@@ -1,0 +1,62 @@
+# Product: SPOKES Employability Skills Curriculum
+
+**One-liner:** An interactive HTML-based employability skills curriculum of 18 self-contained lessons for classroom instruction.
+
+## Problem Statement
+
+Workforce development programs need engaging, accessible, standards-aligned lesson modules that instructors can deliver in classroom settings. Existing materials are static PowerPoints and PDFs that lack interactivity and consistent quality.
+
+## Solution
+
+Build 18 interactive HTML lessons using the SPOKES Builder design system. Each lesson is a single self-contained `index.html` file that runs in any browser -- no server, no install, no dependencies. Lessons follow the WIPPEA pedagogical method and meet WCAG 2.2 AA accessibility standards.
+
+## Target Users
+
+- **Primary:** Classroom instructors delivering employability skills training
+- **Secondary:** Students/learners interacting with the lessons
+- **Stakeholders:** 6 content teams providing source material per lesson topic
+
+## Core Features
+
+- Single-file HTML lessons (portable, no infrastructure needed)
+- WIPPEA-structured pedagogical flow (Warm-up, Introduction, Presentation, Evaluation, Application)
+- Sidebar navigation with progress tracking
+- Minimum 3 interactive elements per lesson (tabs, accordion, checkpoint prompt)
+- Instructor prompt panels (hidden by default, toggle-able)
+- Responsive across mobile (360x800), tablet (768x1024), desktop (1920x1080)
+- SPOKES brand-compliant color system (11-color canonical palette)
+- Unique font pairings and template variants per lesson for visual diversity
+- Video embeds (YouTube) or placeholders when URLs unavailable
+- Downloadable handouts (PDF)
+
+## Lesson Inventory (18 total)
+
+### Complete (3)
+1. Employee Accountability (`Project_1_Employee_Accountability.v2.5/index.html`)
+2. Time Management (`Project_2_Hilary's Project/index.html`)
+3. Interview Skills (`Project_3_Interview-Skills/index.html`)
+
+### Remaining (15)
+Topics TBD -- sourced from 6 content teams via content intake template.
+
+## Success Metrics
+
+- 18 lessons built and passing all 5 quality gates
+- All lessons use canonical 11-color palette only
+- Each lesson has unique approved font pairing
+- Template variant distribution balanced (4-6 lessons per variant)
+- WCAG 2.2 AA Phase 1 compliance on all lessons
+- Zero horizontal scroll at any required viewport
+
+## Milestones
+
+- Phase 1 target: 6 lessons complete by April 15, 2026
+- Program end target: All 18 lessons complete by April 15, 2027
+
+## Current Status
+
+- 3 lessons built and release-approved (as of 2026-03-01)
+- Template stabilization work completed
+- SPOKES Builder design system documented
+- Content intake template ready for distribution
+- Lesson registry tracking active

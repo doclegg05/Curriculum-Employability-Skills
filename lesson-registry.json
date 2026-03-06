@@ -1,6 +1,6 @@
 {
   "version": "1.0.0",
-  "lastUpdated": "2026-03-01",
+  "lastUpdated": "2026-03-06",
   "rules": {
     "allowedVariants": [
       "variant-classic",
@@ -21,7 +21,10 @@
     {
       "id": "lesson-time-management",
       "title": "Time Management",
-      "path": "lesson-time-management/index.html",
+      "description": "Master prioritization, scheduling, and daily planning strategies for workplace success.",
+      "icon": "clock",
+      "themeKey": "time",
+      "path": "Project_2_Hilary's Project/index.html",
       "status": "complete",
       "variant": null,
       "fontPair": {
@@ -49,7 +52,10 @@
     {
       "id": "lesson-interview-skills",
       "title": "Interview Skills",
-      "path": "Interview-Skills/index.html",
+      "description": "Build confidence and master techniques for successful job interviews.",
+      "icon": "briefcase",
+      "themeKey": "interview",
+      "path": "Project_3_Interview-Skills/index.html",
       "status": "complete",
       "variant": null,
       "fontPair": {
@@ -77,7 +83,10 @@
     {
       "id": "lesson-employee-accountability",
       "title": "Employee Accountability",
-      "path": "lesson-employee-accountability/index.html",
+      "description": "Develop personal responsibility, goal-setting, and professional growth habits.",
+      "icon": "checkCircle",
+      "themeKey": "accountability",
+      "path": "Project_1_Employee_Accountability.v2.5/index.html",
       "status": "complete",
       "variant": null,
       "fontPair": {

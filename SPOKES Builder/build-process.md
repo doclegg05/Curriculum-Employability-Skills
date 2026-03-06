@@ -235,3 +235,7 @@ Run through this checklist before delivering:
 - [ ] **Font pairing** matches the approved selection
 - [ ] **Component mix** differs from other lessons in the curriculum
 - [ ] **Responsive** layout works at 768px and 480px widths
+- [ ] **Reduced motion** tested — toggle `prefers-reduced-motion: reduce` in DevTools; verify no animations, no confetti, no sounds, all content visible immediately
+- [ ] **IntersectionObserver reveals** tested — `.reveal-item` elements stagger in on slide entry; scrollable slides trigger on scroll
+- [ ] **View Transitions** graceful fallback confirmed — Chrome/Edge smooth cross-fade; Firefox/Safari use existing slideIn animation
+- [ ] **Optional per-lesson effects** (if used) are gated on `prefersReduced` and pause when slide is not active

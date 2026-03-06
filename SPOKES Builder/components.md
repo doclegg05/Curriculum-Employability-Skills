@@ -30,11 +30,14 @@ This document defines every slide type and content component available in the SP
 
 ```html
 <section class="slide slide-section" data-chapter="3" data-chapter-num="P1">
+  <div class="section-circle"><img src="images/{{chapter-image}}" alt="{{image description}}" loading="lazy"></div>
   <p class="chapter-label">Presentation</p>
   <h2>Chapter Title</h2>
   <div class="divider"></div>
 </section>
 ```
+
+**Section circle image (REQUIRED):** Every section divider must include a `.section-circle` with a relevant `<img>` inside. The image should visually relate to the chapter topic. Images go in the `images/` folder. The circle is positioned at the left side of the slide with a gold border and scale-in animation.
 
 **`data-chapter-num` values and their meanings:**
 | Value | WIPPEA Stage | Chapter Label Text |
@@ -489,3 +492,260 @@ Use these inline classes within `<span>` tags to color-code important words:
 | Simple bulleted list | `content-list` |
 | Key quote or transition | `big-statement` (slide type) |
 | YouTube video | `slide-video` (slide type) |
+| Overlay / feature highlight | `card-glass` |
+| Grid items revealing in sequence | `grid-stagger` with `reveal-item` |
+| Animated section boundary | `gradient-divider` |
+| Content revealed on scroll/hover | `clip-reveal` |
+| High-emphasis CTA button | `btn-magnetic` |
+| Statistic / percentage display | `counter-item` |
+
+---
+
+## Advanced Components (Phase 2)
+
+These components use modern CSS/JS techniques from the advanced design system. All respect `prefers-reduced-motion` and degrade gracefully in older browsers.
+
+### Glass Card
+
+**When to use:** Overlay content on gradient backgrounds, feature highlights, or translucent panels.
+
+```html
+<div class="card card-glass reveal-item">
+  <h4>Feature Title</h4>
+  <p>Description over a frosted translucent background.</p>
+</div>
+```
+
+**CSS (add to theme-override):**
+
+```css
+.card-glass {
+  background: rgba(237, 243, 247, 0.6);
+  backdrop-filter: blur(16px) saturate(1.8);
+  -webkit-backdrop-filter: blur(16px) saturate(1.8);
+  border: 1px solid rgba(255, 255, 255, 0.3);
+  border-left: none;
+  border-radius: 16px;
+  box-shadow: 0 8px 32px rgba(0, 64, 113, 0.08);
+}
+```
+
+**Guidelines:** Best on slides with gradient or image backgrounds. Ensure text meets WCAG AA contrast against blurred background — use `--dark` or `--gray` text. Fallback: browsers without `backdrop-filter` show the solid rgba background.
+
+---
+
+### Staggered Grid Reveal
+
+**When to use:** Any `cards-grid` where items should animate in sequence rather than all at once.
+
+```html
+<div class="cards-grid grid-stagger">
+  <div class="card reveal-item">Card 1 content...</div>
+  <div class="card reveal-item">Card 2 content...</div>
+  <div class="card reveal-item">Card 3 content...</div>
+  <div class="card reveal-item">Card 4 content...</div>
+</div>
+```
+
+**No additional CSS needed** — the `.reveal-item` class and `--reveal-i` variable are set by the IntersectionObserver in the template's navigation engine. Items animate with 60ms stagger between each.
+
+---
+
+### Animated Gradient Divider
+
+**When to use:** Visual section boundaries within a slide, replacing plain `<hr>` or static dividers.
+
+```html
+<div class="gradient-divider"></div>
+```
+
+**CSS (add to theme-override):**
+
+```css
+@property --gradient-angle {
+  syntax: '<angle>';
+  initial-value: 0deg;
+  inherits: false;
+}
+
+.gradient-divider {
+  height: 4px;
+  background: linear-gradient(
+    var(--gradient-angle),
+    var(--primary),
+    var(--accent),
+    var(--gold),
+    var(--primary)
+  );
+  background-size: 300% 100%;
+  animation: gradient-shift 4s ease-in-out infinite;
+  border-radius: 2px;
+  margin: 2rem 0;
+}
+
+@keyframes gradient-shift {
+  0% { --gradient-angle: 0deg; }
+  50% { --gradient-angle: 180deg; }
+  100% { --gradient-angle: 360deg; }
+}
+```
+
+**Guidelines:** Fallback: browsers without `@property` support show a static gradient. The `prefers-reduced-motion` blanket rule handles animation disabling automatically.
+
+---
+
+### Clip-Path Shape Reveals
+
+**When to use:** Content that should reveal dramatically on scroll or hover, or angled section dividers.
+
+**Circle reveal on scroll/hover:**
+
+```html
+<div class="card clip-reveal reveal-item">
+  <h4>Hidden Detail</h4>
+  <p>Content revealed with a circular wipe effect.</p>
+</div>
+```
+
+**CSS:**
+
+```css
+.clip-reveal {
+  clip-path: circle(0% at 50% 50%);
+  transition: clip-path 0.6s cubic-bezier(0.25, 0.46, 0.45, 0.94);
+}
+.clip-reveal.visible,
+.clip-reveal:hover {
+  clip-path: circle(75% at 50% 50%);
+}
+```
+
+**Angled section background:**
+
+```css
+.angle-divider {
+  clip-path: polygon(0 0, 100% 0, 100% 85%, 0 100%);
+  background: var(--primary);
+  padding: 4rem 5rem 6rem;
+  color: var(--light);
+}
+```
+
+---
+
+### Magnetic Button
+
+**When to use:** High-emphasis CTA buttons (e.g., "Start Activity", "Begin Assessment"). Adds a subtle cursor-pull effect on desktop.
+
+```html
+<button class="btn-magnetic">Start Activity</button>
+```
+
+**CSS:**
+
+```css
+.btn-magnetic {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5rem;
+  padding: 0.75rem 1.5rem;
+  background: var(--primary);
+  color: var(--light);
+  border: none;
+  border-radius: 8px;
+  font-size: 1.1rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: transform 0.2s ease-out, box-shadow 0.3s ease;
+}
+.btn-magnetic:hover {
+  box-shadow: 0 8px 25px rgba(0, 123, 175, 0.35);
+}
+.btn-magnetic:focus-visible {
+  outline: 3px solid var(--gold);
+  outline-offset: 3px;
+}
+```
+
+**JS (add to script block):**
+
+```javascript
+document.querySelectorAll('.btn-magnetic').forEach(btn => {
+  btn.addEventListener('pointermove', (e) => {
+    if (e.pointerType === 'touch' || prefersReduced) return;
+    const rect = btn.getBoundingClientRect();
+    const x = e.clientX - rect.left - rect.width / 2;
+    const y = e.clientY - rect.top - rect.height / 2;
+    btn.style.transform = `translate(${x * 0.3}px, ${y * 0.3}px)`;
+  });
+  btn.addEventListener('pointerleave', () => {
+    btn.style.transform = '';
+  });
+});
+```
+
+**Guidelines:** Touch users and reduced-motion users see standard hover effects. The button must be a `<button>` element (not `<span>` or `<div>`). Focus-visible outline uses `--gold`.
+
+---
+
+### Scroll-Triggered Counter
+
+**When to use:** Statistics, percentages, or numerical data that should animate when scrolled into view.
+
+```html
+<div class="counter-item reveal-item">
+  <span class="counter-value" data-target="85">0</span>
+  <p>percent of employers value this skill</p>
+</div>
+```
+
+**CSS:**
+
+```css
+.counter-item {
+  display: flex;
+  align-items: center;
+  gap: 1.25rem;
+  padding: 0.75rem 0;
+}
+.counter-value {
+  font-family: 'DM Serif Display', serif;
+  font-size: 2.5rem;
+  font-weight: 400;
+  color: var(--primary);
+  min-width: 80px;
+  text-align: right;
+}
+```
+
+**JS (add to script block):**
+
+```javascript
+function animateCounter(el, target, duration = 1200) {
+  if (prefersReduced) { el.textContent = target; return; }
+  let start = null;
+  const step = (timestamp) => {
+    if (!start) start = timestamp;
+    const progress = Math.min((timestamp - start) / duration, 1);
+    el.textContent = Math.floor(progress * target);
+    if (progress < 1) requestAnimationFrame(step);
+    else el.textContent = target;
+  };
+  requestAnimationFrame(step);
+}
+
+// Hook into reveal observer: when a .counter-value becomes visible, animate it
+const counterObserver = new MutationObserver((mutations) => {
+  mutations.forEach(m => {
+    if (m.target.classList.contains('visible') && m.target.querySelector('.counter-value')) {
+      const cv = m.target.querySelector('.counter-value');
+      animateCounter(cv, parseInt(cv.dataset.target));
+    }
+  });
+});
+document.querySelectorAll('.counter-item.reveal-item').forEach(el => {
+  counterObserver.observe(el, { attributes: true, attributeFilter: ['class'] });
+});
+```
+
+**Guidelines:** Reduced-motion users see the final number immediately. Counter targets are set via `data-target` attribute.

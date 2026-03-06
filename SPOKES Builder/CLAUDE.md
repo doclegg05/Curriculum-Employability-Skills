@@ -186,6 +186,7 @@ Use `<span>` with these classes inside paragraphs:
 ### Global Design Standards
 
 - **Faded chapter watermark on section dividers:** Every `slide-section` must display a large, faded chapter identifier (letter or number) as a background watermark using the `::after` pseudo-element with `content: attr(data-chapter-num)`. This is a signature SPOKES design element and must appear in ALL template variants.
+- **Chapter image circle on section dividers (REQUIRED):** Every `slide-section` must include a `.section-circle` div containing an `<img>` with a relevant chapter illustration. The circle appears at the left side of the slide with a gold border and animated reveal. Images should be placed in the `images/` folder and relate to the chapter topic. This is mandatory for all lessons.
 
 ### Animations
 

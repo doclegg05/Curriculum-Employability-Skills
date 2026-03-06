@@ -4,47 +4,52 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>SPOKES Employability Skills Curriculum</title>
-    <!-- Modern Typography -->
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700;800&family=DM+Serif+Display:ital@0;1&display=swap" rel="stylesheet">
     <style>
+        /* ===== CSS Variables — Canonical 11-Color Palette Only ===== */
         :root {
-            --brand-primary: #007baf;
-            --brand-accent: #37b550;
-            --brand-dark: #004071;
-            --brand-light: #EDF3F7;
-            --brand-gold: #d3b257;
-            --bg-color: #EDF3F7;
-            --text-main: #004071;
-            --text-muted: #60636b;
+            --primary: #007baf;
+            --accent: #37b550;
+            --dark: #004071;
+            --light: #FFFFFF;
+            --muted: #EDF3F7;
+            --gray: #60636b;
+            --gold: #d3b257;
+            --royal: #00133f;
+            --mauve: #a7253f;
+            --offwhite: #d1d3d4;
+            --muted-gold: #ad8806;
         }
 
-        * {
+        /* ===== Reset ===== */
+        *, *::before, *::after {
             margin: 0;
             padding: 0;
             box-sizing: border-box;
         }
 
+        /* ===== Base ===== */
         body {
             font-family: 'Outfit', -apple-system, BlinkMacSystemFont, sans-serif;
-            background-color: var(--bg-color);
-            color: var(--text-main);
+            background-color: var(--muted);
+            color: var(--dark);
             line-height: 1.6;
             min-height: 100vh;
             display: flex;
             flex-direction: column;
         }
 
-        /* Hero Header */
+        /* ===== Header ===== */
         header {
-            background: linear-gradient(135deg, var(--brand-dark) 0%, var(--brand-primary) 100%);
-            color: white;
+            background: linear-gradient(135deg, var(--dark) 0%, var(--primary) 100%);
+            color: var(--light);
             padding: 5rem 2rem 4rem;
             text-align: center;
             position: relative;
             overflow: hidden;
-            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.1);
+            box-shadow: 0 4px 20px rgba(0, 64, 113, 0.18);
         }
 
         header::before {
@@ -53,9 +58,10 @@
             top: 0;
             left: 0;
             right: 0;
-            height: 100%;
-            background-image: radial-gradient(circle at 20% 150%, rgba(255,255,255,0.1) 0%, transparent 50%),
-                              radial-gradient(circle at 80% -50%, rgba(55, 181, 80, 0.2) 0%, transparent 50%);
+            bottom: 0;
+            background-image:
+                radial-gradient(circle at 20% 150%, rgba(255, 255, 255, 0.1) 0%, transparent 50%),
+                radial-gradient(circle at 80% -50%, rgba(55, 181, 80, 0.15) 0%, transparent 50%);
             pointer-events: none;
         }
 
@@ -70,13 +76,13 @@
             width: clamp(250px, 38vw, 420px);
             aspect-ratio: 3 / 2;
             margin: 0 auto 1.25rem;
-            background: #ffffff;
+            background: var(--light);
             border-radius: 14px;
             padding: 0.3rem;
             display: flex;
             align-items: center;
             justify-content: center;
-            box-shadow: 0 12px 24px rgba(0, 0, 0, 0.28);
+            box-shadow: 0 12px 24px rgba(0, 64, 113, 0.28);
         }
 
         .spokes-logo {
@@ -84,14 +90,14 @@
             width: 100%;
             height: 100%;
             object-fit: contain;
-            filter: drop-shadow(0 6px 14px rgba(0, 0, 0, 0.2));
+            filter: drop-shadow(0 6px 14px rgba(0, 64, 113, 0.2));
         }
 
         .eyebrow {
             font-size: 1rem;
             text-transform: uppercase;
             letter-spacing: 3px;
-            color: var(--brand-gold);
+            color: var(--gold);
             font-weight: 700;
             margin-bottom: 1rem;
             display: block;
@@ -103,7 +109,7 @@
             font-weight: 400;
             margin-bottom: 1.5rem;
             line-height: 1.2;
-            text-shadow: 0 2px 4px rgba(0,0,0,0.2);
+            text-shadow: 0 2px 4px rgba(0, 19, 63, 0.2);
         }
 
         .subtitle {
@@ -114,7 +120,7 @@
             margin: 0 auto;
         }
 
-        /* Main Dashboard Grid */
+        /* ===== Main ===== */
         main {
             flex: 1;
             max-width: 1200px;
@@ -125,57 +131,58 @@
             width: 100%;
         }
 
+        /* ===== Dashboard Grid ===== */
         .dashboard-grid {
             display: grid;
-            grid-template-columns: repeat(3, minmax(0, 1fr));
+            grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
             gap: 2rem;
         }
 
-        /* Module Cards */
+        /* ===== Module Cards ===== */
         .module-card {
-            background: white;
+            background: var(--light);
             border-radius: 16px;
             overflow: hidden;
-            box-shadow: 0 10px 25px rgba(0, 0, 0, 0.05);
-            transition: all 0.4s cubic-bezier(0.165, 0.84, 0.44, 1);
+            box-shadow: 0 10px 25px rgba(0, 64, 113, 0.06);
+            transition: transform 0.4s cubic-bezier(0.165, 0.84, 0.44, 1),
+                        box-shadow 0.4s cubic-bezier(0.165, 0.84, 0.44, 1);
             text-decoration: none;
             color: inherit;
             display: flex;
             flex-direction: column;
-            border: 1px solid transparent;
-            border-top: 5px solid var(--brand-primary);
+            border: 1px solid rgba(209, 211, 212, 0.5);
+            border-top: 5px solid var(--primary);
             position: relative;
-            opacity: 0;
-            transform: translateY(18px) scale(0.985);
-            animation: card-reveal 700ms cubic-bezier(0.16, 1, 0.3, 1) forwards;
+            animation: cardReveal 0.5s ease-out both;
+            animation-delay: calc(var(--i, 0) * 80ms);
         }
 
         .module-card:hover {
             transform: translateY(-8px);
-            box-shadow: 0 20px 40px rgba(0, 0, 0, 0.1);
+            box-shadow: 0 20px 40px rgba(0, 64, 113, 0.12);
         }
 
-        /* Specific module top borders */
-        .module-card.theme-interview {
-            border-top-color: #00133f;
-            border-color: #d6e0fa;
-            background: linear-gradient(180deg, #ffffff 0%, #f2f6ff 100%);
-        }
-        .module-card.theme-time {
-            border-top-color: #a7253f;
-            border-color: #f2d6dc;
-            background: linear-gradient(180deg, #ffffff 0%, #fff4f6 100%);
-        }
-        .module-card.theme-accountability {
-            border-top-color: var(--brand-accent);
-            border-color: #d7f0dd;
-            background: linear-gradient(180deg, #ffffff 0%, #f1fbf4 100%);
+        .module-card:focus-visible {
+            outline: 3px solid var(--gold);
+            outline-offset: 4px;
+            transform: translateY(-5px);
+            box-shadow: 0 18px 36px rgba(0, 64, 113, 0.14);
         }
 
-        .module-card:nth-child(1) { animation-delay: 100ms; }
-        .module-card:nth-child(2) { animation-delay: 180ms; }
-        .module-card:nth-child(3) { animation-delay: 260ms; }
+        .module-card:focus-visible .launch-cta {
+            box-shadow: 0 0 0 3px rgba(211, 178, 87, 0.45);
+        }
 
+        .module-card--planned {
+            cursor: default;
+        }
+
+        .module-card--planned:hover {
+            transform: none;
+            box-shadow: 0 10px 25px rgba(0, 64, 113, 0.06);
+        }
+
+        /* ===== Card Header ===== */
         .card-header {
             padding: 2rem 2rem 1.5rem;
             display: flex;
@@ -190,14 +197,12 @@
             display: flex;
             align-items: center;
             justify-content: center;
-            font-size: 1.75rem;
-            background: rgba(0, 123, 175, 0.1);
-            color: var(--brand-primary);
+            flex-shrink: 0;
         }
 
         .card-icon svg {
-            width: 30px;
-            height: 30px;
+            width: 28px;
+            height: 28px;
             stroke: currentColor;
             stroke-width: 1.85;
             fill: none;
@@ -205,37 +210,56 @@
             stroke-linejoin: round;
         }
 
-        .theme-interview .card-icon { background: rgba(0, 19, 63, 0.1); color: #00133f; }
-        .theme-time .card-icon { background: rgba(167, 37, 63, 0.1); color: #a7253f; }
-        .theme-accountability .card-icon { background: rgba(55, 181, 80, 0.1); color: #004071; }
+        /* ===== Status Badge ===== */
+        .status-badge {
+            font-size: 0.75rem;
+            font-weight: 700;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            padding: 0.35rem 0.75rem;
+            border-radius: 20px;
+        }
 
+        .status-badge--ready {
+            background: rgba(55, 181, 80, 0.1);
+            color: var(--dark);
+        }
+
+        .status-badge--planned {
+            background: rgba(96, 99, 107, 0.1);
+            color: var(--gray);
+        }
+
+        /* ===== Card Body ===== */
         .module-name {
             font-family: 'DM Serif Display', serif;
             font-size: 1.75rem;
             font-weight: 400;
             margin-bottom: 0.5rem;
             padding: 0 2rem;
-            color: var(--brand-dark);
+            color: var(--dark);
         }
 
-        .theme-interview .module-name { color: #00133f; }
-        .theme-time .module-name { color: #a7253f; }
-
         .module-desc {
-            color: var(--text-muted);
+            color: var(--gray);
             padding: 0 2rem 2rem;
             font-size: 1rem;
             flex-grow: 1;
         }
 
+        /* ===== Card Footer ===== */
         .card-footer {
             padding: 1.25rem 2rem;
             background: transparent;
-            border-top: 1px solid rgba(96, 99, 107, 0.2);
+            border-top: 1px solid rgba(209, 211, 212, 0.5);
             display: flex;
             align-items: center;
             justify-content: flex-start;
-            transition: background 0.3s ease, border-color 0.3s ease;
+            transition: border-color 0.3s ease;
+        }
+
+        .module-card:hover .card-footer {
+            border-top-color: rgba(209, 211, 212, 0.8);
         }
 
         .launch-cta {
@@ -247,22 +271,14 @@
             font-size: 0.93rem;
             font-weight: 700;
             letter-spacing: 0.01em;
-            color: #ffffff;
-            background: var(--brand-primary);
-            transition: transform 0.25s ease, box-shadow 0.25s ease, background 0.25s ease;
-        }
-
-        .theme-interview .launch-cta { background: #00133f; }
-        .theme-time .launch-cta { background: #a7253f; }
-        .theme-accountability .launch-cta { background: #0e8a35; }
-
-        .module-card:hover .card-footer {
-            border-top-color: rgba(96, 99, 107, 0.35);
+            color: var(--light);
+            background: var(--primary);
+            transition: transform 0.25s ease, box-shadow 0.25s ease;
         }
 
         .module-card:hover .launch-cta {
             transform: translateX(2px);
-            box-shadow: 0 8px 18px rgba(0, 0, 0, 0.18);
+            box-shadow: 0 8px 18px rgba(0, 64, 113, 0.18);
         }
 
         .arrow-icon {
@@ -271,45 +287,30 @@
             transition: transform 0.25s ease;
         }
 
-        .module-card:hover .launch-cta .arrow-icon {
+        .module-card:hover .arrow-icon {
             transform: translateX(5px);
         }
 
-        .module-card:focus-visible {
-            outline: 3px solid var(--brand-gold);
-            outline-offset: 4px;
-            transform: translateY(-5px);
-            box-shadow: 0 18px 36px rgba(0, 0, 0, 0.16);
+        .planned-label {
+            font-size: 0.93rem;
+            font-weight: 600;
+            color: var(--gray);
+            letter-spacing: 0.01em;
         }
 
-        .module-card:focus-visible .launch-cta {
-            box-shadow: 0 0 0 3px rgba(211, 178, 87, 0.45);
-        }
-
-        /* Status Badge */
-        .status-badge {
-            font-size: 0.75rem;
-            font-weight: 700;
-            text-transform: uppercase;
-            letter-spacing: 1px;
-            padding: 0.35rem 0.75rem;
-            border-radius: 20px;
-            background: rgba(0,0,0,0.05);
-            color: var(--text-muted);
-        }
-
-        .status-ready {
-            background: rgba(55, 181, 80, 0.1);
-            color: #004071;
-        }
-
-        @keyframes card-reveal {
+        /* ===== Card Reveal Animation ===== */
+        @keyframes cardReveal {
+            from {
+                opacity: 0;
+                transform: translateY(20px);
+            }
             to {
                 opacity: 1;
-                transform: translateY(0) scale(1);
+                transform: translateY(0);
             }
         }
 
+        /* ===== Reduced Motion ===== */
         @media (prefers-reduced-motion: reduce) {
             *, *::before, *::after {
                 animation-duration: 0.01ms !important;
@@ -325,26 +326,36 @@
             }
         }
 
-        /* Footer */
+        /* ===== Footer ===== */
         footer {
             text-align: center;
             padding: 2rem;
-            color: var(--text-muted);
+            color: var(--gray);
             font-size: 0.9rem;
             margin-top: auto;
         }
 
-        @media (max-width: 1100px) {
-            .dashboard-grid { grid-template-columns: repeat(2, minmax(0, 1fr)); }
-        }
-
-        /* Responsive */
+        /* ===== Responsive ===== */
         @media (max-width: 768px) {
-            h1 { font-size: 2.5rem; }
-            header { padding: 4rem 1.5rem 3rem; }
-            main { margin-top: -2rem; }
-            .dashboard-grid { grid-template-columns: 1fr; gap: 1.25rem; }
-            .spokes-logo-frame { width: clamp(200px, 70vw, 300px); margin-bottom: 1rem; border-radius: 12px; padding: 0.2rem; }
+            h1 {
+                font-size: 2.5rem;
+            }
+            header {
+                padding: 4rem 1.5rem 3rem;
+            }
+            main {
+                margin-top: -2rem;
+            }
+            .dashboard-grid {
+                grid-template-columns: 1fr;
+                gap: 1.25rem;
+            }
+            .spokes-logo-frame {
+                width: clamp(200px, 70vw, 300px);
+                margin-bottom: 1rem;
+                border-radius: 12px;
+                padding: 0.2rem;
+            }
         }
     </style>
 </head>
@@ -353,80 +364,170 @@
     <header>
         <div class="header-content">
             <div class="spokes-logo-frame">
-                <img src="Interview-Skills/SPOKES-Logo.png" alt="SPOKES logo" class="spokes-logo">
+                <img src="SPOKES-Logo.png" alt="SPOKES logo" class="spokes-logo">
             </div>
             <span class="eyebrow">Interactive Hub</span>
             <h1>Employability Skills Curriculum</h1>
-            <p class="subtitle">Select a module below to launch the interactive presentation and access associated instructional materials.</p>
+            <p class="subtitle">Select a module below to launch an interactive lesson</p>
         </div>
     </header>
 
     <main>
-        <div class="dashboard-grid">
-            
-            <!-- Interview Skills -->
-            <a href="Interview-Skills/index.html" class="module-card theme-interview">
-                <div class="card-header">
-                    <div class="card-icon" aria-hidden="true">
-                        <svg viewBox="0 0 24 24" focusable="false">
-                            <rect x="3" y="7" width="18" height="13" rx="2"></rect>
-                            <path d="M9 7V5a1 1 0 0 1 1-1h4a1 1 0 0 1 1 1v2"></path>
-                            <path d="M3 12h18"></path>
-                            <path d="M10 12v2h4v-2"></path>
-                        </svg>
-                    </div>
-                    <div class="status-badge status-ready">Ready</div>
-                </div>
-                <h3 class="module-name">Interview Skills</h3>
-                <p class="module-desc">Master the techniques for successful job interviews, from preparation and professional presentation to effectively answering behavioral questions.</p>
-                <div class="card-footer">
-                    <span class="launch-cta">Launch Module <span class="arrow-icon">→</span></span>
-                </div>
-            </a>
-
-            <!-- Time Management -->
-            <a href="lesson-time-management/index.html" class="module-card theme-time">
-                <div class="card-header">
-                    <div class="card-icon" aria-hidden="true">
-                        <svg viewBox="0 0 24 24" focusable="false">
-                            <circle cx="12" cy="12" r="8"></circle>
-                            <path d="M12 8v4l3 2"></path>
-                            <path d="M9 3h6"></path>
-                        </svg>
-                    </div>
-                    <div class="status-badge status-ready">Ready</div>
-                </div>
-                <h3 class="module-name">Time Management</h3>
-                <p class="module-desc">Learn how to prioritize tasks, set SMART goals, and utilize tools like the Eisenhower Matrix to overcome procrastination and boost productivity.</p>
-                <div class="card-footer">
-                    <span class="launch-cta">Launch Module <span class="arrow-icon">→</span></span>
-                </div>
-            </a>
-
-            <!-- Employee Accountability -->
-            <a href="lesson-employee-accountability/index.html" class="module-card theme-accountability">
-                <div class="card-header">
-                    <div class="card-icon" aria-hidden="true">
-                        <svg viewBox="0 0 24 24" focusable="false">
-                            <circle cx="12" cy="12" r="9"></circle>
-                            <path d="m8.5 12 2.2 2.2 4.8-4.8"></path>
-                        </svg>
-                    </div>
-                    <div class="status-badge status-ready">Ready</div>
-                </div>
-                <h3 class="module-name">Employee Accountability</h3>
-                <p class="module-desc">Understand the principles of workplace responsibility, taking ownership of actions, and building a reliable professional reputation.</p>
-                <div class="card-footer">
-                    <span class="launch-cta">Launch Module <span class="arrow-icon">→</span></span>
-                </div>
-            </a>
-
-        </div>
+        <div class="dashboard-grid" id="dashboardGrid"></div>
     </main>
 
     <footer>
-        <p>&copy; 2026 SPOKES. All rights reserved.</p>
+        <p>&copy; 2026 WV Adult Basic Education. All rights reserved.</p>
     </footer>
+
+    <script>
+        /* ===== Theme Map ===== */
+        const THEME_MAP = {
+            interview:      { topBorder: 'var(--royal)',  accentBg: 'rgba(0, 19, 63, 0.08)',   ctaBg: 'var(--royal)' },
+            time:           { topBorder: 'var(--mauve)',  accentBg: 'rgba(167, 37, 63, 0.08)', ctaBg: 'var(--mauve)' },
+            accountability: { topBorder: 'var(--accent)', accentBg: 'rgba(55, 181, 80, 0.08)', ctaBg: 'var(--dark)' }
+        };
+
+        /* Cycle themes for future lessons */
+        const CYCLE_THEMES = [
+            { topBorder: 'var(--primary)',   accentBg: 'rgba(0, 123, 175, 0.08)',  ctaBg: 'var(--primary)' },
+            { topBorder: 'var(--gold)',      accentBg: 'rgba(211, 178, 87, 0.08)', ctaBg: 'var(--dark)' },
+            { topBorder: 'var(--royal)',     accentBg: 'rgba(0, 19, 63, 0.08)',    ctaBg: 'var(--royal)' }
+        ];
+
+        function getTheme(themeKey, index) {
+            if (THEME_MAP[themeKey]) return THEME_MAP[themeKey];
+            return CYCLE_THEMES[index % CYCLE_THEMES.length];
+        }
+
+        /* ===== Icon SVG Map ===== */
+        const ICON_MAP = {
+            briefcase: '<svg viewBox="0 0 24 24" aria-hidden="true" focusable="false"><rect x="3" y="7" width="18" height="13" rx="2"></rect><path d="M9 7V5a1 1 0 0 1 1-1h4a1 1 0 0 1 1 1v2"></path><path d="M3 12h18"></path><path d="M10 12v2h4v-2"></path></svg>',
+            clock: '<svg viewBox="0 0 24 24" aria-hidden="true" focusable="false"><circle cx="12" cy="12" r="8"></circle><path d="M12 8v4l3 2"></path><path d="M9 3h6"></path></svg>',
+            checkCircle: '<svg viewBox="0 0 24 24" aria-hidden="true" focusable="false"><circle cx="12" cy="12" r="9"></circle><path d="m8.5 12 2.2 2.2 4.8-4.8"></path></svg>',
+            chat: '<svg viewBox="0 0 24 24" aria-hidden="true" focusable="false"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"></path></svg>',
+            star: '<svg viewBox="0 0 24 24" aria-hidden="true" focusable="false"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"></polygon></svg>',
+            book: '<svg viewBox="0 0 24 24" aria-hidden="true" focusable="false"><path d="M4 19.5A2.5 2.5 0 0 1 6.5 17H20"></path><path d="M6.5 2H20v20H6.5A2.5 2.5 0 0 1 4 19.5v-15A2.5 2.5 0 0 1 6.5 2z"></path></svg>'
+        };
+
+        function getIcon(iconKey) {
+            return ICON_MAP[iconKey] || ICON_MAP.book;
+        }
+
+        /* ===== Fallback Lessons (for file:// protocol) ===== */
+        const FALLBACK_LESSONS = [
+            {
+                id: 'lesson-time-management',
+                title: 'Time Management',
+                description: 'Master prioritization, scheduling, and daily planning strategies for workplace success.',
+                icon: 'clock',
+                themeKey: 'time',
+                path: "Project_2_Hilary's Project/index.html",
+                status: 'complete'
+            },
+            {
+                id: 'lesson-interview-skills',
+                title: 'Interview Skills',
+                description: 'Build confidence and master techniques for successful job interviews.',
+                icon: 'briefcase',
+                themeKey: 'interview',
+                path: 'Project_3_Interview-Skills/index.html',
+                status: 'complete'
+            },
+            {
+                id: 'lesson-employee-accountability',
+                title: 'Employee Accountability',
+                description: 'Develop personal responsibility, goal-setting, and professional growth habits.',
+                icon: 'checkCircle',
+                themeKey: 'accountability',
+                path: 'Project_1_Employee_Accountability.v2.5/index.html',
+                status: 'complete'
+            }
+        ];
+
+        /* ===== Card Builder ===== */
+        function isReady(status) {
+            return status === 'complete' || status === 'ready';
+        }
+
+        function escapeHtml(value) {
+            return String(value ?? '').replace(/[&<>"']/g, function (char) {
+                const map = {
+                    '&': '&amp;',
+                    '<': '&lt;',
+                    '>': '&gt;',
+                    '"': '&quot;',
+                    "'": '&#39;'
+                };
+                return map[char];
+            });
+        }
+
+        function sanitizeLessonPath(path) {
+            const rawPath = String(path ?? '').trim();
+            if (!rawPath) return '';
+            if (!/^[A-Za-z0-9_./' -]+$/.test(rawPath)) return '';
+            if (rawPath.startsWith('/') || rawPath.includes('..')) return '';
+            if (!rawPath.toLowerCase().endsWith('.html')) return '';
+            return encodeURI(rawPath);
+        }
+
+        function buildCard(lesson, index) {
+            const theme = getTheme(lesson.themeKey, index);
+            const ready = isReady(lesson.status);
+            const safePath = ready ? sanitizeLessonPath(lesson.path) : '';
+            const isLaunchable = ready && !!safePath;
+            const tag = isLaunchable ? 'a' : 'div';
+            const hrefAttr = tag === 'a' ? ` href="${safePath}" rel="noopener noreferrer"` : '';
+            const plannedClass = isLaunchable ? '' : ' module-card--planned';
+            const statusClass = isLaunchable ? 'status-badge--ready' : 'status-badge--planned';
+            const statusText = isLaunchable ? 'Ready' : 'Coming Soon';
+            const iconColor = theme.topBorder;
+            const safeTitle = escapeHtml(lesson.title || 'Untitled Module');
+            const safeDescription = escapeHtml(lesson.description || '');
+
+            const footerContent = isLaunchable
+                ? `<span class="launch-cta" style="background: ${theme.ctaBg};">Launch Module <span class="arrow-icon" aria-hidden="true">&rarr;</span></span>`
+                : `<span class="planned-label">Coming Soon</span>`;
+
+            return `<${tag}${hrefAttr} class="module-card${plannedClass}" style="border-top-color: ${theme.topBorder}; --i: ${index};">
+                <div class="card-header">
+                    <div class="card-icon" style="background: ${theme.accentBg}; color: ${iconColor};" aria-hidden="true">
+                        ${getIcon(lesson.icon)}
+                    </div>
+                    <span class="status-badge ${statusClass}">${statusText}</span>
+                </div>
+                <h3 class="module-name">${safeTitle}</h3>
+                <p class="module-desc">${safeDescription}</p>
+                <div class="card-footer">
+                    ${footerContent}
+                </div>
+            </${tag}>`;
+        }
+
+        /* ===== Render ===== */
+        function renderDashboard(lessons) {
+            const visible = (Array.isArray(lessons) ? lessons : []).filter(l => l && l.status !== 'blocked');
+            const grid = document.getElementById('dashboardGrid');
+            grid.innerHTML = visible.map((lesson, i) => buildCard(lesson, i)).join('');
+        }
+
+        /* ===== Init ===== */
+        document.addEventListener('DOMContentLoaded', function () {
+            /* Try fetching registry; fall back for file:// or fetch failure */
+            fetch('lesson-registry.json')
+                .then(function (res) {
+                    if (!res.ok) throw new Error('HTTP ' + res.status);
+                    return res.json();
+                })
+                .then(function (data) {
+                    renderDashboard(data.lessons || []);
+                })
+                .catch(function () {
+                    renderDashboard(FALLBACK_LESSONS);
+                });
+        });
+    </script>
 
 </body>
 </html>

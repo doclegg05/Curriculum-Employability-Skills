@@ -16,7 +16,9 @@ SPOKES interactive employability curriculum system with standards, templates, an
 - `SPOKES-Project-Plan.md` — phased project delivery plan
 - `SPOKES-Master-Action-Plan.md` — consolidated issue register + sprint plan
 - `Dashboard.html` — curriculum launcher/dashboard
-- `Interview-Skills/` — lesson module (existing)
+- `Project_1_Employee_Accountability.v2.5/` — Employee Accountability lesson
+- `Project_2_Hilary's Project/` — Time Management lesson
+- `Project_3_Interview-Skills/` — Interview Skills lesson
 - `SPOKES Builder/` — design system + template assets
 
 ### SPOKES Builder

@@ -262,7 +262,8 @@
     }
 
     .download-btn:hover {
-      background: #2e9a44;
+      background: var(--accent);
+      filter: brightness(0.88);
       transform: translateY(-2px);
       box-shadow: 0 5px 20px rgba(55, 181, 80, 0.4);
     }
@@ -295,7 +296,8 @@
     }
 
     .video-btn:hover {
-      background: #c4a34b;
+      background: var(--gold);
+      filter: brightness(0.92);
       transform: translateY(-2px);
       box-shadow: 0 5px 20px rgba(211, 178, 87, 0.4);
     }
@@ -750,7 +752,7 @@
     .matrix-cell.eliminate {
       background: var(--muted);
       color: var(--gray);
-      border: 2px solid #E0E0E0;
+      border: 2px solid var(--offwhite);
     }
 
     .matrix-cell .matrix-label {
@@ -935,7 +937,7 @@
       justify-content: center;
       align-items: center;
       text-align: center;
-      background: linear-gradient(170deg, #F4F8FB 0%, #FFFFFF 50%, #EEF2F6 100%);
+      background: linear-gradient(170deg, var(--muted) 0%, var(--light) 50%, var(--offwhite) 100%);
     }
 
     .slide-video {
@@ -1053,7 +1055,7 @@
 
     /* Background Variation */
     .slide:not(.slide-title):not(.slide-section):not(.slide-closing):not(.big-statement) {
-      background: linear-gradient(170deg, #F4F8FB 0%, #FFFFFF 50%, #EEF2F6 100%);
+      background: linear-gradient(170deg, var(--muted) 0%, var(--light) 50%, var(--offwhite) 100%);
     }
 
     /* Key Takeaways */
@@ -1069,7 +1071,30 @@
       padding-top: 2rem;
       padding-bottom: 1rem;
     }
-    .slide-section.active::before { flex: 0; min-height: 0; }
+    .slide-section.active::before, .slide-section.active::after { flex: 0; min-height: 0; }
+
+    /* Section dividers — chapter image circle */
+    .slide-section .section-circle {
+      width: 280px; height: 280px;
+      border-radius: 50%;
+      border: 3px solid rgba(211,178,87,0.25);
+      position: absolute;
+      top: 50%; left: 8%;
+      transform: translateY(-50%);
+      z-index: 2; overflow: hidden;
+      box-shadow: 0 8px 32px rgba(0,0,0,0.3);
+    }
+    .slide-section .section-circle img {
+      width: 100%; height: 100%;
+      object-fit: cover;
+    }
+    .slide-section.active .section-circle {
+      animation: circleReveal 0.7s ease-out 0.3s both;
+    }
+    @keyframes circleReveal {
+      from { opacity: 0; transform: translateY(-50%) scale(0.7); }
+      to   { opacity: 1; transform: translateY(-50%) scale(1); }
+    }
 
     .slide-section.active { animation: sectionSlideIn 0.6s ease-out; }
     .slide-section.active .chapter-label { animation: fadeDown 0.5s ease-out 0.2s both; }
@@ -1257,6 +1282,7 @@
       .split-layout { flex-direction: column; gap: 1.5rem; }
       .split-visual { flex: 0 0 auto; }
       .visual-circle { width: 150px; height: 150px; font-size: 3rem; }
+      .slide-section .section-circle { width: 180px; height: 180px; left: 5%; }
       .areas-grid { flex-direction: column; }
       .branding-logo { max-width: 50px; bottom: 0.75rem; right: 0.75rem; }
       .nav-hint { bottom: 1rem; font-size: 0.8rem; }
@@ -1275,8 +1301,56 @@
       .dangers-grid { flex-direction: column; }
       .danger-card { height: 160px; }
       .big-statement h2 { font-size: 2rem; }
+      .slide-section .section-circle { width: 120px; height: 120px; left: 50%; transform: translate(-50%, -50%); opacity: 0.15; }
       .branding-logo { max-width: 40px; bottom: 0.5rem; right: 0.5rem; }
       .slide-video h2 { font-size: 1.3rem; }
+    }
+
+    /* ===== Reduced Motion Accessibility ===== */
+    @media (prefers-reduced-motion: reduce) {
+      *, *::before, *::after {
+        animation-duration: 0.01ms !important;
+        animation-iteration-count: 1 !important;
+        transition-duration: 0.01ms !important;
+        scroll-behavior: auto !important;
+      }
+      .slide {
+        animation: none !important;
+      }
+      .takeaway-num {
+        transform: scale(1) !important;
+        transition: none !important;
+      }
+      .confetti {
+        display: none !important;
+      }
+    }
+
+    /* ===== IntersectionObserver Reveal System ===== */
+    .reveal-item {
+      opacity: 0;
+      transform: translateY(20px);
+      transition: opacity 0.5s ease-out, transform 0.5s ease-out;
+      transition-delay: calc(var(--reveal-i, 0) * 60ms);
+    }
+
+    .reveal-item.visible {
+      opacity: 1;
+      transform: translateY(0);
+    }
+
+    /* ===== View Transitions ===== */
+    ::view-transition-old(root) {
+      animation: vt-fade-out 250ms ease-out;
+    }
+    ::view-transition-new(root) {
+      animation: vt-fade-in 250ms ease-in;
+    }
+    @keyframes vt-fade-out {
+      to { opacity: 0; }
+    }
+    @keyframes vt-fade-in {
+      from { opacity: 0; }
     }
   </style>
 </head>
@@ -1284,7 +1358,7 @@
   <div class="container">
     <!-- Sidebar — Auto-built by JavaScript from slide data-chapter attributes -->
     <nav class="sidebar">
-      <div class="sidebar-title">WIPPEA Lesson</div>
+      <div class="sidebar-title">{{LESSON_TITLE}}</div>
       <ul class="chapter-list" id="chapterList">
         <!-- Dynamically populated by buildSidebar() -->
       </ul>
@@ -1348,7 +1422,9 @@
       <!-- ======================== -->
 
       <!-- SLIDE TYPE: Section divider (one per chapter) -->
+      <!-- Every section divider MUST include a section-circle with a relevant chapter image -->
       <section class="slide slide-section" data-chapter="2" data-chapter-num="I">
+        <div class="section-circle"><img src="images/{{chapter-image}}" alt="{{image description}}" loading="lazy"></div>
         <p class="chapter-label">Introduction</p>
         <h2>{{Chapter Title}}</h2>
         <div class="divider"></div>
@@ -1381,6 +1457,7 @@
       <!-- ======================== -->
 
       <section class="slide slide-section" data-chapter="3" data-chapter-num="P1">
+        <div class="section-circle"><img src="images/{{chapter-image}}" alt="{{image description}}" loading="lazy"></div>
         <p class="chapter-label">Presentation</p>
         <h2>{{Chapter Title}}</h2>
         <div class="divider"></div>
@@ -1420,6 +1497,7 @@
       <!-- ======================== -->
 
       <section class="slide slide-section" data-chapter="4" data-chapter-num="P2">
+        <div class="section-circle"><img src="images/{{chapter-image}}" alt="{{image description}}" loading="lazy"></div>
         <p class="chapter-label">Presentation</p>
         <h2>{{Chapter Title}}</h2>
         <div class="divider"></div>
@@ -1432,6 +1510,7 @@
       <!-- ======================== -->
 
       <section class="slide slide-section" data-chapter="5" data-chapter-num="P3">
+        <div class="section-circle"><img src="images/{{chapter-image}}" alt="{{image description}}" loading="lazy"></div>
         <p class="chapter-label">Presentation</p>
         <h2>{{Chapter Title}}</h2>
         <div class="divider"></div>
@@ -1444,6 +1523,7 @@
       <!-- ======================== -->
 
       <section class="slide slide-section" data-chapter="6" data-chapter-num="E">
+        <div class="section-circle"><img src="images/{{chapter-image}}" alt="{{image description}}" loading="lazy"></div>
         <p class="chapter-label">Evaluation</p>
         <h2>{{Evaluation Title}}</h2>
         <div class="divider"></div>
@@ -1478,6 +1558,7 @@
       <!-- ======================== -->
 
       <section class="slide slide-section" data-chapter="7" data-chapter-num="A">
+        <div class="section-circle"><img src="images/{{chapter-image}}" alt="{{image description}}" loading="lazy"></div>
         <p class="chapter-label">Application</p>
         <h2>{{Application Title}}</h2>
         <div class="divider"></div>
@@ -1531,6 +1612,9 @@
        The ONLY thing you change is the chapterNames object below.
        ================================================================ */
 
+    // Accessibility: reduced motion preference
+    const prefersReduced = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+
     // Slide Navigation
     const slides = document.querySelectorAll('.slide');
     const chapterListEl = document.getElementById('chapterList');
@@ -1550,10 +1634,16 @@
       sidebarToggleBtn.innerHTML = sidebarCollapsed ? '&#187;' : '&#171;';
     }
 
-    // Sound effects
-    const audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+    // Sound effects (gated on reduced motion)
+    let audioCtx;
+    try {
+      if (!prefersReduced) {
+        audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+      }
+    } catch (e) { /* silent fail */ }
 
     function playClickSound() {
+      if (!audioCtx || prefersReduced) return;
       const oscillator = audioCtx.createOscillator();
       const gainNode = audioCtx.createGain();
       oscillator.connect(gainNode);
@@ -1567,6 +1657,7 @@
     }
 
     function playSuccessSound() {
+      if (!audioCtx || prefersReduced) return;
       const notes = [523, 659, 784];
       notes.forEach((freq, i) => {
         setTimeout(() => {
@@ -1657,45 +1748,109 @@
       });
     }
 
+    // IntersectionObserver: staggered content reveals within active slides
+    function observeSlideContent(slideEl) {
+      // Clean up previous observer
+      if (slideEl._contentObserver) {
+        slideEl._contentObserver.disconnect();
+        delete slideEl._contentObserver;
+      }
+
+      const items = slideEl.querySelectorAll('.reveal-item');
+      if (!items.length) return;
+
+      // Assign stagger indices
+      items.forEach((el, i) => el.style.setProperty('--reveal-i', i));
+
+      // If reduced motion, show everything immediately
+      if (prefersReduced) {
+        items.forEach(el => el.classList.add('visible'));
+        return;
+      }
+
+      const observer = new IntersectionObserver((entries) => {
+        entries.forEach(entry => {
+          if (entry.isIntersecting) {
+            entry.target.classList.add('visible');
+            observer.unobserve(entry.target);
+          }
+        });
+      }, { root: slideEl, threshold: 0.1 });
+
+      items.forEach(el => observer.observe(el));
+      slideEl._contentObserver = observer;
+    }
+
     function showSlide(index) {
       if (index < 0) index = 0;
       if (index >= slides.length) index = slides.length - 1;
-      currentIndex = index;
 
-      slides.forEach((slide, i) => slide.classList.toggle('active', i === index));
+      const doTransition = () => {
+        currentIndex = index;
 
-      const currentChapter = slides[index].dataset.chapter;
-      document.querySelectorAll('.chapter-item').forEach(item => {
-        const isActive = item.dataset.chapter === currentChapter;
-        item.classList.toggle('active', isActive);
-        if (isActive) item.classList.add('expanded');
-      });
+        // Clean up observers and reveal states on previous slides
+        slides.forEach((slide, i) => {
+          if (i !== index) {
+            if (slide._contentObserver) {
+              slide._contentObserver.disconnect();
+              delete slide._contentObserver;
+            }
+            slide.querySelectorAll('.reveal-item.visible').forEach(el => el.classList.remove('visible'));
+          }
+          slide.classList.toggle('active', i === index);
+        });
 
-      document.querySelectorAll('.slide-item').forEach(item => {
-        item.classList.toggle('active', parseInt(item.dataset.slide) === index);
-      });
+        const currentChapter = slides[index].dataset.chapter;
+        document.querySelectorAll('.chapter-item').forEach(item => {
+          const isActive = item.dataset.chapter === currentChapter;
+          item.classList.toggle('active', isActive);
+          if (isActive) item.classList.add('expanded');
+        });
 
-      currentSlideEl.textContent = index + 1;
-      progressBar.style.width = ((index + 1) / slides.length) * 100 + '%';
+        document.querySelectorAll('.slide-item').forEach(item => {
+          item.classList.toggle('active', parseInt(item.dataset.slide) === index);
+        });
 
-      // Handle branding logo visibility
-      const brandingLogo = document.querySelector('.branding-logo');
-      if (slides[index].classList.contains('slide-title') || slides[index].classList.contains('slide-closing')) {
-        brandingLogo.style.display = 'none';
+        // Auto-scroll sidebar to keep active item visible
+        const activeSlideItem = document.querySelector('.slide-item.active');
+        const activeChapterItem = document.querySelector('.chapter-item.active');
+        const scrollTarget = activeSlideItem || activeChapterItem;
+        if (scrollTarget) {
+          scrollTarget.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+        }
+
+        currentSlideEl.textContent = index + 1;
+        progressBar.style.width = ((index + 1) / slides.length) * 100 + '%';
+
+        // Handle branding logo visibility
+        const brandingLogo = document.querySelector('.branding-logo');
+        if (slides[index].classList.contains('slide-title') || slides[index].classList.contains('slide-closing')) {
+          brandingLogo.style.display = 'none';
+        } else {
+          brandingLogo.style.display = 'block';
+        }
+
+        // Observe reveal-items in the new active slide
+        observeSlideContent(slides[index]);
+
+        if (slides[index].classList.contains('slide-closing') && !prefersReduced) {
+          triggerConfetti();
+          playSuccessSound();
+        }
+      };
+
+      // Use View Transitions API when available and motion is OK
+      if (document.startViewTransition && !prefersReduced) {
+        document.startViewTransition(doTransition);
       } else {
-        brandingLogo.style.display = 'block';
-      }
-
-      if (slides[index].classList.contains('slide-closing')) {
-        triggerConfetti();
-        playSuccessSound();
+        doTransition();
       }
     }
 
     function triggerConfetti() {
       const container = document.getElementById('confettiContainer');
       container.innerHTML = '';
-      const colors = ['#37b550', '#007baf', '#d3b257', '#FF6B6B', '#FFFFFF'];
+      const colors = ['#37b550', '#007baf', '#d3b257', '#a7253f', '#FFFFFF'];
       for (let i = 0; i < 100; i++) {
         const confetti = document.createElement('div');
         confetti.className = 'confetti';

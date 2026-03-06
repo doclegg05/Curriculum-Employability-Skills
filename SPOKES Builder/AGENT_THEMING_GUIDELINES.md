@@ -214,6 +214,181 @@ The WIPPEA framework provides 7 standard chapters (W, I, P1, P2, P3, E, A). Howe
 
 ---
 
+## Principle 6: Optional Per-Lesson Effects
+
+Each lesson may include **at most 2** of the following optional effects to create visual distinction. All effects are gated on `prefersReduced` and pause when not on the active slide. These go in `<style id="theme-override">` and an additional `<script>` block at the end of the lesson.
+
+### 6a. Pointer Tracking Spotlight
+
+A subtle radial gradient that follows the cursor on title and section slides. Creates an ambient glow effect.
+
+**CSS (theme-override):**
+
+```css
+.slide-title,
+.slide-section.spotlight {
+  --mx: 50%;
+  --my: 50%;
+}
+.slide-title::before,
+.slide-section.spotlight::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background: radial-gradient(
+    600px circle at var(--mx) var(--my),
+    rgba(211, 178, 87, 0.12),
+    transparent 60%
+  );
+  pointer-events: none;
+  z-index: 0;
+}
+```
+
+**JS:**
+
+```javascript
+if (!prefersReduced) {
+  document.addEventListener('pointermove', (e) => {
+    const active = document.querySelector('.slide.active');
+    if (active && (active.classList.contains('slide-title') || active.classList.contains('slide-section'))) {
+      const rect = active.getBoundingClientRect();
+      active.style.setProperty('--mx', ((e.clientX - rect.left) / rect.width * 100) + '%');
+      active.style.setProperty('--my', ((e.clientY - rect.top) / rect.height * 100) + '%');
+    }
+  });
+}
+```
+
+**When to use:** Lessons that want a premium, interactive feel on their title and chapter dividers. Ignored on touch devices.
+
+### 6b. Parallax Title Slide
+
+CSS-only depth layering on the title slide using `perspective` and `translateZ`.
+
+**CSS (theme-override):**
+
+```css
+.slide-title.parallax {
+  perspective: 800px;
+  transform-style: preserve-3d;
+}
+.slide-title.parallax .logo {
+  transform: translateZ(40px);
+}
+.slide-title.parallax h1 {
+  transform: translateZ(60px);
+}
+.slide-title.parallax .subtitle {
+  transform: translateZ(20px);
+}
+```
+
+**When to use:** Adds visual depth to the title slide without JS. Add class `parallax` to the `slide-title` section element.
+
+### 6c. Text Scramble for Big-Statement
+
+Character-by-character reveal animation for impactful quote slides.
+
+**JS:**
+
+```javascript
+function scrambleReveal(el) {
+  if (prefersReduced) return;
+  const text = el.textContent;
+  const chars = '!<>-_\\/[]{}=+*^?#________';
+  let iteration = 0;
+  const interval = setInterval(() => {
+    el.textContent = text.split('').map((char, i) => {
+      if (i < iteration) return text[i];
+      return chars[Math.floor(Math.random() * chars.length)];
+    }).join('');
+    iteration += 1 / 3;
+    if (iteration >= text.length) {
+      clearInterval(interval);
+      el.textContent = text;
+    }
+  }, 30);
+}
+```
+
+**When to use:** Add `data-scramble` attribute to a `.big-statement h2`. Hook into `showSlide()` — when the active slide is a big-statement with `data-scramble`, call `scrambleReveal()` on the h2.
+
+### 6d. Canvas Particle Background
+
+Lightweight particle field for title or closing slides. Uses only brand colors.
+
+**HTML:**
+
+```html
+<canvas class="particle-bg" id="particleCanvas" aria-hidden="true"></canvas>
+```
+
+**CSS (theme-override):**
+
+```css
+.particle-bg {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  pointer-events: none;
+  z-index: 0;
+}
+```
+
+**JS:**
+
+```javascript
+function initParticles(canvas, slideEl) {
+  if (prefersReduced) return;
+  const ctx = canvas.getContext('2d');
+  canvas.width = slideEl.clientWidth;
+  canvas.height = slideEl.clientHeight;
+  const COLORS = ['#007baf', '#37b550', '#d3b257', '#EDF3F7'];
+  const particles = Array.from({ length: 50 }, () => ({
+    x: Math.random() * canvas.width,
+    y: Math.random() * canvas.height,
+    vx: (Math.random() - 0.5) * 0.5,
+    vy: (Math.random() - 0.5) * 0.5,
+    size: Math.random() * 3 + 1,
+    color: COLORS[Math.floor(Math.random() * COLORS.length)]
+  }));
+
+  let lastFrame = 0;
+  const FRAME_INTERVAL = 1000 / 30;
+
+  function draw(timestamp) {
+    if (!slideEl.classList.contains('active') || document.hidden) {
+      requestAnimationFrame(draw);
+      return;
+    }
+    if (timestamp - lastFrame < FRAME_INTERVAL) {
+      requestAnimationFrame(draw);
+      return;
+    }
+    lastFrame = timestamp;
+    ctx.clearRect(0, 0, canvas.width, canvas.height);
+    particles.forEach(p => {
+      p.x += p.vx;
+      p.y += p.vy;
+      if (p.x < 0 || p.x > canvas.width) p.vx *= -1;
+      if (p.y < 0 || p.y > canvas.height) p.vy *= -1;
+      ctx.fillStyle = p.color;
+      ctx.beginPath();
+      ctx.arc(p.x, p.y, p.size, 0, Math.PI * 2);
+      ctx.fill();
+    });
+    requestAnimationFrame(draw);
+  }
+  requestAnimationFrame(draw);
+}
+```
+
+**When to use:** Title or closing slides that want ambient motion. Max 50 particles, 30fps target. Pauses when tab is hidden or slide is not active. Performance budget: must not cause frame drops on 768px tablet viewport.
+
+---
+
 ## Checklist Before Building
 
 - [ ] Confirmed which template variant to use for this lesson
@@ -224,3 +399,6 @@ The WIPPEA framework provides 7 standard chapters (W, I, P1, P2, P3, E, A). Howe
 - [ ] Video slides use embedded iframe (if URL provided) or placeholder (if no URL)
 - [ ] Component selection differs from adjacent lessons in the curriculum
 - [ ] Reviewed existing lessons to ensure visual distinction
+- [ ] At most 2 optional per-lesson effects (Principle 6) selected
+- [ ] All optional effects gated on `prefersReduced`
+- [ ] `prefers-reduced-motion` tested (all animations disabled, no sounds, no confetti)
