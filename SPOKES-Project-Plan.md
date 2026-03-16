@@ -1,151 +1,106 @@
 # SPOKES Employability Skills Curriculum -- Project Plan
 
-**Date:** 2026-02-27
+**Date:** 2026-02-27 (last updated: 2026-03-09)
 **Goal:** Deliver 18 interactive HTML lessons built from the SPOKES Builder system
-**Current State:** 3 of 18 lessons exist (1 brand-compliant, 2 needing fixes)
+**Current State:** 3 of 18 lessons complete and release-approved; awaiting source materials for lessons 4-6. Phase 1 target extended to June 15, 2026.
 
 ---
 
 ## Project Summary
 
-| Metric | Value |
-|--------|-------|
-| Total lessons required | 18 |
-| Lessons built (brand-compliant) | 1 (Employee Accountability) |
-| Lessons built (needs fixing) | 2 (Time Management, Interview Skills) |
-| Lessons remaining to build | 15 |
-| Template variants needed | 3-4 |
-| Content teams delivering source material | 6 |
-| Build format | Single self-contained index.html per lesson |
-| Source material format | PowerPoint + PDFs from human teams |
+| Metric                                   | Value                                                          |
+| ---------------------------------------- | -------------------------------------------------------------- |
+| Total lessons required                   | 18                                                             |
+| Lessons complete (release-approved)      | 3 (Employee Accountability, Time Management, Interview Skills) |
+| Lessons remaining to build               | 15                                                             |
+| Phase 1 target                           | 6 lessons by June 15, 2026 (3 more needed)                     |
+| Template variants needed                 | 3-4 (documented in registry, CSS not yet formalized)           |
+| Content teams delivering source material | 6                                                              |
+| Build format                             | Single self-contained index.html per lesson                    |
+| Source material format                   | PowerPoint + PDFs from human teams                             |
 
 ---
 
 ## Phase 1: Foundation
 
 **Duration estimate:** 1-2 weeks
+**Status:** ~80% complete (as of 2026-03-09)
 **Goal:** Stabilize existing work, lock down the template system, and prepare the intake pipeline for the 6 content teams.
 
-### Task 1.1: Fix Time Management Lesson
+### Task 1.1: Fix Time Management Lesson — COMPLETE
 
-**Effort:** 3-5 hours
-**Dependencies:** Access to the source PowerPoint (`NEW_TIME_MANAGEMENT_MODULE.pptx`) and the brand-compliant Employee Accountability lesson as reference.
-
-**Work items:**
-- Audit `lesson-time-management/index.html` against the 8-phase verification checklist from `build-process.md`
-- Run brand color compliance check: search for any hex color not in the 11-color palette
-- Verify WIPPEA chapter structure (sequential `data-chapter`, section dividers present)
-- Check that `<style id="theme-override">` is placed AFTER the main CSS block
-- Confirm video placeholder slides use the standard placeholder pattern (no broken iframes)
-- Verify sidebar auto-population, slide counter, keyboard navigation, confetti on closing slide
-- Fix all identified issues
-- Standardize lesson folder naming (completed for Time Management as `lesson-time-management`; continue applying to all lessons)
-- Convert any `.docx` handouts to `.pdf` format
-- Re-run verification checklist, confirm zero issues
-
-**Definition of done:** Time Management lesson passes all 14 items on the Phase 8 verification checklist and matches the brand compliance standard set by Employee Accountability.
+**Completed:** 2026-03-01. Lesson release-approved. All 5 quality gates pass. See `docs/qa-reports/` for evidence.
 
 ---
 
-### Task 1.2: Fix Interview Skills Lesson
+### Task 1.2: Fix Interview Skills Lesson — COMPLETE
 
-**Effort:** 3-5 hours
-**Dependencies:** Same as Task 1.1. Can run in parallel with Task 1.1.
-
-**Work items:**
-- Audit `Interview-Skills/index.html` against the verification checklist
-- Run brand color compliance check
-- Verify WIPPEA chapter structure
-- Check theme-override placement
-- Confirm video placeholder pattern
-- Verify sidebar, slide counter, keyboard nav, confetti
-- Convert `.docx` handouts (STAR_Interview_Worksheet, ChatGPT_Interview_Practice, Interviews_Rubric) to `.pdf`
-- Fix all identified issues
-- Re-run verification checklist
-
-**Definition of done:** Interview Skills lesson passes all 14 verification checklist items.
-
-**Parallelization note:** Tasks 1.1 and 1.2 are fully independent and can be done simultaneously by two agents or in parallel sessions.
+**Completed:** 2026-03-01. Migrated to `Project_3_Interview-Skills/`. Lesson release-approved. All 5 quality gates pass.
 
 ---
 
-### Task 1.3: Define and Document Template Variants
+### Task 1.3: Define and Document Template Variants — TODO
 
 **Effort:** 4-6 hours
-**Dependencies:** Employee Accountability must be confirmed as the "Variant A" reference. Should follow Tasks 1.1 and 1.2 so all 3 lessons inform the variant definitions.
+**Status:** Not started. The lesson registry defines 4 allowed variants (`variant-classic`, `variant-modern`, `variant-bold`, `variant-elegant`) but no CSS documentation exists yet.
 
 **Work items:**
-- Analyze Employee Accountability's CSS patterns: section divider gradients, card styling, header treatments, spacing, background textures
-- Define Variant A based on Employee Accountability's actual patterns
-- Design Variant B: different section divider style (e.g., geometric split vs gradient), different card border treatment, different header decoration
-- Design Variant C: a third distinct treatment (e.g., minimal/clean vs the other two)
-- Optionally design Variant D if 3 variants do not provide enough rotation across 18 lessons (18 / 3 = 6 lessons per variant; 18 / 4 = 4-5 lessons per variant)
-- Document each variant's CSS differences in a new file: `SPOKES Builder/template-variants.md`
-- For each variant, create the specific CSS overrides that go into the `<style id="theme-override">` block
-- Create a variant assignment plan: which lessons get which variant to ensure visual contrast between adjacent lessons
 
-**Definition of done:** 3-4 template variants are fully documented with copy-paste CSS, and a rotation plan assigns each of the 18 lessons to a variant.
+- Analyze the 3 completed lessons' CSS patterns to extract variant foundations
+- Document each variant's CSS overrides in `SPOKES Builder/template-variants.md`
+- Create a variant assignment plan for visual contrast between adjacent lessons
+
+**Definition of done:** 3-4 template variants documented with copy-paste CSS and rotation plan.
+
+**Note:** The combinatorics system (added 2026-03-09 to `AGENT_THEMING_GUIDELINES.md`) now provides additional differentiation via CSS background textures, accent emphasis, and optional per-lesson effects. Template variants are one dimension of the broader combinatorial design approach.
 
 ---
 
-### Task 1.4: Create Content Intake Template
+### Task 1.4: Create Content Intake Template — COMPLETE
 
-**Effort:** 2-3 hours
-**Dependencies:** None. Can run in parallel with all other Phase 1 tasks.
-
-**Work items:**
-- Design a structured document (Markdown or Word) that the 6 human content teams fill out for each lesson they deliver
-- Structure must map directly to the WIPPEA stages so content arrives pre-organized
-- Include all fields the build process needs: title, subtitle, content per WIPPEA stage, video topics, handout inventory, key quotes, activity descriptions
-- Include examples from Employee Accountability to show teams what good input looks like
-- Include a "common mistakes" section so teams avoid delivering content that requires rework
-- Deliver as `SPOKES Builder/content-intake-template.md`
-
-**Definition of done:** Template is complete, includes field-level instructions, and has been reviewed against the build-process.md to confirm no required information is missing.
-
-(See the full Content Intake Template specification at the end of this document.)
+**Completed:** Delivered as `SPOKES Builder/content-intake-template.md`. Ready for distribution to content teams.
 
 ---
 
-### Task 1.5: Create Font Pairing Library
+### Task 1.5: Create Font Pairing Library — TODO
 
 **Effort:** 3-4 hours
-**Dependencies:** None. Can start immediately, though reviewing the 3 fixed lessons helps inform choices.
+**Status:** Not started. No `font-pairings.md` exists yet. Each lesson currently gets ad-hoc font proposals.
 
 **Work items:**
-- Curate 18-20 Google Font pairings (heading + body), each visually distinct
-- Ensure all heading fonts are legible at 4rem-5rem
-- Ensure all body fonts are readable at 1.5rem-2rem
-- Organize into a reference document: `SPOKES Builder/font-pairings.md`
-- For each pairing, include: font names, Google Fonts import URL, preview description, recommended lesson type (professional/approachable/energetic/serious)
-- Mark the 3 pairings already used by Employee Accountability, Time Management, and Interview Skills
-- This library gives the user a menu to approve from rather than proposing blind each time
 
-**Definition of done:** Library contains 18+ curated pairings with import URLs, organized by mood/style, ready for user selection during each lesson build.
+- Curate 18-20 Google Font pairings (heading + body), each visually distinct
+- Organize into `SPOKES Builder/font-pairings.md` with import URLs and mood/style tags
+- Mark the 3 pairings already used by the completed lessons
+
+**Definition of done:** Library contains 18+ curated pairings ready for user selection during lesson builds.
 
 ---
 
 ### Phase 1 Risk Register
 
-| Risk | Impact | Likelihood | Mitigation |
-|------|--------|------------|------------|
-| Time Management or Interview Skills have deep structural issues beyond cosmetic fixes | Adds 1-2 days to Phase 1 | Medium | Scope the audit first; if rebuild is faster than repair, rebuild from template |
-| Template variants are too similar, not providing enough visual contrast | Lessons look repetitive across the curriculum | Low | Test variants side-by-side before finalizing; get user sign-off on at least 3 distinct variants |
-| Content teams do not adopt the intake template | Unstructured input continues, slowing builds | High | Keep the template simple; provide a filled-out example; get team lead buy-in before distributing |
+| Risk                                                                                  | Impact                                        | Likelihood | Mitigation                                                                                       |
+| ------------------------------------------------------------------------------------- | --------------------------------------------- | ---------- | ------------------------------------------------------------------------------------------------ |
+| Time Management or Interview Skills have deep structural issues beyond cosmetic fixes | Adds 1-2 days to Phase 1                      | Medium     | Scope the audit first; if rebuild is faster than repair, rebuild from template                   |
+| Template variants are too similar, not providing enough visual contrast               | Lessons look repetitive across the curriculum | Low        | Test variants side-by-side before finalizing; get user sign-off on at least 3 distinct variants  |
+| Content teams do not adopt the intake template                                        | Unstructured input continues, slowing builds  | High       | Keep the template simple; provide a filled-out example; get team lead buy-in before distributing |
 
 ### Phase 1 Definition of Done
 
-- [ ] All 3 existing lessons pass the full verification checklist
+- [x] All 3 existing lessons pass the full verification checklist (release-approved 2026-03-01)
 - [ ] 3-4 template variants documented with CSS and rotation plan
-- [ ] Content intake template created and ready for distribution
+- [x] Content intake template created and ready for distribution
 - [ ] Font pairing library curated with 18+ options
-- [ ] All files organized in `SPOKES Builder/` directory
+- [x] All files organized in `SPOKES Builder/` directory
+- [x] Lesson registry (`lesson-registry.json`) tracking active with combinatorics fields
+- [x] Combinatorics design system documented in `AGENT_THEMING_GUIDELINES.md`
 
 ---
 
 ## Phase 2: Pipeline
 
 **Duration estimate:** 1 week
+**Status:** Not started (as of 2026-03-09). Blocked on source material availability for lesson #4.
 **Goal:** Establish the repeatable, scalable build process so lessons can be produced efficiently in batches. This phase turns the one-off build process into a production pipeline.
 
 ### Task 2.1: Build a Pilot Lesson End-to-End Using the New Pipeline
@@ -154,6 +109,7 @@
 **Dependencies:** All Phase 1 tasks complete. Requires one content team to have delivered materials using the intake template.
 
 **Work items:**
+
 - Select one lesson where source materials are ready
 - Walk through the full pipeline: intake template review, WIPPEA mapping, template variant selection, font pairing approval, slide building, verification
 - Time each step to establish baseline effort estimates
@@ -170,6 +126,7 @@
 **Dependencies:** All 4 lessons (3 fixed + 1 pilot) must exist.
 
 **Work items:**
+
 - Create a tracking document: `SPOKES Builder/component-tracker.md`
 - For each completed lesson, record: which components were used, in what order, which template variant, which font pairing, which accent color emphasis
 - This tracker is consulted before each new build to ensure no two adjacent lessons share the same component sequence
@@ -185,6 +142,7 @@
 **Dependencies:** Task 2.1 (pilot lesson confirms the pipeline works).
 
 **Work items:**
+
 - Design a Claude Code team configuration for parallel lesson building
 - Define agent roles: Lead (coordinates variant/font assignments, reviews output) + Builders (execute the build process)
 - Create a CLAUDE.md-level instruction set for builder agents that includes: template variant assignment, font pairing (pre-approved), component tracker consultation
@@ -202,6 +160,7 @@
 **Dependencies:** Task 2.1 (need a real lesson to define the gate against).
 
 **Work items:**
+
 - Formalize the verification checklist into a structured QA pass/fail document
 - Define two review stages:
   1. **Automated checks:** Brand color scan (grep for non-palette hex values), structural validation (sequential data-chapter, required elements present)
@@ -215,11 +174,11 @@
 
 ### Phase 2 Risk Register
 
-| Risk | Impact | Likelihood | Mitigation |
-|------|--------|------------|------------|
-| Pilot lesson reveals significant gaps in the build process docs | Delays pipeline readiness by 2-3 days | Medium | Budget extra time in the pilot; treat it as a learning exercise |
-| Swarm builds produce inconsistent quality | Rework needed on agent-built lessons | Medium | Tight CLAUDE.md instructions; lead agent reviews every output before delivery |
-| Content teams deliver materials late or incomplete | Pipeline idles waiting for input | High | Stagger the content requests; always have 2-3 lessons in the intake queue |
+| Risk                                                            | Impact                                | Likelihood | Mitigation                                                                    |
+| --------------------------------------------------------------- | ------------------------------------- | ---------- | ----------------------------------------------------------------------------- |
+| Pilot lesson reveals significant gaps in the build process docs | Delays pipeline readiness by 2-3 days | Medium     | Budget extra time in the pilot; treat it as a learning exercise               |
+| Swarm builds produce inconsistent quality                       | Rework needed on agent-built lessons  | Medium     | Tight CLAUDE.md instructions; lead agent reviews every output before delivery |
+| Content teams deliver materials late or incomplete              | Pipeline idles waiting for input      | High       | Stagger the content requests; always have 2-3 lessons in the intake queue     |
 
 ### Phase 2 Definition of Done
 
@@ -289,12 +248,13 @@ Batch 5: Lessons 17-18  (Week 5-6 of Phase 3)
 
 ### Task 3.2: Video Integration Pass (deferred)
 
-**Effort:** 1-2 hours per lesson once video links are available
-**Dependencies:** Curriculum designer provides YouTube URLs for each lesson's video topics.
+**Effort:** 1-2 hours per lesson once video files are available
+**Dependencies:** Curriculum designer provides MP4 video files for each lesson's video topics.
 
 **Work items:**
-- For each lesson, replace `.video-placeholder` divs with standard iframe embeds
-- Use the youtube-nocookie.com embed format specified in the theming guidelines
+
+- For each lesson, download the video to the `videos/` folder.
+- Replace `.video-placeholder` divs with standard HTML5 `<video>` tags pointing to the local files.
 - Verify videos load and display correctly
 - This is a separate pass that can happen after all 18 lessons are structurally complete
 
@@ -308,6 +268,7 @@ Batch 5: Lessons 17-18  (Week 5-6 of Phase 3)
 **Dependencies:** All 18 lessons built and individually verified.
 
 **Work items:**
+
 - Open all 18 lessons side by side (or in sequence)
 - Verify visual variety: no two adjacent lessons look the same
 - Confirm each lesson has a unique font pairing
@@ -322,13 +283,13 @@ Batch 5: Lessons 17-18  (Week 5-6 of Phase 3)
 
 ### Phase 3 Risk Register
 
-| Risk | Impact | Likelihood | Mitigation |
-|------|--------|------------|------------|
-| Content teams deliver materials unevenly -- some batches have 5 lessons ready, others have 0 | Pipeline alternates between idle and overloaded | High | Work with content teams to stagger delivery; maintain a backlog of at least 1 batch ahead |
-| Font pairing approval becomes a bottleneck (user must approve each one) | Builds wait on approval | Medium | Batch the approvals: present 3-5 font pairings at once for a whole batch |
-| Component variety degrades as more lessons are built | Later lessons feel repetitive | Medium | Consult component tracker before every build; deliberately assign underused components |
-| A late-stage lesson requires a structural change to the template | Ripples back to already-completed lessons | Low | Freeze the template after Phase 2; any changes require explicit impact assessment |
-| Agent-built lessons have subtle quality issues that pass automated checks | Inconsistent student experience | Medium | User visual review on every lesson; spot-check 3 random slides per lesson at minimum |
+| Risk                                                                                         | Impact                                          | Likelihood | Mitigation                                                                                |
+| -------------------------------------------------------------------------------------------- | ----------------------------------------------- | ---------- | ----------------------------------------------------------------------------------------- |
+| Content teams deliver materials unevenly -- some batches have 5 lessons ready, others have 0 | Pipeline alternates between idle and overloaded | High       | Work with content teams to stagger delivery; maintain a backlog of at least 1 batch ahead |
+| Font pairing approval becomes a bottleneck (user must approve each one)                      | Builds wait on approval                         | Medium     | Batch the approvals: present 3-5 font pairings at once for a whole batch                  |
+| Component variety degrades as more lessons are built                                         | Later lessons feel repetitive                   | Medium     | Consult component tracker before every build; deliberately assign underused components    |
+| A late-stage lesson requires a structural change to the template                             | Ripples back to already-completed lessons       | Low        | Freeze the template after Phase 2; any changes require explicit impact assessment         |
+| Agent-built lessons have subtle quality issues that pass automated checks                    | Inconsistent student experience                 | Medium     | User visual review on every lesson; spot-check 3 random slides per lesson at minimum      |
 
 ### Phase 3 Definition of Done
 
@@ -345,32 +306,39 @@ Batch 5: Lessons 17-18  (Week 5-6 of Phase 3)
 ## Full Timeline Summary
 
 ```
-Week 1-2:  PHASE 1 -- Foundation
-           - Fix Time Management + Interview Skills (parallel)
-           - Define template variants
-           - Create content intake template + font library
+COMPLETED (Feb 27 - Mar 9):
+           PHASE 1 (partial)
+           - Fixed Time Management + Interview Skills (release-approved Mar 1)
+           - Created content intake template
+           - Added combinatorics design system
+           - Created lesson registry with tracking fields
 
-Week 3:    PHASE 2 -- Pipeline
-           - Pilot lesson build
-           - Component tracker + quality gate
-           - Swarm configuration + test
+REMAINING (Mar 9 - Jun 15):
+Now:       PHASE 1 (finish infrastructure while awaiting content)
+           - Template variants CSS documentation
+           - Font pairing library
 
-Week 4-9:  PHASE 3 -- Production
-           - Build 15 lessons in 5 batches of 3
-           - Paced by content team delivery
+When content arrives:
+           PHASE 2 -- Pipeline
+           - Pilot lesson build (#4)
+           - Quality gate + component tracking
 
-Week 10:   FINAL REVIEW
-           - Full curriculum audit
-           - Video integration (when links available)
-           - Manifest and handoff
+           LESSONS 5-6
+           - Build remaining 2 lessons for Phase 1 target
+
+           BUFFER
+           - QA, fixes, final review of all 6 lessons
 ```
 
-**Total estimated effort:**
-- Phase 1: 16-23 hours
-- Phase 2: 8-13 hours
-- Phase 3: 55-85 hours (15 lessons x 3.5-5.5 hours average including QA)
-- Final review: 5-8 hours
-- **Grand total: 84-129 hours of build effort**
+**Estimated remaining effort to reach 6 lessons:**
+
+- Phase 1 finish (variants + fonts): 6-10 hours
+- Phase 2 (pilot lesson #4): 4-6 hours
+- Lessons 5-6: 8-12 hours
+- QA and buffer: 4-6 hours
+- **Remaining: ~22-34 hours**
+
+**Original grand total for all 18 lessons: 84-129 hours of build effort**
 
 ---
 
@@ -398,6 +366,7 @@ Phase 3 (batched parallel):
 ```
 
 ---
+
 ---
 
 ## Content Intake Template

@@ -12,24 +12,26 @@ A **single self-contained `index.html` file** that is a fully interactive classr
 
 These files are in this directory (`SPOKES Builder/`):
 
-| File                          | Purpose                                                                                              |
-| ----------------------------- | ---------------------------------------------------------------------------------------------------- |
-| `brand-palette.md`            | **CANONICAL** source of truth for all 11 SPOKES brand colors. Every other file must match this.      |
-| `template.html`               | Base skeleton HTML with all CSS/JS intact. Copy this and fill in content.                            |
-| `components.md`               | Copy-paste HTML patterns for every slide type and component.                                         |
-| `build-process.md`            | Step-by-step workflow, WIPPEA mapping, and verification checklist.                                   |
-| `AGENT_THEMING_GUIDELINES.md` | Brand color enforcement, font pairing rules, video placeholders, and template variant guidance.       |
-| `content-intake-template.md`  | Structured form for human content teams to deliver lesson content ready for building.                 |
+| File                          | Purpose                                                                                         |
+| ----------------------------- | ----------------------------------------------------------------------------------------------- |
+| `brand-palette.md`            | **CANONICAL** source of truth for all 11 SPOKES brand colors. Every other file must match this. |
+| `template.html`               | Base skeleton HTML with all CSS/JS intact. Copy this and fill in content.                       |
+| `components.md`               | Copy-paste HTML patterns for every slide type and component.                                    |
+| `build-process.md`            | Step-by-step workflow, WIPPEA mapping, and verification checklist.                              |
+| `AGENT_THEMING_GUIDELINES.md` | Brand color enforcement, font pairing rules, video placeholders, and template variant guidance. |
+| `content-intake-template.md`  | Structured form for human content teams to deliver lesson content ready for building.           |
 
 ## Design Philosophy
 
 Each SPOKES lesson must be **visually distinct** from every other lesson while staying within the brand. Think of it like PowerPoint Slide Masters — the same guardrails, but no two presentations look alike.
 
-Visual identity comes from:
+Visual identity comes from **Combinatorial Design**:
+
 1. **Template variant selection** (3-4 distinct layout styles)
-2. **Google Font pairings** (unique heading + body fonts per lesson)
-3. **Accent emphasis shifts** (which of the 7 brand colors gets featured most)
-4. **Component selection** (different mix of cards-grid, takeaways, split-layout, etc.)
+2. **Combinatorics (Backgrounds & Textures)** (Adding subtle CSS textures to the `.main` background via CSS overrides)
+3. **Google Font pairings** (unique heading + body fonts per lesson)
+4. **Accent emphasis shifts** (which of the 7 core brand colors gets featured most)
+5. **Component selection** (different mix of cards-grid, takeaways, split-layout, etc.)
 
 **NEVER introduce colors outside the 11 approved brand colors (see `brand-palette.md`).** See `AGENT_THEMING_GUIDELINES.md` for the full palette.
 
@@ -65,6 +67,7 @@ Additional Presentation chapters (P4, P5, etc.) may be added if the lesson has m
 ### Step 3: Select Template Variant & Font Pairing
 
 Before building:
+
 1. Review existing lessons to see which template variants are in use
 2. Select a variant that creates visual contrast with adjacent lessons
 3. **Propose a Google Font pairing to the user for approval**
@@ -74,7 +77,10 @@ Before building:
 
 1. Copy `template.html` to the new project directory as `index.html`
 2. Add lesson-specific Google Font `<link>` tags in `<head>`
-3. Add a `<style id="theme-override">` block **AFTER** the main CSS block with font overrides and video placeholder CSS
+3. Add a `<style id="theme-override">` block **AFTER** the main CSS block with:
+   - Font family overrides
+   - Combinatorial design overrides (Subtle CSS pattern backgrounds on `.main`, or card shadow/border variations)
+   - Video placeholder CSS (from `AGENT_THEMING_GUIDELINES.md`)
 
 ### Step 5: Fill in Lesson Metadata
 
@@ -101,8 +107,8 @@ For each video referenced in the source materials:
 1. Create a content slide that introduces the video topic
 2. Follow it with a `slide-video` slide
 3. Title format: `Watch: [Video Topic]`
-4. **If a YouTube URL is provided**, embed it using the iframe pattern from `components.md`
-5. **If no URL is provided**, use the video placeholder pattern from `AGENT_THEMING_GUIDELINES.md`
+4. **If a video file is provided**, embed it using the `<video>` pattern from `components.md` and place it in the `videos/` folder.
+5. **If no video is provided**, use the video placeholder pattern from `AGENT_THEMING_GUIDELINES.md`
 
 ### Step 8: Link Resources in Sidebar
 
@@ -203,7 +209,7 @@ All animations are automatic via CSS. No JS needed. Each component type has stag
 7. **First slide** must be `slide-title` with `active` class and `data-chapter="1"`.
 8. **Last slide** must be `slide-closing` with `id="closingSlide"`.
 9. **Every chapter** must start with a `slide-section` divider.
-10. **Videos** — if a YouTube URL is provided, embed it. If no URL is provided, use the video placeholder component.
+10. **Videos** — if a video file is provided, download it to the `videos/` folder and embed it using an HTML5 `<video>` tag. If no video is provided, use the video placeholder component.
 11. **SPOKES-Logo.png** must be in the project root (same directory as index.html).
 12. **File paths in links** must be relative to index.html (e.g., `Handouts/file.pdf`).
 13. **File nesting** must not exceed 3 levels from project root.

@@ -14,26 +14,27 @@ Every SPOKES lesson must look like it belongs to the SPOKES curriculum family wh
 
 **Core palette (used in every lesson):**
 
-| Variable       | Hex       | Usage                               |
-| -------------- | --------- | ----------------------------------- |
-| `--primary`    | `#007baf` | Headings, primary buttons, links    |
-| `--accent`     | `#37b550` | Download buttons, positive emphasis |
-| `--dark`       | `#004071` | Sidebar, dark backgrounds           |
-| `--light`      | `#FFFFFF` | Text on dark, backgrounds           |
-| `--muted`      | `#EDF3F7` | Card backgrounds, subtle fills      |
-| `--gray`       | `#60636b` | Body text, subtitles                |
-| `--gold`       | `#d3b257` | Gold accents, dividers, badges      |
+| Variable    | Hex       | Usage                               |
+| ----------- | --------- | ----------------------------------- |
+| `--primary` | `#007baf` | Headings, primary buttons, links    |
+| `--accent`  | `#37b550` | Download buttons, positive emphasis |
+| `--dark`    | `#004071` | Sidebar, dark backgrounds           |
+| `--light`   | `#FFFFFF` | Text on dark, backgrounds           |
+| `--muted`   | `#EDF3F7` | Card backgrounds, subtle fills      |
+| `--gray`    | `#60636b` | Body text, subtitles                |
+| `--gold`    | `#d3b257` | Gold accents, dividers, badges      |
 
 **Extended palette (available for variety and emphasis):**
 
-| Variable       | Hex       | Usage                                        |
-| -------------- | --------- | -------------------------------------------- |
-| `--royal`      | `#00133f` | Deep navy backgrounds, premium feel          |
-| `--mauve`      | `#a7253f` | Warm accent, caution/emphasis, card borders   |
-| `--offwhite`   | `#d1d3d4` | Subtle backgrounds, soft borders, dividers    |
-| `--muted-gold` | `#ad8806` | Darker gold for text on light, rich accents   |
+| Variable       | Hex       | Usage                                       |
+| -------------- | --------- | ------------------------------------------- |
+| `--royal`      | `#00133f` | Deep navy backgrounds, premium feel         |
+| `--mauve`      | `#a7253f` | Warm accent, caution/emphasis, card borders |
+| `--offwhite`   | `#d1d3d4` | Subtle backgrounds, soft borders, dividers  |
+| `--muted-gold` | `#ad8806` | Darker gold for text on light, rich accents |
 
 **NEVER introduce any of the following:**
+
 - Bright reds (`#DC2626`, `#991b1b`, etc.)
 - Orange shades (`#EA580C`, `#ff6b35`, etc.)
 - Any color not listed in the tables above
@@ -44,24 +45,75 @@ You may use **opacity variations** of any brand color (e.g., `rgba(0, 123, 175, 
 
 ---
 
-## Principle 2: Lesson Identity Through Layout & Typography
+## Principle 2: Lesson Identity Through Combinatorial Design
 
-Each lesson gets its own visual identity through three mechanisms:
+Each lesson gets its own visual identity through four mechanisms:
 
 ### 2a. Template Variant Selection
 
 There are **3-4 template variants** available. Each provides a different overall look while using the same brand colors. Select the variant that best fits the lesson topic.
 
 Template variants differ in:
+
 - Section divider designs (gradients, geometric patterns, split layouts)
 - Card styling (border placement, shadow depth, corner radius)
 - Header/title treatments (underlines, backgrounds, decorative elements)
 - Spatial arrangement and whitespace patterns
 - Background textures and subtle patterns on content slides
 
-### 2b. Typography Variation
+### 2b. Combinatorial Design: Backgrounds & Textures
 
-Each lesson gets a **unique Google Font pairing** — one heading font and one body font. This is the most immediate way students recognize which lesson they are viewing.
+Another high-impact way to create identity is by injecting subtle textures into the lesson background. Because you cannot change the HTML structure of the `.main` container, you achieve this using the `theme-override` CSS block.
+
+**Rules for Background Textures:**
+
+1. Textures must be extremely subtle (e.g., `opacity: 0.03` or `rgba` values under `0.05`).
+2. They must use ONLY approved brand colors.
+3. They are applied to the `.main` container.
+
+**Example: Subtle Dot Grid (theme-override):**
+
+```css
+.main {
+  background-color: var(--light);
+  background-image: radial-gradient(var(--primary) 1px, transparent 1px);
+  background-size: 20px 20px;
+}
+/* Ensure cards sit above the pattern cleanly */
+.card,
+.smart-content,
+.matrix-cell {
+  background-color: var(--light);
+  border: 1px solid var(--muted);
+}
+```
+
+**Example: Premium Royal Background with Diagonal Lines (theme-override):**
+
+> **CAUTION — Dark background scope:** This example sets `.main` to a near-black background. If applied globally, you **must** override text color to `var(--light)` on **every** component type used in the lesson — not just headings and paragraphs. Commonly missed selectors include: `.takeaway-num`, `.smart-letter`, `.smart-content h4`, `.smart-content p`, `.area-header`, `.area-card ul li`, `.activity-box`, `.activity-label`, `.download-btn`, `ul.content-list li`, `.matrix-label`, `.matrix-action`, `.matrix-desc`. Consider scoping this to specific slides (e.g., `.slide-title .main-inner`) rather than the entire `.main` container.
+
+```css
+.main {
+  background-color: var(--royal);
+  background-image: repeating-linear-gradient(
+    45deg,
+    rgba(211, 178, 87, 0.03),
+    /* --gold at 3% */ rgba(211, 178, 87, 0.03) 10px,
+    transparent 10px,
+    transparent 20px
+  );
+}
+/* Text on dark backgrounds must be light — extend this list for every component used */
+.slide h2,
+.slide h3,
+.slide p,
+.card h4,
+.card p {
+  color: var(--light);
+}
+```
+
+### 2c. Typography Variation
 
 **How to apply fonts:**
 
@@ -72,9 +124,15 @@ Each lesson gets a **unique Google Font pairing** — one heading font and one b
 
 ```html
 <!-- 1. Default fonts (keep these) -->
-<link href="https://fonts.googleapis.com/css2?family=DM+Serif+Display:ital@0;1&family=Outfit:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+<link
+  href="https://fonts.googleapis.com/css2?family=DM+Serif+Display:ital@0;1&family=Outfit:wght@300;400;500;600;700&display=swap"
+  rel="stylesheet"
+/>
 <!-- 2. Lesson-specific fonts -->
-<link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;600;700&family=Inter:wght@400;500;600&display=swap" rel="stylesheet">
+<link
+  href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;600;700&family=Inter:wght@400;500;600&display=swap"
+  rel="stylesheet"
+/>
 
 <!-- ... main SPOKES <style> block first ... -->
 
@@ -96,13 +154,15 @@ Each lesson gets a **unique Google Font pairing** — one heading font and one b
 ```
 
 **Font selection rules:**
+
 - Heading fonts must be legible at 4rem-5rem sizes.
 - Body fonts must be highly readable at 1.5rem-2rem sizes.
 - **Always propose font pairings to the user for approval before applying.**
 
-### 2c. Accent Emphasis Variation
+### 2d. Accent Emphasis Variation
 
-Within the 11 brand colors, you can shift which color is *emphasized* per lesson:
+Within the 11 brand colors, you can shift which color is _emphasized_ per lesson:
+
 - One lesson might lean heavily on `--primary` (blue) for cards and backgrounds
 - Another might feature `--gold` more prominently in borders and highlights
 - Another might use `--accent` (green) as the dominant visual accent
@@ -125,9 +185,11 @@ The component library provides many slide layouts. **Do not use the same sequenc
 
 ## Principle 4: Video Slides
 
-**If a YouTube URL is provided**, embed it using the iframe pattern from `components.md`. **If no URL is provided**, build a styled placeholder layout.
+**If a video file is provided**, embed it using the `<video>` pattern from `components.md`. Videos must be downloaded to the local `videos/` folder for each project. **Do not use external iframe embeds (like YouTube)** to prevent broken links.
 
-When no URL exists, create the structural slide with a branded placeholder:
+**If no video is provided yet**, build a styled placeholder layout.
+
+When no video exists, create the structural slide with a branded placeholder:
 
 **Video Placeholder HTML:**
 
@@ -187,17 +249,23 @@ When no URL exists, create the structural slide with a branded placeholder:
 }
 ```
 
-When video links are later provided, replace the `.video-placeholder` div with the standard iframe:
+When video files are later provided, place them in the `videos/` folder and replace the `.video-placeholder` div with the standard `<video>` tag:
 
 ```html
-<iframe
-  src="https://www.youtube-nocookie.com/embed/VIDEO_ID"
-  title="Video Title"
-  frameborder="0"
-  loading="lazy"
-  allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
-  allowfullscreen>
-</iframe>
+<div
+  class="video-container"
+  style="position:relative; width:100%; max-width:900px; margin:0 auto;"
+>
+  <video
+    controls
+    class="local-video"
+    style="width:100%; border-radius:12px; box-shadow:0 4px 20px rgba(0,0,0,0.15);"
+    poster="videos/poster-image-name.jpg"
+  >
+    <source src="videos/video-file-name.mp4" type="video/mp4" />
+    Your browser does not support the video tag.
+  </video>
+</div>
 ```
 
 ---
@@ -232,7 +300,7 @@ A subtle radial gradient that follows the cursor on title and section slides. Cr
 }
 .slide-title::before,
 .slide-section.spotlight::before {
-  content: '';
+  content: "";
   position: absolute;
   inset: 0;
   background: radial-gradient(
@@ -249,12 +317,22 @@ A subtle radial gradient that follows the cursor on title and section slides. Cr
 
 ```javascript
 if (!prefersReduced) {
-  document.addEventListener('pointermove', (e) => {
-    const active = document.querySelector('.slide.active');
-    if (active && (active.classList.contains('slide-title') || active.classList.contains('slide-section'))) {
+  document.addEventListener("pointermove", (e) => {
+    const active = document.querySelector(".slide.active");
+    if (
+      active &&
+      (active.classList.contains("slide-title") ||
+        active.classList.contains("slide-section"))
+    ) {
       const rect = active.getBoundingClientRect();
-      active.style.setProperty('--mx', ((e.clientX - rect.left) / rect.width * 100) + '%');
-      active.style.setProperty('--my', ((e.clientY - rect.top) / rect.height * 100) + '%');
+      active.style.setProperty(
+        "--mx",
+        ((e.clientX - rect.left) / rect.width) * 100 + "%",
+      );
+      active.style.setProperty(
+        "--my",
+        ((e.clientY - rect.top) / rect.height) * 100 + "%",
+      );
     }
   });
 }
@@ -296,13 +374,16 @@ Character-by-character reveal animation for impactful quote slides.
 function scrambleReveal(el) {
   if (prefersReduced) return;
   const text = el.textContent;
-  const chars = '!<>-_\\/[]{}=+*^?#________';
+  const chars = "!<>-_\\/[]{}=+*^?#________";
   let iteration = 0;
   const interval = setInterval(() => {
-    el.textContent = text.split('').map((char, i) => {
-      if (i < iteration) return text[i];
-      return chars[Math.floor(Math.random() * chars.length)];
-    }).join('');
+    el.textContent = text
+      .split("")
+      .map((char, i) => {
+        if (i < iteration) return text[i];
+        return chars[Math.floor(Math.random() * chars.length)];
+      })
+      .join("");
     iteration += 1 / 3;
     if (iteration >= text.length) {
       clearInterval(interval);
@@ -342,24 +423,24 @@ Lightweight particle field for title or closing slides. Uses only brand colors.
 ```javascript
 function initParticles(canvas, slideEl) {
   if (prefersReduced) return;
-  const ctx = canvas.getContext('2d');
+  const ctx = canvas.getContext("2d");
   canvas.width = slideEl.clientWidth;
   canvas.height = slideEl.clientHeight;
-  const COLORS = ['#007baf', '#37b550', '#d3b257', '#EDF3F7'];
+  const COLORS = ["#007baf", "#37b550", "#d3b257", "#EDF3F7"];
   const particles = Array.from({ length: 50 }, () => ({
     x: Math.random() * canvas.width,
     y: Math.random() * canvas.height,
     vx: (Math.random() - 0.5) * 0.5,
     vy: (Math.random() - 0.5) * 0.5,
     size: Math.random() * 3 + 1,
-    color: COLORS[Math.floor(Math.random() * COLORS.length)]
+    color: COLORS[Math.floor(Math.random() * COLORS.length)],
   }));
 
   let lastFrame = 0;
   const FRAME_INTERVAL = 1000 / 30;
 
   function draw(timestamp) {
-    if (!slideEl.classList.contains('active') || document.hidden) {
+    if (!slideEl.classList.contains("active") || document.hidden) {
       requestAnimationFrame(draw);
       return;
     }
@@ -369,7 +450,7 @@ function initParticles(canvas, slideEl) {
     }
     lastFrame = timestamp;
     ctx.clearRect(0, 0, canvas.width, canvas.height);
-    particles.forEach(p => {
+    particles.forEach((p) => {
       p.x += p.vx;
       p.y += p.vy;
       if (p.x < 0 || p.x > canvas.width) p.vx *= -1;

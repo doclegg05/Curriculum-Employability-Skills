@@ -25,7 +25,7 @@ Build 18 interactive HTML lessons using the SPOKES Builder design system. Each l
 - Instructor prompt panels (hidden by default, toggle-able)
 - Responsive across mobile (360x800), tablet (768x1024), desktop (1920x1080)
 - SPOKES brand-compliant color system (11-color canonical palette)
-- Unique font pairings and template variants per lesson for visual diversity
+- Combinatorial design system for lesson individuality (template variants, CSS textures, font pairings, accent emphasis, component mix, optional per-lesson effects)
 - Video embeds (YouTube) or placeholders when URLs unavailable
 - Downloadable handouts (PDF)
 
@@ -50,13 +50,17 @@ Topics TBD -- sourced from 6 content teams via content intake template.
 
 ## Milestones
 
-- Phase 1 target: 6 lessons complete by April 15, 2026
-- Program end target: All 18 lessons complete by April 15, 2027
+- Phase 1 target: 6 lessons complete by June 15, 2026
+- Program end target: All 18 lessons complete by June 15, 2027
 
-## Current Status
+## Current Status (as of 2026-03-09)
 
 - 3 lessons built and release-approved (as of 2026-03-01)
 - Template stabilization work completed
-- SPOKES Builder design system documented
+- SPOKES Builder design system documented, including combinatorics system
+- Combinatorics design added: CSS background textures, accent emphasis variation, optional per-lesson effects (pointer tracking, parallax, text scramble, canvas particles)
 - Content intake template ready for distribution
-- Lesson registry tracking active
+- Lesson registry (`lesson-registry.json`) tracking active with combinatorics fields
+- Advanced components added to library (glass card, stagger reveal, gradient divider, clip-path reveals, magnetic button, scroll counter)
+- **Awaiting:** Source materials from content teams for lessons 4-6
+- **Remaining Phase 1 infrastructure:** Template variants CSS documentation, font pairing library

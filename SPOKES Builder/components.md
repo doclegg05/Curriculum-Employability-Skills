@@ -12,7 +12,7 @@ This document defines every slide type and content component available in the SP
 
 ```html
 <section class="slide slide-title active" data-chapter="1">
-  <img src="SPOKES-Logo.png" alt="SPOKES" class="logo">
+  <img src="SPOKES-Logo.png" alt="SPOKES" class="logo" />
   <h1>Lesson Title</h1>
   <div class="divider"></div>
   <p class="subtitle">Subtitle Text</p>
@@ -30,7 +30,13 @@ This document defines every slide type and content component available in the SP
 
 ```html
 <section class="slide slide-section" data-chapter="3" data-chapter-num="P1">
-  <div class="section-circle"><img src="images/{{chapter-image}}" alt="{{image description}}" loading="lazy"></div>
+  <div class="section-circle">
+    <img
+      src="images/{{chapter-image}}"
+      alt="{{image description}}"
+      loading="lazy"
+    />
+  </div>
   <p class="chapter-label">Presentation</p>
   <h2>Chapter Title</h2>
   <div class="divider"></div>
@@ -42,13 +48,13 @@ This document defines every slide type and content component available in the SP
 **`data-chapter-num` values and their meanings:**
 | Value | WIPPEA Stage | Chapter Label Text |
 |-------|-------------|-------------------|
-| `W`   | Warm-Up     | `Warm-Up`         |
-| `I`   | Introduction | `Introduction`   |
-| `P1`  | Presentation 1 | `Presentation`  |
-| `P2`  | Presentation 2 | `Presentation`  |
-| `P3`  | Presentation 3 | `Presentation`  |
-| `E`   | Evaluation  | `Evaluation`      |
-| `A`   | Application | `Application`     |
+| `W` | Warm-Up | `Warm-Up` |
+| `I` | Introduction | `Introduction` |
+| `P1` | Presentation 1 | `Presentation` |
+| `P2` | Presentation 2 | `Presentation` |
+| `P3` | Presentation 3 | `Presentation` |
+| `E` | Evaluation | `Evaluation` |
+| `A` | Application | `Application` |
 
 Each value gets a unique gradient background and a giant watermark letter.
 
@@ -73,25 +79,29 @@ Each value gets a unique gradient background and a giant watermark letter.
 </section>
 ```
 
-**With video link (only when URL is provided):**
+**With local video file (downloaded to project's `videos/` folder):**
 
 ```html
 <section class="slide slide-video" data-chapter="3">
   <h2>Watch: Video Title</h2>
-  <div class="video-container">
-    <iframe
-      src="https://www.youtube-nocookie.com/embed/VIDEO_ID_HERE"
-      title="Video Title"
-      frameborder="0"
-      loading="lazy"
-      allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
-      allowfullscreen>
-    </iframe>
+  <div
+    class="video-container"
+    style="position:relative; width:100%; max-width:900px; margin:0 auto;"
+  >
+    <video
+      controls
+      class="local-video"
+      style="width:100%; border-radius:12px; box-shadow:0 4px 20px rgba(0,0,0,0.15);"
+      poster="videos/poster-image-name.jpg"
+    >
+      <source src="videos/video-file-name.mp4" type="video/mp4" />
+      Your browser does not support the video tag.
+    </video>
   </div>
 </section>
 ```
 
-**Notes:** Always prefix the h2 with "Watch: ". The video/placeholder fills up to 1200px wide with 16:9 aspect ratio. The video placeholder CSS must be included in the `<style id="theme-override">` block (see `AGENT_THEMING_GUIDELINES.md`).
+**Notes:** Always prefix the h2 with "Watch: ". All videos must be downloaded and stored locally in the `videos/` subdirectory of the project. Do not use external iframe embeds like YouTube to prevent broken links when videos are taken down. The video placeholder CSS must be included in the `<style id="theme-override">` block (see `AGENT_THEMING_GUIDELINES.md`).
 
 ---
 
@@ -101,15 +111,21 @@ Each value gets a unique gradient background and a giant watermark letter.
 
 ```html
 <section class="slide big-statement" data-chapter="2">
-  <h2>The main message with <span class="accent">highlighted words</span> and <span class="gold">gold emphasis</span></h2>
+  <h2>
+    The main message with <span class="accent">highlighted words</span> and
+    <span class="gold">gold emphasis</span>
+  </h2>
 </section>
 ```
 
 **With subtitle:**
+
 ```html
 <section class="slide big-statement" data-chapter="3">
-  <h2>Main statement...<br><span class="accent">Call to action?</span></h2>
-  <p style="font-size: 1.5rem; margin-top: 2rem;">Supporting text with <span class="gold">color</span>.</p>
+  <h2>Main statement...<br /><span class="accent">Call to action?</span></h2>
+  <p style="font-size: 1.5rem; margin-top: 2rem;">
+    Supporting text with <span class="gold">color</span>.
+  </p>
 </section>
 ```
 
@@ -129,8 +145,13 @@ Each value gets a unique gradient background and a giant watermark letter.
 ```
 
 **Optional subtitle pattern:**
+
 ```html
-<p style="font-size: 1.4rem; color: var(--gray); margin-top: -1.5rem; margin-bottom: 2rem;">Subtitle text</p>
+<p
+  style="font-size: 1.4rem; color: var(--gray); margin-top: -1.5rem; margin-bottom: 2rem;"
+>
+  Subtitle text
+</p>
 ```
 
 ---
@@ -143,7 +164,9 @@ Each value gets a unique gradient background and a giant watermark letter.
 <section class="slide slide-closing" data-chapter="7" id="closingSlide">
   <div class="confetti-container" id="confettiContainer"></div>
   <div class="closing-box">
-    <h3 style="color: var(--gold); font-size: 1.5rem; margin-bottom: 1.5rem;">Congratulations, you have completed this lesson!</h3>
+    <h3 style="color: var(--gold); font-size: 1.5rem; margin-bottom: 1.5rem;">
+      Congratulations, you have completed this lesson!
+    </h3>
     <p>"Inspirational quote related to lesson topic."</p>
     <div class="divider"></div>
     <h2>Closing Statement</h2>
@@ -176,6 +199,7 @@ Each value gets a unique gradient background and a giant watermark letter.
 ```
 
 **Variants:**
+
 - `.card` — green left border (default)
 - `.card.gold-border` — gold left border
 
@@ -205,6 +229,7 @@ Each value gets a unique gradient background and a giant watermark letter.
 ```
 
 **Variants:**
+
 - `.takeaway-num` — blue circle (default)
 - `.takeaway-num.alt` — gold circle
 
@@ -237,6 +262,7 @@ Each value gets a unique gradient background and a giant watermark letter.
 ```
 
 **Variants:**
+
 - `.smart-letter` — blue square (default)
 - `.smart-letter.alt` — gold square
 
@@ -356,6 +382,7 @@ Each value gets a unique gradient background and a giant watermark letter.
 ```
 
 **Variants:**
+
 - `.area-card` — blue background, white text (default)
 - `.area-card.gold-card` — gold background, dark text
 
@@ -370,8 +397,12 @@ Each value gets a unique gradient background and a giant watermark letter.
 ```html
 <div class="split-layout">
   <div class="split-text">
-    <p style="font-size: 1.6rem; margin-bottom: 1.5rem;">Main text with <span class="highlight">blue highlights</span>.</p>
-    <p style="font-size: 1.6rem;">Supporting text with <span class="accent">green emphasis</span>.</p>
+    <p style="font-size: 1.6rem; margin-bottom: 1.5rem;">
+      Main text with <span class="highlight">blue highlights</span>.
+    </p>
+    <p style="font-size: 1.6rem;">
+      Supporting text with <span class="accent">green emphasis</span>.
+    </p>
   </div>
   <div class="split-visual">
     <div class="visual-circle">&#9733;</div>
@@ -380,10 +411,26 @@ Each value gets a unique gradient background and a giant watermark letter.
 ```
 
 **Custom circle colors:**
+
 ```html
-<div class="visual-circle" style="background: linear-gradient(135deg, var(--gold), var(--muted-gold)); font-size: 3.5rem;">&#9878;</div>
-<div class="visual-circle" style="background: linear-gradient(135deg, var(--accent), var(--primary)); font-size: 3rem;">&#8645;</div>
-<div class="visual-circle" style="background: linear-gradient(135deg, var(--mauve), var(--dark)); font-size: 3.5rem;">&#9888;</div>
+<div
+  class="visual-circle"
+  style="background: linear-gradient(135deg, var(--gold), var(--muted-gold)); font-size: 3.5rem;"
+>
+  &#9878;
+</div>
+<div
+  class="visual-circle"
+  style="background: linear-gradient(135deg, var(--accent), var(--primary)); font-size: 3rem;"
+>
+  &#8645;
+</div>
+<div
+  class="visual-circle"
+  style="background: linear-gradient(135deg, var(--mauve), var(--dark)); font-size: 3.5rem;"
+>
+  &#9888;
+</div>
 ```
 
 **Guidelines:** Keep text to 2-3 paragraphs. Font size 1.4rem-1.6rem. Circle renders at 250px (150px on mobile).
@@ -397,7 +444,9 @@ Each value gets a unique gradient background and a giant watermark letter.
 ```html
 <div class="activity-box">
   <div class="activity-label">Group Activity</div>
-  <p>Activity instructions go here. Be specific about what students should do.</p>
+  <p>
+    Activity instructions go here. Be specific about what students should do.
+  </p>
 </div>
 ```
 
@@ -414,22 +463,32 @@ Each value gets a unique gradient background and a giant watermark letter.
 ```html
 <div class="download-resource">
   <span class="download-prompt">Instructor Resource Available</span>
-  <a href="Handouts/filename.pdf" target="_blank" class="download-btn">Button Label</a>
+  <a href="Handouts/filename.pdf" target="_blank" class="download-btn"
+    >Button Label</a
+  >
 </div>
 ```
 
 **Multiple downloads:**
+
 ```html
 <div class="download-resource">
   <span class="download-prompt">Instructor Resource Available</span>
-  <a href="Handouts/file1.pdf" target="_blank" class="download-btn">Resource 1</a>
-  <a href="Handouts/file2.pdf" target="_blank" class="download-btn">Resource 2</a>
+  <a href="Handouts/file1.pdf" target="_blank" class="download-btn"
+    >Resource 1</a
+  >
+  <a href="Handouts/file2.pdf" target="_blank" class="download-btn"
+    >Resource 2</a
+  >
 </div>
 ```
 
 **Standalone download button (no container):**
+
 ```html
-<a href="Handouts/filename.pdf" target="_blank" class="download-btn">Button Label</a>
+<a href="Handouts/filename.pdf" target="_blank" class="download-btn"
+  >Button Label</a
+>
 ```
 
 **Guidelines:** Green buttons with down-arrow prefix. Place at bottom of slide content.
@@ -449,6 +508,7 @@ Each value gets a unique gradient background and a giant watermark letter.
 ```
 
 **Danger variant (warning icons instead of arrows):**
+
 ```html
 <ul class="content-list danger">
   <li>Warning item 1</li>
@@ -462,42 +522,46 @@ Each value gets a unique gradient background and a giant watermark letter.
 
 Use these inline classes within `<span>` tags to color-code important words:
 
-| Class | Color | Usage |
-|-------|-------|-------|
-| `.highlight` | Blue (`--primary`) | Key terms, definitions |
-| `.accent` | Green (`--accent`) | Positive outcomes, actions |
-| `.gold` | Gold (`--gold`) | Special emphasis, transitions |
-| `.mauve` | Mauve (`--mauve`) | Warm accent, caution emphasis |
+| Class        | Color              | Usage                         |
+| ------------ | ------------------ | ----------------------------- |
+| `.highlight` | Blue (`--primary`) | Key terms, definitions        |
+| `.accent`    | Green (`--accent`) | Positive outcomes, actions    |
+| `.gold`      | Gold (`--gold`)    | Special emphasis, transitions |
+| `.mauve`     | Mauve (`--mauve`)  | Warm accent, caution emphasis |
 
 **Example:**
+
 ```html
-<p>The goal is to <span class="highlight">maximize productivity</span> and <span class="accent">achieve your goals</span>.</p>
+<p>
+  The goal is to <span class="highlight">maximize productivity</span> and
+  <span class="accent">achieve your goals</span>.
+</p>
 ```
 
 ---
 
 ## Component Selection Guide
 
-| Content Type | Best Component |
-|---|---|
-| Comparing 2-6 related items | `cards-grid` |
-| Step-by-step instructions | `takeaways` |
-| Acronym breakdown (SMART, etc.) | `smart-stack` |
-| 4-quadrant decision framework | `matrix-grid` |
-| 4-6 dangers/myths/challenges with reveals | `dangers-grid` (flip cards) |
-| 3 major categories with bullet lists | `areas-grid` |
-| Definition + visual icon | `split-layout` |
-| Group activity or discussion prompt | `activity-box` |
-| Downloadable PDF resource | `download-resource` |
-| Simple bulleted list | `content-list` |
-| Key quote or transition | `big-statement` (slide type) |
-| YouTube video | `slide-video` (slide type) |
-| Overlay / feature highlight | `card-glass` |
-| Grid items revealing in sequence | `grid-stagger` with `reveal-item` |
-| Animated section boundary | `gradient-divider` |
-| Content revealed on scroll/hover | `clip-reveal` |
-| High-emphasis CTA button | `btn-magnetic` |
-| Statistic / percentage display | `counter-item` |
+| Content Type                              | Best Component                    |
+| ----------------------------------------- | --------------------------------- |
+| Comparing 2-6 related items               | `cards-grid`                      |
+| Step-by-step instructions                 | `takeaways`                       |
+| Acronym breakdown (SMART, etc.)           | `smart-stack`                     |
+| 4-quadrant decision framework             | `matrix-grid`                     |
+| 4-6 dangers/myths/challenges with reveals | `dangers-grid` (flip cards)       |
+| 3 major categories with bullet lists      | `areas-grid`                      |
+| Definition + visual icon                  | `split-layout`                    |
+| Group activity or discussion prompt       | `activity-box`                    |
+| Downloadable PDF resource                 | `download-resource`               |
+| Simple bulleted list                      | `content-list`                    |
+| Key quote or transition                   | `big-statement` (slide type)      |
+| YouTube video                             | `slide-video` (slide type)        |
+| Overlay / feature highlight               | `card-glass`                      |
+| Grid items revealing in sequence          | `grid-stagger` with `reveal-item` |
+| Animated section boundary                 | `gradient-divider`                |
+| Content revealed on scroll/hover          | `clip-reveal`                     |
+| High-emphasis CTA button                  | `btn-magnetic`                    |
+| Statistic / percentage display            | `counter-item`                    |
 
 ---
 
@@ -563,7 +627,7 @@ These components use modern CSS/JS techniques from the advanced design system. A
 
 ```css
 @property --gradient-angle {
-  syntax: '<angle>';
+  syntax: "<angle>";
   initial-value: 0deg;
   inherits: false;
 }
@@ -584,9 +648,15 @@ These components use modern CSS/JS techniques from the advanced design system. A
 }
 
 @keyframes gradient-shift {
-  0% { --gradient-angle: 0deg; }
-  50% { --gradient-angle: 180deg; }
-  100% { --gradient-angle: 360deg; }
+  0% {
+    --gradient-angle: 0deg;
+  }
+  50% {
+    --gradient-angle: 180deg;
+  }
+  100% {
+    --gradient-angle: 360deg;
+  }
 }
 ```
 
@@ -656,7 +726,9 @@ These components use modern CSS/JS techniques from the advanced design system. A
   font-size: 1.1rem;
   font-weight: 600;
   cursor: pointer;
-  transition: transform 0.2s ease-out, box-shadow 0.3s ease;
+  transition:
+    transform 0.2s ease-out,
+    box-shadow 0.3s ease;
 }
 .btn-magnetic:hover {
   box-shadow: 0 8px 25px rgba(0, 123, 175, 0.35);
@@ -670,16 +742,16 @@ These components use modern CSS/JS techniques from the advanced design system. A
 **JS (add to script block):**
 
 ```javascript
-document.querySelectorAll('.btn-magnetic').forEach(btn => {
-  btn.addEventListener('pointermove', (e) => {
-    if (e.pointerType === 'touch' || prefersReduced) return;
+document.querySelectorAll(".btn-magnetic").forEach((btn) => {
+  btn.addEventListener("pointermove", (e) => {
+    if (e.pointerType === "touch" || prefersReduced) return;
     const rect = btn.getBoundingClientRect();
     const x = e.clientX - rect.left - rect.width / 2;
     const y = e.clientY - rect.top - rect.height / 2;
     btn.style.transform = `translate(${x * 0.3}px, ${y * 0.3}px)`;
   });
-  btn.addEventListener('pointerleave', () => {
-    btn.style.transform = '';
+  btn.addEventListener("pointerleave", () => {
+    btn.style.transform = "";
   });
 });
 ```
@@ -709,7 +781,7 @@ document.querySelectorAll('.btn-magnetic').forEach(btn => {
   padding: 0.75rem 0;
 }
 .counter-value {
-  font-family: 'DM Serif Display', serif;
+  font-family: "DM Serif Display", serif;
   font-size: 2.5rem;
   font-weight: 400;
   color: var(--primary);
@@ -722,7 +794,10 @@ document.querySelectorAll('.btn-magnetic').forEach(btn => {
 
 ```javascript
 function animateCounter(el, target, duration = 1200) {
-  if (prefersReduced) { el.textContent = target; return; }
+  if (prefersReduced) {
+    el.textContent = target;
+    return;
+  }
   let start = null;
   const step = (timestamp) => {
     if (!start) start = timestamp;
@@ -736,15 +811,18 @@ function animateCounter(el, target, duration = 1200) {
 
 // Hook into reveal observer: when a .counter-value becomes visible, animate it
 const counterObserver = new MutationObserver((mutations) => {
-  mutations.forEach(m => {
-    if (m.target.classList.contains('visible') && m.target.querySelector('.counter-value')) {
-      const cv = m.target.querySelector('.counter-value');
+  mutations.forEach((m) => {
+    if (
+      m.target.classList.contains("visible") &&
+      m.target.querySelector(".counter-value")
+    ) {
+      const cv = m.target.querySelector(".counter-value");
       animateCounter(cv, parseInt(cv.dataset.target));
     }
   });
 });
-document.querySelectorAll('.counter-item.reveal-item').forEach(el => {
-  counterObserver.observe(el, { attributes: true, attributeFilter: ['class'] });
+document.querySelectorAll(".counter-item.reveal-item").forEach((el) => {
+  counterObserver.observe(el, { attributes: true, attributeFilter: ["class"] });
 });
 ```
 

@@ -1,6 +1,6 @@
 # SPOKES Agent Execution Spec
 
-Status: Draft v0.6 (2026-02-27)
+Status: v0.8 (2026-03-09)
 Audience: Autonomous agents with minimal supervision
 Purpose: Single operational source for planning, building, QA, and release decisions.
 
@@ -34,16 +34,17 @@ If documents conflict, use this precedence:
 5. Color policy:
    - Use strict fixed 11-color palette only (no non-canonical hex values).
    - Controlled per-lesson color mixing is allowed within the 11-color palette.
-   - Theme variation should come from layout, typography, spacing, component composition, and palette-safe color-role changes.
+   - Theme variation should come from combinatorial design: template variants, CSS background textures, typography, accent emphasis, component composition, and optional per-lesson effects — all within the palette.
    - All color usage must follow the contrast and anti-clash guardrails in `SPOKES Builder/brand-palette.md`.
+   - Combinatorial design choices are documented in `SPOKES Builder/AGENT_THEMING_GUIDELINES.md` and tracked in the `combinatorics` field of `lesson-registry.json`.
 6. Agent concurrency:
    - 1 to 8 agents depending on sprint scope.
 7. Capacity:
    - Plan against 20-25 hours of total agent runtime per week.
 8. Milestone target:
-   - Phase 1 target: 6 lessons complete by April 15, 2026.
+   - Phase 1 target: 6 lessons complete by June 15, 2026.
 9. Program end target:
-   - All 18 lessons complete by April 15, 2027.
+   - All 18 lessons complete by June 15, 2027.
 10. Template governance:
    - After Sprint 1 stabilization, no direct manual template edits outside controlled change workflow.
 11. Severity/SLA policy:
@@ -188,3 +189,13 @@ For each sprint:
 ## 7) Pending Clarifications (Need Final Lock)
 
 1. None at this time for core ship gates.
+
+---
+
+## 8) Changelog
+
+| Version | Date | Changes |
+|---------|------|---------|
+| v0.6 | 2026-02-27 | Initial draft with locked decisions, ship gates, SLA policy |
+| v0.7 | 2026-03-09 | Updated color policy to reference combinatorial design system and `lesson-registry.json` tracking. Bumped from draft. |
+| v0.8 | 2026-03-09 | Extended Phase 1 target from April 15 to June 15, 2026 (content delivery delay). Program end extended to June 15, 2027. |

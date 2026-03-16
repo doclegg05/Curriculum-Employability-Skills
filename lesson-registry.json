@@ -36,6 +36,11 @@
         "approved": false,
         "approvalRef": null
       },
+      "combinatorics": {
+        "texture": null,
+        "colorLead": null,
+        "effects": []
+      },
       "interactions": {
         "minimumRequired": 3,
         "implemented": 3
@@ -67,6 +72,11 @@
         "approved": false,
         "approvalRef": null
       },
+      "combinatorics": {
+        "texture": null,
+        "colorLead": null,
+        "effects": []
+      },
       "interactions": {
         "minimumRequired": 3,
         "implemented": 3
@@ -97,6 +107,11 @@
       "colorSchema": {
         "approved": false,
         "approvalRef": null
+      },
+      "combinatorics": {
+        "texture": null,
+        "colorLead": null,
+        "effects": []
       },
       "interactions": {
         "minimumRequired": 3,

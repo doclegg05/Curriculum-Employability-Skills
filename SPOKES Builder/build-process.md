@@ -87,12 +87,13 @@ Additional Presentation chapters (P4, P5, etc.) may be added with sequential dat
 
 1. **Review existing lessons** — see which template variants and component patterns are already in use
 2. **Select a template variant** that creates visual contrast with neighboring lessons
-3. **Plan lesson color emphasis mix** — vary major/minor color roles for differentiation using only the canonical 11-color palette
-4. **Validate color pairings** — enforce WCAG contrast and anti-clash guardrails from `brand-palette.md`
-5. **Propose final color schema** to the user and get explicit approval before proceeding
-6. **Propose a Google Font pairing** to the user (heading font + body font)
-7. **Wait for user approval** on the font pairing before proceeding
-8. **Plan component mix** — choose a deliberately different sequence of components than other lessons
+3. **Plan Combinatorics (Textures & CSS)** — identify if the background should use a subtle CSS texture (like a dot grid via `radial-gradient`) or if cards need custom `box-shadow` styles. Write this CSS only in the `<style id="theme-override">` block.
+4. **Plan lesson color emphasis mix** — vary major/minor color roles for differentiation using only the canonical 11-color palette
+5. **Validate color pairings** — enforce WCAG contrast and anti-clash guardrails from `brand-palette.md`
+6. **Propose final color schema** to the user and get explicit approval before proceeding
+7. **Propose a Google Font pairing** to the user (heading font + body font)
+8. **Wait for user approval** on the font pairing before proceeding
+9. **Plan component mix** — choose a deliberately different sequence of components than other lessons
 
 ### Phase 4: Select Components for Each Slide
 
@@ -142,6 +143,7 @@ Is there a simple list?
 2. **Add font imports** — add lesson-specific Google Font `<link>` tags in `<head>`
 3. **Add theme override** — add `<style id="theme-override">` block AFTER main CSS with:
    - Font family overrides
+   - Combinatorial design overrides (Subtle CSS pattern backgrounds on `.main`, or card shadow/border variations)
    - Video placeholder CSS (from `AGENT_THEMING_GUIDELINES.md`)
 4. **Replace placeholders:**
    - `{{LESSON_TITLE}}` in `<title>`, `<h1>`, and anywhere else
@@ -150,7 +152,7 @@ Is there a simple list?
 5. **Build slides chapter by chapter:**
    - Start with the section divider for each chapter
    - Add content slides using the selected components
-   - Add video placeholder slides after their introducing slides
+   - Add video placeholder slides after their introducing slides (or actual `<video>` tags if local MP4 files are provided in the `videos/` folder)
 6. **Link resources:**
    - Update the sidebar `<div class="resources-section">` with PDF links
    - Add `download-resource` containers on relevant slides
@@ -183,12 +185,16 @@ New-Lesson-Project/
     Teachers Guide.pdf
     Talking Points.pdf
     ...
+  videos/                 <-- All local video files (.mp4)
+    video_file_name.mp4
+    ...
   .claude/
     launch.json           <-- Preview server config (see below)
   .gitignore              <-- Standard ignore file (see below)
 ```
 
 **`.claude/launch.json`:**
+
 ```json
 {
   "version": "0.0.1",
@@ -204,6 +210,7 @@ New-Lesson-Project/
 ```
 
 **`.gitignore`:**
+
 ```
 ~$*
 *.tmp
@@ -222,7 +229,7 @@ Run through this checklist before delivering:
 - [ ] **All section dividers** show correct WIPPEA badge and watermark
 - [ ] **Sidebar** auto-populates with all chapters and slides
 - [ ] **Slide counter** shows correct total
-- [ ] **Video placeholder slides** display styled placeholder box (no broken iframes)
+- [ ] **Video placeholder slides** display styled placeholder box, or **Local video slides** play successfully from the `videos/` folder (no broken iframes)
 - [ ] **All download buttons** link to correct PDFs
 - [ ] **Resources sidebar** links work
 - [ ] **Keyboard navigation** works (ArrowRight, ArrowLeft, Space)

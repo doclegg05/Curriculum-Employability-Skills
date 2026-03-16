@@ -3,7 +3,23 @@
     "allow": [
       "Bash(xargs:*)",
       "Bash(awk:*)",
-      "Bash(py:*)"
+      "Bash(py:*)",
+      "Bash(where obsidian-mcp:*)",
+      "Bash(powershell.exe:*)",
+      "Bash(git:*)",
+      "Bash(npx:*)",
+      "Bash(obsidian-mcp:*)",
+      "Bash(claude mcp:*)",
+      "mcp__obsidian__list-available-vaults",
+      "mcp__Claude_Preview__preview_start",
+      "WebSearch",
+      "WebFetch(domain:pixabay.com)",
+      "Read(//tmp/**)",
+      "Bash(while read f)",
+      "Bash(do stat --printf=\"%s\" \"$f\")",
+      "Bash(where cwebp:*)",
+      "Bash(where:*)",
+      "Bash(pip show:*)"
     ]
   }
 }

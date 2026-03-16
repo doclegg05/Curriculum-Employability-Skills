@@ -1979,11 +1979,12 @@
       <!-- Slide 14 — Video: Dress for Success -->
       <section class="slide slide-video" data-chapter="4">
         <h2>Watch: What Should I Wear to a Job Interview?</h2>
-        <a class="video-link" href="https://www.youtube.com/watch?v=YzqFqzpUm6M" target="_blank" rel="noopener noreferrer">
-          <img src="https://img.youtube.com/vi/YzqFqzpUm6M/maxresdefault.jpg" alt="What Should I Wear to a Job Interview? — video thumbnail" loading="lazy">
-          <div class="play-overlay"></div>
-          <span class="video-link-label">Click to watch on YouTube</span>
-        </a>
+        <div class="video-container" style="position:relative; width:100%; max-width:1170px; margin:0 auto;">
+          <video controls class="local-video" style="width:100%; border-radius:12px; box-shadow:0 4px 20px rgba(0,0,0,0.15);" poster="videos/what-to-wear.jpg">
+            <source src="videos/what-to-wear.mp4" type="video/mp4">
+            Your browser does not support the video tag.
+          </video>
+        </div>
       </section>
 
       <!-- Slide 15 — Body Language Matters -->
@@ -2012,11 +2013,12 @@
       <!-- Slide 16 — Video: Body Language -->
       <section class="slide slide-video" data-chapter="4">
         <h2>Watch: 7 Body Language Tips to Impress at Your Next Interview</h2>
-        <a class="video-link" href="https://www.youtube.com/watch?v=PCWVi5pAa30" target="_blank" rel="noopener noreferrer">
-          <img src="https://img.youtube.com/vi/PCWVi5pAa30/hqdefault.jpg" alt="7 Body Language Tips to Impress at Your Next Interview — video thumbnail" loading="lazy">
-          <div class="play-overlay"></div>
-          <span class="video-link-label">Click to watch on YouTube</span>
-        </a>
+        <div class="video-container" style="position:relative; width:100%; max-width:1170px; margin:0 auto;">
+          <video controls class="local-video" style="width:100%; border-radius:12px; box-shadow:0 4px 20px rgba(0,0,0,0.15);" poster="videos/body-language.jpg">
+            <source src="videos/body-language.mp4" type="video/mp4">
+            Your browser does not support the video tag.
+          </video>
+        </div>
       </section>
 
       <!-- Slide 17 — Body Language Tips -->
@@ -2760,6 +2762,10 @@
     function showSlide(index) {
       if (index < 0) index = 0;
       if (index >= slides.length) index = slides.length - 1;
+
+      // Pause any playing videos on the slide we're leaving
+      document.querySelectorAll('.slide.active video').forEach(v => { v.pause(); });
+
       currentIndex = index;
 
       slides.forEach((slide, i) => slide.classList.toggle('active', i === index));
@@ -2925,3 +2931,5 @@
   </script>
 </body>
 </html>
+
+

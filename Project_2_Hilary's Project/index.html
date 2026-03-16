@@ -1508,15 +1508,12 @@
     <!-- Slide 21: Video — Smartphones & Focus -->
     <section class="slide slide-video" data-chapter="5">
       <h2>Watch: How Smartphones Sabotage Your Brain's Ability to Focus</h2>
-      <div class="video-container">
-        <iframe
-          src="https://www.youtube-nocookie.com/embed/Ig6I3prnlnE"
-          title="How Smartphones Sabotage Your Brain's Ability to Focus — WSJ"
-          frameborder="0" loading="lazy"
-          allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
-          allowfullscreen>
-        </iframe>
-      </div>
+      <div class="video-container" style="position:relative; width:100%; max-width:1170px; margin:0 auto;">
+          <video controls class="local-video" style="width:100%; border-radius:12px; box-shadow:0 4px 20px rgba(0,0,0,0.15);" poster="videos/smartphones-focus.jpg">
+            <source src="videos/smartphones-focus.mp4" type="video/mp4">
+            Your browser does not support the video tag.
+          </video>
+        </div>
     </section>
 
     <!-- Slide 22: Procrastination -->
@@ -1540,15 +1537,12 @@
     <!-- Slide 23: Video — Procrastination (Mel Robbins) -->
     <section class="slide slide-video" data-chapter="5">
       <h2>Watch: 3 Steps to Break the Procrastination Cycle</h2>
-      <div class="video-container">
-        <iframe
-          src="https://www.youtube-nocookie.com/embed/w2gzEf0IQbc"
-          title="3 Steps to Break The Procrastination Cycle — Mel Robbins"
-          frameborder="0" loading="lazy"
-          allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
-          allowfullscreen>
-        </iframe>
-      </div>
+      <div class="video-container" style="position:relative; width:100%; max-width:1170px; margin:0 auto;">
+          <video controls class="local-video" style="width:100%; border-radius:12px; box-shadow:0 4px 20px rgba(0,0,0,0.15);" poster="videos/procrastination.jpg">
+            <source src="videos/procrastination.mp4" type="video/mp4">
+            Your browser does not support the video tag.
+          </video>
+        </div>
     </section>
 
     <!-- Slide 24: Multitasking -->
@@ -1578,15 +1572,12 @@
     <!-- Slide 25: Video — Multitasking (BBC Ideas) -->
     <section class="slide slide-video" data-chapter="5">
       <h2>Watch: What Multitasking Does to Your Brain</h2>
-      <div class="video-container">
-        <iframe
-          src="https://www.youtube-nocookie.com/embed/tMiyzuO1qMs"
-          title="What Multitasking Does to Your Brain — BBC Ideas"
-          frameborder="0" loading="lazy"
-          allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
-          allowfullscreen>
-        </iframe>
-      </div>
+      <div class="video-container" style="position:relative; width:100%; max-width:1170px; margin:0 auto;">
+          <video controls class="local-video" style="width:100%; border-radius:12px; box-shadow:0 4px 20px rgba(0,0,0,0.15);" poster="videos/multitasking.jpg">
+            <source src="videos/multitasking.mp4" type="video/mp4">
+            Your browser does not support the video tag.
+          </video>
+        </div>
     </section>
 
     <!-- Slide 26: Over-Commitment -->
@@ -1630,15 +1621,12 @@
     <!-- Slide 28: Video — 10 Habits / Structure & Routine -->
     <section class="slide slide-video" data-chapter="5">
       <h2>Watch: 10 Habits That Will Completely Change Your Life</h2>
-      <div class="video-container">
-        <iframe
-          src="https://www.youtube-nocookie.com/embed/A-z_H4_gfMg"
-          title="10 Habits That Will Completely Change Your Life"
-          frameborder="0" loading="lazy"
-          allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
-          allowfullscreen>
-        </iframe>
-      </div>
+      <div class="video-container" style="position:relative; width:100%; max-width:1170px; margin:0 auto;">
+          <video controls class="local-video" style="width:100%; border-radius:12px; box-shadow:0 4px 20px rgba(0,0,0,0.15);" poster="videos/10-habits.jpg">
+            <source src="videos/10-habits.mp4" type="video/mp4">
+            Your browser does not support the video tag.
+          </video>
+        </div>
     </section>
 
     <!-- Slide 29: QA INTERACTIVE — Accordion: Free Time Scenarios -->
@@ -1929,6 +1917,10 @@
   function showSlide(index) {
     if (index < 0) index = 0;
     if (index >= slides.length) index = slides.length - 1;
+
+    // Pause any playing videos on the slide we're leaving
+    document.querySelectorAll('.slide.active video').forEach(v => { v.pause(); });
+
     currentIndex = index;
 
     slides.forEach((slide, i) => slide.classList.toggle('active', i === index));
