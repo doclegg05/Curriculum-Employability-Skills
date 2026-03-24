@@ -417,40 +417,34 @@
     .slide.active .takeaway-item,
     .slide.active .smart-row,
     .slide.active .area-card,
-    .slide.active .matrix-cell,
-    .slide.active .danger-card { animation: fadeUp 0.5s ease-out both; }
+    .slide.active .matrix-cell { animation: fadeUp 0.5s ease-out both; }
 
     .slide.active .card:nth-child(1),
     .slide.active .takeaway-item:nth-child(1),
     .slide.active .smart-row:nth-child(1),
-    .slide.active .danger-card:nth-child(1),
     .slide.active .matrix-cell:nth-child(1),
     .slide.active .area-card:nth-child(1) { animation-delay: 0.1s; }
 
     .slide.active .card:nth-child(2),
     .slide.active .takeaway-item:nth-child(2),
     .slide.active .smart-row:nth-child(2),
-    .slide.active .danger-card:nth-child(2),
     .slide.active .matrix-cell:nth-child(2),
     .slide.active .area-card:nth-child(2) { animation-delay: 0.2s; }
 
     .slide.active .card:nth-child(3),
     .slide.active .takeaway-item:nth-child(3),
     .slide.active .smart-row:nth-child(3),
-    .slide.active .danger-card:nth-child(3),
     .slide.active .matrix-cell:nth-child(3),
     .slide.active .area-card:nth-child(3) { animation-delay: 0.3s; }
 
     .slide.active .card:nth-child(4),
     .slide.active .takeaway-item:nth-child(4),
     .slide.active .smart-row:nth-child(4),
-    .slide.active .danger-card:nth-child(4),
     .slide.active .matrix-cell:nth-child(4) { animation-delay: 0.4s; }
 
     .slide.active .card:nth-child(5),
     .slide.active .takeaway-item:nth-child(5),
-    .slide.active .smart-row:nth-child(5),
-    .slide.active .danger-card:nth-child(5) { animation-delay: 0.5s; }
+    .slide.active .smart-row:nth-child(5) { animation-delay: 0.5s; }
 
     .slide.active .takeaway-item:nth-child(6) { animation-delay: 0.6s; }
 
@@ -3149,17 +3143,6 @@
       });
     });
 
-    // Add "Click to flip" hint to flip cards
-    document.querySelectorAll('.danger-card[role="button"]').forEach(card => {
-      const hint = document.createElement('div');
-      hint.textContent = 'Click to flip';
-      hint.style.cssText = 'position:absolute;bottom:8px;font-size:0.75rem;color:rgba(255,255,255,0.4);letter-spacing:1px;text-transform:uppercase;pointer-events:none;';
-      const front = card.querySelector('.danger-card-front');
-      if (front) {
-        front.style.position = 'relative';
-        front.appendChild(hint);
-      }
-    });
 
     // Tab arrow-key navigation (ARIA tablist pattern)
     document.querySelectorAll('[role="tablist"]').forEach(tablist => {
