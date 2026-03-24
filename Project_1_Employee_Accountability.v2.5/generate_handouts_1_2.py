@@ -161,7 +161,7 @@ def generate_handout_1():
         "-- they reflect, correct, and improve."
     )
 
-    path = os.path.join(RESOURCES, "Handout_1_Habits_of_Mind_Fillable.pdf")
+    path = os.path.join(RESOURCES, "Handout_1_Habits_of_Mind.pdf")
     pdf.output(path)
     print(f"Generated: {path}")
 
@@ -255,7 +255,7 @@ def generate_handout_2():
             pdf.line(pdf.get_x(), pdf.get_y(), pdf.get_x() + 190, pdf.get_y())
         pdf.ln(4)
 
-    path = os.path.join(RESOURCES, "Handout_2_Self_Reflection_Fillable.pdf")
+    path = os.path.join(RESOURCES, "Handout_2_Self_Reflection.pdf")
     pdf.output(path)
     print(f"Generated: {path}")
 

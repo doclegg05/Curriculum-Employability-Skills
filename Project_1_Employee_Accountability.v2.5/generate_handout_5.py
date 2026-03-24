@@ -253,7 +253,7 @@ def generate_handout_5():
     pdf.set_text_color(*DARK)
     pdf.cell(0, 5, "Signature: ____________________________________________     Date: ______________________")
 
-    path = os.path.join(RESOURCES, "Handout_5_Career_Planning_Fillable.pdf")
+    path = os.path.join(RESOURCES, "Handout_5_Career_Planning.pdf")
     pdf.output(path)
     print(f"Generated: {path}")
 

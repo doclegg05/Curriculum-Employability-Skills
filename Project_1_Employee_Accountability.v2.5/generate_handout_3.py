@@ -403,7 +403,7 @@ def generate_handout_3():
     pdf.question_with_lines("3. Think about your own life. Describe a time you acted accountably AND a time you didn't. What did you learn?", 5)
     pdf.question_with_lines("4. Write your own definition of \"employee accountability\" in your own words:", 5)
 
-    path = os.path.join(RESOURCES, "Handout_3_Workplace_Scenarios_Fillable.v2.pdf")
+    path = os.path.join(RESOURCES, "Handout_3_Workplace_Scenarios.v2.pdf")
     pdf.output(path)
     print(f"Generated: {path}")
 

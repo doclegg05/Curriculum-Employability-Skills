@@ -395,7 +395,7 @@ def generate_handout_4():
     pdf.set_xy(x + 3, y + 14)
     pdf.cell(0, 4, "Signature: ____________________________________________     Date: ______________________")
 
-    path = os.path.join(RESOURCES, "Handout_4_SMART_Goal_Fillable.pdf")
+    path = os.path.join(RESOURCES, "Handout_4_SMART_Goal.pdf")
     pdf.output(path)
     print(f"Generated: {path}")
 
