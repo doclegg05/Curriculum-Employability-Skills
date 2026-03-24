@@ -5,6 +5,7 @@ from fpdf import FPDF
 BASE_DIR = os.path.dirname(__file__)
 RESOURCES = os.path.join(BASE_DIR, "Handouts")
 os.makedirs(RESOURCES, exist_ok=True)
+LOGO_PATH = os.path.join(BASE_DIR, "Source Material", "SPOKES-Logo.png")
 
 BLUE = (45, 109, 181)
 GREEN = (76, 184, 72)
@@ -24,6 +25,12 @@ class CareerPDF(FPDF):
     def header_block(self):
         self.set_fill_color(*BLUE)
         self.rect(0, 0, 210, 22, "F")
+        # SPOKES logo centered
+        if os.path.exists(LOGO_PATH):
+            logo_h = 14
+            logo_w = logo_h * (800 / 532)
+            logo_x = (210 - logo_w) / 2
+            self.image(LOGO_PATH, x=logo_x, y=4, h=logo_h)
         self.set_font("Helvetica", "B", 14)
         self.set_text_color(*WHITE)
         self.set_xy(10, 4)

@@ -5,6 +5,7 @@ from fpdf import FPDF
 BASE_DIR = os.path.dirname(__file__)
 RESOURCES = os.path.join(BASE_DIR, "Handouts")
 os.makedirs(RESOURCES, exist_ok=True)
+LOGO_PATH = os.path.join(BASE_DIR, "Source Material", "SPOKES-Logo.png")
 
 # Shared constants
 BLUE = (45, 109, 181)
@@ -36,6 +37,12 @@ class HandoutPDF(FPDF):
         # Blue header bar
         self.set_fill_color(*BLUE)
         self.rect(0, 0, 210, 28, "F")
+        # SPOKES logo centered
+        if os.path.exists(LOGO_PATH):
+            logo_h = 18
+            logo_w = logo_h * (800 / 532)
+            logo_x = (210 - logo_w) / 2
+            self.image(LOGO_PATH, x=logo_x, y=5, h=logo_h)
         # Title
         self.set_font("Helvetica", "B", 16)
         self.set_text_color(*WHITE)
@@ -119,14 +126,14 @@ def generate_handout_1():
         pdf.set_xy(x, y)
         pdf.cell(col_w[0], row_h, "", border=1, fill=True)
         pdf.set_xy(x + 1, y + 2)
-        pdf.multi_cell(col_w[0] - 2, 4.5, habit)
+        pdf.multi_cell(col_w[0] - 2, 4.5, habit, align="L")
 
         # Description
         pdf.set_font("Helvetica", "", 8)
         pdf.set_xy(x + col_w[0], y)
         pdf.cell(col_w[1], row_h, "", border=1, fill=True)
         pdf.set_xy(x + col_w[0] + 1, y + 2)
-        pdf.multi_cell(col_w[1] - 2, 4, desc)
+        pdf.multi_cell(col_w[1] - 2, 4, desc, align="L")
 
         # Example (blank for writing)
         pdf.set_xy(x + col_w[0] + col_w[1], y)
@@ -208,7 +215,7 @@ def generate_handout_2():
         pdf.set_xy(x, y)
         pdf.cell(col_w[0], row_h, "", border=1, fill=True)
         pdf.set_xy(x + 1, y + 2)
-        pdf.multi_cell(col_w[0] - 2, 4, habit)
+        pdf.multi_cell(col_w[0] - 2, 4, habit, align="L")
 
         # Description (shortened)
         short_desc = desc.split(";")[0] + "."
@@ -216,7 +223,7 @@ def generate_handout_2():
         pdf.set_xy(x + col_w[0], y)
         pdf.cell(col_w[1], row_h, "", border=1, fill=True)
         pdf.set_xy(x + col_w[0] + 1, y + 2)
-        pdf.multi_cell(col_w[1] - 2, 3.8, short_desc)
+        pdf.multi_cell(col_w[1] - 2, 3.8, short_desc, align="L")
 
         # Rating boxes (1-5)
         offset = col_w[0] + col_w[1]

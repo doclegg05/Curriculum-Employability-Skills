@@ -187,7 +187,7 @@
       margin-top: 1.5rem; cursor: pointer;
     }
     .download-btn:hover {
-      background: #37b550;
+      background: var(--accent);
       transform: translateY(-2px);
       box-shadow: 0 5px 20px rgba(55,181,80,0.4);
     }
@@ -205,7 +205,7 @@
       margin-top: 1.5rem; cursor: pointer;
     }
     .video-btn:hover {
-      background: #ad8806; transform: translateY(-2px);
+      background: var(--muted-gold); transform: translateY(-2px);
       box-shadow: 0 5px 20px rgba(211,178,87,0.4);
     }
     .video-btn:active { transform: translateY(0px) scale(0.97); box-shadow: none; }
@@ -324,7 +324,7 @@
     .card, .area-card, .danger-card, .matrix-cell {
       transition: transform 0.3s ease, box-shadow 0.3s ease;
     }
-    .card:hover, .area-card:hover, .danger-card:hover, .matrix-cell:hover {
+    .danger-card:hover, .matrix-cell:hover {
       transform: translateY(-5px);
       box-shadow: 0 10px 30px rgba(0,0,0,0.15);
     }
@@ -358,8 +358,8 @@
       to { opacity: 1; transform: scale(1); }
     }
     @keyframes expandWidth {
-      from { width: 0; opacity: 0; }
-      to { width: 120px; opacity: 1; }
+      from { transform: scaleX(0); opacity: 0; }
+      to { transform: scaleX(1); opacity: 1; }
     }
 
     .slide-title h1 {
@@ -371,6 +371,7 @@
     .slide-title .divider {
       width: 120px; height: 5px;
       background: var(--gold); margin-bottom: 2rem;
+      transform-origin: center center;
     }
     .slide-title .logo {
       max-width: 280px; height: auto; margin-bottom: 2rem;
@@ -383,7 +384,7 @@
       font-family: 'DM Serif Display', serif;
       font-size: 3.5rem; color: var(--primary);
       margin-bottom: 2.5rem; font-weight: 400;
-      overflow-wrap: anywhere;
+      overflow-wrap: break-word;
     }
     .slide h3 {
       font-family: 'DM Serif Display', serif;
@@ -547,7 +548,7 @@
     /* Big Statement */
     .big-statement {
       justify-content: center; align-items: center; text-align: center;
-      background: radial-gradient(ellipse at 50% 40%, var(--muted) 0%, #FFFFFF 60%);
+      background: radial-gradient(ellipse at 50% 40%, var(--muted) 0%, var(--light) 60%);
     }
     .big-statement h2 {
       font-family: 'DM Serif Display', serif;
@@ -559,7 +560,7 @@
     /* Video Slides */
     .slide-video {
       justify-content: center; align-items: center; text-align: center;
-      background: linear-gradient(170deg, #EDF3F7 0%, #FFFFFF 50%, #d1d3d4 100%);
+      background: linear-gradient(170deg, var(--muted) 0%, var(--light) 50%, var(--offwhite) 100%);
       padding: 2rem 3rem;
     }
     .slide-video h2 {
@@ -635,9 +636,122 @@
     }
     .content-list.danger li::before { content: "\26A0"; color: var(--gold); }
 
+    /* ── Utility Classes (migrated from inline styles) ──────── */
+
+    /* Slide subtitle — small gray text beneath h2 headings */
+    .slide-subtitle {
+      font-size: 1.4rem; color: var(--gray);
+      margin-top: -2rem; margin-bottom: 2rem;
+    }
+    .slide-subtext {
+      font-size: 1.05rem; color: var(--gray);
+      margin-top: -2rem; margin-bottom: 1.5rem;
+    }
+
+    /* Flex split layout — image + text side by side */
+    .flex-row {
+      display: flex; gap: 2rem; align-items: center;
+      flex-wrap: wrap; flex: 1;
+    }
+    .flex-text { flex: 1; min-width: 260px; }
+    .flex-visual {
+      flex: 0 0 auto; display: flex;
+      align-items: center; justify-content: center;
+    }
+
+    /* Slide images with consistent rounding and shadow */
+    .slide-img {
+      width: 100%; border-radius: 12px;
+      box-shadow: 0 4px 20px rgba(0,0,0,0.12);
+    }
+
+    /* Body paragraphs at common sizes */
+    .body-lg { font-size: 1.55rem; }
+    .body-md { font-size: 1.4rem; }
+    .body-sm { font-size: 1.3rem; }
+    .mb-1  { margin-bottom: 1rem; }
+    .mb-15 { margin-bottom: 1.5rem; }
+    .mt-1  { margin-top: 1rem; }
+    .mt-15 { margin-top: 1.5rem; }
+
+    /* Gold inline emphasis */
+    .gold-emphasis { color: var(--muted-gold); font-weight: 700; }
+
+    /* Video wrapper — centers the video container at a max width */
+    .video-wrapper {
+      position: relative; width: 100%; max-width: 1170px; margin: 0 auto;
+    }
+    .local-video {
+      width: 100%; border-radius: 12px;
+      box-shadow: 0 4px 20px rgba(0,0,0,0.15);
+    }
+
+    /* Info card row — used on Family Chores slide */
+    .info-card {
+      border-radius: 12px; padding: 1.25rem 1.5rem;
+      display: flex; align-items: center; gap: 1.25rem;
+    }
+    .info-card.primary { background: var(--primary); color: var(--light); }
+    .info-card.gold-card { background: var(--gold); color: var(--dark); }
+    .info-card-icon { font-size: 2rem; flex-shrink: 0; }
+    .info-card h4 {
+      font-family: 'DM Serif Display', serif;
+      font-size: 1.25rem; font-weight: 400; margin-bottom: 0.25rem;
+    }
+    .info-card p { font-size: 1rem; line-height: 1.4; }
+    .info-card.primary p { color: rgba(255,255,255,0.85); }
+
+    /* Centered image slide */
+    .slide-image-centered {
+      padding: 2rem; justify-content: center;
+      align-items: center; text-align: center;
+    }
+    .slide-image-centered h2 { margin-bottom: 1rem; }
+    .slide-image-centered img {
+      max-height: calc(100vh - 10rem); max-width: 100%;
+      width: auto; object-fit: contain;
+      border-radius: 12px; box-shadow: 0 4px 20px rgba(0,0,0,0.12);
+    }
+
+    /* Family chores slide */
+    .slide-chores {
+      padding: 1.5rem 2.5rem; justify-content: flex-start;
+    }
+    .slide-chores h2 {
+      font-size: 2.2rem; margin-bottom: 0.25rem;
+      flex-shrink: 0; text-align: center; width: 100%;
+    }
+    .slide-chores > .slide-subtext {
+      margin-top: 0; margin-bottom: 0.75rem;
+      flex-shrink: 0; text-align: center; width: 100%;
+    }
+    .chores-layout {
+      display: flex; gap: 1.5rem; flex: 1;
+      align-items: stretch; min-height: 0;
+    }
+    .chores-image-col {
+      flex: 0 0 50%; display: flex;
+      align-items: center; justify-content: center;
+    }
+    .chores-image-col img {
+      max-height: calc(100vh - 14rem); max-width: 100%;
+      object-fit: contain; border-radius: 12px;
+      box-shadow: 0 4px 20px rgba(0,0,0,0.12);
+    }
+    .chores-cards-col {
+      flex: 1; display: flex; flex-direction: column;
+      gap: 0.75rem; justify-content: center;
+    }
+
+    /* Tab panel key-question */
+    .key-question { margin-top: 0.75rem; font-size: 1.1rem; }
+
+    /* Download button row */
+    .btn-row { display: flex; gap: 1rem; flex-wrap: wrap; }
+
     /* Background for content slides */
     .slide:not(.slide-title):not(.slide-section):not(.slide-closing):not(.big-statement) {
-      background: linear-gradient(170deg, #EDF3F7 0%, #FFFFFF 50%, #d1d3d4 100%);
+      background: linear-gradient(170deg, var(--muted) 0%, var(--light) 50%, var(--offwhite) 100%);
     }
 
     /* Section Slide */
@@ -680,6 +794,7 @@
       width: 100px; height: 5px;
       background: var(--gold); margin-top: 2rem;
       position: relative; z-index: 2;
+      transform-origin: center center;
     }
     .slide-section::after {
       content: attr(data-chapter-num);
@@ -691,13 +806,13 @@
       line-height: 1; pointer-events: none; z-index: 1;
     }
 
-    .slide-section[data-chapter-num="W"] { background: linear-gradient(135deg, #004071 0%, #00133f 100%); }
-    .slide-section[data-chapter-num="I"] { background: linear-gradient(225deg, #007baf 0%, #004071 100%); }
-    .slide-section[data-chapter-num="P1"] { background: linear-gradient(160deg, #007baf 0%, #004071 100%); }
-    .slide-section[data-chapter-num="P2"] { background: linear-gradient(200deg, #007baf 0%, #004071 100%); }
-    .slide-section[data-chapter-num="P3"] { background: linear-gradient(145deg, #007baf 0%, #004071 100%); }
-    .slide-section[data-chapter-num="E"] { background: linear-gradient(190deg, #004071 0%, #00133f 100%); }
-    .slide-section[data-chapter-num="A"] { background: linear-gradient(170deg, #007baf 0%, #004071 100%); }
+    .slide-section[data-chapter-num="W"] { background: linear-gradient(135deg, var(--dark) 0%, var(--royal) 100%); }
+    .slide-section[data-chapter-num="I"] { background: linear-gradient(225deg, var(--primary) 0%, var(--dark) 100%); }
+    .slide-section[data-chapter-num="P1"] { background: linear-gradient(160deg, var(--primary) 0%, var(--dark) 100%); }
+    .slide-section[data-chapter-num="P2"] { background: linear-gradient(200deg, var(--primary) 0%, var(--dark) 100%); }
+    .slide-section[data-chapter-num="P3"] { background: linear-gradient(145deg, var(--primary) 0%, var(--dark) 100%); }
+    .slide-section[data-chapter-num="E"] { background: linear-gradient(190deg, var(--dark) 0%, var(--royal) 100%); }
+    .slide-section[data-chapter-num="A"] { background: linear-gradient(170deg, var(--primary) 0%, var(--dark) 100%); }
 
     /* Closing Slide */
     .slide-closing {
@@ -769,14 +884,14 @@
     }
     .tab-btn {
       padding: 0.85rem 1.75rem;
-      background: var(--muted); border: none;
+      background: var(--muted);
+      border: 2px solid transparent;
+      border-bottom: none;
       border-radius: 8px 8px 0 0;
       font-family: 'Outfit', sans-serif;
       font-size: 1.1rem; font-weight: 600;
       color: var(--gray); cursor: pointer;
       transition: all 0.25s ease;
-      border: 2px solid transparent;
-      border-bottom: none;
       margin-right: 4px;
     }
     .tab-btn:hover { background: rgba(0,123,175,0.1); color: var(--primary); }
@@ -829,7 +944,7 @@
       max-height: 0; overflow: hidden; transition: max-height 0.35s ease;
       background: var(--light);
     }
-    .accordion-body.open { max-height: 300px; }
+    .accordion-body.open { max-height: 800px; }
     .accordion-body-inner { padding: 1.25rem 1.5rem; }
     .accordion-body p { font-size: 1.2rem; color: var(--gray); line-height: 1.6; }
 
@@ -959,7 +1074,7 @@
         linear-gradient(150deg, rgba(0,123,175,0.03) 12%, transparent 12.5%);
       background-size: 40px 70px;
       background-position: 0 0, 0 0, 20px 35px, 20px 35px;
-      background-color: #FFFFFF;
+      background-color: var(--light);
     }
 
     /* Montserrat headings — tight, urgent, bold */
@@ -990,10 +1105,10 @@
     /* Roboto body */
     body { font-family: 'Roboto', sans-serif; }
 
-    /* Angular card treatment */
+    /* Angular card treatment — chamfered top-right corner */
     .card, .area-card, .smart-content, .activity-box,
     .instructor-prompt, .checkpoint-box, .debrief-card {
-      clip-path: polygon(0 0, calc(100% - 10px) 0, 100% 10px, 100% 100%, 0 100%);
+      border-top-right-radius: 10px;
     }
 
     /* Sticky-note hover tilt on cards */
@@ -1058,25 +1173,60 @@
       .slide h2 { font-size: 1.5rem; }
       .big-statement h2 { font-size: 1.8rem; line-height: 1.25; letter-spacing: 0; }
     }
+
+    /* Focus-visible styles for keyboard accessibility */
+    .sidebar-toggle:focus-visible,
+    .chapter-header:focus-visible,
+    .slide-item:focus-visible,
+    .key-icon:focus-visible,
+    .danger-card:focus-visible,
+    .tab-btn:focus-visible,
+    .accordion-btn:focus-visible,
+    .checkpoint-option:focus-visible,
+    .checkpoint-reset:focus-visible,
+    .download-btn:focus-visible,
+    .video-btn:focus-visible,
+    .resource-link:focus-visible {
+      outline: 2px solid var(--gold);
+      outline-offset: 2px;
+    }
+
+    /* Screen-reader only utility */
+    .sr-only {
+      position: absolute; width: 1px; height: 1px;
+      padding: 0; margin: -1px; overflow: hidden;
+      clip: rect(0,0,0,0); white-space: nowrap; border: 0;
+    }
+
+    /* Accessibility: suppress all animations for motion-sensitive users */
+    @media (prefers-reduced-motion: reduce) {
+      *, *::before, *::after {
+        animation-duration: 0.01ms !important;
+        animation-iteration-count: 1 !important;
+        transition-duration: 0.01ms !important;
+      }
+    }
   </style>
 </head>
 <body>
 <div class="container">
   <!-- Sidebar -->
-  <nav class="sidebar" aria-label="Lesson navigation">
-    <div class="sidebar-title">Time Management</div>
+  <nav class="sidebar" id="sidebar" aria-label="Lesson navigation">
+    <h2 class="sidebar-title">Time Management</h2>
     <ul class="chapter-list" id="chapterList"></ul>
-    <div class="resources-section">
-      <div class="resources-title">Resources</div>
-      <a href="Handouts/SPOKES_Module_Template_2026_Time_Management.pdf" target="_blank" rel="noopener noreferrer" class="resource-link">Lesson Plan</a>
-      <a href="Handouts/Teachers Guide.pdf" target="_blank" rel="noopener noreferrer" class="resource-link">Teacher's Guide</a>
-      <a href="Handouts/SPOKES_Time_Management_Self_Assessment.pdf" target="_blank" rel="noopener noreferrer" class="resource-link">Self-Assessment</a>
-      <a href="Handouts/Big_Rocks_of_Time_Worksheet.pdf" target="_blank" rel="noopener noreferrer" class="resource-link">Big Rocks Worksheet</a>
-      <a href="Handouts/GET_YOUR_PRIORITIES_STRAIGHT_FOR_THE_DAY_1.pdf" target="_blank" rel="noopener noreferrer" class="resource-link">Priorities Flow Chart</a>
-      <a href="Handouts/Daily_Planner_2.pdf" target="_blank" rel="noopener noreferrer" class="resource-link">Daily Planner</a>
-      <a href="Handouts/Weekly_Planner_Template_linked_To_Daily_Planner_1.pdf" target="_blank" rel="noopener noreferrer" class="resource-link">Weekly Planner</a>
-      <a href="Handouts/SPOKES_Time_Management_Pre_and_Post_Test.pdf" target="_blank" rel="noopener noreferrer" class="resource-link">Pre/Post Test</a>
-      <a href="Handouts/SPOKES_Time_Management_Rubric.pdf" target="_blank" rel="noopener noreferrer" class="resource-link">Rubric</a>
+    <div class="resources-section" role="region" aria-label="Downloadable resources">
+      <h3 class="resources-title">Resources</h3>
+      <ul style="list-style:none;padding:0;margin:0;">
+        <li><a href="Handouts/SPOKES_Module_Template_2026_Time_Management.pdf" target="_blank" rel="noopener noreferrer" class="resource-link">Lesson Plan</a></li>
+        <li><a href="Handouts/Teachers Guide.pdf" target="_blank" rel="noopener noreferrer" class="resource-link">Teacher's Guide</a></li>
+        <li><a href="Handouts/SPOKES_Time_Management_Self_Assessment.pdf" target="_blank" rel="noopener noreferrer" class="resource-link">Self-Assessment</a></li>
+        <li><a href="Handouts/Big_Rocks_of_Time_Worksheet.pdf" target="_blank" rel="noopener noreferrer" class="resource-link">Big Rocks Worksheet</a></li>
+        <li><a href="Handouts/GET_YOUR_PRIORITIES_STRAIGHT_FOR_THE_DAY_1.pdf" target="_blank" rel="noopener noreferrer" class="resource-link">Priorities Flow Chart</a></li>
+        <li><a href="Handouts/Daily_Planner_2.pdf" target="_blank" rel="noopener noreferrer" class="resource-link">Daily Planner</a></li>
+        <li><a href="Handouts/Weekly_Planner_Template_linked_To_Daily_Planner_1.pdf" target="_blank" rel="noopener noreferrer" class="resource-link">Weekly Planner</a></li>
+        <li><a href="Handouts/SPOKES_Time_Management_Pre_and_Post_Test.pdf" target="_blank" rel="noopener noreferrer" class="resource-link">Pre/Post Test</a></li>
+        <li><a href="Handouts/SPOKES_Time_Management_Rubric.pdf" target="_blank" rel="noopener noreferrer" class="resource-link">Rubric</a></li>
+      </ul>
     </div>
     <div class="slide-counter">
       Slide <span id="currentSlide">1</span> of <span id="totalSlides">0</span>
@@ -1084,8 +1234,9 @@
   </nav>
 
   <!-- Main -->
-  <main class="main" aria-live="polite">
-    <button class="sidebar-toggle" id="sidebarToggle" onclick="toggleSidebar()" title="Toggle sidebar" aria-label="Toggle navigation sidebar" aria-expanded="true" aria-controls="chapterList">&#171;</button>
+  <main class="main">
+    <div id="slideAnnouncer" class="sr-only" aria-live="polite" aria-atomic="true"></div>
+    <button class="sidebar-toggle" id="sidebarToggle" onclick="toggleSidebar()" aria-label="Toggle navigation sidebar" aria-expanded="true" aria-controls="sidebar">&#171;</button>
 
     <!-- ======================== -->
     <!-- W — WARM-UP             -->
@@ -1103,7 +1254,7 @@
     <!-- Slide 2: Self-Reflection / Warm-Up Activity -->
     <section class="slide" data-chapter="1">
       <h2>Self-Reflection</h2>
-      <p style="font-size:1.4rem;color:var(--gray);margin-top:-2rem;margin-bottom:2rem;">How good is your time management?</p>
+      <p class="slide-subtitle">How good is your time management?</p>
       <div class="takeaways">
         <div class="takeaway-item">
           <div class="takeaway-num alt">1</div>
@@ -1124,7 +1275,7 @@
       </div>
       <div class="instructor-prompt">
         <div class="instructor-label">Instructor Note</div>
-        <p>Option 1 (Printable): Distribute the Self-Assessment worksheet. Option 2 (Digital): Visit <strong>psychologytoday.com/us/tests/career/time-management-skills-test</strong> — students click "no thanks, close this window" after submitting to see results without logging in.</p>
+        <p>Option 1 (Printable): Distribute the Self-Assessment worksheet. Option 2 (Digital): Visit <a href="https://www.psychologytoday.com/us/tests/career/time-management-skills-test" target="_blank" rel="noopener noreferrer" style="color:var(--primary);font-weight:700;">psychologytoday.com/.../time-management-skills-test</a> — students click "no thanks, close this window" after submitting to see results without logging in.</p>
       </div>
     </section>
 
@@ -1143,7 +1294,7 @@
     <!-- Slide 4: We All Have 24 Hours -->
     <section class="slide" data-chapter="2">
       <h2>We All Have 24 Hours</h2>
-      <p style="font-size:1.3rem;color:var(--gray);margin-top:-2rem;margin-bottom:2rem;">But we each have different challenges:</p>
+      <p class="slide-subtitle" style="font-size:1.3rem;">But we each have different challenges:</p>
       <div class="cards-grid">
         <div class="card">
           <h4>Responsibilities</h4>
@@ -1166,7 +1317,7 @@
 
     <!-- Slide 5: Big Statement -->
     <section class="slide big-statement" data-chapter="2" data-sidebar-title="Optimize Your Time">
-      <h2>The goal of effective time management is to <span class="accent">maximize productivity</span> and <span style="color:var(--muted-gold);font-weight:800;">achieve your goals</span> by optimizing <span class="highlight">how you use your time</span></h2>
+      <h2>The goal of effective time management is to <span class="accent">maximize productivity</span> and <span class="gold-emphasis" style="font-weight:800;">achieve your goals</span> by optimizing <span class="highlight">how you use your time</span></h2>
     </section>
 
     <!-- Slide 6: Objective Detail -->
@@ -1207,17 +1358,17 @@
     <!-- Slide 8: What Are Priorities -->
     <section class="slide" data-chapter="3">
       <h2>What Are Priorities?</h2>
-      <div style="display:flex;gap:2rem;align-items:center;flex-wrap:wrap;flex:1;">
-        <div style="flex:1;min-width:280px;">
-          <p style="font-size:1.55rem;margin-bottom:1.5rem;"><span class="highlight">Priorities</span> are things that are more important than others and need to be dealt with first — the ranking of something's importance.</p>
-          <p style="font-size:1.55rem;">Priorities establish the <span class="accent">sequence</span> in which things should be done.</p>
-          <div class="activity-box" style="margin-top:1.5rem;">
+      <div class="flex-row">
+        <div class="flex-text" style="min-width:280px;">
+          <p class="body-lg mb-15"><span class="highlight">Priorities</span> are things that are more important than others and need to be dealt with first — the ranking of something's importance.</p>
+          <p class="body-lg">Priorities establish the <span class="accent">sequence</span> in which things should be done.</p>
+          <div class="activity-box mt-15">
             <div class="activity-label">Discussion</div>
             <p>What are your current top 3 priorities in life? How do you decide what comes first each day?</p>
           </div>
         </div>
-        <div style="flex:0 0 auto;display:flex;align-items:center;justify-content:center;">
-          <img src="images/priorities-clipboard.webp" alt="Clipboard with the word Priorities written on it, representing the act of listing and ranking important tasks" loading="lazy" style="max-width:320px;width:100%;border-radius:12px;box-shadow:0 4px 20px rgba(0,0,0,0.12);">
+        <div class="flex-visual">
+          <img src="images/priorities-clipboard.webp" alt="Clipboard with the word Priorities written on it, representing the act of listing and ranking important tasks" loading="lazy" class="slide-img" style="max-width:320px;">
         </div>
       </div>
     </section>
@@ -1225,13 +1376,13 @@
     <!-- Slide 9: Big Rocks -->
     <section class="slide" data-chapter="3">
       <h2>The Big Rocks of Time</h2>
-      <div style="display:flex;gap:2rem;align-items:center;flex-wrap:wrap;flex:1;">
-        <div style="flex:0 0 auto;display:flex;align-items:center;justify-content:center;">
-          <img src="images/big-rocks.webp" alt="Diagram showing a jar filled first with big rocks, then pebbles, then sand — illustrating the priority metaphor" loading="lazy" style="max-width:340px;width:100%;border-radius:12px;box-shadow:0 4px 20px rgba(0,0,0,0.12);">
+      <div class="flex-row">
+        <div class="flex-visual">
+          <img src="images/big-rocks.webp" alt="Diagram showing a jar filled first with big rocks, then pebbles, then sand — illustrating the priority metaphor" loading="lazy" class="slide-img" style="max-width:340px;">
         </div>
-        <div style="flex:1;min-width:260px;">
-          <p style="font-size:1.4rem;margin-bottom:1rem;">If you fill your jar with <strong>sand</strong> first, there's no room for the big rocks. The sand represents small, low-priority tasks.</p>
-          <p style="font-size:1.4rem;margin-bottom:1.5rem;"><span style="color:var(--muted-gold);font-weight:700;">Put the big rocks in first</span> — your most important priorities — then let the smaller things fill around them.</p>
+        <div class="flex-text">
+          <p class="body-md mb-1">If you fill your jar with <strong>sand</strong> first, there's no room for the big rocks. The sand represents small, low-priority tasks.</p>
+          <p class="body-md mb-15"><span class="gold-emphasis">Put the big rocks in first</span> — your most important priorities — then let the smaller things fill around them.</p>
           <div class="download-resource">
             <span class="download-prompt">Hands-on activity</span>
             <a href="Handouts/Big_Rocks_of_Time_Worksheet.pdf" target="_blank" rel="noopener noreferrer" class="download-btn">Big Rocks Worksheet</a>
@@ -1243,8 +1394,8 @@
     <!-- Slide 10: Now What (Transition) -->
     <section class="slide big-statement" data-chapter="3">
       <h2>You've identified your priorities...<br><span class="accent">Now what?</span></h2>
-      <p style="font-size:1.5rem;margin-top:2rem;color:var(--gray);">Now you need a <span style="color:var(--muted-gold);font-weight:700;">system</span> to dedicate time to each one. Never fear — we've got the tools!</p>
-      <img src="images/toolbox.webp" alt="Time Management Tool Box illustration showing a toolbox packed with time management resources and strategies" loading="lazy" style="max-width:320px;width:100%;border-radius:12px;box-shadow:0 4px 24px rgba(0,0,0,0.12);margin-top:2rem;">
+      <p style="font-size:1.5rem;color:var(--gray);" class="mt-15">Now you need a <span class="gold-emphasis">system</span> to dedicate time to each one. Never fear — we've got the tools!</p>
+      <img src="images/toolbox.webp" alt="Time Management Tool Box illustration showing a toolbox packed with time management resources and strategies" loading="lazy" class="slide-img mt-15" style="max-width:320px;">
     </section>
 
     <!-- ======================== -->
@@ -1260,25 +1411,25 @@
     </section>
 
     <!-- Slide 12: SMART Goals -->
-    <section class="slide" data-chapter="4" style="padding:2rem;justify-content:center;align-items:center;text-align:center;">
-      <h2 style="margin-bottom:1rem;">Set SMART Goals</h2>
-      <img src="images/smarter-goals.webp" alt="SMARTER Goal Setting reference table showing criteria for Specific, Measurable, Achievable, Relevant, Time-bound, Evaluate, and Readjust goals" loading="lazy" style="max-height:calc(100vh - 10rem);max-width:100%;width:auto;object-fit:contain;border-radius:12px;box-shadow:0 4px 20px rgba(0,0,0,0.12);">
+    <section class="slide slide-image-centered" data-chapter="4">
+      <h2>Set SMART Goals</h2>
+      <img src="images/smarter-goals.webp" alt="SMARTER Goal Setting reference table showing criteria for Specific, Measurable, Achievable, Relevant, Time-bound, Evaluate, and Readjust goals" loading="lazy">
     </section>
 
     <!-- Slide 13: Flow Chart -->
     <section class="slide" data-chapter="4">
       <h2>Utilize a Flow Chart</h2>
-      <div style="display:flex;gap:2rem;align-items:center;flex-wrap:wrap;flex:1;">
-        <div style="flex:1;min-width:260px;">
-          <p style="font-size:1.4rem;margin-bottom:1rem;">A flow chart can be used on a <span class="highlight">daily or weekly basis</span> to ensure your most important tasks get completed first.</p>
-          <p style="font-size:1.4rem;margin-bottom:1.5rem;">It helps you make quick decisions about what to tackle next based on <span class="accent">urgency</span> and <span style="color:var(--muted-gold);font-weight:700;">importance</span>.</p>
+      <div class="flex-row">
+        <div class="flex-text">
+          <p class="body-md mb-1">A flow chart can be used on a <span class="highlight">daily or weekly basis</span> to ensure your most important tasks get completed first.</p>
+          <p class="body-md mb-15">It helps you make quick decisions about what to tackle next based on <span class="accent">urgency</span> and <span class="gold-emphasis">importance</span>.</p>
           <div class="download-resource">
             <span class="download-prompt">Distribute and customize</span>
             <a href="Handouts/GET_YOUR_PRIORITIES_STRAIGHT_FOR_THE_DAY_1.pdf" target="_blank" rel="noopener noreferrer" class="download-btn">Priorities Flow Chart</a>
           </div>
         </div>
-        <div style="flex:0 0 auto;display:flex;align-items:center;justify-content:center;">
-          <img src="images/flowchart.webp" alt="SPOKES-branded priority flowchart showing a decision-tree process for determining which tasks to tackle first each day" loading="lazy" style="max-width:330px;width:100%;border-radius:12px;box-shadow:0 4px 20px rgba(0,0,0,0.12);">
+        <div class="flex-visual">
+          <img src="images/flowchart.webp" alt="SPOKES-branded priority flowchart showing a decision-tree process for determining which tasks to tackle first each day" loading="lazy" class="slide-img" style="max-width:330px;">
         </div>
       </div>
     </section>
@@ -1286,7 +1437,7 @@
     <!-- Slide 14: Eisenhower Matrix -->
     <section class="slide" data-chapter="4">
       <h2>The Eisenhower Matrix</h2>
-      <p style="font-size:1.05rem;color:var(--gray);margin-top:-2rem;margin-bottom:1.5rem;">Prioritize tasks by urgency and importance to improve productivity</p>
+      <p class="slide-subtext">Prioritize tasks by urgency and importance to improve productivity</p>
       <div class="matrix-grid">
         <div class="matrix-cell do-first">
           <span class="matrix-label">Urgent + Important</span>
@@ -1314,30 +1465,30 @@
     <!-- Slide 15: QA INTERACTIVE — Tabs: Task Classification -->
     <section class="slide" data-chapter="4">
       <h2>Classify This Task</h2>
-      <p style="font-size:1.05rem;color:var(--gray);margin-top:-2rem;margin-bottom:1.5rem;">Which Eisenhower quadrant does each scenario belong in? Click to explore.</p>
+      <p class="slide-subtext">Which Eisenhower quadrant does each scenario belong in? Click to explore.</p>
       <div class="tabs-container">
         <div class="tabs-nav" role="tablist" aria-label="Task classification examples">
-          <button class="tab-btn active" role="tab" aria-selected="true" aria-controls="tab-urgent" onclick="switchTab(this,'tab-urgent')">Urgent Task</button>
-          <button class="tab-btn" role="tab" aria-selected="false" aria-controls="tab-important" onclick="switchTab(this,'tab-important')">Important Task</button>
-          <button class="tab-btn" role="tab" aria-selected="false" aria-controls="tab-timewaster" onclick="switchTab(this,'tab-timewaster')">Time Waster</button>
+          <button id="tab-btn-urgent" class="tab-btn active" role="tab" aria-selected="true" aria-controls="tab-urgent" onclick="switchTab(this,'tab-urgent')">Urgent Task</button>
+          <button id="tab-btn-important" class="tab-btn" role="tab" aria-selected="false" aria-controls="tab-important" onclick="switchTab(this,'tab-important')">Important Task</button>
+          <button id="tab-btn-timewaster" class="tab-btn" role="tab" aria-selected="false" aria-controls="tab-timewaster" onclick="switchTab(this,'tab-timewaster')">Time Waster</button>
         </div>
-        <div id="tab-urgent" class="tab-panel active" role="tabpanel">
+        <div id="tab-urgent" class="tab-panel active" role="tabpanel" aria-labelledby="tab-btn-urgent">
           <span class="example-tag">DO FIRST</span>
           <h4>Urgent + Important</h4>
           <p>Your child has a fever and needs to go to the doctor. Your electricity will be shut off if you don't pay the bill today. Your boss needs a report in one hour.</p>
-          <p style="margin-top:0.75rem;font-size:1.1rem;"><strong>Key question:</strong> Does it have a deadline AND real consequences if I ignore it? Then it goes here.</p>
+          <p class="key-question"><strong>Key question:</strong> Does it have a deadline AND real consequences if I ignore it? Then it goes here.</p>
         </div>
-        <div id="tab-important" class="tab-panel" role="tabpanel">
+        <div id="tab-important" class="tab-panel" role="tabpanel" aria-labelledby="tab-btn-important">
           <span class="example-tag gold">SCHEDULE IT</span>
           <h4>Not Urgent + Important</h4>
           <p>Planning next week's meals. Going to the gym. Applying for a better job. Working toward your GED. These don't feel urgent today — but skipping them has a long-term cost.</p>
-          <p style="margin-top:0.75rem;font-size:1.1rem;"><strong>Key question:</strong> Is this aligned with my big rocks and long-term goals?</p>
+          <p class="key-question"><strong>Key question:</strong> Is this aligned with my big rocks and long-term goals?</p>
         </div>
-        <div id="tab-timewaster" class="tab-panel" role="tabpanel">
+        <div id="tab-timewaster" class="tab-panel" role="tabpanel" aria-labelledby="tab-btn-timewaster">
           <span class="example-tag mauve">ELIMINATE</span>
           <h4>Not Urgent + Not Important</h4>
           <p>Scrolling social media for 45 minutes. Watching a third TV episode when you planned to watch one. Reorganizing a drawer that doesn't need it.</p>
-          <p style="margin-top:0.75rem;font-size:1.1rem;"><strong>Key question:</strong> Does this move me toward any of my priorities? If not — eliminate or strictly limit it.</p>
+          <p class="key-question"><strong>Key question:</strong> Does this move me toward any of my priorities? If not — eliminate or strictly limit it.</p>
         </div>
       </div>
       <div class="instructor-prompt">
@@ -1351,9 +1502,9 @@
       <h2>Daily &amp; Weekly Planners</h2>
       <div class="split-layout">
         <div class="split-text">
-          <p style="font-size:1.4rem;margin-bottom:1rem;">Keeping the day's and week's activities in view ensures <span class="highlight">priority tasks get accomplished</span>.</p>
-          <p style="font-size:1.4rem;margin-bottom:1.5rem;">It also helps you find <span class="accent">free time</span> you didn't know you had!</p>
-          <div style="display:flex;gap:1rem;flex-wrap:wrap;">
+          <p class="body-md mb-1">Keeping the day's and week's activities in view ensures <span class="highlight">priority tasks get accomplished</span>.</p>
+          <p class="body-md mb-15">It also helps you find <span class="accent">free time</span> you didn't know you had!</p>
+          <div class="btn-row">
             <a href="Handouts/Daily_Planner_2.pdf" target="_blank" rel="noopener noreferrer" class="download-btn">Daily Planner</a>
             <a href="Handouts/Weekly_Planner_Template_linked_To_Daily_Planner_1.pdf" target="_blank" rel="noopener noreferrer" class="download-btn">Weekly Planner</a>
           </div>
@@ -1365,39 +1516,34 @@
     </section>
 
     <!-- Slide 17: Family To-Do Lists -->
-    <section class="slide" id="slide-family-chores" data-chapter="4" style="padding:1.5rem 2.5rem;justify-content:flex-start;">
-      <h2 style="font-size:2.2rem;margin-bottom:0.25rem;flex-shrink:0;text-align:center;width:100%;">Family To-Do Lists &amp; Delegation</h2>
-      <p style="font-size:1.05rem;color:var(--gray);margin-bottom:0.75rem;flex-shrink:0;text-align:center;width:100%;">Having the whole family help with chores creates time for what matters most</p>
+    <section class="slide slide-chores" id="slide-family-chores" data-chapter="4">
+      <h2>Family To-Do Lists &amp; Delegation</h2>
+      <p class="slide-subtext">Having the whole family help with chores creates time for what matters most</p>
 
-      <!-- Two-column: image left, cards right -->
-      <div style="display:flex;gap:1.5rem;flex:1;align-items:stretch;min-height:0;">
-
-        <!-- Left: image sized to fill slide height -->
-        <div style="flex:0 0 50%;display:flex;align-items:center;justify-content:center;">
-          <img src="images/age-chores.webp" alt="Age-Appropriate Chores chart listing household tasks organized by child age groups from toddlers through teenagers" loading="lazy" style="max-height:calc(100vh - 14rem);max-width:100%;object-fit:contain;border-radius:12px;box-shadow:0 4px 20px rgba(0,0,0,0.12);">
+      <div class="chores-layout">
+        <div class="chores-image-col">
+          <img src="images/age-chores.webp" alt="Age-Appropriate Chores chart listing household tasks organized by child age groups from toddlers through teenagers" loading="lazy">
         </div>
-
-        <!-- Right: three horizontal info cards stacked vertically -->
-        <div style="flex:1;display:flex;flex-direction:column;gap:0.75rem;justify-content:center;">
-          <div style="background:var(--primary);border-radius:12px;padding:1.25rem 1.5rem;color:var(--light);display:flex;align-items:center;gap:1.25rem;">
-            <span style="font-size:2rem;flex-shrink:0;">&#9829;</span>
+        <div class="chores-cards-col">
+          <div class="info-card primary">
+            <span class="info-card-icon" aria-hidden="true">&#9829;</span>
             <div>
-              <h4 style="font-family:'DM Serif Display',serif;font-size:1.25rem;font-weight:400;margin-bottom:0.25rem;">Builds Self-Esteem</h4>
-              <p style="font-size:1rem;color:rgba(255,255,255,0.85);line-height:1.4;">Children feel valued and capable, gaining a sense of accomplishment and growing confidence in their abilities</p>
+              <h4>Builds Self-Esteem</h4>
+              <p>Children feel valued and capable, gaining a sense of accomplishment and growing confidence in their abilities</p>
             </div>
           </div>
-          <div style="background:var(--gold);border-radius:12px;padding:1.25rem 1.5rem;color:var(--dark);display:flex;align-items:center;gap:1.25rem;">
-            <span style="font-size:2rem;flex-shrink:0;">&#9881;</span>
+          <div class="info-card gold-card">
+            <span class="info-card-icon" aria-hidden="true">&#9881;</span>
             <div>
-              <h4 style="font-family:'DM Serif Display',serif;font-size:1.25rem;font-weight:400;margin-bottom:0.25rem;">Teaches Life Skills</h4>
-              <p style="font-size:1rem;color:var(--dark);line-height:1.4;">Develops responsibility, ownership, time management habits, and a strong work ethic early on</p>
+              <h4>Teaches Life Skills</h4>
+              <p>Develops responsibility, ownership, time management habits, and a strong work ethic early on</p>
             </div>
           </div>
-          <div style="background:var(--primary);border-radius:12px;padding:1.25rem 1.5rem;color:var(--light);display:flex;align-items:center;gap:1.25rem;">
-            <span style="font-size:2rem;flex-shrink:0;">&#9734;</span>
+          <div class="info-card primary">
+            <span class="info-card-icon" aria-hidden="true">&#9734;</span>
             <div>
-              <h4 style="font-family:'DM Serif Display',serif;font-size:1.25rem;font-weight:400;margin-bottom:0.25rem;">Fosters Teamwork</h4>
-              <p style="font-size:1rem;color:rgba(255,255,255,0.85);line-height:1.4;">Creates a sense of belonging, shared family commitment, and more quality time for everyone</p>
+              <h4>Fosters Teamwork</h4>
+              <p>Creates a sense of belonging, shared family commitment, and more quality time for everyone</p>
             </div>
           </div>
         </div>
@@ -1419,12 +1565,12 @@
     <!-- Slide 19: Dangers Overview -->
     <section class="slide" data-chapter="5">
       <h2>Time Management Dangers</h2>
-      <p style="font-size:1rem;color:var(--gray);margin-top:-2rem;margin-bottom:0.75rem;">Despite our best efforts, these challenges sabotage our time — click each card to learn more</p>
+      <p class="slide-subtext" style="margin-bottom:0.75rem;">Despite our best efforts, these challenges sabotage our time — click each card to learn more</p>
       <div class="dangers-grid">
-        <div class="danger-card" tabindex="0" role="button" aria-label="Distractions danger card">
+        <div class="danger-card" tabindex="0" role="button" aria-pressed="false" aria-label="Distractions — press Enter to reveal strategy">
           <div class="danger-card-inner">
             <div class="danger-card-front">
-              <div class="danger-icon">&#128241;</div>
+              <div class="danger-icon" aria-hidden="true">&#128241;</div>
               <h4>Distractions</h4>
             </div>
             <div class="danger-card-back">
@@ -1433,10 +1579,10 @@
             </div>
           </div>
         </div>
-        <div class="danger-card" tabindex="0" role="button" aria-label="Procrastination danger card">
+        <div class="danger-card" tabindex="0" role="button" aria-pressed="false" aria-label="Procrastination — press Enter to reveal strategy">
           <div class="danger-card-inner">
             <div class="danger-card-front">
-              <div class="danger-icon">&#9203;</div>
+              <div class="danger-icon" aria-hidden="true">&#9203;</div>
               <h4>Procrastination</h4>
             </div>
             <div class="danger-card-back">
@@ -1445,10 +1591,10 @@
             </div>
           </div>
         </div>
-        <div class="danger-card" tabindex="0" role="button" aria-label="Multitasking danger card">
+        <div class="danger-card" tabindex="0" role="button" aria-pressed="false" aria-label="Multitasking — press Enter to reveal strategy">
           <div class="danger-card-inner">
             <div class="danger-card-front">
-              <div class="danger-icon">&#128260;</div>
+              <div class="danger-icon" aria-hidden="true">&#128260;</div>
               <h4>Multitasking</h4>
             </div>
             <div class="danger-card-back">
@@ -1457,10 +1603,10 @@
             </div>
           </div>
         </div>
-        <div class="danger-card" tabindex="0" role="button" aria-label="Over-Commitment danger card">
+        <div class="danger-card" tabindex="0" role="button" aria-pressed="false" aria-label="Over-Commitment — press Enter to reveal strategy">
           <div class="danger-card-inner">
             <div class="danger-card-front">
-              <div class="danger-icon">&#128587;</div>
+              <div class="danger-icon" aria-hidden="true">&#128587;</div>
               <h4>Over-Commitment</h4>
             </div>
             <div class="danger-card-back">
@@ -1469,10 +1615,10 @@
             </div>
           </div>
         </div>
-        <div class="danger-card" tabindex="0" role="button" aria-label="No Structure danger card">
+        <div class="danger-card" tabindex="0" role="button" aria-pressed="false" aria-label="No Structure — press Enter to reveal strategy">
           <div class="danger-card-inner">
             <div class="danger-card-front">
-              <div class="danger-icon">&#128736;</div>
+              <div class="danger-icon" aria-hidden="true">&#128736;</div>
               <h4>No Structure</h4>
             </div>
             <div class="danger-card-back">
@@ -1489,7 +1635,7 @@
       <h2>Technology Distractions</h2>
       <div class="split-layout">
         <div class="split-text">
-          <p style="font-size:1.4rem;margin-bottom:1.5rem;">Smartphones are designed to <span class="mauve">capture and hold your attention</span>. Every notification is a deliberate interruption of your focus.</p>
+          <p class="body-md mb-15">Smartphones are designed to <span class="mauve">capture and hold your attention</span>. Every notification is a deliberate interruption of your focus.</p>
           <div class="activity-box">
             <div class="activity-label">Group Activity</div>
             <p>Count the notifications you received on your phone <em>today</em>. On iPhone: swipe down from the top-left corner. Who has the most? What apps are sending them?</p>
@@ -1508,9 +1654,10 @@
     <!-- Slide 21: Video — Smartphones & Focus -->
     <section class="slide slide-video" data-chapter="5">
       <h2>Watch: How Smartphones Sabotage Your Brain's Ability to Focus</h2>
-      <div class="video-container" style="position:relative; width:100%; max-width:1170px; margin:0 auto;">
-          <video controls class="local-video" style="width:100%; border-radius:12px; box-shadow:0 4px 20px rgba(0,0,0,0.15);" poster="videos/smartphones-focus.jpg">
+      <div class="video-container video-wrapper">
+          <video controls class="local-video" class="local-video" poster="videos/smartphones-focus.jpg">
             <source src="videos/smartphones-focus.mp4" type="video/mp4">
+            <track kind="captions" src="videos/smartphones-focus.vtt" srclang="en" label="English">
             Your browser does not support the video tag.
           </video>
         </div>
@@ -1519,13 +1666,13 @@
     <!-- Slide 22: Procrastination -->
     <section class="slide" data-chapter="5">
       <h2>Procrastination</h2>
-      <div style="display:flex;gap:2rem;align-items:center;flex-wrap:wrap;flex:1;">
-        <div style="flex:0 0 auto;display:flex;align-items:center;justify-content:center;">
-          <img src="images/procrastination-cycle.webp" alt="Procrastination Cycle diagram showing the loop of procrastinating, making excuses, feeling guilty, panicking, and repeating" loading="lazy" style="max-width:320px;width:100%;border-radius:12px;box-shadow:0 4px 20px rgba(0,0,0,0.12);">
+      <div class="flex-row">
+        <div class="flex-visual">
+          <img src="images/procrastination-cycle.webp" alt="Procrastination Cycle diagram showing the loop of procrastinating, making excuses, feeling guilty, panicking, and repeating" loading="lazy" class="slide-img" style="max-width:320px;">
         </div>
-        <div style="flex:1;min-width:260px;">
-          <p style="font-size:1.55rem;margin-bottom:1rem;"><span class="highlight">Procrastination</span> is the act of putting off something until a later time.</p>
-          <p style="font-size:1.4rem;margin-bottom:1.5rem;">The procrastination cycle: Procrastinate &rarr; Make excuses &rarr; Feel guilty &rarr; Panic &rarr; Repeat. The good news? Procrastination is a <span class="accent">habit that can be broken</span>.</p>
+        <div class="flex-text">
+          <p class="body-lg mb-1"><span class="highlight">Procrastination</span> is the act of putting off something until a later time.</p>
+          <p class="body-md mb-15">The procrastination cycle: Procrastinate &rarr; Make excuses &rarr; Feel guilty &rarr; Panic &rarr; Repeat. The good news? Procrastination is a <span class="accent">habit that can be broken</span>.</p>
           <div class="instructor-prompt">
             <div class="instructor-label">Instructor Prompt</div>
             <p>Ask: "What is one thing you have been putting off? What is the real reason you haven't started it yet?"</p>
@@ -1537,9 +1684,10 @@
     <!-- Slide 23: Video — Procrastination (Mel Robbins) -->
     <section class="slide slide-video" data-chapter="5">
       <h2>Watch: 3 Steps to Break the Procrastination Cycle</h2>
-      <div class="video-container" style="position:relative; width:100%; max-width:1170px; margin:0 auto;">
-          <video controls class="local-video" style="width:100%; border-radius:12px; box-shadow:0 4px 20px rgba(0,0,0,0.15);" poster="videos/procrastination.jpg">
+      <div class="video-container video-wrapper">
+          <video controls class="local-video" class="local-video" poster="videos/procrastination.jpg">
             <source src="videos/procrastination.mp4" type="video/mp4">
+            <track kind="captions" src="videos/procrastination.vtt" srclang="en" label="English">
             Your browser does not support the video tag.
           </video>
         </div>
@@ -1548,7 +1696,7 @@
     <!-- Slide 24: Multitasking -->
     <section class="slide" data-chapter="5">
       <h2>Multitasking</h2>
-      <p style="font-size:1.1rem;color:var(--gray);margin-top:-2rem;margin-bottom:1.5rem;">Often seen as a strength — but science shows it has a real cost</p>
+      <p class="slide-subtext">Often seen as a strength — but science shows it has a real cost</p>
       <div class="cards-grid">
         <div class="card">
           <h4>Inefficiency</h4>
@@ -1572,9 +1720,10 @@
     <!-- Slide 25: Video — Multitasking (BBC Ideas) -->
     <section class="slide slide-video" data-chapter="5">
       <h2>Watch: What Multitasking Does to Your Brain</h2>
-      <div class="video-container" style="position:relative; width:100%; max-width:1170px; margin:0 auto;">
-          <video controls class="local-video" style="width:100%; border-radius:12px; box-shadow:0 4px 20px rgba(0,0,0,0.15);" poster="videos/multitasking.jpg">
+      <div class="video-container video-wrapper">
+          <video controls class="local-video" class="local-video" poster="videos/multitasking.jpg">
             <source src="videos/multitasking.mp4" type="video/mp4">
+            <track kind="captions" src="videos/multitasking.vtt" srclang="en" label="English">
             Your browser does not support the video tag.
           </video>
         </div>
@@ -1583,17 +1732,17 @@
     <!-- Slide 26: Over-Commitment -->
     <section class="slide" data-chapter="5">
       <h2>Over-Commitment</h2>
-      <div style="display:flex;gap:2rem;align-items:center;flex-wrap:wrap;flex:1;">
-        <div style="flex:1;min-width:260px;">
-          <p style="font-size:1.45rem;margin-bottom:1rem;">The inability to say <span class="highlight">"No"</span> leads to spreading yourself too thin — and nothing gets the attention it deserves.</p>
-          <p style="font-size:1.3rem;margin-bottom:1.25rem;">Learning to set <span class="accent">boundaries</span> is a skill, not selfishness. It protects your priorities.</p>
+      <div class="flex-row">
+        <div class="flex-text">
+          <p style="font-size:1.45rem;" class="mb-1">The inability to say <span class="highlight">"No"</span> leads to spreading yourself too thin — and nothing gets the attention it deserves.</p>
+          <p class="body-sm" style="margin-bottom:1.25rem;">Learning to set <span class="accent">boundaries</span> is a skill, not selfishness. It protects your priorities.</p>
           <div class="activity-box">
             <div class="activity-label">Discussion</div>
             <p>Identify situations where you struggle with saying no. What are polite but effective ways to decline? Examples: "I appreciate you thinking of me, but I can't commit to this right now." / "Unfortunately, now isn't a good time for me."</p>
           </div>
         </div>
-        <div style="flex:0 0 auto;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:0.5rem;">
-          <img src="images/seven-ways-say-no.webp" alt="7 Ways to Say No infographic listing polite and effective phrases for declining requests without guilt" loading="lazy" style="max-width:300px;width:100%;border-radius:12px;box-shadow:0 4px 20px rgba(0,0,0,0.12);">
+        <div class="flex-visual" style="flex-direction:column;gap:0.5rem;">
+          <img src="images/seven-ways-say-no.webp" alt="7 Ways to Say No infographic listing polite and effective phrases for declining requests without guilt" loading="lazy" class="slide-img" style="max-width:300px;">
         </div>
       </div>
     </section>
@@ -1603,9 +1752,9 @@
       <h2>Lack of Structure &amp; Routine</h2>
       <div class="split-layout">
         <div class="split-text">
-          <p style="font-size:1.45rem;margin-bottom:1.25rem;">Without daily structure, it's easy to let time slip away on things that <span class="highlight">don't move you forward</span>.</p>
-          <p style="font-size:1.3rem;margin-bottom:1.25rem;">Small, consistent habits — like a morning clarity ritual or a weekly reset — compound into <span class="accent">big results</span> over time.</p>
-          <ul class="content-list" style="margin-top:0;">
+          <p style="font-size:1.45rem;" class="mb-15">Without daily structure, it's easy to let time slip away on things that <span class="highlight">don't move you forward</span>.</p>
+          <p class="body-sm" style="margin-bottom:1.25rem;">Small, consistent habits — like a morning clarity ritual or a weekly reset — compound into <span class="accent">big results</span> over time.</p>
+          <ul class="content-list" style="margin-top:0">
             <li>Focus on one task at a time</li>
             <li>Learn something new for 20 minutes a day</li>
             <li>Create a "digital sunset" each evening</li>
@@ -1621,9 +1770,10 @@
     <!-- Slide 28: Video — 10 Habits / Structure & Routine -->
     <section class="slide slide-video" data-chapter="5">
       <h2>Watch: 10 Habits That Will Completely Change Your Life</h2>
-      <div class="video-container" style="position:relative; width:100%; max-width:1170px; margin:0 auto;">
-          <video controls class="local-video" style="width:100%; border-radius:12px; box-shadow:0 4px 20px rgba(0,0,0,0.15);" poster="videos/10-habits.jpg">
+      <div class="video-container video-wrapper">
+          <video controls class="local-video" class="local-video" poster="videos/10-habits.jpg">
             <source src="videos/10-habits.mp4" type="video/mp4">
+            <track kind="captions" src="videos/10-habits.vtt" srclang="en" label="English">
             Your browser does not support the video tag.
           </video>
         </div>
@@ -1632,7 +1782,7 @@
     <!-- Slide 29: QA INTERACTIVE — Accordion: Free Time Scenarios -->
     <section class="slide" data-chapter="5">
       <h2>What Would You Do?</h2>
-      <p style="font-size:1.1rem;color:var(--gray);margin-top:-2rem;margin-bottom:1.5rem;">Click each scenario to reveal strategies for managing unexpected time</p>
+      <p class="slide-subtext">Click each scenario to reveal strategies for managing unexpected time</p>
       <div class="accordion">
         <div class="accordion-item">
           <button class="accordion-btn active" onclick="toggleAccordion(this)" aria-expanded="true">
@@ -1665,7 +1815,7 @@
           </div>
         </div>
       </div>
-      <div class="instructor-prompt" style="margin-top:1rem;">
+      <div class="instructor-prompt mt-1">
         <div class="instructor-label">Instructor Prompt</div>
         <p>After exploring the accordion, ask: "What do you typically do when you get unexpected free time? Does it align with your priorities?"</p>
       </div>
@@ -1686,7 +1836,7 @@
     <!-- Slide 31: QA INTERACTIVE — Checkpoint -->
     <section class="slide" data-chapter="6">
       <h2>Quick Check</h2>
-      <p style="font-size:1.05rem;color:var(--gray);margin-top:-2rem;margin-bottom:1.5rem;">Select the best answer, then discuss as a class</p>
+      <p class="slide-subtext">Select the best answer, then discuss as a class</p>
       <div class="checkpoint-box">
         <div class="checkpoint-question">You need to prepare for next week's job interview. Which Eisenhower Matrix quadrant should this go in?</div>
         <div class="checkpoint-options">
@@ -1698,9 +1848,9 @@
         <div class="checkpoint-feedback" id="checkpointFeedback">
           <span id="feedbackText"></span>
         </div>
-        <button class="checkpoint-reset" id="checkpointReset" onclick="resetCheckpoint()">Try Again</button>
+        <button class="checkpoint-reset" id="checkpointReset" onclick="resetCheckpoint(this)">Try Again</button>
       </div>
-      <div class="instructor-prompt" style="margin-top:1rem;">
+      <div class="instructor-prompt mt-1">
         <div class="instructor-label">Instructor Note</div>
         <p>Correct answer: B. The interview is important (it affects your future), but it isn't urgent yet — there's still a week. This is exactly the kind of task people procrastinate on because it feels "later." Use this as a discussion moment: "What happens if you wait until the night before?"</p>
       </div>
@@ -1709,7 +1859,7 @@
     <!-- Slide 32: Self-Assessment Debrief -->
     <section class="slide" data-chapter="6">
       <h2>Assessment Debrief</h2>
-      <p style="font-size:1.05rem;color:var(--gray);margin-top:-2rem;margin-bottom:1.5rem;">After completing the paper self-assessment — let's discuss what you found</p>
+      <p class="slide-subtext">After completing the paper self-assessment — let's discuss what you found</p>
       <div class="debrief-grid">
         <div class="debrief-card">
           <h4>What did your score reveal?</h4>
@@ -1752,7 +1902,7 @@
           <p>What is <strong>one thing you will change</strong> starting today?</p>
         </div>
       </div>
-      <div class="instructor-prompt" style="margin-top:1.5rem;">
+      <div class="instructor-prompt mt-15">
         <div class="instructor-label">Instructor Note</div>
         <p>Distribute the exit ticket slip or have students write their answers on index cards. Collect them to inform follow-up instruction. Provide opportunity for 2-3 volunteers to share aloud.</p>
       </div>
@@ -1773,7 +1923,7 @@
     <!-- Slide 35: Round Robin / Stand & Deliver -->
     <section class="slide" data-chapter="7">
       <h2>How Will You Put Your TIME to Use?</h2>
-      <p style="font-size:1.05rem;color:var(--gray);margin-top:-2rem;margin-bottom:1.5rem;">Round Robin — Stand &amp; Deliver: each learner answers a different question, then papers pass to the right</p>
+      <p class="slide-subtext">Round Robin — Stand &amp; Deliver: each learner answers a different question, then papers pass to the right</p>
       <div class="takeaways">
         <div class="takeaway-item">
           <div class="takeaway-num">1</div>
@@ -1796,7 +1946,7 @@
           <p>What is one question you still have about this topic?</p>
         </div>
       </div>
-      <div class="instructor-prompt" style="margin-top:1rem;">
+      <div class="instructor-prompt mt-1">
         <div class="instructor-label">Instructor Note — Round Robin</div>
         <p>Each learner picks one question and writes it on a blank sheet. Papers pass right — next person writes a response. Repeat until papers return to owners. Each student reads summaries aloud. Facilitate whole-class discussion.</p>
       </div>
@@ -1806,7 +1956,7 @@
     <section class="slide slide-closing" data-chapter="7" id="closingSlide">
       <div class="confetti-container" id="confettiContainer"></div>
       <div class="closing-box">
-        <h3 style="color:var(--gold);font-size:1.5rem;margin-bottom:1.5rem;font-family:'Montserrat',sans-serif;font-weight:700;">Congratulations, you have completed this lesson!</h3>
+        <p style="color:var(--gold);font-size:1.5rem;margin-bottom:1.5rem;font-family:'Montserrat',sans-serif;font-weight:700;">Congratulations, you have completed this lesson!</p>
         <p>"This is the beginning of a new day. You have been given this day to use as you will. What you do today is important because you are exchanging a day of your life for it."</p>
         <div class="divider"></div>
         <h2>Own Your Time</h2>
@@ -1829,6 +1979,8 @@
 </div>
 
 <script>
+(function() {
+  'use strict';
   // ── Slide Navigation ──────────────────────────────────────────────
   const slides = document.querySelectorAll('.slide');
   const chapterListEl = document.getElementById('chapterList');
@@ -1880,21 +2032,21 @@
       const info = chapterNames[chNum] || { name: 'Chapter ' + chNum, badge: 'p' };
       const badgeLetter = wippeaLabels[info.badge] || 'P';
       html += '<li class="chapter-item" data-chapter="' + chNum + '">' +
-        '<div class="chapter-header">' +
+        '<div class="chapter-header" tabindex="0" role="button">' +
           '<span class="chapter-arrow">&#9654;</span>' +
           '<span class="wippea-badge ' + info.badge + '">' + badgeLetter + '</span>' +
           '<span>' + info.name + '</span>' +
         '</div>' +
         '<ul class="slide-list">';
       chapters[chNum].forEach(s => {
-        html += '<li class="slide-item" data-slide="' + s.index + '">' + s.title + '</li>';
+        html += '<li class="slide-item" tabindex="0" data-slide="' + s.index + '">' + s.title + '</li>';
       });
       html += '</ul></li>';
     });
     chapterListEl.innerHTML = html;
 
     document.querySelectorAll('.chapter-header').forEach(header => {
-      header.addEventListener('click', () => {
+      function activateChapter() {
         const item = header.parentElement;
         const wasExpanded = item.classList.contains('expanded');
         document.querySelectorAll('.chapter-item').forEach(i => i.classList.remove('expanded'));
@@ -1902,13 +2054,18 @@
         const ch = item.dataset.chapter;
         const idx = Array.from(slides).findIndex(s => s.dataset.chapter === ch);
         if (idx !== -1) showSlide(idx);
+      }
+      header.addEventListener('click', activateChapter);
+      header.addEventListener('keydown', e => {
+        if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); activateChapter(); }
       });
     });
 
     document.querySelectorAll('.slide-item').forEach(item => {
-      item.addEventListener('click', e => {
-        e.stopPropagation();
-        showSlide(parseInt(item.dataset.slide));
+      function activateSlide() { showSlide(parseInt(item.dataset.slide)); }
+      item.addEventListener('click', e => { e.stopPropagation(); activateSlide(); });
+      item.addEventListener('keydown', e => {
+        if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); e.stopPropagation(); activateSlide(); }
       });
     });
   }
@@ -1957,13 +2114,29 @@
     if (slides[index].classList.contains('slide-closing')) {
       triggerConfetti();
     }
+
+    // Announce slide to screen readers
+    const heading = slides[index].querySelector('h1, h2');
+    const announcer = document.getElementById('slideAnnouncer');
+    if (heading && announcer) {
+      announcer.textContent = 'Slide ' + (index + 1) + ' of ' + slides.length + ': ' + heading.textContent;
+    }
   }
 
   // ── Confetti ──────────────────────────────────────────────────────
   function triggerConfetti() {
+    if (window.matchMedia('(prefers-reduced-motion: reduce)').matches) return;
     const container = document.getElementById('confettiContainer');
     container.innerHTML = '';
-    const colors = ['#37b550', '#007baf', '#d3b257', '#a7253f', '#FFFFFF', '#004071'];
+    const cs = getComputedStyle(document.documentElement);
+    const colors = [
+      cs.getPropertyValue('--accent').trim(),
+      cs.getPropertyValue('--primary').trim(),
+      cs.getPropertyValue('--gold').trim(),
+      cs.getPropertyValue('--mauve').trim(),
+      cs.getPropertyValue('--light').trim(),
+      cs.getPropertyValue('--dark').trim(),
+    ];
     for (let i = 0; i < 100; i++) {
       const el = document.createElement('div');
       el.className = 'confetti';
@@ -1974,6 +2147,7 @@
       const size = Math.random() * 10 + 5;
       el.style.width = size + 'px'; el.style.height = size + 'px';
       el.style.borderRadius = Math.random() > 0.5 ? '50%' : '0';
+      el.addEventListener('animationend', () => el.remove());
       container.appendChild(el);
     }
   }
@@ -1999,10 +2173,11 @@
     else if (e.key === ' ') { e.preventDefault(); nextSlide(); }
   });
 
-  // Touch / swipe
+  // Touch / swipe — scoped to main content area to avoid sidebar scroll conflicts
   let touchStartX = 0;
-  document.addEventListener('touchstart', e => { touchStartX = e.changedTouches[0].screenX; }, { passive: true });
-  document.addEventListener('touchend', e => {
+  const mainEl = document.querySelector('.main');
+  mainEl.addEventListener('touchstart', e => { touchStartX = e.changedTouches[0].screenX; }, { passive: true });
+  mainEl.addEventListener('touchend', e => {
     const diff = touchStartX - e.changedTouches[0].screenX;
     if (Math.abs(diff) > 50) { diff > 0 ? nextSlide() : prevSlide(); }
   }, { passive: true });
@@ -2019,9 +2194,10 @@
     card.addEventListener('keydown', e => {
       if (e.key === 'Enter' || e.key === ' ') {
         e.preventDefault();
-        card.querySelector('.danger-card-inner').style.transform =
-          card.querySelector('.danger-card-inner').style.transform === 'rotateY(180deg)'
-            ? '' : 'rotateY(180deg)';
+        const inner = card.querySelector('.danger-card-inner');
+        const isFlipped = inner.style.transform === 'rotateY(180deg)';
+        inner.style.transform = isFlipped ? '' : 'rotateY(180deg)';
+        card.setAttribute('aria-pressed', isFlipped ? 'false' : 'true');
       }
     });
   });
@@ -2093,8 +2269,8 @@
     resetBtn.classList.add('show');
   }
 
-  function resetCheckpoint() {
-    const box = document.querySelector('.checkpoint-box');
+  function resetCheckpoint(btn) {
+    const box = btn.closest('.checkpoint-box');
     box.querySelectorAll('.checkpoint-option').forEach(opt => {
       opt.disabled = false;
       opt.style.cursor = '';
@@ -2106,9 +2282,29 @@
   }
 
   // ── Initialize ────────────────────────────────────────────────────
+  // Label all slide sections with their heading for screen readers (L2)
+  slides.forEach((slide, i) => {
+    const heading = slide.querySelector('h1, h2');
+    if (heading) {
+      const hId = 'slide-heading-' + i;
+      heading.id = hId;
+      slide.setAttribute('aria-labelledby', hId);
+    }
+  });
+
   buildSidebar();
   initSidebarState();
   showSlide(0);
+
+  // Expose functions used by inline onclick handlers
+  window.toggleSidebar = toggleSidebar;
+  window.prevSlide = prevSlide;
+  window.nextSlide = nextSlide;
+  window.switchTab = switchTab;
+  window.toggleAccordion = toggleAccordion;
+  window.checkAnswer = checkAnswer;
+  window.resetCheckpoint = resetCheckpoint;
+})();
 </script>
 </body>
 </html>

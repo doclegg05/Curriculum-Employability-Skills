@@ -38,7 +38,7 @@
     body {
       font-family: 'Outfit', sans-serif;
       background: var(--dark);
-      color: var(--dark);
+      color: var(--light);
       overflow: hidden;
       height: 100vh;
     }
@@ -416,7 +416,6 @@
     .slide.active .card,
     .slide.active .takeaway-item,
     .slide.active .smart-row,
-    .slide.active .principle-item,
     .slide.active .area-card,
     .slide.active .matrix-cell,
     .slide.active .danger-card { animation: fadeUp 0.5s ease-out both; }
@@ -515,6 +514,11 @@
       to { width: 120px; opacity: 1; }
     }
 
+    @keyframes expandWidth100 {
+      from { width: 0; opacity: 0; }
+      to { width: 100px; opacity: 1; }
+    }
+
     .slide-title h1 {
       font-family: 'DM Serif Display', serif;
       font-size: 5rem;
@@ -551,11 +555,7 @@
       margin-top: 1rem;
     }
 
-    /* Hide corner branding on title and closing slides */
-    .slide-title.active ~ .branding-logo,
-    .slide-closing.active ~ .branding-logo {
-      display: none;
-    }
+    /* Branding logo visibility is controlled by JavaScript in showSlide() */
 
     /* Content Slides */
     .slide h2 {
@@ -948,9 +948,6 @@
       align-items: center;
       text-align: center;
       background: linear-gradient(170deg, var(--muted) 0%, #FFFFFF 50%, var(--offwhite) 100%);
-    }
-
-    .slide-video {
       padding: 2rem 3rem;
     }
     .slide-video h2 {
@@ -1086,7 +1083,7 @@
     .slide-section.active { animation: sectionSlideIn 0.6s ease-out; }
     .slide-section.active .chapter-label { animation: fadeDown 0.5s ease-out 0.2s both; }
     .slide-section.active h2 { animation: scaleIn 0.6s ease-out 0.4s both; }
-    .slide-section.active .divider { animation: expandWidth 0.5s ease-out 0.7s both; }
+    .slide-section.active .divider { animation: expandWidth100 0.5s ease-out 0.7s both; }
 
     /* Section dividers — chapter image circle */
     .slide-section .section-circle {
@@ -1320,6 +1317,32 @@
       .branding-logo { max-width: 40px; bottom: 0.5rem; right: 0.5rem; }
       .slide-video h2 { font-size: 1.3rem; }
       .tab-btn { flex-basis: 100%; padding: 0.6rem 0.85rem; }
+    }
+
+    /* Reduced motion — WCAG 2.1 SC 2.3.3 */
+    @media (prefers-reduced-motion: reduce) {
+      *, *::before, *::after {
+        animation-duration: 0.01ms !important;
+        animation-iteration-count: 1 !important;
+        transition-duration: 0.01ms !important;
+        scroll-behavior: auto !important;
+      }
+      .danger-card-inner {
+        transition: none !important;
+      }
+    }
+
+    /* Focus visibility — WCAG 2.1 SC 2.4.7 */
+    .sidebar-toggle:focus-visible,
+    .chapter-header:focus-visible,
+    .slide-item:focus-visible,
+    .key-icon:focus-visible,
+    .tab-btn:focus-visible,
+    .accordion-header:focus-visible,
+    .checkpoint-option:focus-visible,
+    .danger-card:focus-visible {
+      outline: 3px solid var(--gold);
+      outline-offset: 2px;
     }
   </style>
 
@@ -1908,7 +1931,7 @@
 </head>
 <body>
   <div class="container">
-    <nav class="sidebar" id="sidebar" role="navigation" aria-label="Lesson navigation">
+    <nav class="sidebar" id="sidebar" aria-label="Lesson navigation">
       <div class="sidebar-title">Employee Accountability</div>
       <ul class="chapter-list" id="chapterList"></ul>
 
@@ -2326,11 +2349,11 @@
         <p style="font-size: 1.1rem; color: var(--gray); margin-top: -1.5rem; margin-bottom: 1.5rem;">Select a tab to see how each C applies in a real workplace context:</p>
         <div class="tabs-container">
           <div class="tab-buttons" role="tablist">
-            <button class="tab-btn active" onclick="showTab('clarity', this)" role="tab" aria-selected="true">Clarity</button>
-            <button class="tab-btn" onclick="showTab('commitment', this)" role="tab" aria-selected="false">Commitment</button>
-            <button class="tab-btn" onclick="showTab('communication', this)" role="tab" aria-selected="false">Communication</button>
-            <button class="tab-btn" onclick="showTab('collaboration', this)" role="tab" aria-selected="false">Collaboration</button>
-            <button class="tab-btn" onclick="showTab('consequences', this)" role="tab" aria-selected="false">Consequences</button>
+            <button class="tab-btn active" onclick="showTab('clarity', this)" role="tab" aria-selected="true" aria-controls="clarity">Clarity</button>
+            <button class="tab-btn" onclick="showTab('commitment', this)" role="tab" aria-selected="false" aria-controls="commitment">Commitment</button>
+            <button class="tab-btn" onclick="showTab('communication', this)" role="tab" aria-selected="false" aria-controls="communication">Communication</button>
+            <button class="tab-btn" onclick="showTab('collaboration', this)" role="tab" aria-selected="false" aria-controls="collaboration">Collaboration</button>
+            <button class="tab-btn" onclick="showTab('consequences', this)" role="tab" aria-selected="false" aria-controls="consequences">Consequences</button>
           </div>
           <div id="clarity" class="tab-panel active" role="tabpanel">
             <h4>Clarity in Action</h4>
@@ -2437,28 +2460,28 @@
         <h2>6 Powerful Principles of Personal Accountability</h2>
         <p style="font-size: 1.1rem; color: var(--gray); margin-top: -1.5rem; margin-bottom: 1.5rem;">These principles shift how you see your role in your own outcomes:</p>
         <div class="accordion" id="principlesAccordion">
-          <div class="accordion-item open" onclick="toggleAccordion(this)">
-            <div class="accordion-header" aria-expanded="true">1. Practice Optimism <span class="accordion-arrow">&#9654;</span></div>
+          <div class="accordion-item open">
+            <div class="accordion-header" role="button" tabindex="0" aria-expanded="true" onclick="toggleAccordion(this.parentElement)" onkeydown="if(event.key==='Enter'||event.key===' '){event.preventDefault();toggleAccordion(this.parentElement);}">1. Practice Optimism <span class="accordion-arrow">&#9654;</span></div>
             <div class="accordion-body">Cultivate realistic hope through challenges. Optimism is not ignoring problems — it is believing you have the capacity to solve them. Accountable people stay solution-focused even in difficult situations.</div>
           </div>
-          <div class="accordion-item gold-border" onclick="toggleAccordion(this)">
-            <div class="accordion-header" aria-expanded="false">2. Practice Self-Awareness <span class="accordion-arrow">&#9654;</span></div>
+          <div class="accordion-item gold-border">
+            <div class="accordion-header" role="button" tabindex="0" aria-expanded="false" onclick="toggleAccordion(this.parentElement)" onkeydown="if(event.key==='Enter'||event.key===' '){event.preventDefault();toggleAccordion(this.parentElement);}">2. Practice Self-Awareness <span class="accordion-arrow">&#9654;</span></div>
             <div class="accordion-body">See things as they really are — including your own blind spots. Self-awareness means understanding how your behavior affects others and being willing to examine your own contributions to problems.</div>
           </div>
-          <div class="accordion-item" onclick="toggleAccordion(this)">
-            <div class="accordion-header" aria-expanded="false">3. Own Your Actions <span class="accordion-arrow">&#9654;</span></div>
+          <div class="accordion-item">
+            <div class="accordion-header" role="button" tabindex="0" aria-expanded="false" onclick="toggleAccordion(this.parentElement)" onkeydown="if(event.key==='Enter'||event.key===' '){event.preventDefault();toggleAccordion(this.parentElement);}">3. Own Your Actions <span class="accordion-arrow">&#9654;</span></div>
             <div class="accordion-body">Take responsibility instead of playing the victim. Every situation has contributing factors — but accountable people focus on what they could have done differently, not on who else is to blame.</div>
           </div>
-          <div class="accordion-item gold-border" onclick="toggleAccordion(this)">
-            <div class="accordion-header" aria-expanded="false">4. Be Solution-Oriented <span class="accordion-arrow">&#9654;</span></div>
+          <div class="accordion-item gold-border">
+            <div class="accordion-header" role="button" tabindex="0" aria-expanded="false" onclick="toggleAccordion(this.parentElement)" onkeydown="if(event.key==='Enter'||event.key===' '){event.preventDefault();toggleAccordion(this.parentElement);}">4. Be Solution-Oriented <span class="accordion-arrow">&#9654;</span></div>
             <div class="accordion-body">Think creatively and ask for help when you need it. The question is not "Why did this happen?" — it is "What can I do about it?" Accountable people spend more energy on solutions than on complaints.</div>
           </div>
-          <div class="accordion-item" onclick="toggleAccordion(this)">
-            <div class="accordion-header" aria-expanded="false">5. Change the Narrative <span class="accordion-arrow">&#9654;</span></div>
+          <div class="accordion-item">
+            <div class="accordion-header" role="button" tabindex="0" aria-expanded="false" onclick="toggleAccordion(this.parentElement)" onkeydown="if(event.key==='Enter'||event.key===' '){event.preventDefault();toggleAccordion(this.parentElement);}">5. Change the Narrative <span class="accordion-arrow">&#9654;</span></div>
             <div class="accordion-body">Create a new path forward using your facts, skills, and available resources. You cannot always control what happens to you — but you can always control the story you tell yourself about what happens next.</div>
           </div>
-          <div class="accordion-item gold-border" onclick="toggleAccordion(this)">
-            <div class="accordion-header" aria-expanded="false">6. Supercharge Leadership Skills <span class="accordion-arrow">&#9654;</span></div>
+          <div class="accordion-item gold-border">
+            <div class="accordion-header" role="button" tabindex="0" aria-expanded="false" onclick="toggleAccordion(this.parentElement)" onkeydown="if(event.key==='Enter'||event.key===' '){event.preventDefault();toggleAccordion(this.parentElement);}">6. Supercharge Leadership Skills <span class="accordion-arrow">&#9654;</span></div>
             <div class="accordion-body">Accept responsibility for your output — even when you are not in charge. Leadership is not a title. It is the decision to take ownership and model accountable behavior for the people around you.</div>
           </div>
         </div>
@@ -2557,10 +2580,10 @@
             <p>You are a nurse on duty. A CNA alerts you that a resident seems agitated and confused. You are behind on your charting and have two other residents to check. What is the most accountable response?</p>
           </div>
           <div class="checkpoint-options">
-            <div class="checkpoint-option" onclick="checkAnswer(this, false)">A. Finish your charting first — you are already behind and the CNA can handle it.</div>
-            <div class="checkpoint-option" onclick="checkAnswer(this, false)">B. Tell the CNA to document it and you will check later if you have time.</div>
-            <div class="checkpoint-option" onclick="checkAnswer(this, true)">C. Immediately assess the resident, document the situation, and adjust your other tasks accordingly.</div>
-            <div class="checkpoint-option" onclick="checkAnswer(this, false)">D. Complain to your supervisor about being understaffed and wait for direction.</div>
+            <div class="checkpoint-option" role="button" tabindex="0" onclick="checkAnswer(this, false)" onkeydown="if(event.key==='Enter'||event.key===' '){event.preventDefault();checkAnswer(this,false);}">A. Finish your charting first — you are already behind and the CNA can handle it.</div>
+            <div class="checkpoint-option" role="button" tabindex="0" onclick="checkAnswer(this, false)" onkeydown="if(event.key==='Enter'||event.key===' '){event.preventDefault();checkAnswer(this,false);}">B. Tell the CNA to document it and you will check later if you have time.</div>
+            <div class="checkpoint-option" role="button" tabindex="0" onclick="checkAnswer(this, true)" onkeydown="if(event.key==='Enter'||event.key===' '){event.preventDefault();checkAnswer(this,true);}">C. Immediately assess the resident, document the situation, and adjust your other tasks accordingly.</div>
+            <div class="checkpoint-option" role="button" tabindex="0" onclick="checkAnswer(this, false)" onkeydown="if(event.key==='Enter'||event.key===' '){event.preventDefault();checkAnswer(this,false);}">D. Complain to your supervisor about being understaffed and wait for direction.</div>
           </div>
           <div class="checkpoint-feedback" id="checkpointFeedback"></div>
         </div>
@@ -2783,13 +2806,13 @@
 
       <!-- Navigation Hint -->
       <div class="nav-hint">
-        <span class="key-icon" id="prevBtn" onclick="prevSlide()">&#8592;</span>
+        <button class="key-icon" id="prevBtn" onclick="prevSlide()" aria-label="Previous slide" type="button">&#8592;</button>
         <span>to navigate</span>
-        <span class="key-icon" id="nextBtn" onclick="nextSlide()">&#8594;</span>
+        <button class="key-icon" id="nextBtn" onclick="nextSlide()" aria-label="Next slide" type="button">&#8594;</button>
       </div>
 
       <!-- Branding Logo -->
-      <img src="../SPOKES-Logo.png" alt="SPOKES" class="branding-logo">
+      <img src="../SPOKES-Logo.png" alt="" class="branding-logo" aria-hidden="true">
 
       <!-- Progress Bar -->
       <div class="progress-bar" id="progressBar" role="progressbar" aria-valuenow="0" aria-valuemin="0" aria-valuemax="100" aria-label="Lesson progress"></div>
@@ -2812,6 +2835,7 @@
     const progressBar = document.getElementById('progressBar');
 
     let currentIndex = 0;
+    let confettiTriggered = false;
     let sidebarCollapsed = false;
     const sidebarEl = document.querySelector('.sidebar');
     const sidebarToggleBtn = document.getElementById('sidebarToggle');
@@ -2834,6 +2858,7 @@
 
     function playClickSound() {
       if (!audioCtx) return;
+      if (audioCtx.state === 'suspended') audioCtx.resume();
       const oscillator = audioCtx.createOscillator();
       const gainNode = audioCtx.createGain();
       oscillator.connect(gainNode);
@@ -2848,6 +2873,7 @@
 
     function playSuccessSound() {
       if (!audioCtx) return;
+      if (audioCtx.state === 'suspended') audioCtx.resume();
       const notes = [523, 659, 784];
       notes.forEach((freq, i) => {
         setTimeout(() => {
@@ -2908,7 +2934,7 @@
           '<ul class="slide-list">';
 
         chapterSlides.forEach(s => {
-          html += '<li class="slide-item" data-slide="' + s.index + '">' + s.title + '</li>';
+          html += '<li class="slide-item" tabindex="0" role="button" data-slide="' + s.index + '">' + s.title + '</li>';
         });
 
         html += '</ul></li>';
@@ -2917,7 +2943,7 @@
       chapterListEl.innerHTML = html;
 
       document.querySelectorAll('.chapter-header').forEach(header => {
-        header.addEventListener('click', () => {
+        function activateChapter() {
           const chapterItem = header.parentElement;
           const wasExpanded = chapterItem.classList.contains('expanded');
           document.querySelectorAll('.chapter-item').forEach(item => item.classList.remove('expanded'));
@@ -2925,13 +2951,20 @@
           const chapter = chapterItem.dataset.chapter;
           const targetIndex = Array.from(slides).findIndex(slide => slide.dataset.chapter === chapter);
           if (targetIndex !== -1) showSlide(targetIndex);
+        }
+        header.addEventListener('click', activateChapter);
+        header.addEventListener('keydown', (e) => {
+          if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); activateChapter(); }
         });
       });
 
       document.querySelectorAll('.slide-item').forEach(item => {
-        item.addEventListener('click', (e) => {
-          e.stopPropagation();
+        function activateSlide() {
           showSlide(parseInt(item.dataset.slide));
+        }
+        item.addEventListener('click', (e) => { e.stopPropagation(); activateSlide(); });
+        item.addEventListener('keydown', (e) => {
+          if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); e.stopPropagation(); activateSlide(); }
         });
       });
     }
@@ -2969,13 +3002,14 @@
 
       // Handle branding logo visibility
       const brandingLogo = document.querySelector('.branding-logo');
-      if (slides[index].classList.contains('slide-title') || slides[index].classList.contains('slide-closing')) {
-        brandingLogo.style.display = 'none';
-      } else {
-        brandingLogo.style.display = 'block';
+      if (brandingLogo) {
+        brandingLogo.style.display =
+          (slides[index].classList.contains('slide-title') || slides[index].classList.contains('slide-closing'))
+          ? 'none' : 'block';
       }
 
-      if (slides[index].classList.contains('slide-closing')) {
+      if (slides[index].classList.contains('slide-closing') && !confettiTriggered) {
+        confettiTriggered = true;
         triggerConfetti();
         playSuccessSound();
       }
@@ -2983,6 +3017,7 @@
 
     function triggerConfetti() {
       const container = document.getElementById('confettiContainer');
+      if (!container) return;
       container.innerHTML = '';
       const colors = ['#37b550', '#007baf', '#d3b257', '#004071', '#FFFFFF'];
       for (let i = 0; i < 100; i++) {
@@ -3022,9 +3057,12 @@
     });
 
     // Touch/swipe support
-    let touchStartX = 0;
-    document.addEventListener('touchstart', (e) => { touchStartX = e.changedTouches[0].screenX; });
+    let touchStartX = null;
+    document.addEventListener('touchstart', (e) => {
+      touchStartX = sidebarEl.contains(e.target) ? null : e.changedTouches[0].screenX;
+    });
     document.addEventListener('touchend', (e) => {
+      if (touchStartX === null) return;
       const diff = touchStartX - e.changedTouches[0].screenX;
       if (Math.abs(diff) > 50) { diff > 0 ? nextSlide() : prevSlide(); }
     });
@@ -3075,15 +3113,17 @@
 
     // Checkpoint (Scenario slide)
     function checkAnswer(option, isCorrect) {
-      // Reset all options
-      document.querySelectorAll('.checkpoint-option').forEach(opt => {
+      // Reset options scoped to the current checkpoint
+      const container = option.closest('.checkpoint-options');
+      (container || document).querySelectorAll('.checkpoint-option').forEach(opt => {
         opt.classList.remove('correct', 'incorrect');
       });
       const feedback = document.getElementById('checkpointFeedback');
+      if (!feedback) return;
       option.classList.add(isCorrect ? 'correct' : 'incorrect');
       feedback.className = 'checkpoint-feedback show ' + (isCorrect ? 'correct' : 'incorrect');
       if (isCorrect) {
-        feedback.textContent = 'Correct! This is the accountable response. Maria immediately assessed the resident, documented the situation, and adjusted her priorities — demonstrating Persisting, Striving for Accuracy, and the C of Communication all at once.';
+        feedback.textContent = 'Correct! This is the accountable response. You immediately assessed the resident, documented the situation, and adjusted your priorities — demonstrating Persisting, Striving for Accuracy, and the C of Communication all at once.';
       } else {
         feedback.textContent = 'Not quite. Delaying or avoiding the situation puts the resident at risk and shifts accountability onto others. The accountable choice is to assess and document immediately, then communicate to your supervisor about workload challenges.';
       }
@@ -3113,6 +3153,23 @@
         front.style.position = 'relative';
         front.appendChild(hint);
       }
+    });
+
+    // Tab arrow-key navigation (ARIA tablist pattern)
+    document.querySelectorAll('[role="tablist"]').forEach(tablist => {
+      tablist.addEventListener('keydown', (e) => {
+        const tabs = Array.from(tablist.querySelectorAll('[role="tab"]'));
+        const idx = tabs.indexOf(document.activeElement);
+        if (idx === -1) return;
+        let next = -1;
+        if (e.key === 'ArrowRight') next = (idx + 1) % tabs.length;
+        else if (e.key === 'ArrowLeft') next = (idx - 1 + tabs.length) % tabs.length;
+        if (next !== -1) {
+          e.preventDefault();
+          tabs[next].focus();
+          tabs[next].click();
+        }
+      });
     });
 
     // Initialize
