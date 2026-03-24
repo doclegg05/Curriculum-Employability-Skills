@@ -24,7 +24,8 @@
       "Bash(mv \"Chapter 3 — P1 Preparing for the Interview.png\" \"ch3-preparation.png\")",
       "Bash(mv \"Chapter 4 — P2 Professional Presentation.png\" \"ch4-presentation.png\")",
       "Bash(mv \"Chapter 5 — P3 Interview Techniques & Follow-Up.png\" \"ch5-techniques.png\")",
-      "Bash(mv \"Chapter 6 — Evaluation Check Your Knowledge.png\" \"ch6-evaluation.png\")"
+      "Bash(mv \"Chapter 6 — Evaluation Check Your Knowledge.png\" \"ch6-evaluation.png\")",
+      "Bash(cd:*)"
     ]
   }
 }
