@@ -25,11 +25,14 @@ class CareerPDF(FPDF):
     def header_block(self):
         self.set_fill_color(*BLUE)
         self.rect(0, 0, 210, 22, "F")
-        # SPOKES logo centered
+        # SPOKES logo centered with white background
         if os.path.exists(LOGO_PATH):
             logo_h = 14
             logo_w = logo_h * (800 / 532)
             logo_x = (210 - logo_w) / 2
+            pad = 2
+            self.set_fill_color(*WHITE)
+            self.rect(logo_x - pad, 4 - pad, logo_w + pad * 2, logo_h + pad * 2, "F")
             self.image(LOGO_PATH, x=logo_x, y=4, h=logo_h)
         self.set_font("Helvetica", "B", 14)
         self.set_text_color(*WHITE)

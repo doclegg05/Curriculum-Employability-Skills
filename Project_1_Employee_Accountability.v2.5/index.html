@@ -462,12 +462,10 @@
     /* Card hover effects */
     .card,
     .area-card,
-    .danger-card,
     .matrix-cell { transition: transform 0.3s ease, box-shadow 0.3s ease; }
 
     .card:hover,
     .area-card:hover,
-    .danger-card:hover,
     .matrix-cell:hover {
       transform: translateY(-5px);
       box-shadow: 0 10px 30px rgba(0,0,0,0.15);
@@ -788,7 +786,7 @@
       display: flex;
       gap: 1.5rem;
       flex: 1;
-      align-items: center;
+      align-items: flex-start;
     }
 
     .danger-card {
@@ -797,10 +795,13 @@
       cursor: pointer;
       height: 200px;
       min-width: 110px;
+      position: relative;
     }
 
     .danger-card-inner {
-      position: relative;
+      position: absolute;
+      top: 0;
+      left: 0;
       width: 100%;
       height: 100%;
       transition: transform 0.6s;
@@ -1402,8 +1403,7 @@
 
     /* Blueprint: green-glow hover on cards */
     .card:hover,
-    .area-card:hover,
-    .danger-card:hover {
+    .area-card:hover {
       box-shadow: 0 8px 25px rgba(55,181,80,0.15);
       transform: translateY(-4px);
     }
@@ -3035,8 +3035,8 @@
       }
     }
 
-    function nextSlide() { showSlide(currentIndex + 1); }
-    function prevSlide() { showSlide(currentIndex - 1); }
+    function nextSlide() { showSlide(currentIndex + 1); document.activeElement?.blur(); }
+    function prevSlide() { showSlide(currentIndex - 1); document.activeElement?.blur(); }
 
     // Keyboard navigation
     document.addEventListener('keydown', (e) => {
@@ -3046,8 +3046,14 @@
       if (isFormField) return;
       if (e.defaultPrevented) return;
 
-      const isInteractive = target.closest('button, a, input, textarea, select, [role="button"], [role="tab"], .checkpoint-option, .accordion-header');
-      if (isInteractive && (e.key === 'ArrowRight' || e.key === 'ArrowLeft' || e.key === ' ')) {
+      // Suppress arrow keys only inside tablists (tabs need arrow navigation)
+      const inTablist = target.closest('[role="tablist"]');
+      if (inTablist && (e.key === 'ArrowRight' || e.key === 'ArrowLeft')) {
+        return;
+      }
+      // Suppress space on interactive elements so they activate instead of advancing slides
+      const isInteractive = target.closest('button, a, [role="button"], [role="tab"], .checkpoint-option, .accordion-header');
+      if (isInteractive && e.key === ' ') {
         return;
       }
 
