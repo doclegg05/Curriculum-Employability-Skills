@@ -2943,8 +2943,12 @@
       const isFormField = target && target.closest('input, textarea, select, [contenteditable="true"]');
       if (isFormField) return;
       if (e.defaultPrevented) return;
-      const isInteractive = target && target.closest('button, a, input, textarea, select, [role="button"], [role="tab"]');
-      if (isInteractive && (e.key === 'ArrowRight' || e.key === 'ArrowLeft' || e.key === ' ')) return;
+      // Only suppress arrow keys for elements that use them internally (tabs)
+      const usesArrowKeys = target && target.closest('[role="tab"]');
+      if (usesArrowKeys && (e.key === 'ArrowRight' || e.key === 'ArrowLeft')) return;
+      // Suppress space only on focusable interactive elements (buttons, links, etc.)
+      const isInteractive = target && target.closest('button, a, [role="button"], [role="tab"]');
+      if (isInteractive && e.key === ' ') return;
       if (e.key === 'ArrowRight') { e.preventDefault(); nextSlide(); }
       else if (e.key === 'ArrowLeft') { e.preventDefault(); prevSlide(); }
       else if (e.key === ' ') { e.preventDefault(); nextSlide(); }
