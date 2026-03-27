@@ -32,9 +32,9 @@ Build 18 interactive HTML lessons using the SPOKES Builder design system. Each l
 ## Lesson Inventory (18 total)
 
 ### Complete (3)
-1. Employee Accountability (`Project_1_Employee_Accountability.v2.5/index.html`)
-2. Time Management (`Project_2_Hilary's Project/index.html`)
-3. Interview Skills (`Project_3_Interview-Skills/index.html`)
+1. Employee Accountability (`lesson-employee-accountability/index.html`)
+2. Time Management (`lesson-time-management/index.html`)
+3. Interview Skills (`lesson-interview-skills/index.html`)
 
 ### Remaining (15)
 Topics TBD -- sourced from 6 content teams via content intake template.

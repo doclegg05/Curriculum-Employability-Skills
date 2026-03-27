@@ -33,7 +33,7 @@ No frameworks. No build tools. No npm. Everything is inline in the single HTML f
 | Python 3 | PDF generation scripts |
 | ReportLab (assumed) | PDF library for handout generation |
 
-Scripts: `generate_handout_*.py`, `generate_rubric.py` in Project_1 folder.
+Scripts: `generate_handout_*.py`, `generate_rubric.py` in lesson-employee-accountability folder.
 
 ## Infrastructure
 

@@ -24,7 +24,7 @@
       "description": "Master prioritization, scheduling, and daily planning strategies for workplace success.",
       "icon": "clock",
       "themeKey": "time",
-      "path": "Project_2_Hilary's Project/index.html",
+      "path": "lesson-time-management/index.html",
       "status": "complete",
       "variant": null,
       "fontPair": {
@@ -60,7 +60,7 @@
       "description": "Build confidence and master techniques for successful job interviews.",
       "icon": "briefcase",
       "themeKey": "interview",
-      "path": "Project_3_Interview-Skills/index.html",
+      "path": "lesson-interview-skills/index.html",
       "status": "complete",
       "variant": "variant-elegant",
       "fontPair": {
@@ -96,7 +96,7 @@
       "description": "Develop personal responsibility, goal-setting, and professional growth habits.",
       "icon": "checkCircle",
       "themeKey": "accountability",
-      "path": "Project_1_Employee_Accountability.v2.5/index.html",
+      "path": "lesson-employee-accountability/index.html",
       "status": "complete",
       "variant": null,
       "fontPair": {
