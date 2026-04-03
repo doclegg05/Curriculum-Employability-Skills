@@ -1,8 +1,8 @@
 # SPOKES Employability Skills Curriculum -- Project Plan
 
-**Date:** 2026-02-27 (last updated: 2026-03-09)
+**Date:** 2026-02-27 (last updated: 2026-04-03)
 **Goal:** Deliver 18 interactive HTML lessons built from the SPOKES Builder system
-**Current State:** 3 of 18 lessons complete and release-approved; awaiting source materials for lessons 4-6. Phase 1 target extended to June 15, 2026.
+**Current State:** 3 of 18 lessons release-approved; 2 additional lessons built and in QA (Communicating with the Public, Controlling Anger). Phase 1 target extended to June 15, 2026.
 
 ---
 
@@ -12,8 +12,9 @@
 | ---------------------------------------- | -------------------------------------------------------------- |
 | Total lessons required                   | 18                                                             |
 | Lessons complete (release-approved)      | 3 (Employee Accountability, Time Management, Interview Skills) |
-| Lessons remaining to build               | 15                                                             |
-| Phase 1 target                           | 6 lessons by June 15, 2026 (3 more needed)                     |
+| Lessons in QA                            | 2 (Communicating with the Public, Controlling Anger)           |
+| Lessons remaining to build               | 13                                                             |
+| Phase 1 target                           | 6 lessons by June 15, 2026 (1 more needed)                     |
 | Template variants needed                 | 3-4 (documented in registry, CSS not yet formalized)           |
 | Content teams delivering source material | 6                                                              |
 | Build format                             | Single self-contained index.html per lesson                    |
@@ -62,10 +63,9 @@
 
 ---
 
-### Task 1.5: Create Font Pairing Library — TODO
+### Task 1.5: Create Font Pairing Library — COMPLETE
 
-**Effort:** 3-4 hours
-**Status:** Not started. No `font-pairings.md` exists yet. Each lesson currently gets ad-hoc font proposals.
+**Completed:** 2026-04-02. Library created at `SPOKES Builder/font-pairings.md` with 20 curated pairings (18 available for remaining lessons).
 
 **Work items:**
 
@@ -90,7 +90,7 @@
 - [x] All 3 existing lessons pass the full verification checklist (release-approved 2026-03-01)
 - [ ] 3-4 template variants documented with CSS and rotation plan
 - [x] Content intake template created and ready for distribution
-- [ ] Font pairing library curated with 18+ options
+- [x] Font pairing library curated with 18+ options (completed 2026-04-02)
 - [x] All files organized in `SPOKES Builder/` directory
 - [x] Lesson registry (`lesson-registry.json`) tracking active with combinatorics fields
 - [x] Combinatorics design system documented in `AGENT_THEMING_GUIDELINES.md`

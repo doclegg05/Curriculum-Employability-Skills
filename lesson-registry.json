@@ -1,6 +1,6 @@
 {
   "version": "1.0.0",
-  "lastUpdated": "2026-03-24",
+  "lastUpdated": "2026-04-03",
   "rules": {
     "allowedVariants": [
       "variant-classic",
@@ -125,6 +125,78 @@
         "engagement": "pass"
       },
       "notes": "Release-approved 2026-03-01; see manual-runtime-qa-evidence-2026-03-01.md, ship-readiness-audit-2026-03-01.md, and release-closeout-addendum-2026-03-01.md."
+    },
+    {
+      "id": "lesson-communicating-with-the-public",
+      "title": "Communicating with the Public",
+      "description": "Master active listening, communication styles, congruent messaging, and self-advocacy skills for workplace and personal success.",
+      "icon": "messageCircle",
+      "themeKey": "communication",
+      "path": "lesson-communicating-with-the-public/index.html",
+      "status": "qa",
+      "variant": null,
+      "fontPair": {
+        "heading": "Crimson Pro",
+        "body": "Work Sans",
+        "approved": true
+      },
+      "colorSchema": {
+        "approved": true,
+        "approvalRef": "User approved 2026-04-02: blue-gold emphasis (--primary lead, --gold accents)"
+      },
+      "combinatorics": {
+        "texture": "dot-grid",
+        "colorLead": "blue-gold",
+        "effects": []
+      },
+      "interactions": {
+        "minimumRequired": 3,
+        "implemented": 8
+      },
+      "qualityGates": {
+        "accessibility": "pending",
+        "multimodal": "pending",
+        "wippea": "pass",
+        "brand": "pending",
+        "engagement": "pending"
+      },
+      "notes": "Build 2026-04-02. Font: Crimson Pro + Work Sans (CSS vars fixed 2026-04-03). 33 slides, 7 chapters, 8 interactive components (tabs, accordion, flip cards, matrix, prompt toggles, video grid, checkpoint, reveals). 8 videos embedded, 8+ handout links."
+    },
+    {
+      "id": "lesson-controlling-anger",
+      "title": "Controlling Anger",
+      "description": "Recognize anger triggers, practice healthy expression through the Embrace-Express-Work Through framework, and build coping strategies for the workplace.",
+      "icon": "flame",
+      "themeKey": "anger",
+      "path": "lesson-controlling-anger/index.html",
+      "status": "qa",
+      "variant": null,
+      "fontPair": {
+        "heading": "Vollkorn",
+        "body": "Fira Sans",
+        "approved": true
+      },
+      "colorSchema": {
+        "approved": true,
+        "approvalRef": "User approved 2026-04-02: mauve-green emphasis (--mauve lead, --accent for solutions)"
+      },
+      "combinatorics": {
+        "texture": "diagonal-lines",
+        "colorLead": "mauve-green",
+        "effects": []
+      },
+      "interactions": {
+        "minimumRequired": 3,
+        "implemented": 6
+      },
+      "qualityGates": {
+        "accessibility": "pending",
+        "multimodal": "pending",
+        "wippea": "pass",
+        "brand": "pending",
+        "engagement": "pending"
+      },
+      "notes": "Build 2026-04-02. Font: Vollkorn + Fira Sans (CSS vars fixed 2026-04-03). 31 slides, 7 chapters, 6 interactive components (tabs, spinner wheel, accordion, Jeopardy game, matrix, checkpoint). 4 videos embedded, 4 handout downloads."
     }
   ]
 }

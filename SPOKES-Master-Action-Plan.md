@@ -2,8 +2,8 @@
 
 Compiled from: 4 skill evaluations (design-system, accessibility, visual-design, project-planner), Gemini team review, and user direction.
 
-**Date:** 2026-02-27 (last updated: 2026-03-09)
-**Status:** Sprints 1-2 complete. Sprint 3 partially complete. Awaiting source materials for next lessons.
+**Date:** 2026-02-27 (last updated: 2026-04-03)
+**Status:** Sprints 1-2 complete. Sprint 3 partially complete. Two new lessons built (Communicating with the Public, Controlling Anger) — in QA.
 
 ---
 
@@ -100,12 +100,23 @@ Compiled from: 4 skill evaluations (design-system, accessibility, visual-design,
 | Task                                                                        | Issues Addressed | Status                                                                                                                     |
 | --------------------------------------------------------------------------- | ---------------- | -------------------------------------------------------------------------------------------------------------------------- |
 | Design and implement 3-4 template variants as documented CSS class systems. | H2               | **TODO** — variant names defined in registry but CSS not documented                                                        |
-| Curate a library of 18+ Google Font pairings.                               | Project plan     | **TODO** — no `font-pairings.md` exists                                                                                    |
+| Curate a library of 18+ Google Font pairings.                               | Project plan     | **DONE** — `SPOKES Builder/font-pairings.md` created 2026-04-02 with 20 pairings (18 available)                            |
 | Create `lesson-registry.json` manifest.                                     | M6               | **DONE** — registry active with variant, font, color, combinatorics, and gate tracking                                     |
 | Add new components to `components.md`.                                      | M7               | **DONE** — 6 advanced components added (glass card, stagger reveal, gradient divider, clip-path, magnetic button, counter) |
 | Document combinatorics design system.                                       | New              | **DONE** — added to `AGENT_THEMING_GUIDELINES.md`, `build-process.md`, `CLAUDE.md` (2026-03-09)                            |
 
-### Sprint 4-8: Production (15 Remaining Lessons)
+### Sprint 4: New Lesson Builds — IN PROGRESS
+
+Two lessons built 2026-04-02, font CSS variables fixed 2026-04-03:
+
+| Lesson | Slides | Interactions | Videos | Status |
+|--------|--------|-------------|--------|--------|
+| Communicating with the Public | 33 (7 ch) | 8 (tabs, accordion, flip cards, matrix, prompts, video grid, checkpoint, reveals) | 8 embedded | QA |
+| Controlling Anger | 31 (7 ch) | 6 (tabs, spinner wheel, accordion, Jeopardy, matrix, checkpoint) | 4 embedded | QA |
+
+Both use `--font-heading` / `--font-body` CSS variables. Quality gates pending formal pass.
+
+### Sprint 5-8: Production (13 Remaining Lessons)
 
 Build in batches of 3, with 2-3 lessons in parallel per batch. Each batch follows:
 
