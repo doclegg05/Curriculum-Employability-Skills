@@ -1318,7 +1318,7 @@
       .slide-section { background: linear-gradient(135deg, var(--primary), var(--accent)); }
 
       /* Title slide: top-banner */
-      .slide-title { background: var(--light); display: flex; flex-direction: column; }
+      .slide-title { background: var(--light); flex-direction: column; }
       .slide-title::before { content: 'SPOKES \2014  SKILLS FOR LIFE'; background: linear-gradient(90deg, var(--dark), var(--primary), var(--dark)); color: var(--gold); font-size: 0.75rem; letter-spacing: 3px; text-align: center; padding: 0.75rem; width: 100%; }
       .slide-title::after { content: ''; height: 4px; background: linear-gradient(90deg, var(--primary), var(--gold), var(--accent)); width: 100%; margin-top: auto; }
       .slide-title h1 { color: var(--dark); }
@@ -1471,7 +1471,7 @@
       .slide-section[data-chapter="1"],
       .slide-section[data-chapter="6"] {
         background: linear-gradient(180deg, var(--muted) 0%, var(--light) 100%);
-        display: flex; flex-direction: column; align-items: center; justify-content: center;
+        flex-direction: column; align-items: center; justify-content: center;
       }
       .slide-section[data-chapter="1"] h2,
       .slide-section[data-chapter="6"] h2 { color: var(--dark); }
@@ -1497,13 +1497,13 @@
       .slide-section[data-chapter="3"] .section-circle { border-color: rgba(255,255,255,0.3); background: rgba(0,0,0,0.15); }
 
       /* Chapter 4: framed-gold */
-      .slide-section[data-chapter="4"] { background: var(--royal); display: flex; align-items: center; justify-content: center; }
+      .slide-section[data-chapter="4"] { background: var(--royal); align-items: center; justify-content: center; }
       .slide-section[data-chapter="4"] h2 { border: 2px solid var(--gold); border-radius: 8px; padding: 1.5rem 2.5rem; color: var(--light); }
       .slide-section[data-chapter="4"] .chapter-label { color: var(--gold); }
       .slide-section[data-chapter="4"] .divider { background: var(--gold); }
 
       /* Chapter 5: split-panel */
-      .slide-section[data-chapter="5"] { display: flex; flex-direction: row; }
+      .slide-section[data-chapter="5"] { flex-direction: row; }
       .slide-section[data-chapter="5"]::before { content: ''; display: block; width: 40%; background: var(--dark); }
       .slide-section[data-chapter="5"]::after { content: ''; display: block; flex: 1; background: var(--muted); }
       .slide-section[data-chapter="5"] h2 { color: var(--dark); position: relative; z-index: 1; }

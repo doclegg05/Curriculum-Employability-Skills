@@ -638,7 +638,7 @@
 
 /* --- 2. framed-gold --- */
 /*
-   DIVIDER_SCOPE { background: var(--royal); display: flex; align-items: center; justify-content: center; }
+   DIVIDER_SCOPE { background: var(--royal); align-items: center; justify-content: center; }
    DIVIDER_SCOPE h2 { border: 2px solid var(--gold); border-radius: 8px; padding: 1.5rem 2.5rem; color: var(--light); }
    DIVIDER_SCOPE .chapter-label { color: var(--gold); }
    DIVIDER_SCOPE .divider { background: var(--gold); }
@@ -659,7 +659,7 @@
 
 /* --- 4. split-panel --- */
 /*
-   DIVIDER_SCOPE { display: flex; flex-direction: row; }
+   DIVIDER_SCOPE { flex-direction: row; }
    DIVIDER_SCOPE::before { content: ''; display: block; width: 40%; background: var(--dark); }
    DIVIDER_SCOPE::after { content: ''; display: block; flex: 1; background: var(--muted); }
    DIVIDER_SCOPE h2 { color: var(--dark); position: relative; z-index: 1; }
@@ -670,7 +670,7 @@
 
 /* --- 5. centered-badge --- */
 /*
-   DIVIDER_SCOPE { background: linear-gradient(180deg, var(--muted) 0%, var(--light) 100%); display: flex; flex-direction: column; align-items: center; justify-content: center; }
+   DIVIDER_SCOPE { background: linear-gradient(180deg, var(--muted) 0%, var(--light) 100%); flex-direction: column; align-items: center; justify-content: center; }
    DIVIDER_SCOPE h2 { color: var(--dark); }
    DIVIDER_SCOPE .chapter-label { color: var(--primary); }
    DIVIDER_SCOPE .divider { background: linear-gradient(90deg, transparent, var(--gold), transparent); }
@@ -694,7 +694,7 @@
 
 /* --- 2. split-hero --- */
 /*
-   .slide-title { display: flex; flex-direction: row; align-items: stretch; text-align: left; background: none; }
+   .slide-title { flex-direction: row; align-items: stretch; text-align: left; background: none; }
    .slide-title::before { content: ''; width: 45%; background: var(--royal); display: block; }
    .slide-title::after { content: ''; flex: 1; background: linear-gradient(135deg, var(--primary), var(--dark)); display: block; }
    .slide-title h1, .slide-title .subtitle, .slide-title .logo, .slide-title .copyright { position: absolute; left: 3rem; z-index: 1; }
@@ -717,7 +717,7 @@
 
 /* --- 4. bottom-anchored --- */
 /*
-   .slide-title { background: linear-gradient(180deg, var(--muted) 0%, var(--light) 60%, var(--light) 60%); display: flex; flex-direction: column; }
+   .slide-title { background: linear-gradient(180deg, var(--muted) 0%, var(--light) 60%, var(--light) 60%); flex-direction: column; }
    .slide-title h1 { color: var(--dark); }
    .slide-title .subtitle { color: var(--gray); }
    .slide-title .copyright { background: var(--dark); color: rgba(255,255,255,0.6); padding: 0.75rem; margin-top: auto; width: 100%; text-align: center; }
@@ -751,7 +751,7 @@
 
 /* --- 8. top-banner --- */
 /*
-   .slide-title { background: var(--light); display: flex; flex-direction: column; }
+   .slide-title { background: var(--light); flex-direction: column; }
    .slide-title::before { content: 'SPOKES \2014  SKILLS FOR LIFE'; background: linear-gradient(90deg, var(--dark), var(--primary), var(--dark)); color: var(--gold); font-size: 0.75rem; letter-spacing: 3px; text-align: center; padding: 0.75rem; width: 100%; }
    .slide-title::after { content: ''; height: 4px; background: linear-gradient(90deg, var(--primary), var(--gold), var(--accent)); width: 100%; margin-top: auto; }
    .slide-title h1 { color: var(--dark); }
@@ -786,6 +786,6 @@
 
 /* --- 12. horizon-line --- */
 /*
-   .slide-title { background: linear-gradient(180deg, var(--royal) 0%, var(--dark) 50%, var(--dark) 50%, var(--primary) 100%); display: flex; flex-direction: column; align-items: center; justify-content: center; }
+   .slide-title { background: linear-gradient(180deg, var(--royal) 0%, var(--dark) 50%, var(--dark) 50%, var(--primary) 100%); flex-direction: column; align-items: center; justify-content: center; }
    .slide-title .divider { width: 200px; height: 3px; background: linear-gradient(90deg, transparent, var(--gold), transparent); margin: 1rem auto; }
 */
