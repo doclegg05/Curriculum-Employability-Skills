@@ -1657,14 +1657,29 @@
       color: var(--light);
     }
 
-    .theme-dark .card,
-    .theme-dark .smart-content,
-    .theme-dark .matrix-cell {
-      background: rgba(237,243,247,0.08);
-      border-color: rgba(255,255,255,0.1);
+    /* Specificity 0,3,0 to beat card style overrides at 0,2,0 */
+    .theme-dark [data-chapter] .card,
+    .theme-dark [data-chapter] .smart-content,
+    .theme-dark [data-chapter] .matrix-cell {
+      background: rgba(237,243,247,0.10);
+      border-color: rgba(255,255,255,0.15);
+      backdrop-filter: blur(8px);
     }
 
-    .theme-dark .activity-box {
+    .theme-dark [data-chapter] .card h4,
+    .theme-dark [data-chapter] .card p,
+    .theme-dark [data-chapter] .smart-content h4,
+    .theme-dark [data-chapter] .smart-content p {
+      color: var(--light);
+    }
+
+    .theme-dark [data-chapter] .takeaway-num {
+      background: rgba(255,255,255,0.15);
+      border: 1px solid rgba(255,255,255,0.3);
+      color: var(--light);
+    }
+
+    .theme-dark [data-chapter] .activity-box {
       background: rgba(211,178,87,0.08);
       border-color: rgba(211,178,87,0.3);
     }
