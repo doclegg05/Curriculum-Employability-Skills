@@ -37,6 +37,7 @@ If documents conflict, use this precedence:
    - Theme variation should come from combinatorial design: template variants, CSS background textures, typography, accent emphasis, component composition, and optional per-lesson effects — all within the palette.
    - All color usage must follow the contrast and anti-clash guardrails in `SPOKES Builder/brand-palette.md`.
    - Combinatorial design choices are documented in `SPOKES Builder/AGENT_THEMING_GUIDELINES.md` and tracked in the `combinatorics` field of `lesson-registry.json`.
+   - Theme variation is defined in `SPOKES Builder/theme-registry.json` and applied via `theme-library.css`. Agents do not make design decisions.
 6. Agent concurrency:
    - 1 to 8 agents depending on sprint scope.
 7. Capacity:
@@ -66,8 +67,9 @@ If documents conflict, use this precedence:
      - Mobile: active slide must be fully visible on one screen; sidebar may be collapsed by default and accessed via toggle/drawer.
    - At all three viewports: no horizontal scrolling/panning is allowed.
 15. Color schema approval:
-   - Each lesson must have a final color schema approved by the user before build finalization/release.
-   - Agents must not self-approve final color role combinations.
+   - Theme packages are pre-approved in bulk when the user signs off on the complete theme registry. No per-lesson color or font approval gates at build time.
+16. Theme registry:
+   - Theme registry (`SPOKES Builder/theme-registry.json`) is the single source of truth for per-lesson design choices. Agents read the assigned package and apply it without modification.
 
 ---
 

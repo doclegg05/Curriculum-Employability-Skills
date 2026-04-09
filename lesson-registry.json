@@ -20,6 +20,7 @@
   "lessons": [
     {
       "id": "lesson-time-management",
+      "themePackage": "lesson-time-management",
       "title": "Time Management",
       "description": "Master prioritization, scheduling, and daily planning strategies for workplace success.",
       "icon": "clock",
@@ -56,6 +57,7 @@
     },
     {
       "id": "lesson-interview-skills",
+      "themePackage": "lesson-interview-skills",
       "title": "Interview Skills",
       "description": "Build confidence and master techniques for successful job interviews.",
       "icon": "briefcase",
@@ -92,6 +94,7 @@
     },
     {
       "id": "lesson-employee-accountability",
+      "themePackage": "lesson-employee-accountability",
       "title": "Employee Accountability",
       "description": "Develop personal responsibility, goal-setting, and professional growth habits.",
       "icon": "checkCircle",
@@ -128,6 +131,7 @@
     },
     {
       "id": "lesson-communicating-with-the-public",
+      "themePackage": "lesson-communicating-with-the-public",
       "title": "Communicating with the Public",
       "description": "Master active listening, communication styles, congruent messaging, and self-advocacy skills for workplace and personal success.",
       "icon": "messageCircle",
@@ -164,6 +168,7 @@
     },
     {
       "id": "lesson-controlling-anger",
+      "themePackage": "lesson-controlling-anger",
       "title": "Controlling Anger",
       "description": "Recognize anger triggers, practice healthy expression through the Embrace-Express-Work Through framework, and build coping strategies for the workplace.",
       "icon": "flame",

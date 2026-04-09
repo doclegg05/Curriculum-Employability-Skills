@@ -23,17 +23,18 @@ These files are in this directory (`SPOKES Builder/`):
 
 ## Design Philosophy
 
-Each SPOKES lesson must be **visually distinct** from every other lesson while staying within the brand. Think of it like PowerPoint Slide Masters — the same guardrails, but no two presentations look alike.
+Each SPOKES lesson has a unique visual identity created by the **two-layer theme system**:
 
-Visual identity comes from **Combinatorial Design**:
+- **Layer 1 (Lesson Identity):** Color lead, sidebar color, background texture, title slide design, and font pairing stay constant across the entire lesson.
+- **Layer 2 (Chapter Variation):** Card styles, section divider styles, lead components, and secondary accents rotate between chapters for visual freshness.
 
-1. **Template variant selection** (3-4 distinct layout styles)
-2. **Combinatorics (Backgrounds & Textures)** (Adding subtle CSS textures to the `.main` background via CSS overrides)
-3. **Google Font pairings** (unique heading + body fonts per lesson)
-4. **Accent emphasis shifts** (which of the 7 core brand colors gets featured most)
-5. **Component selection** (different mix of cards-grid, takeaways, split-layout, etc.)
+Theme packages are pre-defined in `theme-registry.json` and pre-approved in bulk. The agent applies the assigned package — no design proposals or approval loops at build time.
 
-**NEVER introduce colors outside the 11 approved brand colors (see `brand-palette.md`).** See `AGENT_THEMING_GUIDELINES.md` for the full palette.
+**Reference files:**
+- `theme-registry.json` — Per-lesson theme assignments
+- `theme-library.css` — All reusable CSS snippets
+- `brand-palette.md` — Canonical 11-color system
+- `font-pairings.md` — Pre-curated font library
 
 ## Build Process (10 Steps)
 
@@ -64,23 +65,28 @@ Additional Presentation chapters (P4, P5, etc.) may be added if the lesson has m
 
 **Target: 25-35 slides total.**
 
-### Step 3: Select Template Variant & Font Pairing
+### Step 3: Read Theme Package
 
-Before building:
-
-1. Review existing lessons to see which template variants are in use
-2. Select a variant that creates visual contrast with adjacent lessons
-3. **Propose a Google Font pairing to the user for approval**
-4. Do not proceed until the font pairing is approved
+1. Look up the lesson in `theme-registry.json`
+2. Read Layer 1 properties: colorLead, sidebarColor, backgroundTexture, titleSlide, fontPairing
+3. Read Layer 2 chapterStyles: per-chapter divider, cards, leadComponent, secondaryAccent
+4. If the lesson is not in the registry, STOP — do not build without a theme package
 
 ### Step 4: Copy Template & Apply Theme
 
 1. Copy `template.html` to the new project directory as `index.html`
-2. Add lesson-specific Google Font `<link>` tags in `<head>`
-3. Add a `<style id="theme-override">` block **AFTER** the main CSS block with:
+2. Add lesson-specific Google Font `<link>` tags in `<head>` (look up import URL in `font-pairings.md`)
+3. Generate a `<style id="theme-override">` block AFTER the main CSS block by assembling snippets from `theme-library.css`:
    - Font family overrides
-   - Combinatorial design overrides (Subtle CSS pattern backgrounds on `.main`, or card shadow/border variations)
-   - Video placeholder CSS (from `AGENT_THEMING_GUIDELINES.md`)
+   - Background texture for the assigned `backgroundTexture`
+   - Color lead overrides for the assigned `colorLead`
+   - Sidebar color override if `sidebarColor` is "royal"
+   - Dark theme inversion if `backgroundTexture` is "dark-royal" (add `class="theme-dark"` to `.main`)
+   - Title slide design CSS for the assigned `titleSlide`
+   - Per-chapter card style CSS scoped to `[data-chapter="N"]` (replace SCOPE prefix)
+   - Per-chapter section divider CSS scoped to `.slide-section[data-chapter="N"]` (replace DIVIDER_SCOPE prefix)
+   - Per-chapter secondary accent overrides
+   - Video placeholder CSS
 
 ### Step 5: Fill in Lesson Metadata
 

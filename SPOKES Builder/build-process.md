@@ -81,19 +81,30 @@ Additional Presentation chapters (P4, P5, etc.) may be added with sequential dat
 
 **Total target: 25-35 slides**
 
-### Phase 3: Design — Template Variant & Font Pairing
+### Phase 3: Apply Theme Package
 
-**Before building any slides:**
+#### Step A: Read Theme Package
 
-1. **Review existing lessons** — see which template variants and component patterns are already in use
-2. **Select a template variant** that creates visual contrast with neighboring lessons
-3. **Plan Combinatorics (Textures & CSS)** — identify if the background should use a subtle CSS texture (like a dot grid via `radial-gradient`) or if cards need custom `box-shadow` styles. Write this CSS only in the `<style id="theme-override">` block.
-4. **Plan lesson color emphasis mix** — vary major/minor color roles for differentiation using only the canonical 11-color palette
-5. **Validate color pairings** — enforce WCAG contrast and anti-clash guardrails from `brand-palette.md`
-6. **Propose final color schema** to the user and get explicit approval before proceeding
-7. **Propose a Google Font pairing** to the user (heading font + body font)
-8. **Wait for user approval** on the font pairing before proceeding
-9. **Plan component mix** — choose a deliberately different sequence of components than other lessons
+1. Look up the lesson in `theme-registry.json`
+2. Read Layer 1 properties: colorLead, sidebarColor, backgroundTexture, titleSlide, fontPairing
+3. Read Layer 2 chapterStyles: per-chapter divider, cards, leadComponent, secondaryAccent
+4. If the lesson is not in the registry, STOP — do not build without a theme package
+
+#### Step B: Copy Template & Apply Theme
+
+1. Copy `template.html` to the new project directory as `index.html`
+2. Add lesson-specific Google Font `<link>` tags in `<head>` (look up import URL in `font-pairings.md`)
+3. Generate a `<style id="theme-override">` block AFTER the main CSS block by assembling snippets from `theme-library.css`:
+   - Font family overrides
+   - Background texture for the assigned `backgroundTexture`
+   - Color lead overrides for the assigned `colorLead`
+   - Sidebar color override if `sidebarColor` is "royal"
+   - Dark theme inversion if `backgroundTexture` is "dark-royal" (add `class="theme-dark"` to `.main`)
+   - Title slide design CSS for the assigned `titleSlide`
+   - Per-chapter card style CSS scoped to `[data-chapter="N"]` (replace SCOPE prefix)
+   - Per-chapter section divider CSS scoped to `.slide-section[data-chapter="N"]` (replace DIVIDER_SCOPE prefix)
+   - Per-chapter secondary accent overrides
+   - Video placeholder CSS
 
 ### Phase 4: Select Components for Each Slide
 
@@ -168,6 +179,8 @@ Is there a simple list?
 - Opacity variations of brand colors are OK (e.g., `rgba(0, 123, 175, 0.1)`)
 - Consult `brand-palette.md` for the full prohibited colors list and contrast reference
 - No colors outside the 11-color palette should exist
+- Verify theme-override block was generated from theme-library.css — no custom CSS outside the library
+- Verify card styles change between chapters (check [data-chapter] scoping)
 
 ### Phase 7: Set Up Project Structure
 
