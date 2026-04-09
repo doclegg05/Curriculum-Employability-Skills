@@ -1,0 +1,261 @@
+{
+  "version": "1.0.0",
+  "description": "SPOKES two-layer theme system registry. Each lesson has Layer 1 (lesson identity) and Layer 2 (chapter variation) configuration. Agents look up the assigned package and apply it — no guessing, no approval loop.",
+  "lessons": {
+    "lesson-time-management": {
+      "colorLead": "blue",
+      "sidebarColor": "dark",
+      "backgroundTexture": "dot-grid",
+      "titleSlide": "centered-gradient",
+      "fontPairing": "dm-serif-display-outfit",
+      "chapterStyles": {
+        "W": {
+          "divider": "gradient-sweep",
+          "cards": "left-border",
+          "leadComponent": "takeaways",
+          "secondaryAccent": "gold"
+        },
+        "I": {
+          "divider": "centered-badge",
+          "cards": "shadow-float",
+          "leadComponent": "split-layout",
+          "secondaryAccent": "accent"
+        },
+        "P1": {
+          "divider": "bold-full-bleed",
+          "cards": "left-border",
+          "leadComponent": "smart-stack",
+          "secondaryAccent": "gold"
+        },
+        "P2": {
+          "divider": "framed-gold",
+          "cards": "pill",
+          "leadComponent": "cards-grid",
+          "secondaryAccent": "accent"
+        },
+        "P3": {
+          "divider": "split-panel",
+          "cards": "shadow-float",
+          "leadComponent": "dangers-grid",
+          "secondaryAccent": "gold"
+        },
+        "E": {
+          "divider": "centered-badge",
+          "cards": "left-border",
+          "leadComponent": "takeaways",
+          "secondaryAccent": "accent"
+        },
+        "A": {
+          "divider": "gradient-sweep",
+          "cards": "pill",
+          "leadComponent": "content-list",
+          "secondaryAccent": "gold"
+        }
+      }
+    },
+    "lesson-interview-skills": {
+      "colorLead": "royal",
+      "sidebarColor": "royal",
+      "backgroundTexture": "diagonal",
+      "titleSlide": "split-hero",
+      "fontPairing": "playfair-display-inter",
+      "chapterStyles": {
+        "W": {
+          "divider": "framed-gold",
+          "cards": "outlined",
+          "leadComponent": "split-layout",
+          "secondaryAccent": "gold"
+        },
+        "I": {
+          "divider": "centered-badge",
+          "cards": "sharp-border",
+          "leadComponent": "cards-grid",
+          "secondaryAccent": "primary"
+        },
+        "P1": {
+          "divider": "gradient-sweep",
+          "cards": "outlined",
+          "leadComponent": "takeaways",
+          "secondaryAccent": "gold"
+        },
+        "P2": {
+          "divider": "bold-full-bleed",
+          "cards": "layered",
+          "leadComponent": "smart-stack",
+          "secondaryAccent": "primary"
+        },
+        "P3": {
+          "divider": "split-panel",
+          "cards": "sharp-border",
+          "leadComponent": "dangers-grid",
+          "secondaryAccent": "gold"
+        },
+        "E": {
+          "divider": "framed-gold",
+          "cards": "outlined",
+          "leadComponent": "takeaways",
+          "secondaryAccent": "primary"
+        },
+        "A": {
+          "divider": "centered-badge",
+          "cards": "layered",
+          "leadComponent": "content-list",
+          "secondaryAccent": "gold"
+        }
+      }
+    },
+    "lesson-employee-accountability": {
+      "colorLead": "green",
+      "sidebarColor": "dark",
+      "backgroundTexture": "soft-gradient",
+      "titleSlide": "bottom-anchored",
+      "fontPairing": "merriweather-source-sans-3",
+      "chapterStyles": {
+        "W": {
+          "divider": "gradient-sweep",
+          "cards": "pill",
+          "leadComponent": "takeaways",
+          "secondaryAccent": "gold"
+        },
+        "I": {
+          "divider": "bold-full-bleed",
+          "cards": "shadow-float",
+          "leadComponent": "cards-grid",
+          "secondaryAccent": "primary"
+        },
+        "P1": {
+          "divider": "centered-badge",
+          "cards": "pill",
+          "leadComponent": "smart-stack",
+          "secondaryAccent": "gold"
+        },
+        "P2": {
+          "divider": "gradient-sweep",
+          "cards": "gradient-fill",
+          "leadComponent": "areas-grid",
+          "secondaryAccent": "primary"
+        },
+        "P3": {
+          "divider": "split-panel",
+          "cards": "shadow-float",
+          "leadComponent": "dangers-grid",
+          "secondaryAccent": "gold"
+        },
+        "E": {
+          "divider": "framed-gold",
+          "cards": "pill",
+          "leadComponent": "takeaways",
+          "secondaryAccent": "primary"
+        },
+        "A": {
+          "divider": "centered-badge",
+          "cards": "gradient-fill",
+          "leadComponent": "content-list",
+          "secondaryAccent": "gold"
+        }
+      }
+    },
+    "lesson-communicating-with-the-public": {
+      "colorLead": "dual-blue-green",
+      "sidebarColor": "dark",
+      "backgroundTexture": "crosshatch",
+      "titleSlide": "top-banner",
+      "fontPairing": "crimson-pro-work-sans",
+      "chapterStyles": {
+        "W": {
+          "divider": "centered-badge",
+          "cards": "shadow-float",
+          "leadComponent": "split-layout",
+          "secondaryAccent": "gold"
+        },
+        "I": {
+          "divider": "gradient-sweep",
+          "cards": "left-border",
+          "leadComponent": "cards-grid",
+          "secondaryAccent": "mauve"
+        },
+        "P1": {
+          "divider": "bold-full-bleed",
+          "cards": "shadow-float",
+          "leadComponent": "takeaways",
+          "secondaryAccent": "gold"
+        },
+        "P2": {
+          "divider": "framed-gold",
+          "cards": "layered",
+          "leadComponent": "areas-grid",
+          "secondaryAccent": "mauve"
+        },
+        "P3": {
+          "divider": "split-panel",
+          "cards": "left-border",
+          "leadComponent": "dangers-grid",
+          "secondaryAccent": "gold"
+        },
+        "E": {
+          "divider": "centered-badge",
+          "cards": "layered",
+          "leadComponent": "takeaways",
+          "secondaryAccent": "mauve"
+        },
+        "A": {
+          "divider": "gradient-sweep",
+          "cards": "shadow-float",
+          "leadComponent": "content-list",
+          "secondaryAccent": "gold"
+        }
+      }
+    },
+    "lesson-controlling-anger": {
+      "colorLead": "mauve",
+      "sidebarColor": "royal",
+      "backgroundTexture": "dark-royal",
+      "titleSlide": "framed-center",
+      "fontPairing": "vollkorn-fira-sans",
+      "chapterStyles": {
+        "W": {
+          "divider": "framed-gold",
+          "cards": "glass",
+          "leadComponent": "split-layout",
+          "secondaryAccent": "gold"
+        },
+        "I": {
+          "divider": "bold-full-bleed",
+          "cards": "outlined",
+          "leadComponent": "cards-grid",
+          "secondaryAccent": "primary"
+        },
+        "P1": {
+          "divider": "centered-badge",
+          "cards": "glass",
+          "leadComponent": "dangers-grid",
+          "secondaryAccent": "gold"
+        },
+        "P2": {
+          "divider": "gradient-sweep",
+          "cards": "gradient-fill",
+          "leadComponent": "smart-stack",
+          "secondaryAccent": "accent"
+        },
+        "P3": {
+          "divider": "split-panel",
+          "cards": "outlined",
+          "leadComponent": "areas-grid",
+          "secondaryAccent": "gold"
+        },
+        "E": {
+          "divider": "framed-gold",
+          "cards": "glass",
+          "leadComponent": "takeaways",
+          "secondaryAccent": "primary"
+        },
+        "A": {
+          "divider": "centered-badge",
+          "cards": "gradient-fill",
+          "leadComponent": "content-list",
+          "secondaryAccent": "accent"
+        }
+      }
+    }
+  }
+}
