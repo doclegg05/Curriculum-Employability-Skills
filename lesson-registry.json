@@ -1,6 +1,6 @@
 {
   "version": "1.0.0",
-  "lastUpdated": "2026-04-03",
+  "lastUpdated": "2026-04-09",
   "rules": {
     "allowedVariants": [
       "variant-classic",
@@ -29,17 +29,17 @@
       "status": "complete",
       "variant": null,
       "fontPair": {
-        "heading": null,
-        "body": null,
-        "approved": false
+        "heading": "DM Serif Display",
+        "body": "Outfit",
+        "approved": true
       },
       "colorSchema": {
-        "approved": false,
-        "approvalRef": null
+        "approved": true,
+        "approvalRef": "Two-layer theme retrofit 2026-04-09: blue lead, dot-grid, centered-gradient title"
       },
       "combinatorics": {
-        "texture": null,
-        "colorLead": null,
+        "texture": "dot-grid",
+        "colorLead": "blue",
         "effects": []
       },
       "interactions": {
@@ -75,9 +75,9 @@
         "approvalRef": "release-closeout-addendum-2026-03-01.md"
       },
       "combinatorics": {
-        "texture": "pinstripe",
-        "colorLead": "mauve-gold",
-        "effects": ["boardroom-theme"]
+        "texture": "diagonal",
+        "colorLead": "royal",
+        "effects": []
       },
       "interactions": {
         "minimumRequired": 3,
@@ -103,17 +103,17 @@
       "status": "complete",
       "variant": null,
       "fontPair": {
-        "heading": null,
-        "body": null,
-        "approved": false
+        "heading": "Merriweather",
+        "body": "Source Sans 3",
+        "approved": true
       },
       "colorSchema": {
-        "approved": false,
-        "approvalRef": null
+        "approved": true,
+        "approvalRef": "Two-layer theme retrofit 2026-04-09: green lead, soft-gradient, bottom-anchored title"
       },
       "combinatorics": {
-        "texture": null,
-        "colorLead": null,
+        "texture": "soft-gradient",
+        "colorLead": "green",
         "effects": []
       },
       "interactions": {
@@ -127,7 +127,7 @@
         "brand": "pass",
         "engagement": "pass"
       },
-      "notes": "Release-approved 2026-03-01; see manual-runtime-qa-evidence-2026-03-01.md, ship-readiness-audit-2026-03-01.md, and release-closeout-addendum-2026-03-01.md."
+      "notes": "Release-approved 2026-03-01. Two-layer theme retrofit 2026-04-09: Merriweather + Source Sans 3, green lead, soft-gradient, bottom-anchored title."
     },
     {
       "id": "lesson-communicating-with-the-public",
@@ -149,8 +149,8 @@
         "approvalRef": "User approved 2026-04-02: blue-gold emphasis (--primary lead, --gold accents)"
       },
       "combinatorics": {
-        "texture": "dot-grid",
-        "colorLead": "blue-gold",
+        "texture": "crosshatch",
+        "colorLead": "dual-blue-green",
         "effects": []
       },
       "interactions": {
@@ -186,9 +186,9 @@
         "approvalRef": "User approved 2026-04-02: mauve-green emphasis (--mauve lead, --accent for solutions)"
       },
       "combinatorics": {
-        "texture": "diagonal-lines",
-        "colorLead": "mauve-green",
-        "effects": []
+        "texture": "dark-royal",
+        "colorLead": "mauve",
+        "effects": ["theme-dark"]
       },
       "interactions": {
         "minimumRequired": 3,
@@ -202,6 +202,43 @@
         "engagement": "pending"
       },
       "notes": "Build 2026-04-02. Font: Vollkorn + Fira Sans (CSS vars fixed 2026-04-03). 31 slides, 7 chapters, 6 interactive components (tabs, spinner wheel, accordion, Jeopardy game, matrix, checkpoint). 4 videos embedded, 4 handout downloads."
+    },
+    {
+      "id": "lesson-problem-solving-and-decision-making",
+      "themePackage": "lesson-problem-solving-and-decision-making",
+      "title": "Problem Solving & Decision Making",
+      "description": "Apply structured problem-solving frameworks, critical thinking strategies, and group decision-making techniques for workplace success.",
+      "icon": "lightbulb",
+      "themeKey": "problemSolving",
+      "path": "lesson-problem-solving-and-decision-making/index.html",
+      "status": "qa",
+      "variant": null,
+      "fontPair": {
+        "heading": "Bitter",
+        "body": "Raleway",
+        "approved": true
+      },
+      "colorSchema": {
+        "approved": true,
+        "approvalRef": "User approved 2026-04-09: dual-gold-green lead, plain texture, offset-left title"
+      },
+      "combinatorics": {
+        "texture": "plain",
+        "colorLead": "dual-gold-green",
+        "effects": []
+      },
+      "interactions": {
+        "minimumRequired": 3,
+        "implemented": 6
+      },
+      "qualityGates": {
+        "accessibility": "pending",
+        "multimodal": "pending",
+        "wippea": "pass",
+        "brand": "pending",
+        "engagement": "pending"
+      },
+      "notes": "Build 2026-04-02. Theme retrofit 2026-04-09. Font: Bitter + Raleway. 7 chapters, 6 interactive components (tabs, accordion, quiz reveal, ranking reveal, scenario cards, checkpoint). 4 videos embedded, 6+ handout downloads."
     }
   ]
 }
