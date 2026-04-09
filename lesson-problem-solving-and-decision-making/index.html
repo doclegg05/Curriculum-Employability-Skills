@@ -1,0 +1,3161 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Bitter:wght@400;600;700&family=Raleway:wght@400;500;600&display=swap" rel="stylesheet" />
+  <title>Problem-Solving &amp; Decision-Making &mdash; SPOKES</title>
+  <style>
+    /* ================================================================
+       SPOKES DESIGN SYSTEM — DO NOT MODIFY THIS CSS
+       This entire <style> block is the SPOKES brand standard.
+       Copy it verbatim into every new lesson.
+       ================================================================ */
+
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+
+    :root {
+      --primary: #007baf;
+      --accent: #37b550;
+      --dark: #004071;
+      --light: #ffffff;
+      --muted: #edf3f7;
+      --gray: #60636b;
+      --gold: #d3b257;
+      --royal: #00133f;
+      --mauve: #a7253f;
+      --offwhite: #d1d3d4;
+      --muted-gold: #ad8806;
+      --font-heading: "Vollkorn", serif;
+      --font-body: "Fira Sans", sans-serif;
+    }
+
+    body {
+      font-family: var(--font-body);
+      background: var(--dark);
+      color: var(--dark);
+      overflow: hidden;
+      height: 100vh;
+    }
+
+    /* Layout */
+    .container {
+      display: flex;
+      height: 100vh;
+      width: 100%;
+      min-width: 0;
+      overflow: hidden;
+    }
+
+    /* Sidebar */
+    .sidebar {
+      width: 280px;
+      background: var(--dark);
+      padding: 2rem 1.5rem;
+      display: flex;
+      flex-direction: column;
+      overflow-y: auto;
+      transition: margin-left 0.3s ease, opacity 0.3s ease;
+      flex-shrink: 0;
+    }
+
+    .sidebar.collapsed {
+      margin-left: -280px;
+    }
+
+    .sidebar-toggle {
+      position: absolute;
+      top: 1rem;
+      left: 1rem;
+      z-index: 300;
+      background: var(--dark);
+      color: var(--light);
+      border: none;
+      width: 36px;
+      height: 36px;
+      border-radius: 8px;
+      cursor: pointer;
+      font-size: 1.1rem;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      transition: background 0.2s ease, transform 0.2s ease;
+      box-shadow: 0 2px 8px rgba(0, 0, 0, 0.15);
+    }
+
+    .sidebar-toggle:hover {
+      background: var(--primary);
+      transform: scale(1.05);
+    }
+
+    .sidebar-toggle:active {
+      transform: scale(0.95);
+    }
+
+    .sidebar-title {
+      color: var(--gold);
+      font-size: 0.875rem;
+      text-transform: uppercase;
+      letter-spacing: 2px;
+      margin-bottom: 2rem;
+      padding-bottom: 1rem;
+      border-bottom: 2px solid rgba(255, 255, 255, 0.1);
+    }
+
+    .chapter-list {
+      list-style: none;
+      flex: 1;
+    }
+
+    .chapter-item {
+      margin-bottom: 0.25rem;
+    }
+
+    .chapter-header {
+      padding: 0.75rem 1rem;
+      border-radius: 8px;
+      cursor: pointer;
+      color: rgba(255, 255, 255, 0.7);
+      font-size: 0.95rem;
+      transition: all 0.3s ease;
+      border-left: 3px solid transparent;
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+    }
+
+    .chapter-header:hover {
+      background: rgba(255, 255, 255, 0.1);
+      color: var(--light);
+    }
+
+    .chapter-item.active > .chapter-header {
+      background: rgba(0, 123, 175, 0.25);
+      color: var(--light);
+      border-left-color: var(--gold);
+    }
+
+    .chapter-arrow {
+      font-size: 0.7rem;
+      transition: transform 0.3s ease;
+    }
+
+    .chapter-item.expanded .chapter-arrow {
+      transform: rotate(90deg);
+    }
+
+    .wippea-badge {
+      display: inline-block;
+      font-size: 0.6rem;
+      font-weight: 700;
+      letter-spacing: 1px;
+      padding: 0.15rem 0.4rem;
+      border-radius: 4px;
+      text-transform: uppercase;
+      flex-shrink: 0;
+    }
+
+    .wippea-badge.w {
+      background: var(--gold);
+      color: var(--dark);
+    }
+    .wippea-badge.i {
+      background: var(--primary);
+      color: var(--light);
+    }
+    .wippea-badge.p {
+      background: var(--accent);
+      color: var(--light);
+    }
+    .wippea-badge.e {
+      background: var(--gold);
+      color: var(--dark);
+    }
+    .wippea-badge.a {
+      background: var(--dark);
+      color: var(--gold);
+      border: 1px solid var(--gold);
+    }
+
+    .slide-list {
+      list-style: none;
+      max-height: 0;
+      overflow: hidden;
+      transition: max-height 0.3s ease;
+      padding-left: 1rem;
+    }
+
+    .chapter-item.expanded .slide-list {
+      max-height: 500px;
+    }
+
+    .slide-item {
+      padding: 0.5rem 1rem;
+      cursor: pointer;
+      color: rgba(255, 255, 255, 0.5);
+      font-size: 0.85rem;
+      border-radius: 6px;
+      transition: all 0.2s ease;
+      white-space: normal;
+      word-wrap: break-word;
+    }
+
+    .slide-item:hover {
+      background: rgba(255, 255, 255, 0.1);
+      color: rgba(255, 255, 255, 0.8);
+    }
+
+    .slide-item.active {
+      background: rgba(211, 178, 87, 0.3);
+      color: var(--light);
+    }
+
+    .slide-counter {
+      color: rgba(255, 255, 255, 0.5);
+      font-size: 0.875rem;
+      padding-top: 1rem;
+      border-top: 1px solid rgba(255, 255, 255, 0.1);
+    }
+
+    /* Resources Section */
+    .resources-section {
+      margin-top: 1.5rem;
+      padding-top: 1rem;
+      border-top: 1px solid rgba(255, 255, 255, 0.1);
+    }
+
+    .resources-title {
+      color: var(--gold);
+      font-size: 0.75rem;
+      text-transform: uppercase;
+      letter-spacing: 2px;
+      margin-bottom: 0.75rem;
+    }
+
+    .resource-link {
+      display: block;
+      padding: 0.5rem 0.75rem;
+      color: rgba(255, 255, 255, 0.6);
+      font-size: 0.8rem;
+      text-decoration: none;
+      border-radius: 6px;
+      transition: all 0.2s ease;
+      margin-bottom: 0.25rem;
+    }
+
+    .resource-link:hover {
+      background: rgba(255, 255, 255, 0.1);
+      color: var(--light);
+    }
+
+    .resource-link:active {
+      background: rgba(255, 255, 255, 0.2);
+      transform: scale(0.97);
+    }
+
+    .resource-link::before {
+      content: "\2193 ";
+      opacity: 0.6;
+    }
+
+    /* Download Button */
+    .download-btn {
+      display: inline-flex;
+      align-items: center;
+      gap: 0.5rem;
+      padding: 0.75rem 1.5rem;
+      background: var(--accent);
+      color: var(--light);
+      text-decoration: none;
+      border-radius: 8px;
+      font-size: 1.1rem;
+      font-weight: 600;
+      transition: all 0.3s ease;
+      margin-top: 1.5rem;
+      cursor: pointer;
+    }
+
+    .download-btn:hover {
+      background: var(--accent);
+      filter: brightness(0.88);
+      transform: translateY(-2px);
+      box-shadow: 0 5px 20px rgba(55, 181, 80, 0.4);
+    }
+
+    .download-btn:active {
+      transform: translateY(0px) scale(0.97);
+      box-shadow: none;
+    }
+
+    .download-btn::before {
+      content: "\2193";
+      font-size: 1.2rem;
+    }
+
+    /* Video Button */
+    .video-btn {
+      display: inline-flex;
+      align-items: center;
+      gap: 0.5rem;
+      padding: 0.75rem 1.5rem;
+      background: var(--gold);
+      color: var(--dark);
+      text-decoration: none;
+      border-radius: 8px;
+      font-size: 1.1rem;
+      font-weight: 600;
+      transition: all 0.3s ease;
+      margin-top: 1.5rem;
+      cursor: pointer;
+    }
+
+    .video-btn:hover {
+      background: var(--gold);
+      filter: brightness(0.92);
+      transform: translateY(-2px);
+      box-shadow: 0 5px 20px rgba(211, 178, 87, 0.4);
+    }
+
+    .video-btn:active {
+      transform: translateY(0px) scale(0.97);
+      box-shadow: none;
+    }
+
+    .video-btn::before {
+      content: "\25B6";
+      font-size: 1rem;
+    }
+
+    /* Download Resource Container */
+    .download-resource {
+      display: flex;
+      align-items: center;
+      gap: 1rem;
+      margin-top: 2rem;
+      padding: 1rem 1.5rem;
+      background: rgba(0, 123, 175, 0.06);
+      border-radius: 12px;
+      border: 1px solid rgba(0, 123, 175, 0.1);
+      align-self: flex-start;
+      flex-wrap: wrap;
+    }
+
+    .download-prompt {
+      font-size: 0.9rem;
+      color: var(--gray);
+      font-style: italic;
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+    }
+
+    .download-resource .download-btn,
+    .download-resource .video-btn {
+      margin-top: 0;
+      font-size: 0.95rem;
+      padding: 0.6rem 1.2rem;
+    }
+
+    /* Main Content */
+    .main {
+      flex: 1;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      background: var(--light);
+      position: relative;
+    }
+
+    /* Progress Bar */
+    .progress-bar {
+      position: absolute;
+      top: 0;
+      left: 0;
+      height: 10px;
+      background: linear-gradient(90deg, var(--primary) 0%, var(--gold) 100%);
+      transition: width 0.3s ease;
+      z-index: 200;
+      box-shadow: 0 2px 8px rgba(0, 123, 175, 0.5);
+    }
+
+    /* Branding Logo */
+    .branding-logo {
+      position: absolute;
+      bottom: 1.5rem;
+      right: 1.5rem;
+      max-width: 80px;
+      height: auto;
+      opacity: 1;
+      z-index: 100;
+      padding: 0.5rem;
+      border-radius: 6px;
+      background: var(--light);
+    }
+
+    /* Slides */
+    .slide {
+      display: none;
+      width: 100%;
+      height: 100%;
+      padding: 4rem 5rem;
+      animation: slideIn 0.5s ease-out;
+    }
+
+    .slide.active {
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      overflow-y: auto;
+    }
+
+    .slide.active::before,
+    .slide.active::after {
+      content: "";
+      flex: 1 0 0px;
+      min-height: 1rem;
+    }
+
+    @keyframes slideIn {
+      from {
+        opacity: 0;
+        transform: translateX(30px);
+      }
+      to {
+        opacity: 1;
+        transform: translateX(0);
+      }
+    }
+
+    /* Staggered content animations */
+    .slide.active h2 {
+      animation: fadeUp 0.5s ease-out both;
+    }
+
+    .slide.active .card,
+    .slide.active .takeaway-item,
+    .slide.active .smart-row,
+    .slide.active .principle-item,
+    .slide.active .area-card,
+    .slide.active .matrix-cell,
+    .slide.active .danger-card {
+      animation: fadeUp 0.5s ease-out both;
+    }
+
+    .slide.active .card:nth-child(1),
+    .slide.active .takeaway-item:nth-child(1),
+    .slide.active .smart-row:nth-child(1),
+    .slide.active .danger-card:nth-child(1),
+    .slide.active .matrix-cell:nth-child(1),
+    .slide.active .area-card:nth-child(1) {
+      animation-delay: 0.1s;
+    }
+
+    .slide.active .card:nth-child(2),
+    .slide.active .takeaway-item:nth-child(2),
+    .slide.active .smart-row:nth-child(2),
+    .slide.active .danger-card:nth-child(2),
+    .slide.active .matrix-cell:nth-child(2),
+    .slide.active .area-card:nth-child(2) {
+      animation-delay: 0.2s;
+    }
+
+    .slide.active .card:nth-child(3),
+    .slide.active .takeaway-item:nth-child(3),
+    .slide.active .smart-row:nth-child(3),
+    .slide.active .danger-card:nth-child(3),
+    .slide.active .matrix-cell:nth-child(3),
+    .slide.active .area-card:nth-child(3) {
+      animation-delay: 0.3s;
+    }
+
+    .slide.active .card:nth-child(4),
+    .slide.active .takeaway-item:nth-child(4),
+    .slide.active .smart-row:nth-child(4),
+    .slide.active .danger-card:nth-child(4),
+    .slide.active .matrix-cell:nth-child(4) {
+      animation-delay: 0.4s;
+    }
+
+    .slide.active .card:nth-child(5),
+    .slide.active .takeaway-item:nth-child(5),
+    .slide.active .smart-row:nth-child(5),
+    .slide.active .danger-card:nth-child(5) {
+      animation-delay: 0.5s;
+    }
+
+    .slide.active .takeaway-item:nth-child(6) {
+      animation-delay: 0.6s;
+    }
+
+    @keyframes fadeUp {
+      from {
+        opacity: 0;
+        transform: translateY(20px);
+      }
+      to {
+        opacity: 1;
+        transform: translateY(0);
+      }
+    }
+
+    /* Card hover effects */
+    .card,
+    .area-card,
+    .danger-card,
+    .matrix-cell {
+      transition: transform 0.3s ease, box-shadow 0.3s ease;
+    }
+
+    .card:hover,
+    .area-card:hover,
+    .danger-card:hover,
+    .matrix-cell:hover {
+      transform: translateY(-5px);
+      box-shadow: 0 10px 30px rgba(0, 0, 0, 0.15);
+    }
+
+    .matrix-cell.do-first:hover,
+    .matrix-cell.schedule:hover,
+    .matrix-cell.delegate:hover {
+      transform: translateY(-8px) scale(1.02);
+      box-shadow: 0 16px 40px rgba(0, 0, 0, 0.35);
+      filter: brightness(1.12);
+    }
+
+    /* Title Slide */
+    .slide-title {
+      justify-content: center;
+      align-items: center;
+      text-align: center;
+      background: linear-gradient(135deg, var(--primary) 0%, var(--dark) 100%);
+      overflow: hidden;
+      padding-top: 2rem;
+      padding-bottom: 1rem;
+    }
+    .slide-title.active::before {
+      flex: 0.7;
+    }
+    .slide-title.active::after {
+      flex: 1;
+    }
+
+    .slide-title.active .logo {
+      animation: dropIn 0.8s ease-out both;
+    }
+    .slide-title.active h1 {
+      animation: zoomIn 0.8s ease-out 0.3s both;
+    }
+    .slide-title.active .divider {
+      animation: expandWidth 0.6s ease-out 0.7s both;
+    }
+    .slide-title.active .subtitle {
+      animation: fadeUp 0.8s ease-out 1s both;
+    }
+
+    @keyframes dropIn {
+      from {
+        opacity: 0;
+        transform: translateY(-100px) scale(0.5);
+      }
+      to {
+        opacity: 1;
+        transform: translateY(0) scale(1);
+      }
+    }
+
+    @keyframes zoomIn {
+      from {
+        opacity: 0;
+        transform: scale(0.5);
+      }
+      to {
+        opacity: 1;
+        transform: scale(1);
+      }
+    }
+
+    @keyframes expandWidth {
+      from {
+        width: 0;
+        opacity: 0;
+      }
+      to {
+        width: 120px;
+        opacity: 1;
+      }
+    }
+
+    .slide-title h1 {
+      font-family: var(--font-heading);
+      font-size: 5rem;
+      color: var(--light);
+      margin-bottom: 1.5rem;
+      font-weight: 400;
+    }
+
+    .slide-title .subtitle {
+      font-size: 2rem;
+      color: var(--gold);
+      margin-bottom: 3rem;
+    }
+
+    .slide-title .divider {
+      width: 120px;
+      height: 5px;
+      background: var(--gold);
+      margin-bottom: 2rem;
+    }
+
+    .slide-title .logo {
+      max-width: 280px;
+      height: auto;
+      margin-bottom: 2rem;
+      background: var(--light);
+      padding: 1rem;
+      border-radius: 8px;
+    }
+
+    .slide-title .copyright {
+      font-size: 0.85rem;
+      color: rgba(255, 255, 255, 0.5);
+      margin-top: 1rem;
+    }
+
+    .slide-title.active ~ .branding-logo,
+    .slide-closing.active ~ .branding-logo {
+      display: none;
+    }
+
+    /* Content Slides */
+    .slide h2 {
+      font-family: var(--font-heading);
+      font-size: 3.5rem;
+      color: var(--primary);
+      margin-bottom: 2.5rem;
+      font-weight: 400;
+    }
+
+    .slide h3 {
+      font-family: var(--font-heading);
+      font-size: 2.5rem;
+      color: var(--dark);
+      margin-bottom: 2rem;
+      font-weight: 400;
+    }
+
+    .slide p {
+      font-size: 2rem;
+      line-height: 1.6;
+      color: var(--gray);
+    }
+
+    .slide .highlight {
+      color: var(--primary);
+      font-weight: 700;
+    }
+
+    .slide .accent {
+      color: var(--accent);
+      font-weight: 700;
+    }
+
+    .slide .gold {
+      color: var(--gold);
+      font-weight: 700;
+    }
+
+    .slide .mauve {
+      color: var(--mauve);
+      font-weight: 700;
+    }
+
+    /* Cards Grid */
+    .cards-grid {
+      display: grid;
+      grid-template-columns: repeat(2, 1fr);
+      gap: 2rem;
+      flex: 1;
+    }
+
+    .card {
+      background: var(--muted);
+      padding: 2rem 2.5rem;
+      border-radius: 12px;
+      border-left: 6px solid var(--accent);
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+    }
+
+    .card.gold-border {
+      border-left-color: var(--gold);
+    }
+
+    .card h4 {
+      font-family: var(--font-heading);
+      font-size: 1.75rem;
+      color: var(--primary);
+      margin-bottom: 1rem;
+      font-weight: 400;
+    }
+
+    .card p {
+      font-size: 1.5rem;
+      color: var(--gray);
+    }
+
+    /* Takeaways / Numbered Items */
+    .takeaways {
+      display: flex;
+      flex-direction: column;
+      gap: 0.75rem;
+      flex: 1;
+      justify-content: center;
+    }
+
+    .takeaway-item {
+      display: flex;
+      align-items: center;
+      gap: 1rem;
+    }
+
+    .takeaway-num {
+      width: 40px;
+      height: 40px;
+      background: var(--primary);
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 1.25rem;
+      font-weight: 700;
+      color: var(--light);
+      flex-shrink: 0;
+      transform: scale(0);
+      transition: transform 0.4s cubic-bezier(0.68, -0.55, 0.265, 1.55);
+    }
+
+    .slide.active .takeaway-num {
+      transform: scale(1);
+    }
+    .slide.active .takeaway-item:nth-child(1) .takeaway-num {
+      transition-delay: 0.2s;
+    }
+    .slide.active .takeaway-item:nth-child(2) .takeaway-num {
+      transition-delay: 0.4s;
+    }
+    .slide.active .takeaway-item:nth-child(3) .takeaway-num {
+      transition-delay: 0.6s;
+    }
+    .slide.active .takeaway-item:nth-child(4) .takeaway-num {
+      transition-delay: 0.8s;
+    }
+    .slide.active .takeaway-item:nth-child(5) .takeaway-num {
+      transition-delay: 1s;
+    }
+    .slide.active .takeaway-item:nth-child(6) .takeaway-num {
+      transition-delay: 1.2s;
+    }
+
+    .takeaway-num.alt {
+      background: var(--gold);
+      color: var(--dark);
+    }
+
+    .takeaway-item p {
+      font-size: 1.35rem;
+    }
+
+    /* SMART Goals / Letter+Content Rows */
+    .smart-stack {
+      display: flex;
+      flex-direction: column;
+      gap: 0.4rem;
+      flex: 1;
+      justify-content: center;
+    }
+
+    .smart-row {
+      display: flex;
+      gap: 0.75rem;
+      align-items: center;
+    }
+
+    .smart-letter {
+      width: 44px;
+      height: 44px;
+      background: var(--primary);
+      border-radius: 8px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 1.5rem;
+      font-weight: 700;
+      color: var(--light);
+      flex-shrink: 0;
+    }
+
+    .smart-letter.alt {
+      background: var(--gold);
+      color: var(--dark);
+    }
+
+    .smart-content {
+      flex: 1;
+      background: var(--muted);
+      padding: 0.5rem 1.25rem;
+      border-radius: 8px;
+    }
+
+    .smart-content h4 {
+      font-family: var(--font-heading);
+      font-size: 1.15rem;
+      color: var(--primary);
+      margin-bottom: 0;
+      font-weight: 400;
+    }
+
+    .smart-content p {
+      font-size: 0.95rem;
+    }
+
+    /* Eisenhower Matrix */
+    .matrix-grid {
+      display: grid;
+      grid-template-columns: repeat(2, 1fr);
+      gap: 1.5rem;
+      flex: 1;
+    }
+
+    .matrix-cell {
+      padding: 1.5rem;
+      border-radius: 16px;
+      text-align: center;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      gap: 0.5rem;
+    }
+
+    .matrix-cell.do-first {
+      background: var(--primary);
+      color: var(--light);
+    }
+
+    .matrix-cell.schedule {
+      background: var(--accent);
+      color: var(--light);
+    }
+
+    .matrix-cell.delegate {
+      background: var(--gold);
+      color: var(--dark);
+    }
+
+    .matrix-cell.eliminate {
+      background: var(--muted);
+      color: var(--gray);
+      border: 2px solid var(--offwhite);
+    }
+
+    .matrix-cell .matrix-label {
+      font-size: 0.8rem;
+      text-transform: uppercase;
+      letter-spacing: 2px;
+      opacity: 0.8;
+    }
+
+    .matrix-cell .matrix-action {
+      font-family: var(--font-heading);
+      font-size: 2rem;
+      font-weight: 400;
+    }
+
+    .matrix-cell .matrix-desc {
+      font-size: 1.1rem;
+      opacity: 0.9;
+    }
+
+    /* Danger Cards (flip) */
+    .dangers-grid {
+      display: flex;
+      gap: 1.5rem;
+      flex: 1;
+      align-items: center;
+    }
+
+    .danger-card {
+      flex: 1;
+      perspective: 1000px;
+      cursor: pointer;
+      height: 200px;
+      min-width: 110px;
+    }
+
+    .danger-card-inner {
+      position: relative;
+      width: 100%;
+      height: 100%;
+      transition: transform 0.6s;
+      transform-style: preserve-3d;
+    }
+
+    .danger-card:hover .danger-card-inner {
+      transform: rotateY(180deg);
+    }
+
+    .danger-card-front,
+    .danger-card-back {
+      position: absolute;
+      width: 100%;
+      height: 100%;
+      backface-visibility: hidden;
+      border-radius: 16px;
+      padding: 1.25rem;
+      text-align: center;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      overflow: hidden;
+    }
+
+    .danger-card-front {
+      background: var(--dark);
+      color: var(--light);
+    }
+
+    .danger-card-back {
+      background: var(--gold);
+      color: var(--dark);
+      transform: rotateY(180deg);
+    }
+
+    .danger-icon {
+      font-size: 2.5rem;
+      margin-bottom: 0.75rem;
+    }
+
+    .danger-card-front h4 {
+      font-size: 1.1rem;
+      font-weight: 600;
+    }
+
+    .danger-card-back p {
+      font-size: 0.85rem;
+      line-height: 1.4;
+    }
+
+    .danger-card-back h4 {
+      font-size: 1rem;
+      margin-bottom: 0.5rem;
+      font-weight: 600;
+    }
+
+    /* Area Cards (3 column) */
+    .areas-grid {
+      display: flex;
+      gap: 2rem;
+      flex: 1;
+    }
+
+    .area-card {
+      flex: 1;
+      background: var(--primary);
+      border-radius: 16px;
+      padding: 2rem;
+      color: var(--light);
+    }
+
+    .area-card.gold-card {
+      background: var(--gold);
+      color: var(--dark);
+    }
+
+    .area-header {
+      text-align: center;
+      margin-bottom: 1.5rem;
+    }
+
+    .area-icon {
+      width: 60px;
+      height: 60px;
+      background: var(--accent);
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 1.75rem;
+      font-weight: 700;
+      margin: 0 auto 1rem;
+    }
+
+    .area-card.gold-card .area-icon {
+      background: var(--dark);
+      color: var(--gold);
+    }
+
+    .area-card h4 {
+      font-family: var(--font-heading);
+      font-size: 1.5rem;
+      font-weight: 400;
+    }
+
+    .area-card ul {
+      list-style: none;
+    }
+
+    .area-card li {
+      font-size: 1.25rem;
+      padding: 0.5rem 0;
+      color: rgba(255, 255, 255, 0.85);
+      padding-left: 1.5rem;
+      position: relative;
+    }
+
+    .area-card.gold-card li {
+      color: var(--dark);
+    }
+
+    .area-card li::before {
+      content: "\2022";
+      position: absolute;
+      left: 0;
+      color: var(--gold);
+    }
+
+    .area-card.gold-card li::before {
+      color: var(--dark);
+    }
+
+    /* Big Statement */
+    .big-statement {
+      justify-content: center;
+      align-items: center;
+      text-align: center;
+      background: radial-gradient(ellipse at 50% 40%, var(--muted) 0%, #ffffff 60%);
+    }
+
+    .big-statement h2 {
+      font-family: var(--font-heading);
+      font-size: 4.5rem;
+      font-weight: 400;
+      line-height: 1.3;
+      max-width: 900px;
+    }
+
+    .big-statement p {
+      max-width: 700px;
+    }
+
+    /* Video Embed Slides */
+    .slide-video {
+      justify-content: center;
+      align-items: center;
+      text-align: center;
+      background: linear-gradient(170deg, var(--muted) 0%, var(--light) 50%, var(--offwhite) 100%);
+    }
+
+    .slide-video {
+      padding: 2rem 3rem;
+    }
+    .slide-video h2 {
+      font-family: var(--font-heading);
+      font-size: 2rem;
+      color: var(--primary);
+      margin-bottom: 1rem;
+      font-weight: 400;
+    }
+
+    .video-container {
+      position: relative;
+      width: 100%;
+      max-width: 1200px;
+      aspect-ratio: 16 / 9;
+      border-radius: 12px;
+      overflow: hidden;
+      box-shadow: 0 8px 30px rgba(0, 0, 0, 0.15);
+    }
+
+    .video-container iframe {
+      position: absolute;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      border: none;
+    }
+
+    .slide-video.active .video-container {
+      animation: fadeUp 0.6s ease-out 0.3s both;
+    }
+
+    /* Activity Callout */
+    .activity-box {
+      background: rgba(211, 178, 87, 0.1);
+      border: 2px solid var(--gold);
+      border-radius: 12px;
+      padding: 1.5rem 2rem;
+      margin-top: 2rem;
+      align-self: stretch;
+    }
+
+    .activity-label {
+      font-size: 0.8rem;
+      text-transform: uppercase;
+      letter-spacing: 2px;
+      color: var(--gold);
+      font-weight: 700;
+      margin-bottom: 0.5rem;
+    }
+
+    .activity-box p {
+      font-size: 1.25rem;
+      color: var(--dark);
+    }
+
+    /* Content with side visual */
+    .split-layout {
+      display: flex;
+      gap: 4rem;
+      flex: 1;
+      align-items: center;
+    }
+
+    .split-text {
+      flex: 1;
+    }
+    .split-visual {
+      flex: 0 0 300px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+
+    .visual-circle {
+      width: 250px;
+      height: 250px;
+      border-radius: 50%;
+      background: linear-gradient(135deg, var(--primary), var(--dark));
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      color: var(--light);
+      font-size: 5rem;
+    }
+
+    /* Content list */
+    .content-list {
+      list-style: none;
+      margin-top: 1rem;
+    }
+
+    .content-list li {
+      font-size: 1.5rem;
+      padding: 0.6rem 0;
+      padding-left: 2rem;
+      position: relative;
+      color: var(--gray);
+    }
+
+    .content-list li::before {
+      content: "\2192";
+      position: absolute;
+      left: 0;
+      color: var(--accent);
+      font-weight: bold;
+    }
+
+    .content-list.danger li::before {
+      content: "\26A0";
+      color: var(--gold);
+    }
+
+    /* Background Variation */
+    .slide:not(.slide-title):not(.slide-section):not(.slide-closing):not(.big-statement) {
+      background: linear-gradient(170deg, var(--muted) 0%, var(--light) 50%, var(--offwhite) 100%);
+    }
+
+    /* Section Slide */
+    .slide-section {
+      justify-content: center;
+      align-items: center;
+      text-align: center;
+      background: var(--primary);
+      overflow: hidden;
+      padding-top: 2rem;
+      padding-bottom: 1rem;
+    }
+    .slide-section.active::before,
+    .slide-section.active::after {
+      flex: 0;
+      min-height: 0;
+    }
+
+    .slide-section .section-circle {
+      width: 280px;
+      height: 280px;
+      border-radius: 50%;
+      border: 3px solid rgba(211, 178, 87, 0.25);
+      position: absolute;
+      top: 50%;
+      left: 8%;
+      transform: translateY(-50%);
+      z-index: 2;
+      overflow: hidden;
+      box-shadow: 0 8px 32px rgba(0, 0, 0, 0.3);
+    }
+    .slide-section .section-circle img {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+    }
+    .slide-section.active .section-circle {
+      animation: circleReveal 0.7s ease-out 0.3s both;
+    }
+    @keyframes circleReveal {
+      from {
+        opacity: 0;
+        transform: translateY(-50%) scale(0.7);
+      }
+      to {
+        opacity: 1;
+        transform: translateY(-50%) scale(1);
+      }
+    }
+
+    .slide-section.active {
+      animation: sectionSlideIn 0.6s ease-out;
+    }
+    .slide-section.active .chapter-label {
+      animation: fadeDown 0.5s ease-out 0.2s both;
+    }
+    .slide-section.active h2 {
+      animation: scaleIn 0.6s ease-out 0.4s both;
+    }
+    .slide-section.active .divider {
+      animation: expandWidth 0.5s ease-out 0.7s both;
+    }
+
+    @keyframes sectionSlideIn {
+      from {
+        opacity: 0;
+        background: var(--dark);
+      }
+      to {
+        opacity: 1;
+        background: var(--primary);
+      }
+    }
+
+    @keyframes fadeDown {
+      from {
+        opacity: 0;
+        transform: translateY(-30px);
+      }
+      to {
+        opacity: 1;
+        transform: translateY(0);
+      }
+    }
+
+    @keyframes scaleIn {
+      from {
+        opacity: 0;
+        transform: scale(0.8);
+      }
+      to {
+        opacity: 1;
+        transform: scale(1);
+      }
+    }
+
+    .slide-section .chapter-label {
+      font-family: var(--font-body);
+      font-size: 1.1rem;
+      color: var(--gold);
+      text-transform: uppercase;
+      letter-spacing: 4px;
+      margin-bottom: 1.5rem;
+      font-weight: 600;
+    }
+
+    .slide-section h2 {
+      font-family: var(--font-heading);
+      font-size: 4rem;
+      color: var(--light);
+      font-weight: 400;
+      position: relative;
+      z-index: 2;
+    }
+
+    .slide-section .divider {
+      width: 100px;
+      height: 5px;
+      background: var(--gold);
+      margin-top: 2rem;
+      position: relative;
+      z-index: 2;
+    }
+
+    .slide-section::after {
+      content: attr(data-chapter-num);
+      position: absolute;
+      font-family: var(--font-heading);
+      font-size: 28rem;
+      font-weight: 400;
+      color: rgba(255, 255, 255, 0.04);
+      right: 5%;
+      top: 50%;
+      transform: translateY(-50%);
+      line-height: 1;
+      pointer-events: none;
+      z-index: 1;
+    }
+
+    .slide-section[data-chapter-num="W"] {
+      background: linear-gradient(135deg, var(--primary) 0%, var(--dark) 100%);
+    }
+    .slide-section[data-chapter-num="I"] {
+      background: linear-gradient(225deg, var(--dark) 0%, var(--royal) 100%);
+    }
+    .slide-section[data-chapter-num="P1"] {
+      background: linear-gradient(160deg, var(--primary) 0%, var(--royal) 100%);
+    }
+    .slide-section[data-chapter-num="P2"] {
+      background: linear-gradient(200deg, var(--dark) 0%, var(--primary) 100%);
+    }
+    .slide-section[data-chapter-num="P3"] {
+      background: linear-gradient(145deg, var(--royal) 0%, var(--primary) 100%);
+    }
+    .slide-section[data-chapter-num="E"] {
+      background: linear-gradient(190deg, var(--primary) 0%, var(--dark) 100%);
+    }
+    .slide-section[data-chapter-num="A"] {
+      background: linear-gradient(170deg, var(--royal) 0%, var(--dark) 100%);
+    }
+
+    /* Closing Slide */
+    .slide-closing {
+      justify-content: center;
+      align-items: center;
+      text-align: center;
+      background: linear-gradient(135deg, var(--primary) 0%, var(--dark) 100%);
+      overflow: hidden;
+      position: relative;
+    }
+
+    .slide-closing.active .closing-box {
+      animation: celebrateIn 0.8s ease-out both;
+    }
+
+    @keyframes celebrateIn {
+      from {
+        opacity: 0;
+        transform: scale(0.5) rotate(-5deg);
+      }
+      to {
+        opacity: 1;
+        transform: scale(1) rotate(0deg);
+      }
+    }
+
+    .confetti-container {
+      position: absolute;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      pointer-events: none;
+      overflow: hidden;
+    }
+
+    .confetti {
+      position: absolute;
+      width: 10px;
+      height: 10px;
+      top: -10px;
+      animation: confettiFall 4s ease-in-out forwards;
+    }
+
+    @keyframes confettiFall {
+      0% {
+        transform: translateY(0) rotate(0deg);
+        opacity: 1;
+      }
+      100% {
+        transform: translateY(100vh) rotate(720deg);
+        opacity: 0;
+      }
+    }
+
+    .closing-box {
+      background: rgba(255, 255, 255, 0.1);
+      padding: 4rem 5rem;
+      border-radius: 20px;
+      max-width: 800px;
+      position: relative;
+      z-index: 10;
+    }
+
+    .closing-box p {
+      font-size: 1.75rem;
+      color: rgba(255, 255, 255, 0.9);
+      line-height: 1.6;
+      font-style: italic;
+      margin-bottom: 2rem;
+    }
+
+    .closing-box .divider {
+      width: 80px;
+      height: 4px;
+      background: var(--gold);
+      margin: 0 auto 2rem;
+    }
+
+    .closing-box h2 {
+      font-family: var(--font-heading);
+      font-size: 3.5rem;
+      color: var(--light);
+      font-weight: 400;
+    }
+
+    /* Navigation Hint */
+    .nav-hint {
+      position: absolute;
+      bottom: 1rem;
+      left: 50%;
+      transform: translateX(-50%);
+      display: flex;
+      align-items: center;
+      gap: 0.75rem;
+      color: var(--gray);
+      font-size: 0.8rem;
+      background: rgba(255, 255, 255, 0.9);
+      padding: 0.5rem 1rem;
+      border-radius: 8px;
+    }
+
+    .key-icon {
+      background: var(--muted);
+      padding: 0.5rem 0.75rem;
+      border-radius: 6px;
+      font-family: monospace;
+      cursor: pointer;
+      transition: all 0.2s ease;
+      user-select: none;
+    }
+
+    .key-icon:hover {
+      background: var(--primary);
+      color: var(--light);
+    }
+
+    .key-icon:active {
+      transform: scale(0.95);
+    }
+
+    /* ===== Mobile Responsiveness ===== */
+    @media (max-width: 768px) {
+      .sidebar {
+        margin-left: -280px;
+      }
+      .sidebar-toggle {
+        display: flex;
+      }
+      .slide {
+        padding: 2rem 1.5rem;
+      }
+      .slide h1 {
+        font-size: 2.5rem;
+      }
+      .slide h2 {
+        font-size: 1.8rem;
+      }
+      .cards-grid {
+        grid-template-columns: 1fr;
+        gap: 1rem;
+      }
+      .matrix-grid {
+        grid-template-columns: 1fr;
+        gap: 1rem;
+      }
+      .dangers-grid {
+        flex-wrap: wrap;
+        gap: 1rem;
+      }
+      .danger-card {
+        min-width: 120px;
+        height: 180px;
+      }
+      .split-layout {
+        flex-direction: column;
+        gap: 1.5rem;
+      }
+      .split-visual {
+        flex: 0 0 auto;
+      }
+      .visual-circle {
+        width: 150px;
+        height: 150px;
+        font-size: 3rem;
+      }
+      .slide-section .section-circle {
+        width: 180px;
+        height: 180px;
+        left: 5%;
+      }
+      .areas-grid {
+        flex-direction: column;
+      }
+      .branding-logo {
+        max-width: 50px;
+        bottom: 0.75rem;
+        right: 0.75rem;
+      }
+      .nav-hint {
+        bottom: 1rem;
+        font-size: 0.8rem;
+      }
+      .slide-title h1 {
+        font-size: 3rem;
+      }
+      .logo {
+        max-width: 150px;
+      }
+      .download-resource {
+        flex-direction: column;
+        align-items: flex-start;
+      }
+      .slide-video h2 {
+        font-size: 1.6rem;
+        margin-bottom: 1.5rem;
+      }
+      .video-container {
+        max-width: 100%;
+      }
+    }
+
+    @media (max-width: 480px) {
+      .slide {
+        padding: 1.5rem 1rem;
+      }
+      .slide h1 {
+        font-size: 2rem;
+      }
+      .slide h2 {
+        font-size: 1.4rem;
+      }
+      .slide-title h1 {
+        font-size: 2.2rem;
+      }
+      .dangers-grid {
+        flex-direction: column;
+      }
+      .danger-card {
+        height: 160px;
+      }
+      .big-statement h2 {
+        font-size: 2rem;
+      }
+      .slide-section .section-circle {
+        width: 120px;
+        height: 120px;
+        left: 50%;
+        transform: translate(-50%, -50%);
+        opacity: 0.15;
+      }
+      .branding-logo {
+        max-width: 40px;
+        bottom: 0.5rem;
+        right: 0.5rem;
+      }
+      .slide-video h2 {
+        font-size: 1.3rem;
+      }
+    }
+
+    /* ===== Reduced Motion Accessibility ===== */
+    @media (prefers-reduced-motion: reduce) {
+      *,
+      *::before,
+      *::after {
+        animation-duration: 0.01ms !important;
+        animation-iteration-count: 1 !important;
+        transition-duration: 0.01ms !important;
+        scroll-behavior: auto !important;
+      }
+      .slide {
+        animation: none !important;
+      }
+      .takeaway-num {
+        transform: scale(1) !important;
+        transition: none !important;
+      }
+      .confetti {
+        display: none !important;
+      }
+    }
+
+    /* ===== IntersectionObserver Reveal System ===== */
+    .reveal-item {
+      opacity: 0;
+      transform: translateY(20px);
+      transition: opacity 0.5s ease-out, transform 0.5s ease-out;
+      transition-delay: calc(var(--reveal-i, 0) * 60ms);
+    }
+
+    .reveal-item.visible {
+      opacity: 1;
+      transform: translateY(0);
+    }
+
+    /* ===== View Transitions ===== */
+    ::view-transition-old(root) {
+      animation: vt-fade-out 250ms ease-out;
+    }
+    ::view-transition-new(root) {
+      animation: vt-fade-in 250ms ease-in;
+    }
+    @keyframes vt-fade-out {
+      to {
+        opacity: 0;
+      }
+    }
+    @keyframes vt-fade-in {
+      from {
+        opacity: 0;
+      }
+    }
+  </style>
+
+  <!-- Theme Override: Two-Layer Theme System — lesson-problem-solving-and-decision-making -->
+  <!-- Layer 1: dual-gold-green lead, dark sidebar, plain texture, offset-left title, bitter-raleway fonts -->
+  <!-- Layer 2: Per-chapter card styles, dividers, and secondary accents from theme-registry.json -->
+  <style id="theme-override">
+    /* ================================================================
+       FONT PAIRING: bitter-raleway
+       ================================================================ */
+    body { font-family: 'Raleway', sans-serif; }
+    .slide-title h1, .slide h2, .slide h3, .card h4,
+    .smart-content h4, .matrix-action, .slide-section h2,
+    .closing-box h2 {
+      font-family: 'Bitter', serif;
+    }
+
+    /* ================================================================
+       LAYER 1 — LESSON IDENTITY
+       ================================================================ */
+
+    /* --- Background Texture: plain (no override needed — default is var(--light)) --- */
+
+    /* --- Sidebar Color: dark (default — no override needed) --- */
+
+    /* --- Color Lead: dual-gold-green --- */
+    .slide h2 { color: var(--muted-gold); }
+    .slide h3 { color: var(--primary); }
+    .download-btn { background: var(--accent); }
+    .divider { background: linear-gradient(90deg, var(--gold), var(--accent)); }
+    .slide-section { background: linear-gradient(135deg, var(--gold), var(--accent)); }
+
+    /* --- Title Slide: offset-left --- */
+    .slide-title { background: linear-gradient(135deg, var(--dark), var(--royal)); text-align: left; padding-left: 5rem; position: relative; overflow: hidden; }
+    .slide-title::after { content: ''; position: absolute; right: 5rem; top: 50%; transform: translateY(-50%); width: 200px; height: 200px; border-radius: 50%; border: 2px solid rgba(211,178,87,0.15); }
+    .slide-title h1 { text-align: left; }
+    .slide-title .divider { margin: 0.5rem 0; }
+
+    /* ================================================================
+       LAYER 2 — CHAPTER STYLES
+       ================================================================ */
+
+    /* --- Card Style: sharp-border (chapters 1, 3) --- */
+    [data-chapter="1"] .card,
+    [data-chapter="3"] .card {
+      background: var(--light);
+      border: 2px solid var(--dark);
+      border-radius: 0;
+    }
+    [data-chapter="1"] .card.gold-border,
+    [data-chapter="3"] .card.gold-border {
+      border-color: var(--gold);
+    }
+    [data-chapter="1"] .takeaway-num,
+    [data-chapter="3"] .takeaway-num {
+      border-radius: 0;
+    }
+    [data-chapter="1"] .takeaway-num.alt,
+    [data-chapter="3"] .takeaway-num.alt {
+      border-radius: 0;
+    }
+    [data-chapter="1"] .smart-letter,
+    [data-chapter="3"] .smart-letter {
+      border-radius: 0;
+    }
+    [data-chapter="1"] .smart-letter.alt,
+    [data-chapter="3"] .smart-letter.alt {
+      border-radius: 0;
+    }
+    [data-chapter="1"] .smart-content,
+    [data-chapter="3"] .smart-content {
+      border-radius: 0;
+      border: 1px solid var(--offwhite);
+    }
+    [data-chapter="1"] .matrix-cell,
+    [data-chapter="3"] .matrix-cell {
+      border-radius: 0;
+      border: 2px solid var(--dark);
+    }
+    [data-chapter="1"] .danger-card-front,
+    [data-chapter="1"] .danger-card-back,
+    [data-chapter="3"] .danger-card-front,
+    [data-chapter="3"] .danger-card-back {
+      border-radius: 0;
+    }
+    [data-chapter="1"] .area-card,
+    [data-chapter="3"] .area-card {
+      border-radius: 0;
+    }
+    [data-chapter="1"] .activity-box,
+    [data-chapter="3"] .activity-box {
+      border-radius: 0;
+      border: 2px solid var(--gold);
+    }
+    [data-chapter="1"] .download-btn,
+    [data-chapter="3"] .download-btn {
+      border-radius: 0;
+    }
+
+    /* --- Card Style: shadow-float (chapters 2, 5) --- */
+    [data-chapter="2"] .card,
+    [data-chapter="5"] .card {
+      background: var(--light);
+      border-left: none;
+      border-top: 3px solid var(--primary);
+      border-radius: 10px;
+      box-shadow: 0 4px 15px rgba(0,64,113,0.08);
+    }
+    [data-chapter="2"] .card.gold-border,
+    [data-chapter="5"] .card.gold-border {
+      border-top-color: var(--gold);
+      border-left: none;
+    }
+    [data-chapter="2"] .takeaway-num,
+    [data-chapter="5"] .takeaway-num {
+      background: var(--light);
+      color: var(--primary);
+      border-radius: 6px;
+      box-shadow: 0 2px 6px rgba(0,0,0,0.08);
+    }
+    [data-chapter="2"] .takeaway-num.alt,
+    [data-chapter="5"] .takeaway-num.alt {
+      color: var(--gold);
+    }
+    [data-chapter="2"] .smart-letter,
+    [data-chapter="5"] .smart-letter {
+      border-radius: 6px;
+      box-shadow: 0 2px 6px rgba(0,0,0,0.08);
+    }
+    [data-chapter="2"] .smart-content,
+    [data-chapter="5"] .smart-content {
+      background: var(--light);
+      border-radius: 10px;
+      box-shadow: 0 2px 8px rgba(0,0,0,0.06);
+    }
+    [data-chapter="2"] .matrix-cell,
+    [data-chapter="5"] .matrix-cell {
+      border-radius: 10px;
+      box-shadow: 0 4px 12px rgba(0,0,0,0.08);
+    }
+    [data-chapter="2"] .danger-card-front,
+    [data-chapter="2"] .danger-card-back,
+    [data-chapter="5"] .danger-card-front,
+    [data-chapter="5"] .danger-card-back {
+      border-radius: 12px;
+      box-shadow: 0 4px 15px rgba(0,0,0,0.1);
+    }
+    [data-chapter="2"] .area-card,
+    [data-chapter="5"] .area-card {
+      border-radius: 12px;
+      box-shadow: 0 4px 15px rgba(0,0,0,0.08);
+    }
+    [data-chapter="2"] .activity-box,
+    [data-chapter="5"] .activity-box {
+      border-radius: 10px;
+      box-shadow: 0 2px 8px rgba(0,0,0,0.06);
+    }
+    [data-chapter="2"] .download-btn,
+    [data-chapter="5"] .download-btn {
+      border-radius: 8px;
+      box-shadow: 0 2px 6px rgba(0,0,0,0.1);
+    }
+
+    /* --- Card Style: pill (chapters 4, 6) --- */
+    [data-chapter="4"] .card,
+    [data-chapter="6"] .card {
+      background: var(--light);
+      border: 1px solid var(--offwhite);
+      border-left: 1px solid var(--offwhite);
+      border-radius: 24px;
+      padding: 1.25rem 1.5rem;
+    }
+    [data-chapter="4"] .card.gold-border,
+    [data-chapter="6"] .card.gold-border {
+      border-color: var(--offwhite);
+    }
+    [data-chapter="4"] .takeaway-num,
+    [data-chapter="6"] .takeaway-num {
+      border-radius: 50%;
+    }
+    [data-chapter="4"] .takeaway-num.alt,
+    [data-chapter="6"] .takeaway-num.alt {
+      border-radius: 50%;
+    }
+    [data-chapter="4"] .smart-letter,
+    [data-chapter="6"] .smart-letter {
+      border-radius: 50%;
+    }
+    [data-chapter="4"] .smart-content,
+    [data-chapter="6"] .smart-content {
+      border-radius: 16px;
+      border: 1px solid var(--offwhite);
+    }
+    [data-chapter="4"] .matrix-cell,
+    [data-chapter="6"] .matrix-cell {
+      border-radius: 16px;
+    }
+    [data-chapter="4"] .danger-card-front,
+    [data-chapter="4"] .danger-card-back,
+    [data-chapter="6"] .danger-card-front,
+    [data-chapter="6"] .danger-card-back {
+      border-radius: 20px;
+    }
+    [data-chapter="4"] .area-card,
+    [data-chapter="6"] .area-card {
+      border-radius: 20px;
+    }
+    [data-chapter="4"] .activity-box,
+    [data-chapter="6"] .activity-box {
+      border-radius: 16px;
+    }
+    [data-chapter="4"] .download-btn,
+    [data-chapter="6"] .download-btn {
+      border-radius: 20px;
+    }
+
+    /* --- Card Style: left-border (chapter 7) — default, no overrides needed --- */
+
+    /* --- Section Dividers --- */
+
+    /* Ch1 (W): gradient-sweep (default — no override needed) */
+
+    /* Ch2 (I): framed-gold */
+    .slide-section[data-chapter="2"] { background: var(--royal); display: flex; align-items: center; justify-content: center; }
+    .slide-section[data-chapter="2"] h2 { border: 2px solid var(--gold); border-radius: 8px; padding: 1.5rem 2.5rem; color: var(--light); }
+    .slide-section[data-chapter="2"] .chapter-label { color: var(--gold); }
+    .slide-section[data-chapter="2"] .divider { background: var(--gold); }
+
+    /* Ch3 (P1): bold-full-bleed */
+    .slide-section[data-chapter="3"] { background: var(--primary); }
+    .slide-section[data-chapter="3"] h2 { color: var(--light); }
+    .slide-section[data-chapter="3"] .chapter-label { color: rgba(255,255,255,0.7); }
+    .slide-section[data-chapter="3"] .divider { background: var(--gold); }
+    .slide-section[data-chapter="3"] .section-circle { border-color: rgba(255,255,255,0.3); background: rgba(0,0,0,0.15); }
+
+    /* Ch4 (P2): centered-badge */
+    .slide-section[data-chapter="4"] { background: linear-gradient(180deg, var(--muted) 0%, var(--light) 100%); display: flex; flex-direction: column; align-items: center; justify-content: center; }
+    .slide-section[data-chapter="4"] h2 { color: var(--dark); }
+    .slide-section[data-chapter="4"] .chapter-label { color: var(--primary); }
+    .slide-section[data-chapter="4"] .divider { background: linear-gradient(90deg, transparent, var(--gold), transparent); }
+    .slide-section[data-chapter="4"] .section-circle { position: relative; left: auto; margin-bottom: 1rem; width: 80px; height: 80px; background: linear-gradient(135deg, var(--primary), var(--dark)); box-shadow: 0 4px 15px rgba(0,64,113,0.25); }
+
+    /* Ch5 (P3): split-panel */
+    .slide-section[data-chapter="5"] { display: flex; flex-direction: row; }
+    .slide-section[data-chapter="5"]::before { content: ''; display: block; width: 40%; background: var(--dark); }
+    .slide-section[data-chapter="5"]::after { content: ''; display: block; flex: 1; background: var(--muted); }
+    .slide-section[data-chapter="5"] h2 { color: var(--dark); position: relative; z-index: 1; }
+    .slide-section[data-chapter="5"] .chapter-label { color: var(--gold); position: absolute; left: 2rem; }
+    .slide-section[data-chapter="5"] .section-circle { position: absolute; left: 5%; top: 50%; transform: translateY(-50%); z-index: 1; }
+
+    /* Ch6 (E): framed-gold */
+    .slide-section[data-chapter="6"] { background: var(--royal); display: flex; align-items: center; justify-content: center; }
+    .slide-section[data-chapter="6"] h2 { border: 2px solid var(--gold); border-radius: 8px; padding: 1.5rem 2.5rem; color: var(--light); }
+    .slide-section[data-chapter="6"] .chapter-label { color: var(--gold); }
+    .slide-section[data-chapter="6"] .divider { background: var(--gold); }
+
+    /* Ch7 (A): gradient-sweep (default — no override needed) */
+
+    /* --- Secondary Accent: mauve (chapters 2, 4, 6) --- */
+    [data-chapter="2"] .card.gold-border,
+    [data-chapter="4"] .card.gold-border,
+    [data-chapter="6"] .card.gold-border {
+      border-left-color: var(--mauve);
+    }
+    [data-chapter="2"] .takeaway-num.alt,
+    [data-chapter="4"] .takeaway-num.alt,
+    [data-chapter="6"] .takeaway-num.alt {
+      background: var(--mauve);
+    }
+
+
+    /* ================================================================
+       LESSON-SPECIFIC INTERACTIVE COMPONENTS (preserved)
+       ================================================================ */
+
+    /* === Tabs Component === */
+    .tabs-container { width: 100%; flex: 1; }
+    .tabs-nav { display: flex; gap: 0.5rem; margin-bottom: 0; }
+    .tab-btn {
+      padding: 0.75rem 1.5rem;
+      border: 2px solid var(--offwhite);
+      border-bottom: none;
+      border-radius: 10px 10px 0 0;
+      background: var(--muted);
+      color: var(--gray);
+      font-family: var(--font-body);
+      font-size: 1.1rem;
+      font-weight: 600;
+      cursor: pointer;
+      transition: all 0.2s ease;
+    }
+    .tab-btn.active {
+      background: var(--light);
+      color: var(--muted-gold);
+      border-color: var(--gold);
+    }
+    .tab-btn:hover:not(.active) {
+      background: var(--offwhite);
+    }
+    .tab-panel {
+      display: none;
+      padding: 1.5rem 2rem;
+      border: 2px solid var(--gold);
+      border-radius: 0 12px 12px 12px;
+      background: var(--light);
+      min-height: 180px;
+    }
+    .tab-panel.active { display: block; }
+    .tab-panel h4 {
+      font-family: var(--font-heading);
+      font-size: 1.5rem;
+      color: var(--muted-gold);
+      margin-bottom: 0.75rem;
+    }
+    .tab-panel p { font-size: 1.2rem; color: var(--gray); line-height: 1.6; }
+    .tab-panel ul { list-style: none; margin-top: 0.5rem; }
+    .tab-panel ul li {
+      font-size: 1.15rem;
+      color: var(--gray);
+      padding: 0.35rem 0;
+      padding-left: 1.5rem;
+      position: relative;
+    }
+    .tab-panel ul li::before {
+      content: "\2713";
+      position: absolute;
+      left: 0;
+      color: var(--accent);
+      font-weight: bold;
+    }
+
+    /* === Accordion Component === */
+    .accordion { width: 100%; display: flex; flex-direction: column; gap: 0.5rem; }
+    .accordion-item { border: 1px solid var(--offwhite); border-radius: 10px; overflow: hidden; }
+    .accordion-header {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 0.85rem 1.25rem;
+      background: var(--muted);
+      cursor: pointer;
+      font-family: var(--font-body);
+      font-size: 1.1rem;
+      font-weight: 600;
+      color: var(--dark);
+      transition: background 0.2s ease;
+      user-select: none;
+    }
+    .accordion-header:hover { background: var(--offwhite); }
+    .accordion-header .acc-icon {
+      font-size: 1.2rem;
+      transition: transform 0.3s ease;
+      color: var(--muted-gold);
+    }
+    .accordion-item.open .accordion-header .acc-icon { transform: rotate(45deg); }
+    .accordion-body {
+      max-height: 0;
+      overflow: hidden;
+      transition: max-height 0.35s ease;
+      padding: 0 1.25rem;
+    }
+    .accordion-item.open .accordion-body { max-height: 500px; padding: 0.75rem 1.25rem 1rem; }
+    .accordion-body p { font-size: 1.05rem; color: var(--gray); line-height: 1.5; }
+    .accordion-body ul { list-style: none; margin-top: 0.25rem; }
+    .accordion-body ul li {
+      font-size: 1.05rem;
+      color: var(--gray);
+      padding: 0.25rem 0 0.25rem 1.25rem;
+      position: relative;
+    }
+    .accordion-body ul li::before {
+      content: "\2192";
+      position: absolute;
+      left: 0;
+      color: var(--accent);
+    }
+
+    /* === Checkpoint Prompt === */
+    .checkpoint {
+      background: rgba(211, 178, 87, 0.06);
+      border: 2px solid var(--gold);
+      border-radius: 12px;
+      padding: 1.5rem 2rem;
+      margin-top: 1.5rem;
+      align-self: stretch;
+    }
+    .checkpoint-label {
+      font-size: 0.8rem;
+      text-transform: uppercase;
+      letter-spacing: 2px;
+      color: var(--muted-gold);
+      font-weight: 700;
+      margin-bottom: 0.75rem;
+    }
+    .checkpoint textarea {
+      width: 100%;
+      min-height: 80px;
+      border: 1px solid var(--offwhite);
+      border-radius: 8px;
+      padding: 0.75rem;
+      font-family: var(--font-body);
+      font-size: 1rem;
+      color: var(--dark);
+      resize: vertical;
+      margin-top: 0.5rem;
+    }
+    .checkpoint textarea:focus {
+      outline: 2px solid var(--gold);
+      border-color: var(--gold);
+    }
+
+    /* === Quiz Reveal Component === */
+    .quiz-question {
+      background: var(--muted);
+      border-radius: 12px;
+      padding: 1.25rem 1.5rem;
+      margin-bottom: 0.75rem;
+      border-left: 5px solid var(--gold);
+    }
+    .quiz-question h4 {
+      font-family: var(--font-heading);
+      font-size: 1.3rem;
+      color: var(--dark);
+      margin-bottom: 0.5rem;
+      font-weight: 400;
+    }
+    .quiz-answer {
+      display: none;
+      padding: 0.75rem 1rem;
+      background: rgba(55, 181, 80, 0.08);
+      border-radius: 8px;
+      margin-top: 0.5rem;
+    }
+    .quiz-answer p { font-size: 1.1rem; color: var(--accent); font-weight: 600; }
+    .quiz-answer .quiz-why { font-size: 0.95rem; color: var(--gray); font-weight: 400; font-style: italic; margin-top: 0.25rem; }
+    .quiz-reveal-btn {
+      padding: 0.4rem 1rem;
+      background: var(--accent);
+      color: var(--light);
+      border: none;
+      border-radius: 6px;
+      font-family: var(--font-body);
+      font-size: 0.9rem;
+      font-weight: 600;
+      cursor: pointer;
+      margin-top: 0.5rem;
+      transition: all 0.2s ease;
+    }
+    .quiz-reveal-btn:hover { filter: brightness(1.1); transform: translateY(-1px); }
+
+    /* === Ranking Reveal === */
+    .ranking-list { list-style: none; display: flex; flex-direction: column; gap: 0.35rem; }
+    .ranking-item {
+      display: flex; align-items: center; gap: 0.75rem;
+      padding: 0.5rem 1rem; background: var(--muted);
+      border-radius: 8px; font-size: 1rem; color: var(--dark);
+    }
+    .ranking-rank {
+      width: 32px; height: 32px;
+      background: var(--muted-gold); color: var(--light);
+      border-radius: 50%; display: flex; align-items: center; justify-content: center;
+      font-weight: 700; font-size: 0.85rem; flex-shrink: 0;
+    }
+    .ranking-item .ranking-reason {
+      display: none; font-size: 0.85rem; color: var(--gray);
+      font-style: italic; margin-left: auto; max-width: 50%;
+    }
+
+    /* === Scenario Cards Grid === */
+    .scenarios-grid { display: grid; grid-template-columns: repeat(2, 1fr); gap: 1rem; flex: 1; }
+    .scenario-card {
+      background: var(--muted);
+      padding: 1.25rem 1.5rem; border-radius: 10px;
+      border-left: 4px solid var(--gold);
+      font-size: 1.05rem; color: var(--dark); line-height: 1.5;
+    }
+    .scenario-card strong {
+      color: var(--muted-gold); display: block;
+      margin-bottom: 0.25rem; font-size: 0.85rem;
+      text-transform: uppercase; letter-spacing: 1px;
+    }
+
+    /* === Mobile overrides for custom components === */
+    @media (max-width: 768px) {
+      .tabs-nav { flex-wrap: wrap; }
+      .tab-btn { font-size: 0.9rem; padding: 0.5rem 1rem; }
+      .scenarios-grid { grid-template-columns: 1fr; }
+    }
+
+    @media (max-width: 480px) {
+      .scenarios-grid { grid-template-columns: 1fr; }
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <!-- Sidebar -->
+    <nav class="sidebar">
+      <div class="sidebar-title">Problem-Solving &amp; Decision-Making</div>
+      <ul class="chapter-list" id="chapterList"></ul>
+
+      <div class="resources-section">
+        <div class="resources-title">Resources</div>
+        <a href="Handouts/Problem_Solving_Styles.docx" target="_blank" class="resource-link">Problem-Solving Styles</a>
+        <a href="Handouts/Group Activity Scenarios.docx" target="_blank" class="resource-link">Group Activity Scenarios</a>
+        <a href="Handouts/Lost At Sea.docx" target="_blank" class="resource-link">Lost at Sea</a>
+        <a href="Handouts/Lunar Survival.docx" target="_blank" class="resource-link">Lunar Survival</a>
+        <a href="Handouts/Stranded on a Mountain.docx" target="_blank" class="resource-link">Stranded on a Mountain</a>
+      </div>
+
+      <div class="slide-counter">
+        Slide <span id="currentSlide">1</span> of
+        <span id="totalSlides">0</span>
+      </div>
+    </nav>
+
+    <!-- Main Content -->
+    <main class="main">
+      <button class="sidebar-toggle" id="sidebarToggle" onclick="toggleSidebar()" title="Toggle sidebar">&#171;</button>
+
+      <!-- ======================== -->
+      <!-- CH 1 — WARM-UP          -->
+      <!-- ======================== -->
+
+      <!-- Slide 1: Title -->
+      <section class="slide slide-title active" data-chapter="1">
+        <img src="SPOKES-Logo.png" alt="SPOKES &mdash; Strategic Planning in Occupational Knowledge for Employment and Success &mdash; Skills for Life" class="logo" />
+        <h1>Problem-Solving &amp; Decision-Making</h1>
+        <div class="divider"></div>
+        <p class="subtitle">Think Critically. Decide Wisely. Act Confidently.</p>
+        <p class="copyright">Copyright &copy; 2026 WV Adult Basic Education</p>
+      </section>
+
+      <!-- Slide 2: Hook Video — Critical Thinking Tips -->
+      <section class="slide slide-video" data-chapter="1">
+        <h2>5 Tips to Improve Your Critical Thinking</h2>
+        <div class="video-container" style="position:relative; width:100%; max-width:1215px; margin:0 auto;">
+          <video controls class="local-video" style="width:100%; border-radius:12px; box-shadow:0 4px 20px rgba(0,0,0,0.15);">
+            <source src="videos/critical_thinking_tips_ted_ed.mp4" type="video/mp4" />
+            Your browser does not support the video tag.
+          </video>
+        </div>
+      </section>
+
+      <!-- Slide 3: Critical Thinking Exercise — Giraffe Quiz -->
+      <section class="slide" data-chapter="1">
+        <h2>Critical Thinking Quiz</h2>
+        <p style="font-size:1.2rem; color:var(--gray); margin-top:-1.5rem; margin-bottom:1.5rem;">This short quiz was developed to test critical thinking skills. Try to answer each question before revealing the answer!</p>
+
+        <div class="quiz-question">
+          <h4>Q1: How do you put a giraffe into a refrigerator?</h4>
+          <div class="quiz-answer" id="q1a">
+            <p>Open the refrigerator, put in the giraffe, and close the door.</p>
+            <p class="quiz-why">This tests whether you tend to do simple things in an overly complicated way.</p>
+          </div>
+          <button class="quiz-reveal-btn" onclick="revealAnswer('q1a', this)">Reveal Answer</button>
+        </div>
+
+        <div class="quiz-question">
+          <h4>Q2: How do you put an elephant into a refrigerator?</h4>
+          <div class="quiz-answer" id="q2a">
+            <p>Open the refrigerator, take out the giraffe, put in the elephant, and close the door.</p>
+            <p class="quiz-why">This tests your ability to think through the repercussions of your previous actions.</p>
+          </div>
+          <button class="quiz-reveal-btn" onclick="revealAnswer('q2a', this)">Reveal Answer</button>
+        </div>
+
+        <div class="quiz-question">
+          <h4>Q3: The Lion King is hosting an animal conference. All animals attend except one &mdash; which one?</h4>
+          <div class="quiz-answer" id="q3a">
+            <p>The elephant &mdash; it&rsquo;s still in the refrigerator!</p>
+            <p class="quiz-why">This tests your memory.</p>
+          </div>
+          <button class="quiz-reveal-btn" onclick="revealAnswer('q3a', this)">Reveal Answer</button>
+        </div>
+
+        <div class="quiz-question">
+          <h4>Q4: You must cross a river used by crocodiles, and you don&rsquo;t have a boat. How do you do it?</h4>
+          <div class="quiz-answer" id="q4a">
+            <p>Jump in and swim across &mdash; all the crocodiles are at the animal conference!</p>
+            <p class="quiz-why">This tests whether you learn quickly from your mistakes.</p>
+          </div>
+          <button class="quiz-reveal-btn" onclick="revealAnswer('q4a', this)">Reveal Answer</button>
+        </div>
+      </section>
+
+      <!-- Slide 3: Objectives -->
+      <section class="slide" data-chapter="1">
+        <h2>Objectives</h2>
+        <div class="takeaways">
+          <div class="takeaway-item">
+            <div class="takeaway-num">1</div>
+            <p>Participate in discussions about <strong>problem-solving</strong> and <strong>decision-making</strong></p>
+          </div>
+          <div class="takeaway-item">
+            <div class="takeaway-num alt">2</div>
+            <p>Recognize the correlation between <strong>critical thinking</strong> and problem-solving</p>
+          </div>
+          <div class="takeaway-item">
+            <div class="takeaway-num">3</div>
+            <p>Identify your personal <strong>decision-making style(s)</strong></p>
+          </div>
+          <div class="takeaway-item">
+            <div class="takeaway-num alt">4</div>
+            <p>Learn to apply a <strong>logical method</strong> in solving problems and making decisions</p>
+          </div>
+        </div>
+        <div class="activity-box" style="margin-top:1.5rem;">
+          <div class="activity-label">Discussion</div>
+          <p>Think about a decision you made today. Was it easy or hard? How might that decision affect your day?</p>
+        </div>
+      </section>
+
+      <!-- ======================== -->
+      <!-- CH 2 — INTRODUCTION     -->
+      <!-- ======================== -->
+
+      <!-- Slide 4: Section Divider -->
+      <section class="slide slide-section" data-chapter="2" data-chapter-num="I">
+        <div class="section-circle" style="display:flex;align-items:center;justify-content:center;font-size:3rem;background:rgba(255,255,255,0.1);">&#129504;</div>
+        <p class="chapter-label">Introduction</p>
+        <h2>Critical Thinking in Action</h2>
+        <div class="divider"></div>
+      </section>
+
+      <!-- Slide 5: Fosbury Flop Video -->
+      <section class="slide slide-video" data-chapter="2">
+        <h2>How Critical Thinking Can Change the Game</h2>
+        <div class="video-container" style="position:relative; width:100%; max-width:1215px; margin:0 auto;">
+          <video controls class="local-video" style="width:100%; border-radius:12px; box-shadow:0 4px 20px rgba(0,0,0,0.15);">
+            <source src="videos/fosbury_flop_critical_thinking.mp4" type="video/mp4" />
+            Your browser does not support the video tag.
+          </video>
+        </div>
+      </section>
+
+      <!-- Slide 6: Problem-Solving Styles Intro -->
+      <section class="slide" data-chapter="2">
+        <h2>Problem-Solving Styles</h2>
+        <div class="split-layout">
+          <div class="split-text">
+            <p style="font-size:1.5rem; margin-bottom:1.25rem;">People try to solve problems in one of <span class="highlight">four main ways</span>. These are known as problem-solving styles.</p>
+            <p style="font-size:1.3rem; margin-bottom:1rem;">You will probably use a variety of styles, but it&rsquo;s a good idea to know which style you <span class="accent">prefer</span>.</p>
+            <p style="font-size:1.15rem; color:var(--gray);">Complete the questionnaire to discover your dominant style, then we&rsquo;ll explore what each one means.</p>
+          </div>
+          <div class="split-visual">
+            <div class="visual-circle" style="background: linear-gradient(135deg, var(--gold), var(--primary)); font-size:3.5rem;">&#10067;</div>
+          </div>
+        </div>
+        <div class="download-resource">
+          <span class="download-prompt">Student Handout</span>
+          <a href="Handouts/Problem_Solving_Styles.docx" target="_blank" class="download-btn">Problem-Solving Styles Questionnaire</a>
+        </div>
+      </section>
+
+      <!-- Slide 7: Four Styles — Flip Cards -->
+      <section class="slide" data-chapter="2">
+        <h2>The Four Styles</h2>
+        <p style="font-size:1.1rem; color:var(--gray); margin-top:-1.5rem; margin-bottom:1.5rem;">Hover over each card to learn more about the style.</p>
+        <div class="dangers-grid">
+          <div class="danger-card">
+            <div class="danger-card-inner">
+              <div class="danger-card-front">
+                <div class="danger-icon">&#128218;</div>
+                <h4>Professor</h4>
+              </div>
+              <div class="danger-card-back">
+                <h4>Professor</h4>
+                <p>Seeks background info &amp; theory. Values objectivity. Learns from past situations. <strong>Guard against:</strong> indecision from wanting too much information.</p>
+              </div>
+            </div>
+          </div>
+          <div class="danger-card">
+            <div class="danger-card-inner">
+              <div class="danger-card-front">
+                <div class="danger-icon">&#129309;</div>
+                <h4>Diplomat</h4>
+              </div>
+              <div class="danger-card-back">
+                <h4>Diplomat</h4>
+                <p>Seeks consensus by talking to people. Values opinions. Very persuasive. <strong>Guard against:</strong> missing timelines from gathering too many opinions.</p>
+              </div>
+            </div>
+          </div>
+          <div class="danger-card">
+            <div class="danger-card-inner">
+              <div class="danger-card-front">
+                <div class="danger-icon">&#128269;</div>
+                <h4>Detective</h4>
+              </div>
+              <div class="danger-card-back">
+                <h4>Detective</h4>
+                <p>Finds root causes with facts &amp; observation. Follows consistent methods. <strong>Guard against:</strong> inflexibility and insensitivity to people.</p>
+              </div>
+            </div>
+          </div>
+          <div class="danger-card">
+            <div class="danger-card-inner">
+              <div class="danger-card-front">
+                <div class="danger-icon">&#127942;</div>
+                <h4>Champion</h4>
+              </div>
+              <div class="danger-card-back">
+                <h4>Champion</h4>
+                <p>Results-oriented, trusts instincts. Tries solutions hands-on. Great in a crisis. <strong>Guard against:</strong> impulsiveness and uncooperativeness.</p>
+              </div>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <!-- ======================== -->
+      <!-- CH 3 — PRESENTATION 1   -->
+      <!-- ======================== -->
+
+      <!-- Slide 8: Section Divider -->
+      <section class="slide slide-section" data-chapter="3" data-chapter-num="P1">
+        <div class="section-circle" style="display:flex;align-items:center;justify-content:center;font-size:3rem;background:rgba(255,255,255,0.1);">&#129518;</div>
+        <p class="chapter-label">Presentation</p>
+        <h2>The Four-Step Process</h2>
+        <div class="divider"></div>
+      </section>
+
+      <!-- Slide 9: Video — Decision-Making Strategies -->
+      <section class="slide slide-video" data-chapter="3">
+        <h2>Decision-Making Strategies</h2>
+        <div class="video-container" style="position:relative; width:100%; max-width:1215px; margin:0 auto;">
+          <video controls class="local-video" style="width:100%; border-radius:12px; box-shadow:0 4px 20px rgba(0,0,0,0.15);">
+            <source src="videos/decision_making_strategies.mp4" type="video/mp4" />
+            Your browser does not support the video tag.
+          </video>
+        </div>
+      </section>
+
+      <!-- Slide 10: Process Overview -->
+      <section class="slide" data-chapter="3">
+        <h2>Four Steps to Better Decisions</h2>
+        <p style="font-size:1.2rem; color:var(--gray); margin-top:-1.5rem; margin-bottom:1.5rem;">A logical method for solving problems and making decisions (Christenson et al., 2008)</p>
+        <div class="matrix-grid">
+          <div class="matrix-cell do-first">
+            <span class="matrix-label">Step 1</span>
+            <span class="matrix-action">Stop!</span>
+            <span class="matrix-desc">Think about the problem</span>
+          </div>
+          <div class="matrix-cell schedule">
+            <span class="matrix-label">Step 2</span>
+            <span class="matrix-action">Options</span>
+            <span class="matrix-desc">What are some choices?</span>
+          </div>
+          <div class="matrix-cell delegate">
+            <span class="matrix-label">Step 3</span>
+            <span class="matrix-action">Choose</span>
+            <span class="matrix-desc">Pick the best one</span>
+          </div>
+          <div class="matrix-cell do-first" style="background: var(--mauve);">
+            <span class="matrix-label">Step 4</span>
+            <span class="matrix-action">Do It!</span>
+            <span class="matrix-desc">Apply your decision</span>
+          </div>
+        </div>
+      </section>
+
+      <!-- Slide 10: Steps Detail — Tabs -->
+      <section class="slide" data-chapter="3">
+        <h2>The Four Steps in Detail</h2>
+        <div class="tabs-container">
+          <div class="tabs-nav">
+            <button class="tab-btn active" onclick="switchTab(event, 'step1')">Step 1: Stop!</button>
+            <button class="tab-btn" onclick="switchTab(event, 'step2')">Step 2: Options</button>
+            <button class="tab-btn" onclick="switchTab(event, 'step3')">Step 3: Choose</button>
+            <button class="tab-btn" onclick="switchTab(event, 'step4')">Step 4: Do It</button>
+          </div>
+          <div class="tab-panel active" id="step1">
+            <h4>Stop! Think About the Problem</h4>
+            <p>When presented with a problem, we sometimes react in an extreme manner &mdash; either by being <strong>impulsive</strong> or by <strong>procrastinating</strong>.</p>
+            <ul>
+              <li>What might happen if we react impulsively?</li>
+              <li>What might happen if we procrastinate?</li>
+              <li>How could outcomes differ if we stopped first, then thought, then decided?</li>
+            </ul>
+          </div>
+          <div class="tab-panel" id="step2">
+            <h4>What Are Some Options?</h4>
+            <p>Write a list of possible solutions &mdash; also called options or choices.</p>
+            <ul>
+              <li>Brainstorm random solutions, even &ldquo;outside the box&rdquo; ones</li>
+              <li>After your list is full, eliminate choices that won&rsquo;t work</li>
+              <li>Cross out options that are unethical, illegal, or harmful</li>
+            </ul>
+          </div>
+          <div class="tab-panel" id="step3">
+            <h4>Choose One</h4>
+            <p>Look at the remaining options on your list.</p>
+            <ul>
+              <li>If two choices remain, select the one that is most effective without causing negative effects</li>
+              <li>If only one viable option remains, it may be the best choice</li>
+              <li>Weigh short-term vs. long-term consequences</li>
+            </ul>
+          </div>
+          <div class="tab-panel" id="step4">
+            <h4>Do It!</h4>
+            <p>Apply the remaining option to your situation.</p>
+            <ul>
+              <li>Take action on your chosen solution</li>
+              <li>Observe the results</li>
+              <li>If the solution doesn&rsquo;t work, go back to Step 2 and try another option</li>
+            </ul>
+          </div>
+        </div>
+      </section>
+
+      <!-- Slide 11: Scenario Example -->
+      <section class="slide" data-chapter="3">
+        <h2>Let&rsquo;s Try It Together</h2>
+        <div class="split-layout">
+          <div class="split-text">
+            <div style="background:var(--muted); padding:1.5rem 2rem; border-radius:12px; border-left:5px solid var(--gold); margin-bottom:1.5rem;">
+              <p style="font-size:1.2rem; color:var(--dark); line-height:1.5;"><strong style="color:var(--gold);">Scenario:</strong> Your kids need shirts for school, and with your limited budget, you look for a bargain on your favorite store&rsquo;s website. You find a great sale on children&rsquo;s shirts at <strong>3 for $10</strong>! You rush to the store &mdash; but find the same shirts listed at <strong>$15 each</strong>, no sale sign in sight!</p>
+            </div>
+            <p style="font-size:1.5rem; color:var(--primary); font-weight:600;">What could you do?</p>
+            <ul class="content-list" style="margin-top:0.5rem;">
+              <li><strong>Stop</strong> &mdash; Think about the problem</li>
+              <li><strong>Options</strong> &mdash; Brainstorm possible solutions</li>
+              <li><strong>Choose</strong> &mdash; Eliminate what won&rsquo;t work</li>
+              <li><strong>Do it</strong> &mdash; Apply your best option</li>
+            </ul>
+          </div>
+          <div class="split-visual">
+            <div class="visual-circle" style="background: linear-gradient(135deg, var(--gold), var(--dark)); font-size:3.5rem;">&#128722;</div>
+          </div>
+        </div>
+      </section>
+
+      <!-- ======================== -->
+      <!-- CH 4 — PRACTICE 2       -->
+      <!-- ======================== -->
+
+      <!-- Slide 12: Section Divider -->
+      <section class="slide slide-section" data-chapter="4" data-chapter-num="P2">
+        <div class="section-circle" style="display:flex;align-items:center;justify-content:center;font-size:3rem;background:rgba(255,255,255,0.1);">&#128101;</div>
+        <p class="chapter-label">Practice</p>
+        <h2>Group Scenarios</h2>
+        <div class="divider"></div>
+      </section>
+
+      <!-- Slide 13: Video — Good Teamwork and Bad Teamwork -->
+      <section class="slide slide-video" data-chapter="4">
+        <h2>Good Teamwork and Bad Teamwork</h2>
+        <div class="video-container" style="position:relative; width:100%; max-width:1215px; margin:0 auto;">
+          <video controls class="local-video" style="width:100%; border-radius:12px; box-shadow:0 4px 20px rgba(0,0,0,0.15);">
+            <source src="videos/good_teamwork_bad_teamwork.mp4" type="video/mp4" />
+            Your browser does not support the video tag.
+          </video>
+        </div>
+      </section>
+
+      <!-- Slide 14: Group Activity Instructions -->
+      <section class="slide" data-chapter="4">
+        <h2>Group Scenario Activity</h2>
+        <div class="split-layout">
+          <div class="split-text">
+            <div class="takeaways" style="gap:0.5rem;">
+              <div class="takeaway-item">
+                <div class="takeaway-num">1</div>
+                <p>Divide into groups</p>
+              </div>
+              <div class="takeaway-item">
+                <div class="takeaway-num alt">2</div>
+                <p>Choose a scenario</p>
+              </div>
+              <div class="takeaway-item">
+                <div class="takeaway-num">3</div>
+                <p>Discuss &amp; brainstorm options</p>
+              </div>
+              <div class="takeaway-item">
+                <div class="takeaway-num alt">4</div>
+                <p>Eliminate what won&rsquo;t work</p>
+              </div>
+              <div class="takeaway-item">
+                <div class="takeaway-num">5</div>
+                <p>Share your results!</p>
+              </div>
+            </div>
+          </div>
+          <div class="split-visual">
+            <div class="visual-circle" style="background: linear-gradient(135deg, var(--accent), var(--primary)); font-size:3.5rem;">&#128483;</div>
+          </div>
+        </div>
+        <div class="download-resource">
+          <span class="download-prompt">Student Handout</span>
+          <a href="Handouts/Group Activity Scenarios.docx" target="_blank" class="download-btn">Group Scenarios</a>
+        </div>
+      </section>
+
+      <!-- Slide 14: Scenario Cards -->
+      <section class="slide" data-chapter="4">
+        <h2>Choose a Scenario</h2>
+        <div class="scenarios-grid">
+          <div class="scenario-card"><strong>Scenario 1</strong>You run into an acquaintance at the library and realize you forgot her name. What could you do?</div>
+          <div class="scenario-card"><strong>Scenario 2</strong>You take clothes to a consignment shop expecting 50/50, but the clerk says it&rsquo;s 30/70. You were counting on that money. What could you do?</div>
+          <div class="scenario-card"><strong>Scenario 3</strong>Your friend asks you to write a reference for a job. In your opinion, he isn&rsquo;t qualified. What could you do?</div>
+          <div class="scenario-card"><strong>Scenario 4</strong>You&rsquo;re a single parent with a job interview, and your babysitter cancels last minute. This is a dream job. What could you do?</div>
+          <div class="scenario-card"><strong>Scenario 5</strong>After surgery, the nurse says to ring the buzzer for the bathroom &mdash; but it takes staff 20 minutes to answer. What could you do?</div>
+          <div class="scenario-card"><strong>Scenario 6</strong>Your washing machine is making strange noises. A service call costs $150, but you only have $20 left this month. What could you do?</div>
+          <div class="scenario-card"><strong>Scenario 7</strong>You just started a new job. At lunchtime you realize you don&rsquo;t have enough lunch money. What could you do?</div>
+          <div class="scenario-card"><strong>Scenario 8</strong>Your boss constantly asks you to run personal errands during work. You can&rsquo;t finish your own work. What could you do?</div>
+          <div class="scenario-card"><strong>Scenario 9</strong>You call the doctor to schedule a check-up, but the receptionist isn&rsquo;t being helpful with an appointment time. What could you do?</div>
+          <div class="scenario-card"><strong>Scenario 10</strong>You&rsquo;re offered a great job with a huge salary, but it requires a lot of travel that cuts into family time. What could you do?</div>
+        </div>
+      </section>
+
+      <!-- ======================== -->
+      <!-- CH 5 — PRACTICE 3       -->
+      <!-- ======================== -->
+
+      <!-- Slide 15: Section Divider -->
+      <section class="slide slide-section" data-chapter="5" data-chapter-num="P3">
+        <div class="section-circle" style="display:flex;align-items:center;justify-content:center;font-size:3rem;background:rgba(255,255,255,0.1);">&#127758;</div>
+        <p class="chapter-label">Practice</p>
+        <h2>Survival Challenge</h2>
+        <div class="divider"></div>
+      </section>
+
+      <!-- Slide 16: Survival Activity Intro -->
+      <section class="slide" data-chapter="5">
+        <h2>Survival Activity</h2>
+        <div class="split-layout">
+          <div class="split-text">
+            <p style="font-size:1.4rem; margin-bottom:1rem;">Practice <span class="highlight">collaborative problem-solving</span> by ranking items needed for survival.</p>
+            <p style="font-size:1.2rem; margin-bottom:1.5rem; color:var(--gray);">Choose one of three survival scenarios. Use the four-step process to determine your rankings, then compare with the expert answers.</p>
+            <div class="takeaways" style="gap:0.4rem;">
+              <div class="takeaway-item">
+                <div class="takeaway-num">1</div>
+                <p>Rank items individually first</p>
+              </div>
+              <div class="takeaway-item">
+                <div class="takeaway-num alt">2</div>
+                <p>Discuss and agree as a group</p>
+              </div>
+              <div class="takeaway-item">
+                <div class="takeaway-num">3</div>
+                <p>Reveal the expert rankings</p>
+              </div>
+              <div class="takeaway-item">
+                <div class="takeaway-num alt">4</div>
+                <p>Discuss your reasoning</p>
+              </div>
+            </div>
+          </div>
+          <div class="split-visual">
+            <div class="visual-circle" style="background: linear-gradient(135deg, var(--mauve), var(--dark)); font-size:3.5rem;">&#9978;</div>
+          </div>
+        </div>
+        <div class="download-resource">
+          <span class="download-prompt">Student Handouts</span>
+          <a href="Handouts/Lost At Sea.docx" target="_blank" class="download-btn">Lost at Sea</a>
+          <a href="Handouts/Lunar Survival.docx" target="_blank" class="download-btn">Lunar Survival</a>
+          <a href="Handouts/Stranded on a Mountain.docx" target="_blank" class="download-btn">Stranded on a Mountain</a>
+        </div>
+      </section>
+
+      <!-- Slide 17: Lost at Sea -->
+      <section class="slide" data-chapter="5">
+        <h2>Lost at Sea &mdash; Expert Rankings</h2>
+        <p style="font-size:1rem; color:var(--gray); margin-top:-1.5rem; margin-bottom:1rem;">You are adrift in the South Pacific after a yacht fire. Rank these 15 items for survival.</p>
+        <div class="tabs-container">
+          <div class="tabs-nav">
+            <button class="tab-btn active" onclick="switchTab(event, 'sea-items')">Items to Rank</button>
+            <button class="tab-btn" onclick="switchTab(event, 'sea-answers')">Expert Answers</button>
+          </div>
+          <div class="tab-panel active" id="sea-items">
+            <p style="font-size:1rem; margin-bottom:0.75rem;">Rank from 1 (most important) to 15 (least important):</p>
+            <div style="display:grid; grid-template-columns:1fr 1fr; gap:0.25rem 2rem;">
+              <p style="font-size:1rem;">&#9744; Sextant</p>
+              <p style="font-size:1rem;">&#9744; Small transistor radio</p>
+              <p style="font-size:1rem;">&#9744; Shaving mirror</p>
+              <p style="font-size:1rem;">&#9744; Shark repellent</p>
+              <p style="font-size:1rem;">&#9744; 5 gallons of water</p>
+              <p style="font-size:1rem;">&#9744; 20 sq. ft. opaque plastic</p>
+              <p style="font-size:1rem;">&#9744; Mosquito netting</p>
+              <p style="font-size:1rem;">&#9744; 1 case of rations</p>
+              <p style="font-size:1rem;">&#9744; Maps of the area</p>
+              <p style="font-size:1rem;">&#9744; Seat cushion (flotation)</p>
+              <p style="font-size:1rem;">&#9744; 2 gal. oil/gas mixture</p>
+              <p style="font-size:1rem;">&#9744; 1 qt. 160-proof rum</p>
+              <p style="font-size:1rem;">&#9744; 15 ft. nylon rope</p>
+              <p style="font-size:1rem;">&#9744; 2 boxes of chocolate bars</p>
+              <p style="font-size:1rem;">&#9744; Fishing kit</p>
+            </div>
+          </div>
+          <div class="tab-panel" id="sea-answers">
+            <ol style="list-style:none; display:flex; flex-direction:column; gap:0.2rem; padding:0;">
+              <li style="font-size:0.95rem; padding:0.3rem 0.5rem; background:rgba(55,181,80,0.08); border-radius:6px;"><strong style="color:var(--primary);">1.</strong> Shaving mirror &mdash; vital for signaling rescue</li>
+              <li style="font-size:0.95rem; padding:0.3rem 0.5rem;"><strong style="color:var(--primary);">2.</strong> Oil/gas mixture &mdash; floats and can be ignited for signaling</li>
+              <li style="font-size:0.95rem; padding:0.3rem 0.5rem; background:rgba(55,181,80,0.08); border-radius:6px;"><strong style="color:var(--primary);">3.</strong> 5 gallons of water</li>
+              <li style="font-size:0.95rem; padding:0.3rem 0.5rem;"><strong style="color:var(--primary);">4.</strong> 1 case of rations</li>
+              <li style="font-size:0.95rem; padding:0.3rem 0.5rem; background:rgba(55,181,80,0.08); border-radius:6px;"><strong style="color:var(--primary);">5.</strong> Opaque plastic &mdash; collect rainwater, shelter</li>
+              <li style="font-size:0.95rem; padding:0.3rem 0.5rem;"><strong style="color:var(--primary);">6.</strong> Chocolate bars &mdash; reserve food</li>
+              <li style="font-size:0.95rem; padding:0.3rem 0.5rem; background:rgba(55,181,80,0.08); border-radius:6px;"><strong style="color:var(--primary);">7.</strong> Fishing kit &mdash; no guarantee of catching fish</li>
+              <li style="font-size:0.95rem; padding:0.3rem 0.5rem;"><strong style="color:var(--primary);">8.</strong> Nylon rope &mdash; secure equipment</li>
+              <li style="font-size:0.95rem; padding:0.3rem 0.5rem; background:rgba(55,181,80,0.08); border-radius:6px;"><strong style="color:var(--primary);">9.</strong> Seat cushion &mdash; lifesaver if someone falls in</li>
+              <li style="font-size:0.95rem; padding:0.3rem 0.5rem;"><strong style="color:var(--primary);">10.</strong> Shark repellent</li>
+              <li style="font-size:0.95rem; padding:0.3rem 0.5rem; background:rgba(55,181,80,0.08); border-radius:6px;"><strong style="color:var(--primary);">11.</strong> Rum &mdash; 80% alcohol, antiseptic only; causes dehydration</li>
+              <li style="font-size:0.95rem; padding:0.3rem 0.5rem;"><strong style="color:var(--primary);">12.</strong> Transistor radio &mdash; no transmitter</li>
+              <li style="font-size:0.95rem; padding:0.3rem 0.5rem; background:rgba(55,181,80,0.08); border-radius:6px;"><strong style="color:var(--primary);">13.</strong> Maps &mdash; worthless without navigation tools</li>
+              <li style="font-size:0.95rem; padding:0.3rem 0.5rem;"><strong style="color:var(--primary);">14.</strong> Mosquito netting &mdash; no mosquitoes at sea</li>
+              <li style="font-size:0.95rem; padding:0.3rem 0.5rem; background:rgba(55,181,80,0.08); border-radius:6px;"><strong style="color:var(--primary);">15.</strong> Sextant &mdash; useless without tables and chronometer</li>
+            </ol>
+          </div>
+        </div>
+      </section>
+
+      <!-- Slide 18: Lunar Survival -->
+      <section class="slide" data-chapter="5">
+        <h2>Lunar Survival &mdash; NASA Rankings</h2>
+        <p style="font-size:1rem; color:var(--gray); margin-top:-1.5rem; margin-bottom:1rem;">Your ship crash-landed 200 miles from the mothership on the moon. Rank these 15 items.</p>
+        <div class="tabs-container">
+          <div class="tabs-nav">
+            <button class="tab-btn active" onclick="switchTab(event, 'lunar-items')">Items to Rank</button>
+            <button class="tab-btn" onclick="switchTab(event, 'lunar-answers')">NASA Answers</button>
+          </div>
+          <div class="tab-panel active" id="lunar-items">
+            <p style="font-size:1rem; margin-bottom:0.75rem;">Rank from 1 (most important) to 15 (least important):</p>
+            <div style="display:grid; grid-template-columns:1fr 1fr; gap:0.25rem 2rem;">
+              <p style="font-size:1rem;">&#9744; Box of matches</p>
+              <p style="font-size:1rem;">&#9744; Food concentrate</p>
+              <p style="font-size:1rem;">&#9744; 50 ft. nylon rope</p>
+              <p style="font-size:1rem;">&#9744; Parachute silk</p>
+              <p style="font-size:1rem;">&#9744; Portable heating unit</p>
+              <p style="font-size:1rem;">&#9744; Two .45 caliber pistols</p>
+              <p style="font-size:1rem;">&#9744; Dehydrated milk</p>
+              <p style="font-size:1rem;">&#9744; Two 100-lb. oxygen tanks</p>
+              <p style="font-size:1rem;">&#9744; Stellar map</p>
+              <p style="font-size:1rem;">&#9744; Self-inflating life raft</p>
+              <p style="font-size:1rem;">&#9744; Magnetic compass</p>
+              <p style="font-size:1rem;">&#9744; 20 liters of water</p>
+              <p style="font-size:1rem;">&#9744; Signal flares</p>
+              <p style="font-size:1rem;">&#9744; First aid kit w/ injection needle</p>
+              <p style="font-size:1rem;">&#9744; Solar FM receiver-transmitter</p>
+            </div>
+          </div>
+          <div class="tab-panel" id="lunar-answers">
+            <ol style="list-style:none; display:flex; flex-direction:column; gap:0.2rem; padding:0;">
+              <li style="font-size:0.95rem; padding:0.3rem 0.5rem; background:rgba(55,181,80,0.08); border-radius:6px;"><strong style="color:var(--primary);">1.</strong> Oxygen tanks &mdash; most pressing survival need</li>
+              <li style="font-size:0.95rem; padding:0.3rem 0.5rem;"><strong style="color:var(--primary);">2.</strong> 20 liters of water &mdash; replacement for body fluid loss</li>
+              <li style="font-size:0.95rem; padding:0.3rem 0.5rem; background:rgba(55,181,80,0.08); border-radius:6px;"><strong style="color:var(--primary);">3.</strong> Stellar map &mdash; navigation</li>
+              <li style="font-size:0.95rem; padding:0.3rem 0.5rem;"><strong style="color:var(--primary);">4.</strong> Food concentrate &mdash; efficient energy supply</li>
+              <li style="font-size:0.95rem; padding:0.3rem 0.5rem; background:rgba(55,181,80,0.08); border-radius:6px;"><strong style="color:var(--primary);">5.</strong> FM receiver-transmitter &mdash; communication with mothership</li>
+              <li style="font-size:0.95rem; padding:0.3rem 0.5rem;"><strong style="color:var(--primary);">6.</strong> Nylon rope &mdash; climbing, tying injured together</li>
+              <li style="font-size:0.95rem; padding:0.3rem 0.5rem; background:rgba(55,181,80,0.08); border-radius:6px;"><strong style="color:var(--primary);">7.</strong> First aid kit &mdash; aiding the injured</li>
+              <li style="font-size:0.95rem; padding:0.3rem 0.5rem;"><strong style="color:var(--primary);">8.</strong> Parachute silk &mdash; sun protection</li>
+              <li style="font-size:0.95rem; padding:0.3rem 0.5rem; background:rgba(55,181,80,0.08); border-radius:6px;"><strong style="color:var(--primary);">9.</strong> Life raft &mdash; CO2 bottle for self-propulsion</li>
+              <li style="font-size:0.95rem; padding:0.3rem 0.5rem;"><strong style="color:var(--primary);">10.</strong> Signal flares &mdash; distress signal when mothership is visible</li>
+              <li style="font-size:0.95rem; padding:0.3rem 0.5rem; background:rgba(55,181,80,0.08); border-radius:6px;"><strong style="color:var(--primary);">11.</strong> Pistols &mdash; possible self-propulsion</li>
+              <li style="font-size:0.95rem; padding:0.3rem 0.5rem;"><strong style="color:var(--primary);">12.</strong> Dehydrated milk &mdash; similar to food concentrate</li>
+              <li style="font-size:0.95rem; padding:0.3rem 0.5rem; background:rgba(55,181,80,0.08); border-radius:6px;"><strong style="color:var(--primary);">13.</strong> Heating unit &mdash; not needed on lit side of moon</li>
+              <li style="font-size:0.95rem; padding:0.3rem 0.5rem;"><strong style="color:var(--primary);">14.</strong> Magnetic compass &mdash; no polarized magnetic field on moon</li>
+              <li style="font-size:0.95rem; padding:0.3rem 0.5rem; background:rgba(55,181,80,0.08); border-radius:6px;"><strong style="color:var(--primary);">15.</strong> Matches &mdash; worthless, no oxygen on the moon</li>
+            </ol>
+          </div>
+        </div>
+      </section>
+
+      <!-- Slide 19: Big Statement -->
+      <section class="slide big-statement" data-chapter="5">
+        <h2>Every problem is a chance to<br><span class="highlight">think differently.</span></h2>
+      </section>
+
+      <!-- ======================== -->
+      <!-- CH 6 — EVALUATION        -->
+      <!-- ======================== -->
+
+      <!-- Slide 20: Section Divider -->
+      <section class="slide slide-section" data-chapter="6" data-chapter-num="E">
+        <div class="section-circle" style="display:flex;align-items:center;justify-content:center;font-size:3rem;background:rgba(255,255,255,0.1);">&#128221;</div>
+        <p class="chapter-label">Evaluation</p>
+        <h2>3&ndash;2&ndash;1 Reflection</h2>
+        <div class="divider"></div>
+      </section>
+
+      <!-- Slide 21: 3-2-1 Reflection -->
+      <section class="slide" data-chapter="6">
+        <h2>3 &ndash; 2 &ndash; 1 Reflection</h2>
+        <div class="checkpoint" style="margin-top:0;">
+          <div class="checkpoint-label">3 &mdash; Things You Learned</div>
+          <p style="font-size:1.1rem; color:var(--gray);">Name three things you learned today about problem-solving and decision-making.</p>
+          <textarea placeholder="1. &#10;2. &#10;3. "></textarea>
+        </div>
+        <div class="checkpoint">
+          <div class="checkpoint-label">2 &mdash; Barriers to Improve</div>
+          <p style="font-size:1.1rem; color:var(--gray);">What are two barriers to effective decision-making you want to work on?</p>
+          <textarea placeholder="1. &#10;2. "></textarea>
+        </div>
+        <div class="checkpoint">
+          <div class="checkpoint-label">1 &mdash; Strategy to Implement</div>
+          <p style="font-size:1.1rem; color:var(--gray);">What is one strategy you can implement today?</p>
+          <textarea placeholder="I will..."></textarea>
+        </div>
+      </section>
+
+      <!-- ======================== -->
+      <!-- CH 7 — APPLICATION       -->
+      <!-- ======================== -->
+
+      <!-- Slide 22: Section Divider -->
+      <section class="slide slide-section" data-chapter="7" data-chapter-num="A">
+        <div class="section-circle" style="display:flex;align-items:center;justify-content:center;font-size:3rem;background:rgba(255,255,255,0.1);">&#127891;</div>
+        <p class="chapter-label">Application</p>
+        <h2>Share &amp; Apply</h2>
+        <div class="divider"></div>
+      </section>
+
+      <!-- Slide 23: Key Takeaways -->
+      <section class="slide" data-chapter="7">
+        <h2>Key Takeaways</h2>
+        <div class="takeaways">
+          <div class="takeaway-item">
+            <div class="takeaway-num">1</div>
+            <p><strong>Critical thinking</strong> is the foundation of effective problem-solving</p>
+          </div>
+          <div class="takeaway-item">
+            <div class="takeaway-num alt">2</div>
+            <p>Everyone has a <strong>problem-solving style</strong> &mdash; knowing yours helps you improve</p>
+          </div>
+          <div class="takeaway-item">
+            <div class="takeaway-num">3</div>
+            <p>The four-step process: <strong>Stop, Options, Choose, Do It</strong></p>
+          </div>
+          <div class="takeaway-item">
+            <div class="takeaway-num alt">4</div>
+            <p><strong>Collaboration</strong> leads to better decisions than working alone</p>
+          </div>
+          <div class="takeaway-item">
+            <div class="takeaway-num">5</div>
+            <p>Practice makes you a <strong>more confident</strong> decision-maker</p>
+          </div>
+        </div>
+        <div class="download-resource">
+          <span class="download-prompt">Teacher Resources</span>
+          <a href="Teacher-Resources/Problem_Solving__Decision_Making_Rubric.docx" target="_blank" class="download-btn">Rubric</a>
+          <a href="Teacher-Resources/SPOKES Problem-Solving Module.docx" target="_blank" class="download-btn">Lesson Plan</a>
+        </div>
+      </section>
+
+      <!-- Slide 24: Share Reflections -->
+      <section class="slide" data-chapter="7">
+        <h2>Share Your Reflections</h2>
+        <div class="split-layout">
+          <div class="split-text">
+            <p style="font-size:1.5rem; margin-bottom:1.5rem;">Share your <span class="highlight">3-2-1 responses</span> with the class:</p>
+            <ul class="content-list">
+              <li><strong>3 things</strong> you learned about problem-solving and decision-making</li>
+              <li><strong>2 barriers</strong> you want to improve on</li>
+              <li><strong>1 strategy</strong> you can implement today</li>
+            </ul>
+          </div>
+          <div class="split-visual">
+            <div class="visual-circle" style="background: linear-gradient(135deg, var(--accent), var(--gold)); font-size:3.5rem;">&#128172;</div>
+          </div>
+        </div>
+        <div class="activity-box" style="margin-top:1.5rem;">
+          <div class="activity-label">Application</div>
+          <p>Think about a problem you are currently facing. How can you apply the four-step process to work through it?</p>
+        </div>
+      </section>
+
+      <!-- Slide 25: Closing -->
+      <section class="slide slide-closing" data-chapter="7" id="closingSlide">
+        <div class="confetti-container" id="confettiContainer"></div>
+        <div class="closing-box">
+          <h3 style="color: var(--gold); font-size: 1.5rem; margin-bottom: 1.5rem;">
+            Congratulations, you have completed this lesson!
+          </h3>
+          <p>&ldquo;In the middle of difficulty lies opportunity.&rdquo; &mdash; Albert Einstein</p>
+          <div class="divider"></div>
+          <h2>Think. Decide. Act.</h2>
+        </div>
+      </section>
+
+      <!-- Navigation Hint -->
+      <div class="nav-hint">
+        <span class="key-icon" id="prevBtn" onclick="prevSlide()">&#8592;</span>
+        <span>to navigate</span>
+        <span class="key-icon" id="nextBtn" onclick="nextSlide()">&#8594;</span>
+      </div>
+
+      <!-- Branding Logo -->
+      <img src="SPOKES-Logo.png" alt="SPOKES" class="branding-logo" />
+
+      <!-- Progress Bar -->
+      <div class="progress-bar" id="progressBar"></div>
+    </main>
+  </div>
+
+  <script>
+    /* ================================================================
+       SPOKES NAVIGATION ENGINE — DO NOT MODIFY THIS JAVASCRIPT
+       This entire script block is the SPOKES standard.
+       Copy it verbatim into every new lesson.
+       The ONLY thing you change is the chapterNames object below.
+       ================================================================ */
+
+    const prefersReduced = window.matchMedia(
+      "(prefers-reduced-motion: reduce)",
+    ).matches;
+
+    const slides = document.querySelectorAll(".slide");
+    const chapterListEl = document.getElementById("chapterList");
+    const currentSlideEl = document.getElementById("currentSlide");
+    const totalSlidesEl = document.getElementById("totalSlides");
+    const progressBar = document.getElementById("progressBar");
+
+    let currentIndex = 0;
+    let sidebarCollapsed = false;
+    const sidebarEl = document.querySelector(".sidebar");
+    const sidebarToggleBtn = document.getElementById("sidebarToggle");
+    totalSlidesEl.textContent = slides.length;
+
+    function toggleSidebar() {
+      sidebarCollapsed = !sidebarCollapsed;
+      sidebarEl.classList.toggle("collapsed", sidebarCollapsed);
+      sidebarToggleBtn.textContent = sidebarCollapsed ? "\u00BB" : "\u00AB";
+    }
+
+    let audioCtx;
+    try {
+      if (!prefersReduced) {
+        audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+      }
+    } catch (e) { /* silent fail */ }
+
+    function playClickSound() {
+      if (!audioCtx || prefersReduced) return;
+      const oscillator = audioCtx.createOscillator();
+      const gainNode = audioCtx.createGain();
+      oscillator.connect(gainNode);
+      gainNode.connect(audioCtx.destination);
+      oscillator.frequency.value = 800;
+      oscillator.type = "sine";
+      gainNode.gain.setValueAtTime(0.1, audioCtx.currentTime);
+      gainNode.gain.exponentialRampToValueAtTime(0.01, audioCtx.currentTime + 0.1);
+      oscillator.start(audioCtx.currentTime);
+      oscillator.stop(audioCtx.currentTime + 0.1);
+    }
+
+    function playSuccessSound() {
+      if (!audioCtx || prefersReduced) return;
+      [523, 659, 784].forEach(function(freq, i) {
+        setTimeout(function() {
+          const oscillator = audioCtx.createOscillator();
+          const gainNode = audioCtx.createGain();
+          oscillator.connect(gainNode);
+          gainNode.connect(audioCtx.destination);
+          oscillator.frequency.value = freq;
+          oscillator.type = "sine";
+          gainNode.gain.setValueAtTime(0.1, audioCtx.currentTime);
+          gainNode.gain.exponentialRampToValueAtTime(0.01, audioCtx.currentTime + 0.3);
+          oscillator.start(audioCtx.currentTime);
+          oscillator.stop(audioCtx.currentTime + 0.3);
+        }, i * 150);
+      });
+    }
+
+    const chapterNames = {
+      1: { name: "Warm-Up", badge: "w" },
+      2: { name: "Critical Thinking", badge: "i" },
+      3: { name: "The Four-Step Process", badge: "p" },
+      4: { name: "Group Scenarios", badge: "p" },
+      5: { name: "Survival Challenge", badge: "p" },
+      6: { name: "Evaluation", badge: "e" },
+      7: { name: "Application", badge: "a" },
+    };
+
+    const wippeaLabels = { w: "W", i: "I", p: "P", e: "E", a: "A" };
+
+    function buildSidebar() {
+      var chapters = {};
+      slides.forEach(function(slide, index) {
+        var chapter = slide.dataset.chapter;
+        if (!chapters[chapter]) chapters[chapter] = [];
+        var h1 = slide.querySelector("h1");
+        var h2 = slide.querySelector("h2");
+        var title = h1 ? h1.textContent : h2 ? h2.textContent : "Slide " + (index + 1);
+        title = title.replace(/\s+/g, " ").trim();
+        chapters[chapter].push({ index: index, title: title });
+      });
+
+      var fragment = document.createDocumentFragment();
+      Object.keys(chapters).forEach(function(chapterNum) {
+        var chapterSlides = chapters[chapterNum];
+        var info = chapterNames[chapterNum] || { name: "Chapter " + chapterNum, badge: "p" };
+        var badgeLetter = wippeaLabels[info.badge] || "P";
+
+        var li = document.createElement("li");
+        li.className = "chapter-item";
+        li.dataset.chapter = chapterNum;
+
+        var header = document.createElement("div");
+        header.className = "chapter-header";
+
+        var arrow = document.createElement("span");
+        arrow.className = "chapter-arrow";
+        arrow.textContent = "\u25B6";
+
+        var badge = document.createElement("span");
+        badge.className = "wippea-badge " + info.badge;
+        badge.textContent = badgeLetter;
+
+        var nameSpan = document.createElement("span");
+        nameSpan.textContent = info.name;
+
+        header.appendChild(arrow);
+        header.appendChild(badge);
+        header.appendChild(nameSpan);
+
+        var ul = document.createElement("ul");
+        ul.className = "slide-list";
+
+        chapterSlides.forEach(function(s) {
+          var slideItem = document.createElement("li");
+          slideItem.className = "slide-item";
+          slideItem.dataset.slide = s.index;
+          slideItem.textContent = s.title;
+          ul.appendChild(slideItem);
+        });
+
+        li.appendChild(header);
+        li.appendChild(ul);
+        fragment.appendChild(li);
+      });
+
+      chapterListEl.appendChild(fragment);
+
+      document.querySelectorAll(".chapter-header").forEach(function(header) {
+        header.addEventListener("click", function() {
+          var chapterItem = header.parentElement;
+          var wasExpanded = chapterItem.classList.contains("expanded");
+          document.querySelectorAll(".chapter-item").forEach(function(item) { item.classList.remove("expanded"); });
+          if (!wasExpanded) chapterItem.classList.add("expanded");
+          var chapter = chapterItem.dataset.chapter;
+          var targetIndex = Array.from(slides).findIndex(function(slide) { return slide.dataset.chapter === chapter; });
+          if (targetIndex !== -1) showSlide(targetIndex);
+        });
+      });
+
+      document.querySelectorAll(".slide-item").forEach(function(item) {
+        item.addEventListener("click", function(e) {
+          e.stopPropagation();
+          showSlide(parseInt(item.dataset.slide));
+        });
+      });
+    }
+
+    function observeSlideContent(slideEl) {
+      if (slideEl._contentObserver) {
+        slideEl._contentObserver.disconnect();
+        delete slideEl._contentObserver;
+      }
+      var items = slideEl.querySelectorAll(".reveal-item");
+      if (!items.length) return;
+      items.forEach(function(el, i) { el.style.setProperty("--reveal-i", i); });
+      if (prefersReduced) {
+        items.forEach(function(el) { el.classList.add("visible"); });
+        return;
+      }
+      var observer = new IntersectionObserver(function(entries) {
+        entries.forEach(function(entry) {
+          if (entry.isIntersecting) {
+            entry.target.classList.add("visible");
+            observer.unobserve(entry.target);
+          }
+        });
+      }, { root: slideEl, threshold: 0.1 });
+      items.forEach(function(el) { observer.observe(el); });
+      slideEl._contentObserver = observer;
+    }
+
+    function showSlide(index) {
+      if (index < 0) index = 0;
+      if (index >= slides.length) index = slides.length - 1;
+
+      var doTransition = function() {
+        currentIndex = index;
+        slides.forEach(function(slide, i) {
+          if (i !== index) {
+            if (slide._contentObserver) {
+              slide._contentObserver.disconnect();
+              delete slide._contentObserver;
+            }
+            slide.querySelectorAll(".reveal-item.visible").forEach(function(el) { el.classList.remove("visible"); });
+          }
+          slide.classList.toggle("active", i === index);
+        });
+
+        var currentChapter = slides[index].dataset.chapter;
+        document.querySelectorAll(".chapter-item").forEach(function(item) {
+          var isActive = item.dataset.chapter === currentChapter;
+          item.classList.toggle("active", isActive);
+          if (isActive) item.classList.add("expanded");
+        });
+
+        document.querySelectorAll(".slide-item").forEach(function(item) {
+          item.classList.toggle("active", parseInt(item.dataset.slide) === index);
+        });
+
+        var scrollTarget = document.querySelector(".slide-item.active") || document.querySelector(".chapter-item.active");
+        if (scrollTarget) {
+          scrollTarget.scrollIntoView({ behavior: "smooth", block: "nearest" });
+        }
+
+        currentSlideEl.textContent = index + 1;
+        progressBar.style.width = ((index + 1) / slides.length) * 100 + "%";
+
+        var brandingLogo = document.querySelector(".branding-logo");
+        if (slides[index].classList.contains("slide-title") || slides[index].classList.contains("slide-closing")) {
+          brandingLogo.style.display = "none";
+        } else {
+          brandingLogo.style.display = "block";
+        }
+
+        observeSlideContent(slides[index]);
+
+        if (slides[index].classList.contains("slide-closing") && !prefersReduced) {
+          triggerConfetti();
+          playSuccessSound();
+        }
+      };
+
+      if (document.startViewTransition && !prefersReduced) {
+        document.startViewTransition(doTransition);
+      } else {
+        doTransition();
+      }
+    }
+
+    function triggerConfetti() {
+      var container = document.getElementById("confettiContainer");
+      while (container.firstChild) container.removeChild(container.firstChild);
+      var colors = ["#a7253f", "#d3b257", "#37b550", "#007baf", "#FFFFFF"];
+      for (var i = 0; i < 100; i++) {
+        var confetti = document.createElement("div");
+        confetti.className = "confetti";
+        confetti.style.left = Math.random() * 100 + "%";
+        confetti.style.backgroundColor = colors[Math.floor(Math.random() * colors.length)];
+        confetti.style.animationDelay = Math.random() * 2 + "s";
+        confetti.style.animationDuration = Math.random() * 2 + 3 + "s";
+        var size = Math.random() * 10 + 5;
+        confetti.style.width = size + "px";
+        confetti.style.height = size + "px";
+        confetti.style.borderRadius = Math.random() > 0.5 ? "50%" : "0";
+        container.appendChild(confetti);
+      }
+    }
+
+    function nextSlide() { showSlide(currentIndex + 1); }
+    function prevSlide() { showSlide(currentIndex - 1); }
+
+    document.addEventListener("keydown", function(e) {
+      if (e.target.tagName === "TEXTAREA" || e.target.tagName === "INPUT") return;
+      if (e.key === "ArrowRight" || e.key === " ") {
+        e.preventDefault();
+        nextSlide();
+      } else if (e.key === "ArrowLeft") {
+        e.preventDefault();
+        prevSlide();
+      }
+    });
+
+    var touchStartX = 0;
+    document.addEventListener("touchstart", function(e) {
+      touchStartX = e.changedTouches[0].screenX;
+    });
+    document.addEventListener("touchend", function(e) {
+      var diff = touchStartX - e.changedTouches[0].screenX;
+      if (Math.abs(diff) > 50) {
+        diff > 0 ? nextSlide() : prevSlide();
+      }
+    });
+
+    function initSidebarState() {
+      if (window.innerWidth <= 768) {
+        sidebarCollapsed = true;
+        sidebarEl.classList.add("collapsed");
+        sidebarToggleBtn.textContent = "\u00BB";
+      }
+    }
+
+    buildSidebar();
+    initSidebarState();
+    showSlide(0);
+
+    /* ================================================================
+       LESSON-SPECIFIC INTERACTIVE COMPONENTS
+       ================================================================ */
+
+    // === Tabs Component ===
+    function switchTab(event, tabId) {
+      var container = event.target.closest('.slide');
+      container.querySelectorAll('.tab-btn').forEach(function(b) { b.classList.remove('active'); });
+      container.querySelectorAll('.tab-panel').forEach(function(p) { p.classList.remove('active'); });
+      event.target.classList.add('active');
+      document.getElementById(tabId).classList.add('active');
+    }
+
+    // === Accordion Component ===
+    function toggleAccordion(header) {
+      var item = header.parentElement;
+      var wasOpen = item.classList.contains('open');
+      item.closest('.accordion').querySelectorAll('.accordion-item').forEach(function(i) { i.classList.remove('open'); });
+      if (!wasOpen) item.classList.add('open');
+    }
+
+    // === Quiz Reveal ===
+    function revealAnswer(id, btn) {
+      var answer = document.getElementById(id);
+      if (answer.style.display === 'block') {
+        answer.style.display = 'none';
+        btn.textContent = 'Reveal Answer';
+      } else {
+        answer.style.display = 'block';
+        btn.textContent = 'Hide Answer';
+      }
+    }
+  </script>
+</body>
+</html>
