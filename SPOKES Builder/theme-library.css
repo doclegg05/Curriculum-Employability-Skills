@@ -130,3 +130,95 @@
 .theme-dark .download-resource .download-prompt {
   color: rgba(255,255,255,0.7);
 }
+
+
+/* ==========================================================================
+   COLOR LEADS
+   --------------------------------------------------------------------------
+   Nine color-lead options. Each is a COMMENTED CSS block. Agents uncomment
+   the one matching the lesson's lead color and place the rules inside a
+   <style id="theme-override"> block. The "blue" lead is the default palette
+   so it requires minimal overrides — it is listed here for completeness.
+   ========================================================================== */
+
+/* --- blue (default — minimal overrides needed) --- */
+/* .slide h2 { color: var(--primary); }
+   .download-btn { background: var(--primary); }
+   .chapter-item.active > .chapter-header { background: rgba(0,123,175,0.25); }
+   .divider { background: linear-gradient(90deg, var(--primary), var(--gold)); }
+   .slide-section { background: linear-gradient(135deg, var(--primary), var(--dark)); } */
+
+/* --- mauve --- */
+/* .slide h2 { color: var(--mauve); }
+   .download-btn { background: var(--mauve); }
+   .download-btn:hover { background: #8b1e33; }
+   .chapter-item.active > .chapter-header { background: rgba(167,37,63,0.25); }
+   .divider { background: linear-gradient(90deg, var(--mauve), var(--gold)); }
+   .slide-section { background: linear-gradient(135deg, var(--mauve), var(--royal)); } */
+
+/* --- gold --- */
+/* .slide h2 { color: var(--muted-gold); }
+   .download-btn { background: var(--muted-gold); }
+   .download-btn:hover { background: #8a6d04; }
+   .chapter-item.active > .chapter-header { background: rgba(211,178,87,0.2); }
+   .divider { background: linear-gradient(90deg, var(--gold), var(--primary)); }
+   .slide-section { background: linear-gradient(135deg, var(--muted-gold), var(--dark)); } */
+
+/* --- green --- */
+/* .slide h2 { color: var(--primary); }
+   .download-btn { background: var(--accent); }
+   .chapter-item.active > .chapter-header { background: rgba(55,181,80,0.2); }
+   .sidebar .sidebar-title { color: var(--accent); }
+   .divider { background: linear-gradient(90deg, var(--accent), var(--gold)); }
+   .slide-section { background: linear-gradient(135deg, var(--accent), var(--dark)); } */
+
+/* --- royal --- */
+/* .main { background-color: var(--muted); }
+   .slide h2 { color: var(--royal); }
+   .download-btn { background: var(--royal); color: var(--gold); }
+   .chapter-item.active > .chapter-header { background: rgba(0,19,63,0.3); }
+   .divider { background: linear-gradient(90deg, var(--royal), var(--gold)); }
+   .slide-section { background: linear-gradient(135deg, var(--royal), var(--dark)); } */
+
+/* --- dual-mauve-blue --- */
+/* .slide h2 { color: var(--mauve); }
+   .slide h3 { color: var(--primary); }
+   .download-btn { background: var(--primary); }
+   .divider { background: linear-gradient(90deg, var(--mauve), var(--primary)); }
+   .slide-section { background: linear-gradient(135deg, var(--mauve), var(--primary)); } */
+
+/* --- dual-gold-green --- */
+/* .slide h2 { color: var(--muted-gold); }
+   .slide h3 { color: var(--primary); }
+   .download-btn { background: var(--accent); }
+   .divider { background: linear-gradient(90deg, var(--gold), var(--accent)); }
+   .slide-section { background: linear-gradient(135deg, var(--gold), var(--accent)); } */
+
+/* --- dual-mauve-gold --- */
+/* .slide h2 { color: var(--mauve); }
+   .slide h3 { color: var(--muted-gold); }
+   .download-btn { background: var(--mauve); }
+   .divider { background: linear-gradient(90deg, var(--mauve), var(--gold)); }
+   .slide-section { background: linear-gradient(135deg, var(--mauve), var(--gold)); } */
+
+/* --- dual-blue-green --- */
+/* .slide h2 { color: var(--primary); }
+   .slide h3 { color: var(--primary); }
+   .download-btn { background: var(--accent); }
+   .divider { background: linear-gradient(90deg, var(--primary), var(--accent)); }
+   .slide-section { background: linear-gradient(135deg, var(--primary), var(--accent)); } */
+
+
+/* ==========================================================================
+   SIDEBAR COLORS
+   --------------------------------------------------------------------------
+   Two sidebar background options. Agents uncomment the desired option.
+   The "dark" sidebar is the default, so no override is needed — it is
+   listed here for completeness.
+   ========================================================================== */
+
+/* --- dark (default) --- */
+/* .sidebar { background: var(--dark); } */
+
+/* --- royal --- */
+/* .sidebar { background: var(--royal); } */
