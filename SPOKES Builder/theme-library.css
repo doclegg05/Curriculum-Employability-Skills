@@ -1,0 +1,132 @@
+/* ==========================================================================
+   SPOKES Two-Layer Theme System — CSS Library
+   ==========================================================================
+
+   This file is the central reference for the SPOKES two-layer theme system.
+   Agents copy relevant sections into <style id="theme-override"> blocks
+   when building or restyling lesson HTML files.
+
+   SCOPE prefix mechanism:
+     When building a theme-override block, agents replace the literal text
+     SCOPE with [data-chapter="N"] to target chapter-level styles.
+     Example:  SCOPE .slide h2  -->  [data-chapter="3"] .slide h2
+
+   DIVIDER_SCOPE prefix mechanism:
+     Agents replace the literal text DIVIDER_SCOPE with
+     .slide-section[data-chapter="N"] to target section dividers.
+     Example:  DIVIDER_SCOPE .divider-title  -->  .slide-section[data-chapter="2"] .divider-title
+
+   Brand palette variables (defined in template.html :root):
+     --primary   #007baf
+     --accent    #37b550
+     --dark      #004071
+     --light     #FFFFFF
+     --muted     #EDF3F7
+     --gray      #60636b
+     --gold      #d3b257
+     --royal     #00133f
+     --mauve     #a7253f
+     --offwhite  #d1d3d4
+     --muted-gold #ad8806
+
+   No other colors are permitted.
+   ========================================================================== */
+
+
+/* ==========================================================================
+   BACKGROUND TEXTURES
+   --------------------------------------------------------------------------
+   Six texture options. Each is wrapped in comments. Agents uncomment the
+   one they need and place it inside a <style id="theme-override"> block.
+   The "plain" texture uses var(--light) which is already the default, so
+   no override is needed — it is listed here only for completeness.
+   ========================================================================== */
+
+/* --- plain --- */
+/* Default background. No override needed.
+   .main {
+     background: var(--light);
+   }
+*/
+
+/* --- dot-grid --- */
+/* .main {
+     background-color: var(--light);
+     background-image: radial-gradient(rgba(0,123,175,0.08) 1px, transparent 1px);
+     background-size: 16px 16px;
+   }
+*/
+
+/* --- diagonal --- */
+/* .main {
+     background-color: var(--light);
+     background-image: repeating-linear-gradient(45deg, rgba(211,178,87,0.05), rgba(211,178,87,0.05) 1px, transparent 1px, transparent 14px);
+   }
+*/
+
+/* --- crosshatch --- */
+/* .main {
+     background-color: var(--muted);
+     background-image: linear-gradient(rgba(0,64,113,0.04) 1px, transparent 1px), linear-gradient(90deg, rgba(0,64,113,0.04) 1px, transparent 1px);
+     background-size: 24px 24px;
+   }
+*/
+
+/* --- soft-gradient --- */
+/* .main {
+     background: linear-gradient(180deg, var(--light) 0%, var(--muted) 100%);
+   }
+*/
+
+/* --- dark-royal --- */
+/* .main {
+     background-color: var(--royal);
+     background-image: repeating-linear-gradient(45deg, rgba(211,178,87,0.03), rgba(211,178,87,0.03) 1px, transparent 1px, transparent 20px);
+   }
+*/
+
+
+/* ==========================================================================
+   DARK THEME INVERSION
+   --------------------------------------------------------------------------
+   Live CSS — included directly when the dark-royal texture is active.
+   Apply the .theme-dark class to the container element so these selectors
+   take effect. Overrides text to var(--light) and adjusts card/component
+   backgrounds for readability on dark surfaces.
+   ========================================================================== */
+
+/* --- Text color overrides --- */
+.theme-dark .slide h2,
+.theme-dark .slide h3,
+.theme-dark .slide p,
+.theme-dark .card h4,
+.theme-dark .card p,
+.theme-dark .smart-content h4,
+.theme-dark .smart-content p,
+.theme-dark .area-card ul li,
+.theme-dark .takeaway-item p,
+.theme-dark .activity-box p,
+.theme-dark .matrix-label,
+.theme-dark .matrix-desc,
+.theme-dark ul.content-list li {
+  color: var(--light);
+}
+
+/* --- Card / component backgrounds --- */
+.theme-dark .card,
+.theme-dark .smart-content,
+.theme-dark .matrix-cell {
+  background: rgba(237,243,247,0.08);
+  border-color: rgba(255,255,255,0.1);
+}
+
+/* --- Activity box --- */
+.theme-dark .activity-box {
+  background: rgba(211,178,87,0.08);
+  border-color: rgba(211,178,87,0.3);
+}
+
+/* --- Download prompt --- */
+.theme-dark .download-resource .download-prompt {
+  color: rgba(255,255,255,0.7);
+}
