@@ -7,6 +7,7 @@
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=DM+Serif+Display:ital@0;1&family=Outfit:wght@300;400;500;600;700&display=swap" rel="stylesheet">
   <link href="https://fonts.googleapis.com/css2?family=Barlow+Condensed:wght@400;600;700&family=IBM+Plex+Sans:wght@400;500;600&display=swap" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=Merriweather:wght@400;700;900&family=Source+Sans+3:wght@400;500;600&display=swap" rel="stylesheet">
   <title>Employee Accountability — SPOKES</title>
   <style>
     /* ================================================================
@@ -1263,144 +1264,296 @@
   </style>
 
   <!-- ================================================================
-       THE BLUEPRINT — Design Identity Theme Override
-       Structured, precise, dependable — like an architect's plan
-       Font pairing: Barlow Condensed (headings) + IBM Plex Sans (body)
-       Accent emphasis: Primary blue + accent green (trust + growth)
+       Two-Layer Theme Override — Employee Accountability
+       Layer 1: green lead, dark sidebar, soft-gradient, bottom-anchored,
+                merriweather-source-sans-3
+       Layer 2: per-chapter card, divider, and accent variation
        ================================================================ -->
   <style id="theme-override">
-    /* Font overrides */
-    body {
-      font-family: 'IBM Plex Sans', 'Outfit', sans-serif;
+    /* ── Layer 1: Font Override (Merriweather + Source Sans 3) ── */
+    body { font-family: 'Source Sans 3', sans-serif; }
+    .slide-title h1, .slide h2, .slide h3, .card h4,
+    .smart-content h4, .matrix-action, .slide-section h2 {
+      font-family: 'Merriweather', serif;
     }
 
-    .slide-title h1,
-    .slide-section h2,
-    .closing-box h2,
-    .closing-box h3,
-    .big-statement h2 {
-      font-family: 'Barlow Condensed', 'DM Serif Display', serif;
-      font-weight: 700;
-      letter-spacing: -0.02em;
+    /* ── Layer 1: Background Texture — soft-gradient ── */
+    .main {
+      background: linear-gradient(180deg, var(--light) 0%, var(--muted) 100%);
     }
 
-    .slide h2,
-    .card h4,
-    .area-card h4,
-    .smart-content h4,
-    .matrix-cell .matrix-action {
-      font-family: 'Barlow Condensed', 'DM Serif Display', serif;
-      font-weight: 600;
-      letter-spacing: -0.01em;
-    }
+    /* ── Layer 1: Color Lead — green ── */
+    .slide h2 { color: var(--primary); }
+    .download-btn { background: var(--accent); }
+    .chapter-item.active > .chapter-header { background: rgba(55,181,80,0.2); }
+    .sidebar .sidebar-title { color: var(--accent); }
+    .divider { background: linear-gradient(90deg, var(--accent), var(--gold)); }
+    .slide-section { background: linear-gradient(135deg, var(--accent), var(--dark)); }
 
-    /* Blueprint: dot-grid background on content slides */
-    .slide:not(.slide-title):not(.slide-section):not(.slide-closing):not(.big-statement) {
-      background: #FFFFFF;
-      background-image: radial-gradient(circle, rgba(0,123,175,0.04) 1px, transparent 1px);
-      background-size: 28px 28px;
-    }
+    /* ── Layer 1: Title Slide — bottom-anchored ── */
+    .slide-title { background: linear-gradient(180deg, var(--muted) 0%, var(--light) 60%, var(--light) 60%); display: flex; flex-direction: column; }
+    .slide-title h1 { color: var(--dark); }
+    .slide-title .subtitle { color: var(--gray); }
+    .slide-title .copyright { background: var(--dark); color: rgba(255,255,255,0.6); padding: 0.75rem; margin-top: auto; width: 100%; text-align: center; }
 
-    /* Blueprint: card treatment — top-border + bottom-shadow */
-    .card {
-      border-left: none;
-      border-top: 4px solid var(--accent);
-      border-bottom: 3px solid rgba(0,64,113,0.1);
-      border-radius: 8px;
+    /* ── Layer 2: Card Style — pill (chapters 1, 3, 6) ── */
+    [data-chapter="1"] .card,
+    [data-chapter="3"] .card,
+    [data-chapter="6"] .card {
       background: var(--light);
-      box-shadow: 0 2px 8px rgba(0,64,113,0.06);
+      border: 1px solid var(--offwhite);
+      border-left: 1px solid var(--offwhite);
+      border-radius: 24px;
+      padding: 1.25rem 1.5rem;
+    }
+    [data-chapter="1"] .card.gold-border,
+    [data-chapter="3"] .card.gold-border,
+    [data-chapter="6"] .card.gold-border {
+      border-color: var(--offwhite);
+    }
+    [data-chapter="1"] .takeaway-num,
+    [data-chapter="3"] .takeaway-num,
+    [data-chapter="6"] .takeaway-num {
+      border-radius: 50%;
+    }
+    [data-chapter="1"] .takeaway-num.alt,
+    [data-chapter="3"] .takeaway-num.alt,
+    [data-chapter="6"] .takeaway-num.alt {
+      border-radius: 50%;
+    }
+    [data-chapter="1"] .smart-letter,
+    [data-chapter="3"] .smart-letter,
+    [data-chapter="6"] .smart-letter {
+      border-radius: 50%;
+    }
+    [data-chapter="1"] .smart-content,
+    [data-chapter="3"] .smart-content,
+    [data-chapter="6"] .smart-content {
+      border-radius: 16px;
+      border: 1px solid var(--offwhite);
+    }
+    [data-chapter="1"] .matrix-cell,
+    [data-chapter="3"] .matrix-cell,
+    [data-chapter="6"] .matrix-cell {
+      border-radius: 16px;
+    }
+    [data-chapter="1"] .danger-card-front,
+    [data-chapter="1"] .danger-card-back,
+    [data-chapter="3"] .danger-card-front,
+    [data-chapter="3"] .danger-card-back,
+    [data-chapter="6"] .danger-card-front,
+    [data-chapter="6"] .danger-card-back {
+      border-radius: 20px;
+    }
+    [data-chapter="1"] .area-card,
+    [data-chapter="3"] .area-card,
+    [data-chapter="6"] .area-card {
+      border-radius: 20px;
+    }
+    [data-chapter="1"] .activity-box,
+    [data-chapter="3"] .activity-box,
+    [data-chapter="6"] .activity-box {
+      border-radius: 16px;
+    }
+    [data-chapter="1"] .download-btn,
+    [data-chapter="3"] .download-btn,
+    [data-chapter="6"] .download-btn {
+      border-radius: 20px;
     }
 
-    .card.gold-border {
+    /* ── Layer 2: Card Style — shadow-float (chapters 2, 5) ── */
+    [data-chapter="2"] .card,
+    [data-chapter="5"] .card {
+      background: var(--light);
+      border-left: none;
+      border-top: 3px solid var(--primary);
+      border-radius: 10px;
+      box-shadow: 0 4px 15px rgba(0,64,113,0.08);
+    }
+    [data-chapter="2"] .card.gold-border,
+    [data-chapter="5"] .card.gold-border {
       border-top-color: var(--gold);
       border-left: none;
     }
-
-    /* Blueprint: green-glow hover on cards */
-    .card:hover,
-    .area-card:hover {
-      box-shadow: 0 8px 25px rgba(55,181,80,0.15);
-      transform: translateY(-4px);
+    [data-chapter="2"] .takeaway-num,
+    [data-chapter="5"] .takeaway-num {
+      background: var(--light);
+      color: var(--primary);
+      border-radius: 6px;
+      box-shadow: 0 2px 6px rgba(0,0,0,0.08);
+    }
+    [data-chapter="2"] .takeaway-num.alt,
+    [data-chapter="5"] .takeaway-num.alt {
+      color: var(--gold);
+    }
+    [data-chapter="2"] .smart-letter,
+    [data-chapter="5"] .smart-letter {
+      border-radius: 6px;
+      box-shadow: 0 2px 6px rgba(0,0,0,0.08);
+    }
+    [data-chapter="2"] .smart-content,
+    [data-chapter="5"] .smart-content {
+      background: var(--light);
+      border-radius: 10px;
+      box-shadow: 0 2px 8px rgba(0,0,0,0.06);
+    }
+    [data-chapter="2"] .matrix-cell,
+    [data-chapter="5"] .matrix-cell {
+      border-radius: 10px;
+      box-shadow: 0 4px 12px rgba(0,0,0,0.08);
+    }
+    [data-chapter="2"] .danger-card-front,
+    [data-chapter="2"] .danger-card-back,
+    [data-chapter="5"] .danger-card-front,
+    [data-chapter="5"] .danger-card-back {
+      border-radius: 12px;
+      box-shadow: 0 4px 15px rgba(0,0,0,0.1);
+    }
+    [data-chapter="2"] .area-card,
+    [data-chapter="5"] .area-card {
+      border-radius: 12px;
+      box-shadow: 0 4px 15px rgba(0,0,0,0.08);
+    }
+    [data-chapter="2"] .activity-box,
+    [data-chapter="5"] .activity-box {
+      border-radius: 10px;
+      box-shadow: 0 2px 8px rgba(0,0,0,0.06);
+    }
+    [data-chapter="2"] .download-btn,
+    [data-chapter="5"] .download-btn {
+      border-radius: 8px;
+      box-shadow: 0 2px 6px rgba(0,0,0,0.1);
     }
 
-    /* Blueprint: double-line divider on title slide */
-    .slide-title .divider {
-      position: relative;
-      height: 8px;
-      background: none;
-      border-top: 3px solid var(--gold);
-      border-bottom: 2px solid rgba(211,178,87,0.4);
-      width: 120px;
-      margin-bottom: 2rem;
-    }
-
-    /* Blueprint: section divider double-line */
-    .slide-section .divider {
-      position: relative;
-      height: 8px;
-      background: none;
-      border-top: 3px solid var(--gold);
-      border-bottom: 2px solid rgba(211,178,87,0.4);
-    }
-
-    /* Blueprint: closing box divider */
-    .closing-box .divider {
-      height: 8px;
-      background: none;
-      border-top: 3px solid var(--gold);
-      border-bottom: 2px solid rgba(211,178,87,0.4);
-    }
-
-    /* Blueprint: sidebar vertical stripe overlay */
-    .sidebar {
-      background: var(--royal);
-      position: relative;
-    }
-
-    .sidebar::before {
-      content: '';
-      position: absolute;
-      inset: 0;
-      background: repeating-linear-gradient(
-        90deg,
-        transparent 0px,
-        transparent 18px,
-        rgba(255,255,255,0.015) 18px,
-        rgba(255,255,255,0.015) 20px
-      );
-      pointer-events: none;
-    }
-
-    /* Blueprint: progress bar segmented feel */
-    .progress-bar {
-      background: linear-gradient(90deg, var(--primary) 0%, var(--accent) 60%, var(--gold) 100%);
-      height: 6px;
-      border-radius: 0 3px 3px 0;
-    }
-
-    /* Blueprint: smart-stack letter tiles */
-    .smart-letter {
-      border-radius: 4px;
-      font-family: 'Barlow Condensed', sans-serif;
-      font-size: 1.6rem;
-      font-weight: 700;
-    }
-
-    /* Blueprint: activity box styling */
-    .activity-box {
-      background: rgba(0,64,113,0.04);
+    /* ── Layer 2: Card Style — gradient-fill (chapters 4, 7) ── */
+    [data-chapter="4"] .card,
+    [data-chapter="7"] .card {
+      background: linear-gradient(135deg, var(--primary), var(--dark));
+      color: var(--light);
       border: none;
-      border-left: 4px solid var(--gold);
-      border-radius: 0 8px 8px 0;
+      border-left: none;
+      border-radius: 8px;
+    }
+    [data-chapter="4"] .card h4,
+    [data-chapter="4"] .card p,
+    [data-chapter="7"] .card h4,
+    [data-chapter="7"] .card p {
+      color: var(--light);
+    }
+    [data-chapter="4"] .card.gold-border,
+    [data-chapter="7"] .card.gold-border {
+      background: linear-gradient(135deg, var(--gold), var(--muted-gold));
+    }
+    [data-chapter="4"] .card.gold-border h4,
+    [data-chapter="4"] .card.gold-border p,
+    [data-chapter="7"] .card.gold-border h4,
+    [data-chapter="7"] .card.gold-border p {
+      color: var(--light);
+    }
+    [data-chapter="4"] .takeaway-num,
+    [data-chapter="7"] .takeaway-num {
+      background: linear-gradient(135deg, var(--primary), var(--dark));
+    }
+    [data-chapter="4"] .takeaway-num.alt,
+    [data-chapter="7"] .takeaway-num.alt {
+      background: linear-gradient(135deg, var(--gold), var(--muted-gold));
+    }
+    [data-chapter="4"] .smart-letter,
+    [data-chapter="7"] .smart-letter {
+      background: linear-gradient(135deg, var(--primary), var(--dark));
+    }
+    [data-chapter="4"] .smart-letter.alt,
+    [data-chapter="7"] .smart-letter.alt {
+      background: linear-gradient(135deg, var(--gold), var(--muted-gold));
+    }
+    [data-chapter="4"] .area-card,
+    [data-chapter="7"] .area-card {
+      background: linear-gradient(135deg, var(--primary), var(--dark));
+    }
+    [data-chapter="4"] .area-card.gold-card,
+    [data-chapter="7"] .area-card.gold-card {
+      background: linear-gradient(135deg, var(--gold), var(--muted-gold));
+    }
+    [data-chapter="4"] .matrix-cell.do-first,
+    [data-chapter="7"] .matrix-cell.do-first {
+      background: linear-gradient(135deg, var(--primary), var(--dark));
+    }
+    [data-chapter="4"] .matrix-cell.schedule,
+    [data-chapter="7"] .matrix-cell.schedule {
+      background: linear-gradient(135deg, var(--accent), #2e9a44);
+    }
+    [data-chapter="4"] .matrix-cell.delegate,
+    [data-chapter="7"] .matrix-cell.delegate {
+      background: linear-gradient(135deg, var(--gold), var(--muted-gold));
+    }
+    [data-chapter="4"] .activity-box,
+    [data-chapter="7"] .activity-box {
+      background: linear-gradient(135deg, rgba(211,178,87,0.1), rgba(211,178,87,0.05));
+    }
+    [data-chapter="4"] .download-btn,
+    [data-chapter="7"] .download-btn {
+      border-radius: 8px;
     }
 
-    .activity-label {
-      color: var(--muted-gold);
-      font-family: 'IBM Plex Sans', sans-serif;
-      font-weight: 600;
+    /* ── Layer 2: Section Dividers ── */
+
+    /* Ch1 (W): gradient-sweep — default, no override needed */
+
+    /* Ch2 (I): bold-full-bleed — green-led uses var(--accent) */
+    .slide-section[data-chapter="2"] { background: var(--accent); }
+    .slide-section[data-chapter="2"] h2 { color: var(--light); }
+    .slide-section[data-chapter="2"] .chapter-label { color: rgba(255,255,255,0.7); }
+    .slide-section[data-chapter="2"] .divider { background: var(--gold); }
+    .slide-section[data-chapter="2"] .section-circle { border-color: rgba(255,255,255,0.3); background: rgba(0,0,0,0.15); }
+
+    /* Ch3 (P1): centered-badge */
+    .slide-section[data-chapter="3"] { background: linear-gradient(180deg, var(--muted) 0%, var(--light) 100%); display: flex; flex-direction: column; align-items: center; justify-content: center; }
+    .slide-section[data-chapter="3"] h2 { color: var(--dark); }
+    .slide-section[data-chapter="3"] .chapter-label { color: var(--primary); }
+    .slide-section[data-chapter="3"] .divider { background: linear-gradient(90deg, transparent, var(--gold), transparent); }
+    .slide-section[data-chapter="3"] .section-circle { position: relative; left: auto; margin-bottom: 1rem; width: 80px; height: 80px; background: linear-gradient(135deg, var(--primary), var(--dark)); box-shadow: 0 4px 15px rgba(0,64,113,0.25); }
+
+    /* Ch4 (P2): gradient-sweep — explicit override to ensure gradient-sweep */
+    .slide-section[data-chapter="4"] { background: linear-gradient(135deg, var(--accent), var(--dark)); }
+
+    /* Ch5 (P3): split-panel */
+    .slide-section[data-chapter="5"] { display: flex; flex-direction: row; }
+    .slide-section[data-chapter="5"]::before { content: ''; display: block; width: 40%; background: var(--dark); }
+    .slide-section[data-chapter="5"]::after { content: ''; display: block; flex: 1; background: var(--muted); }
+    .slide-section[data-chapter="5"] h2 { color: var(--dark); position: relative; z-index: 1; }
+    .slide-section[data-chapter="5"] .chapter-label { color: var(--gold); position: absolute; left: 2rem; }
+    .slide-section[data-chapter="5"] .section-circle { position: absolute; left: 5%; top: 50%; transform: translateY(-50%); z-index: 1; }
+
+    /* Ch6 (E): framed-gold */
+    .slide-section[data-chapter="6"] { background: var(--royal); display: flex; align-items: center; justify-content: center; }
+    .slide-section[data-chapter="6"] h2 { border: 2px solid var(--gold); border-radius: 8px; padding: 1.5rem 2.5rem; color: var(--light); }
+    .slide-section[data-chapter="6"] .chapter-label { color: var(--gold); }
+    .slide-section[data-chapter="6"] .divider { background: var(--gold); }
+
+    /* Ch7 (A): centered-badge */
+    .slide-section[data-chapter="7"] { background: linear-gradient(180deg, var(--muted) 0%, var(--light) 100%); display: flex; flex-direction: column; align-items: center; justify-content: center; }
+    .slide-section[data-chapter="7"] h2 { color: var(--dark); }
+    .slide-section[data-chapter="7"] .chapter-label { color: var(--primary); }
+    .slide-section[data-chapter="7"] .divider { background: linear-gradient(90deg, transparent, var(--gold), transparent); }
+    .slide-section[data-chapter="7"] .section-circle { position: relative; left: auto; margin-bottom: 1rem; width: 80px; height: 80px; background: linear-gradient(135deg, var(--primary), var(--dark)); box-shadow: 0 4px 15px rgba(0,64,113,0.25); }
+
+    /* ── Layer 2: Secondary Accent — primary (blue) for chapters 2, 4, 6 ── */
+    [data-chapter="2"] .card.gold-border,
+    [data-chapter="4"] .card.gold-border,
+    [data-chapter="6"] .card.gold-border {
+      border-left-color: var(--primary);
+    }
+    [data-chapter="2"] .takeaway-num.alt,
+    [data-chapter="4"] .takeaway-num.alt,
+    [data-chapter="6"] .takeaway-num.alt {
+      background: var(--primary);
     }
 
-    /* Blueprint: debrief habit row for progressive reveal */
+    /* ================================================================
+       Lesson-specific interactive component CSS (preserved)
+       ================================================================ */
+
+    /* Debrief habit row for progressive reveal */
     .debrief-grid {
       display: grid;
       grid-template-columns: repeat(2, 1fr);
@@ -1422,12 +1575,11 @@
     }
 
     .debrief-card h4 {
-      font-family: 'Barlow Condensed', sans-serif;
+      font-family: 'Merriweather', serif;
       font-size: 1.3rem;
       font-weight: 700;
       color: var(--primary);
       margin-bottom: 0.4rem;
-      letter-spacing: 0.01em;
     }
 
     .debrief-card.gold-top h4 {
@@ -1440,7 +1592,7 @@
       line-height: 1.4;
     }
 
-    /* Blueprint: tabs component for QA interactive pack */
+    /* Tabs component for QA interactive pack */
     .tabs-container {
       flex: 1;
       display: flex;
@@ -1460,11 +1612,11 @@
       border: none;
       border-radius: 8px 8px 0 0;
       cursor: pointer;
-      font-family: 'Barlow Condensed', sans-serif;
-      font-size: 1.15rem;
+      font-family: 'Merriweather', serif;
+      font-size: 1.05rem;
       font-weight: 700;
       color: var(--gray);
-      letter-spacing: 0.03em;
+      letter-spacing: 0.01em;
       transition: all 0.2s ease;
       border-top: 3px solid transparent;
       border-left: 1px solid var(--offwhite);
@@ -1501,11 +1653,10 @@
     }
 
     .tab-panel h4 {
-      font-family: 'Barlow Condensed', sans-serif;
-      font-size: 1.6rem;
+      font-family: 'Merriweather', serif;
+      font-size: 1.4rem;
       font-weight: 700;
       color: var(--dark);
-      letter-spacing: 0.01em;
     }
 
     .tab-panel p {
@@ -1536,7 +1687,7 @@
       font-weight: 700;
     }
 
-    /* Blueprint: accordion component */
+    /* Accordion component */
     .accordion {
       display: flex;
       flex-direction: column;
@@ -1564,11 +1715,10 @@
       align-items: center;
       background: var(--light);
       transition: background 0.2s;
-      font-family: 'Barlow Condensed', sans-serif;
-      font-size: 1.3rem;
+      font-family: 'Merriweather', serif;
+      font-size: 1.15rem;
       font-weight: 700;
       color: var(--dark);
-      letter-spacing: 0.01em;
     }
 
     .accordion-header:hover {
@@ -1600,7 +1750,7 @@
       padding: 0.75rem 1.5rem 1.25rem;
     }
 
-    /* Blueprint: checkpoint / scenario card */
+    /* Checkpoint / scenario card */
     .checkpoint-box {
       flex: 1;
       display: flex;
@@ -1624,7 +1774,7 @@
       color: var(--mauve);
       font-weight: 700;
       margin-bottom: 0.75rem;
-      font-family: 'IBM Plex Sans', sans-serif;
+      font-family: 'Source Sans 3', sans-serif;
     }
 
     .scenario-card p {
@@ -1648,7 +1798,7 @@
       font-size: 1.1rem;
       color: var(--dark);
       transition: all 0.2s ease;
-      font-family: 'IBM Plex Sans', sans-serif;
+      font-family: 'Source Sans 3', sans-serif;
     }
 
     .checkpoint-option:hover {
@@ -1674,63 +1824,14 @@
       padding: 1rem 1.5rem;
       border-radius: 8px;
       font-size: 1.1rem;
-      font-family: 'IBM Plex Sans', sans-serif;
+      font-family: 'Source Sans 3', sans-serif;
     }
 
     .checkpoint-feedback.show { display: block; }
     .checkpoint-feedback.correct { background: rgba(55,181,80,0.1); color: var(--accent); border-left: 4px solid var(--accent); }
     .checkpoint-feedback.incorrect { background: rgba(167,37,63,0.08); color: var(--mauve); border-left: 4px solid var(--mauve); }
 
-    /* Blueprint: big-statement refined */
-    .big-statement {
-      background: #FFFFFF;
-      background-image: radial-gradient(circle, rgba(0,123,175,0.04) 1px, transparent 1px);
-      background-size: 28px 28px;
-    }
-
-    .big-statement h2 {
-      font-family: 'Barlow Condensed', sans-serif;
-      font-weight: 700;
-      letter-spacing: -0.02em;
-      font-size: 5rem;
-      color: var(--dark);
-    }
-
-    /* Blueprint: slide-closing refined */
-    .slide-closing {
-      background: linear-gradient(145deg, var(--royal) 0%, var(--dark) 60%, var(--primary) 100%);
-    }
-
-    /* Blueprint: section divider visually distinct treatments */
-    .slide-section[data-chapter-num="W"] {
-      background: linear-gradient(160deg, var(--primary) 0%, var(--royal) 100%);
-    }
-
-    .slide-section[data-chapter-num="I"] {
-      background: linear-gradient(135deg, var(--royal) 0%, var(--dark) 100%);
-    }
-
-    .slide-section[data-chapter-num="P1"] {
-      background: linear-gradient(200deg, var(--dark) 10%, var(--primary) 100%);
-    }
-
-    .slide-section[data-chapter-num="P2"] {
-      background: linear-gradient(165deg, var(--primary) 0%, var(--dark) 80%);
-    }
-
-    .slide-section[data-chapter-num="P3"] {
-      background: linear-gradient(150deg, var(--royal) 0%, var(--primary) 100%);
-    }
-
-    .slide-section[data-chapter-num="E"] {
-      background: linear-gradient(130deg, var(--dark) 0%, var(--royal) 100%);
-    }
-
-    .slide-section[data-chapter-num="A"] {
-      background: linear-gradient(170deg, var(--royal) 0%, var(--dark) 100%);
-    }
-
-    /* Blueprint: comparison panels */
+    /* Comparison panels */
     .comparison-row {
       display: flex;
       gap: 2rem;
