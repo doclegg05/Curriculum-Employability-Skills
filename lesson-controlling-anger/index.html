@@ -1657,6 +1657,17 @@
       color: var(--light);
     }
 
+    /* Override the base light gradient on content slides */
+    .theme-dark .slide:not(.slide-title):not(.slide-section):not(.slide-closing):not(.big-statement) {
+      background: none;
+    }
+    .theme-dark .slide-video {
+      background: none;
+    }
+    .theme-dark .slide-closing {
+      background: linear-gradient(135deg, var(--mauve), var(--royal));
+    }
+
     /* Specificity 0,3,0 to beat card style overrides at 0,2,0 */
     .theme-dark [data-chapter] .card,
     .theme-dark [data-chapter] .smart-content,
