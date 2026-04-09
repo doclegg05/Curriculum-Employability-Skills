@@ -1048,7 +1048,7 @@
       font-size: 4.5rem;
       font-weight: 400;
       line-height: 1.3;
-      max-width: 900px;
+      max-width: 1200px;
     }
 
     .big-statement p {
@@ -2003,6 +2003,17 @@
     }
 
 
+    /* --- Dark theme contrast fix: light-background dividers need dark text --- */
+    /* These override .theme-dark .slide h2 { color: var(--light) } (0,2,1)
+       with .theme-dark .slide-section[data-chapter] h2 (0,2,2) */
+    .theme-dark .slide-section[data-chapter="3"] h2,
+    .theme-dark .slide-section[data-chapter="7"] h2 { color: var(--dark); }
+    .theme-dark .slide-section[data-chapter="3"] .chapter-label,
+    .theme-dark .slide-section[data-chapter="7"] .chapter-label { color: var(--primary); }
+    .theme-dark .slide-section[data-chapter="5"] h2 { color: var(--dark); }
+    .theme-dark .slide-section[data-chapter="5"] .chapter-label { color: var(--gold); }
+
+
     /* ================================================================
        LESSON-SPECIFIC INTERACTIVE COMPONENTS (preserved)
        ================================================================ */
@@ -2276,7 +2287,7 @@
       <!-- Slide 2: Hook Video -->
       <section class="slide slide-video" data-chapter="1">
         <h2>Watch: Anger Management &mdash; Rage on a Plane</h2>
-        <div class="video-container" style="position:relative; width:100%; max-width:900px; margin:0 auto;">
+        <div class="video-container" style="position:relative; width:100%; max-width:1200px; margin:0 auto;">
           <video controls class="local-video" style="width:100%; border-radius:12px; box-shadow:0 4px 20px rgba(0,0,0,0.15);">
             <source src="videos/anger_management_rage_on_plane.mp4" type="video/mp4" />
             Your browser does not support the video tag.
@@ -2411,7 +2422,7 @@
       <!-- Slide 10: Iceberg Video -->
       <section class="slide slide-video" data-chapter="3">
         <h2>Watch: The Iceberg Theory of Anger</h2>
-        <div class="video-container" style="position:relative; width:100%; max-width:900px; margin:0 auto;">
+        <div class="video-container" style="position:relative; width:100%; max-width:1200px; margin:0 auto;">
           <video controls class="local-video" style="width:100%; border-radius:12px; box-shadow:0 4px 20px rgba(0,0,0,0.15);">
             <source src="videos/iceberg_theory_of_anger.mp4" type="video/mp4" />
             Your browser does not support the video tag.
@@ -2614,7 +2625,7 @@
       <!-- Slide 17: Anger Thermometer Video -->
       <section class="slide slide-video" data-chapter="4">
         <h2>Watch: Anger Thermometer &mdash; Warning Signs</h2>
-        <div class="video-container" style="position:relative; width:100%; max-width:900px; margin:0 auto;">
+        <div class="video-container" style="position:relative; width:100%; max-width:1200px; margin:0 auto;">
           <video controls class="local-video" style="width:100%; border-radius:12px; box-shadow:0 4px 20px rgba(0,0,0,0.15);">
             <source src="videos/anger_thermometer_warning_signs.mp4" type="video/mp4" />
             Your browser does not support the video tag.
@@ -2801,7 +2812,7 @@
       <!-- Slide 24: Drinking Poison Video -->
       <section class="slide slide-video" data-chapter="5">
         <h2>Watch: Holding Onto Anger Is Like Drinking Poison</h2>
-        <div class="video-container" style="position:relative; width:100%; max-width:900px; margin:0 auto;">
+        <div class="video-container" style="position:relative; width:100%; max-width:1200px; margin:0 auto;">
           <video controls class="local-video" style="width:100%; border-radius:12px; box-shadow:0 4px 20px rgba(0,0,0,0.15);">
             <source src="videos/holding_onto_anger_drinking_poison.mp4" type="video/mp4" />
             Your browser does not support the video tag.
