@@ -141,12 +141,22 @@
    so it requires minimal overrides — it is listed here for completeness.
    ========================================================================== */
 
+/* IMPORTANT: Every color lead MUST include these two lines after the
+   .slide-section background to preserve white text on dark dividers:
+     .slide-section h2 { color: var(--light); }
+     .slide-section .chapter-label { color: rgba(255,255,255,0.7); }
+   Without these, the .slide h2 color lead override (same specificity as
+   the base .slide-section h2) wins by cascade order, causing low-contrast
+   heading text on gradient divider backgrounds. */
+
 /* --- blue (default — minimal overrides needed) --- */
 /* .slide h2 { color: var(--primary); }
    .download-btn { background: var(--primary); }
    .chapter-item.active > .chapter-header { background: rgba(0,123,175,0.25); }
    .divider { background: linear-gradient(90deg, var(--primary), var(--gold)); }
-   .slide-section { background: linear-gradient(135deg, var(--primary), var(--dark)); } */
+   .slide-section { background: linear-gradient(135deg, var(--primary), var(--dark)); }
+   .slide-section h2 { color: var(--light); }
+   .slide-section .chapter-label { color: rgba(255,255,255,0.7); } */
 
 /* --- mauve --- */
 /* .slide h2 { color: var(--mauve); }
