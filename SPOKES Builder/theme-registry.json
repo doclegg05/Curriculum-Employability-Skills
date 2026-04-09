@@ -1,12 +1,13 @@
 {
-  "version": "1.0.0",
-  "description": "SPOKES two-layer theme system registry. Each lesson has Layer 1 (lesson identity) and Layer 2 (chapter variation) configuration. Agents look up the assigned package and apply it — no guessing, no approval loop.",
+  "version": "1.1.0",
+  "description": "SPOKES two-layer theme system registry. Each lesson has Layer 1 (lesson identity) and Layer 2 (chapter variation) configuration. Divider style is uniform per lesson (not rotated per chapter). Agents look up the assigned package and apply it — no guessing, no approval loop.",
   "lessons": {
     "lesson-time-management": {
       "colorLead": "blue",
       "sidebarColor": "dark",
       "backgroundTexture": "dot-grid",
       "titleSlide": "centered-gradient",
+      "dividerStyle": "gradient-sweep",
       "fontPairing": "dm-serif-display-outfit",
       "chapterStyles": {
         "W": {
@@ -16,31 +17,31 @@
           "secondaryAccent": "gold"
         },
         "I": {
-          "divider": "centered-badge",
+          "divider": "gradient-sweep",
           "cards": "shadow-float",
           "leadComponent": "split-layout",
           "secondaryAccent": "accent"
         },
         "P1": {
-          "divider": "bold-full-bleed",
+          "divider": "gradient-sweep",
           "cards": "left-border",
           "leadComponent": "smart-stack",
           "secondaryAccent": "gold"
         },
         "P2": {
-          "divider": "framed-gold",
+          "divider": "gradient-sweep",
           "cards": "pill",
           "leadComponent": "cards-grid",
           "secondaryAccent": "accent"
         },
         "P3": {
-          "divider": "split-panel",
+          "divider": "gradient-sweep",
           "cards": "shadow-float",
           "leadComponent": "dangers-grid",
           "secondaryAccent": "gold"
         },
         "E": {
-          "divider": "centered-badge",
+          "divider": "gradient-sweep",
           "cards": "left-border",
           "leadComponent": "takeaways",
           "secondaryAccent": "accent"
@@ -58,6 +59,7 @@
       "sidebarColor": "royal",
       "backgroundTexture": "diagonal",
       "titleSlide": "split-hero",
+      "dividerStyle": "framed-gold",
       "fontPairing": "playfair-display-inter",
       "chapterStyles": {
         "W": {
@@ -67,25 +69,25 @@
           "secondaryAccent": "gold"
         },
         "I": {
-          "divider": "centered-badge",
+          "divider": "framed-gold",
           "cards": "sharp-border",
           "leadComponent": "cards-grid",
           "secondaryAccent": "primary"
         },
         "P1": {
-          "divider": "gradient-sweep",
+          "divider": "framed-gold",
           "cards": "outlined",
           "leadComponent": "takeaways",
           "secondaryAccent": "gold"
         },
         "P2": {
-          "divider": "bold-full-bleed",
+          "divider": "framed-gold",
           "cards": "layered",
           "leadComponent": "smart-stack",
           "secondaryAccent": "primary"
         },
         "P3": {
-          "divider": "split-panel",
+          "divider": "framed-gold",
           "cards": "sharp-border",
           "leadComponent": "dangers-grid",
           "secondaryAccent": "gold"
@@ -97,7 +99,7 @@
           "secondaryAccent": "primary"
         },
         "A": {
-          "divider": "centered-badge",
+          "divider": "framed-gold",
           "cards": "layered",
           "leadComponent": "content-list",
           "secondaryAccent": "gold"
@@ -109,16 +111,17 @@
       "sidebarColor": "dark",
       "backgroundTexture": "soft-gradient",
       "titleSlide": "bottom-anchored",
+      "dividerStyle": "centered-badge",
       "fontPairing": "merriweather-source-sans-3",
       "chapterStyles": {
         "W": {
-          "divider": "gradient-sweep",
+          "divider": "centered-badge",
           "cards": "pill",
           "leadComponent": "takeaways",
           "secondaryAccent": "gold"
         },
         "I": {
-          "divider": "bold-full-bleed",
+          "divider": "centered-badge",
           "cards": "shadow-float",
           "leadComponent": "cards-grid",
           "secondaryAccent": "primary"
@@ -130,19 +133,19 @@
           "secondaryAccent": "gold"
         },
         "P2": {
-          "divider": "gradient-sweep",
+          "divider": "centered-badge",
           "cards": "gradient-fill",
           "leadComponent": "areas-grid",
           "secondaryAccent": "primary"
         },
         "P3": {
-          "divider": "split-panel",
+          "divider": "centered-badge",
           "cards": "shadow-float",
           "leadComponent": "dangers-grid",
           "secondaryAccent": "gold"
         },
         "E": {
-          "divider": "framed-gold",
+          "divider": "centered-badge",
           "cards": "pill",
           "leadComponent": "takeaways",
           "secondaryAccent": "primary"
@@ -160,16 +163,17 @@
       "sidebarColor": "dark",
       "backgroundTexture": "crosshatch",
       "titleSlide": "top-banner",
+      "dividerStyle": "bold-full-bleed",
       "fontPairing": "crimson-pro-work-sans",
       "chapterStyles": {
         "W": {
-          "divider": "centered-badge",
+          "divider": "bold-full-bleed",
           "cards": "shadow-float",
           "leadComponent": "split-layout",
           "secondaryAccent": "gold"
         },
         "I": {
-          "divider": "gradient-sweep",
+          "divider": "bold-full-bleed",
           "cards": "left-border",
           "leadComponent": "cards-grid",
           "secondaryAccent": "mauve"
@@ -181,25 +185,25 @@
           "secondaryAccent": "gold"
         },
         "P2": {
-          "divider": "framed-gold",
+          "divider": "bold-full-bleed",
           "cards": "layered",
           "leadComponent": "areas-grid",
           "secondaryAccent": "mauve"
         },
         "P3": {
-          "divider": "split-panel",
+          "divider": "bold-full-bleed",
           "cards": "left-border",
           "leadComponent": "dangers-grid",
           "secondaryAccent": "gold"
         },
         "E": {
-          "divider": "centered-badge",
+          "divider": "bold-full-bleed",
           "cards": "layered",
           "leadComponent": "takeaways",
           "secondaryAccent": "mauve"
         },
         "A": {
-          "divider": "gradient-sweep",
+          "divider": "bold-full-bleed",
           "cards": "shadow-float",
           "leadComponent": "content-list",
           "secondaryAccent": "gold"
@@ -211,6 +215,7 @@
       "sidebarColor": "royal",
       "backgroundTexture": "dark-royal",
       "titleSlide": "framed-center",
+      "dividerStyle": "framed-gold",
       "fontPairing": "vollkorn-fira-sans",
       "chapterStyles": {
         "W": {
@@ -220,25 +225,25 @@
           "secondaryAccent": "gold"
         },
         "I": {
-          "divider": "bold-full-bleed",
+          "divider": "framed-gold",
           "cards": "outlined",
           "leadComponent": "cards-grid",
           "secondaryAccent": "primary"
         },
         "P1": {
-          "divider": "centered-badge",
+          "divider": "framed-gold",
           "cards": "glass",
           "leadComponent": "dangers-grid",
           "secondaryAccent": "gold"
         },
         "P2": {
-          "divider": "gradient-sweep",
+          "divider": "framed-gold",
           "cards": "gradient-fill",
           "leadComponent": "smart-stack",
           "secondaryAccent": "accent"
         },
         "P3": {
-          "divider": "split-panel",
+          "divider": "framed-gold",
           "cards": "outlined",
           "leadComponent": "areas-grid",
           "secondaryAccent": "gold"
@@ -250,7 +255,7 @@
           "secondaryAccent": "primary"
         },
         "A": {
-          "divider": "centered-badge",
+          "divider": "framed-gold",
           "cards": "gradient-fill",
           "leadComponent": "content-list",
           "secondaryAccent": "accent"
@@ -262,28 +267,29 @@
       "sidebarColor": "dark",
       "backgroundTexture": "plain",
       "titleSlide": "offset-left",
+      "dividerStyle": "split-panel",
       "fontPairing": "bitter-raleway",
       "chapterStyles": {
         "W": {
-          "divider": "gradient-sweep",
+          "divider": "split-panel",
           "cards": "sharp-border",
           "leadComponent": "split-layout",
           "secondaryAccent": "gold"
         },
         "I": {
-          "divider": "framed-gold",
+          "divider": "split-panel",
           "cards": "shadow-float",
           "leadComponent": "cards-grid",
           "secondaryAccent": "mauve"
         },
         "P1": {
-          "divider": "bold-full-bleed",
+          "divider": "split-panel",
           "cards": "sharp-border",
           "leadComponent": "takeaways",
           "secondaryAccent": "gold"
         },
         "P2": {
-          "divider": "centered-badge",
+          "divider": "split-panel",
           "cards": "pill",
           "leadComponent": "smart-stack",
           "secondaryAccent": "mauve"
@@ -295,13 +301,13 @@
           "secondaryAccent": "gold"
         },
         "E": {
-          "divider": "framed-gold",
+          "divider": "split-panel",
           "cards": "pill",
           "leadComponent": "takeaways",
           "secondaryAccent": "mauve"
         },
         "A": {
-          "divider": "gradient-sweep",
+          "divider": "split-panel",
           "cards": "left-border",
           "leadComponent": "content-list",
           "secondaryAccent": "gold"

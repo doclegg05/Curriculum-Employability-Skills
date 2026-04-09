@@ -1103,13 +1103,7 @@
         z-index: 1;
       }
 
-      .slide-section[data-chapter-num="W"] { background: linear-gradient(135deg, var(--primary) 0%, var(--dark) 100%); }
-      .slide-section[data-chapter-num="I"] { background: linear-gradient(225deg, var(--dark) 0%, var(--royal) 100%); }
-      .slide-section[data-chapter-num="P1"] { background: linear-gradient(160deg, var(--primary) 0%, var(--royal) 100%); }
-      .slide-section[data-chapter-num="P2"] { background: linear-gradient(200deg, var(--dark) 0%, var(--primary) 100%); }
-      .slide-section[data-chapter-num="P3"] { background: linear-gradient(145deg, var(--royal) 0%, var(--primary) 100%); }
-      .slide-section[data-chapter-num="E"] { background: linear-gradient(190deg, var(--primary) 0%, var(--dark) 100%); }
-      .slide-section[data-chapter-num="A"] { background: linear-gradient(170deg, var(--royal) 0%, var(--dark) 100%); }
+      /* Per-chapter divider backgrounds removed — uniform divider style in theme-override */
 
       /* Closing Slide */
       .slide-closing {
@@ -1316,8 +1310,6 @@
       .download-btn { background: var(--accent); }
       .divider { background: linear-gradient(90deg, var(--primary), var(--accent)); }
       .slide-section { background: linear-gradient(135deg, var(--primary), var(--accent)); }
-      .slide-section h2 { color: var(--light); }
-      .slide-section .chapter-label { color: rgba(255,255,255,0.7); }
 
       /* Title slide: top-banner */
       .slide-title { background: var(--light); flex-direction: column; }
@@ -1467,50 +1459,12 @@
         border-radius: 6px;
       }
 
-      /* --- Section Dividers --- */
-
-      /* Chapters 1, 6: centered-badge */
-      .slide-section[data-chapter="1"],
-      .slide-section[data-chapter="6"] {
-        background: linear-gradient(180deg, var(--muted) 0%, var(--light) 100%);
-        flex-direction: column; align-items: center; justify-content: center;
-      }
-      .slide-section[data-chapter="1"] h2,
-      .slide-section[data-chapter="6"] h2 { color: var(--dark); }
-      .slide-section[data-chapter="1"] .chapter-label,
-      .slide-section[data-chapter="6"] .chapter-label { color: var(--primary); }
-      .slide-section[data-chapter="1"] .divider,
-      .slide-section[data-chapter="6"] .divider { background: linear-gradient(90deg, transparent, var(--gold), transparent); }
-      .slide-section[data-chapter="1"] .section-circle,
-      .slide-section[data-chapter="6"] .section-circle {
-        position: relative; left: auto; margin-bottom: 1rem;
-        width: 80px; height: 80px;
-        background: linear-gradient(135deg, var(--primary), var(--dark));
-        box-shadow: 0 4px 15px rgba(0,64,113,0.25);
-      }
-
-      /* Chapters 2, 7: gradient-sweep (default — no overrides needed) */
-
-      /* Chapter 3: bold-full-bleed */
-      .slide-section[data-chapter="3"] { background: var(--primary); }
-      .slide-section[data-chapter="3"] h2 { color: var(--light); }
-      .slide-section[data-chapter="3"] .chapter-label { color: rgba(255,255,255,0.7); }
-      .slide-section[data-chapter="3"] .divider { background: var(--gold); }
-      .slide-section[data-chapter="3"] .section-circle { border-color: rgba(255,255,255,0.3); background: rgba(0,0,0,0.15); }
-
-      /* Chapter 4: framed-gold */
-      .slide-section[data-chapter="4"] { background: var(--royal); align-items: center; justify-content: center; }
-      .slide-section[data-chapter="4"] h2 { border: 2px solid var(--gold); border-radius: 8px; padding: 1.5rem 2.5rem; color: var(--light); }
-      .slide-section[data-chapter="4"] .chapter-label { color: var(--gold); }
-      .slide-section[data-chapter="4"] .divider { background: var(--gold); }
-
-      /* Chapter 5: split-panel */
-      .slide-section[data-chapter="5"] { flex-direction: row; }
-      .slide-section[data-chapter="5"]::before { content: ''; display: block; width: 40%; background: var(--dark); }
-      .slide-section[data-chapter="5"]::after { content: ''; display: block; flex: 1; background: var(--muted); }
-      .slide-section[data-chapter="5"] h2 { color: var(--dark); position: relative; z-index: 1; }
-      .slide-section[data-chapter="5"] .chapter-label { color: var(--gold); position: absolute; left: 2rem; }
-      .slide-section[data-chapter="5"] .section-circle { position: absolute; left: 5%; top: 50%; transform: translateY(-50%); z-index: 1; }
+      /* --- Uniform Divider Style: bold-full-bleed --- */
+      .slide-section { background: var(--primary); }
+      .slide-section h2 { color: var(--light); }
+      .slide-section .chapter-label { color: rgba(255,255,255,0.7); }
+      .slide-section .divider { background: var(--gold); }
+      .slide-section .section-circle { border-color: rgba(255,255,255,0.3); background: rgba(0,0,0,0.15); }
 
       /* --- Secondary Accent: mauve (chapters 2, 4, 6) --- */
       [data-chapter="2"] .card.gold-border,
