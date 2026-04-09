@@ -256,6 +256,57 @@
           "secondaryAccent": "accent"
         }
       }
+    },
+    "lesson-problem-solving-and-decision-making": {
+      "colorLead": "dual-gold-green",
+      "sidebarColor": "dark",
+      "backgroundTexture": "plain",
+      "titleSlide": "offset-left",
+      "fontPairing": "bitter-raleway",
+      "chapterStyles": {
+        "W": {
+          "divider": "gradient-sweep",
+          "cards": "sharp-border",
+          "leadComponent": "split-layout",
+          "secondaryAccent": "gold"
+        },
+        "I": {
+          "divider": "framed-gold",
+          "cards": "shadow-float",
+          "leadComponent": "cards-grid",
+          "secondaryAccent": "mauve"
+        },
+        "P1": {
+          "divider": "bold-full-bleed",
+          "cards": "sharp-border",
+          "leadComponent": "takeaways",
+          "secondaryAccent": "gold"
+        },
+        "P2": {
+          "divider": "centered-badge",
+          "cards": "pill",
+          "leadComponent": "smart-stack",
+          "secondaryAccent": "mauve"
+        },
+        "P3": {
+          "divider": "split-panel",
+          "cards": "shadow-float",
+          "leadComponent": "dangers-grid",
+          "secondaryAccent": "gold"
+        },
+        "E": {
+          "divider": "framed-gold",
+          "cards": "pill",
+          "leadComponent": "takeaways",
+          "secondaryAccent": "mauve"
+        },
+        "A": {
+          "divider": "gradient-sweep",
+          "cards": "left-border",
+          "leadComponent": "content-list",
+          "secondaryAccent": "gold"
+        }
+      }
     }
   }
 }
