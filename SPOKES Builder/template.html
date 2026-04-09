@@ -61,13 +61,40 @@
         flex-direction: column;
         overflow-y: auto;
         transition:
-          margin-left 0.3s ease,
+          width 0.3s ease,
+          padding 0.3s ease,
           opacity 0.3s ease;
         flex-shrink: 0;
+        position: relative;
       }
 
       .sidebar.collapsed {
-        margin-left: -280px;
+        width: 52px;
+        padding: 1rem 0.5rem;
+        overflow: hidden;
+      }
+
+      .sidebar.collapsed .sidebar-title,
+      .sidebar.collapsed .resources-section,
+      .sidebar.collapsed .slide-counter,
+      .sidebar.collapsed .slide-list,
+      .sidebar.collapsed .chapter-arrow {
+        display: none;
+      }
+
+      .sidebar.collapsed .chapter-header {
+        justify-content: center;
+        border-left-color: transparent;
+        padding: 0.6rem 0.25rem;
+      }
+
+      .sidebar.collapsed .chapter-header > span:last-child {
+        display: none;
+      }
+
+      .sidebar.collapsed .wippea-badge {
+        font-size: 0.7rem;
+        padding: 0.25rem 0.35rem;
       }
 
       .sidebar-toggle {
@@ -99,6 +126,32 @@
 
       .sidebar-toggle:active {
         transform: scale(0.95);
+      }
+
+      .sidebar-collapse-btn {
+        width: 28px;
+        height: 28px;
+        border-radius: 50%;
+        background: rgba(255, 255, 255, 0.15);
+        border: 1px solid rgba(255, 255, 255, 0.3);
+        color: var(--light);
+        font-size: 0.85rem;
+        cursor: pointer;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        margin: 1rem auto 0;
+        transition: background 0.2s ease;
+        flex-shrink: 0;
+      }
+
+      .sidebar-collapse-btn:hover {
+        background: rgba(255, 255, 255, 0.25);
+      }
+
+      .sidebar-collapse-btn:focus-visible {
+        outline: 2px solid var(--gold);
+        outline-offset: 2px;
       }
 
       .sidebar-title {
@@ -1516,7 +1569,48 @@
       /* ===== Mobile Responsiveness ===== */
       @media (max-width: 768px) {
         .sidebar {
-          margin-left: -280px;
+          position: fixed;
+          top: 0;
+          left: 0;
+          height: 100vh;
+          z-index: 400;
+          width: 280px;
+          transform: translateX(-100%);
+          transition: transform 0.3s ease;
+        }
+        .sidebar.mobile-open {
+          transform: translateX(0);
+        }
+        .sidebar.collapsed {
+          width: 280px;
+          padding: 2rem 1.5rem;
+          overflow: visible;
+          transform: translateX(-100%);
+        }
+        .sidebar.collapsed.mobile-open {
+          transform: translateX(0);
+        }
+        .sidebar.collapsed .sidebar-title,
+        .sidebar.collapsed .resources-section,
+        .sidebar.collapsed .slide-counter,
+        .sidebar.collapsed .slide-list,
+        .sidebar.collapsed .chapter-arrow {
+          display: revert;
+        }
+        .sidebar.collapsed .chapter-header {
+          justify-content: flex-start;
+          border-left-color: transparent;
+          padding: 0.75rem 1rem;
+        }
+        .sidebar.collapsed .chapter-header > span:last-child {
+          display: inline;
+        }
+        .sidebar.collapsed .wippea-badge {
+          font-size: 0.6rem;
+          padding: 0.15rem 0.4rem;
+        }
+        .sidebar-collapse-btn {
+          display: none;
         }
         .sidebar-toggle {
           display: flex;
@@ -1692,7 +1786,7 @@
   <body>
     <div class="container">
       <!-- Sidebar — Auto-built by JavaScript from slide data-chapter attributes -->
-      <nav class="sidebar">
+      <nav class="sidebar" id="sidebar-nav" aria-label="Lesson chapters">
         <div class="sidebar-title">{{LESSON_TITLE}}</div>
         <ul class="chapter-list" id="chapterList">
           <!-- Dynamically populated by buildSidebar() -->
@@ -1708,6 +1802,8 @@
           Slide <span id="currentSlide">1</span> of
           <span id="totalSlides">0</span>
         </div>
+
+        <button class="sidebar-collapse-btn" id="sidebarCollapseBtn" aria-expanded="true" aria-controls="sidebar-nav" title="Collapse sidebar">&#171;</button>
       </nav>
 
       <!-- Main Content -->
@@ -1718,8 +1814,10 @@
           id="sidebarToggle"
           onclick="toggleSidebar()"
           title="Toggle sidebar"
+          aria-expanded="true"
+          aria-controls="sidebar-nav"
         >
-          &#171;
+          &#9776;
         </button>
 
         <!-- ======================== -->
@@ -2109,13 +2207,39 @@
       let sidebarCollapsed = false;
       const sidebarEl = document.querySelector(".sidebar");
       const sidebarToggleBtn = document.getElementById("sidebarToggle");
+      const sidebarCollapseBtn = document.getElementById("sidebarCollapseBtn");
       totalSlidesEl.textContent = slides.length;
 
-      function toggleSidebar() {
-        sidebarCollapsed = !sidebarCollapsed;
-        sidebarEl.classList.toggle("collapsed", sidebarCollapsed);
-        sidebarToggleBtn.innerHTML = sidebarCollapsed ? "&#187;" : "&#171;";
+      // Hide external toggle when sidebar starts expanded (desktop)
+      if (window.innerWidth > 768) {
+        sidebarToggleBtn.style.display = "none";
       }
+
+      function toggleSidebar() {
+        if (window.innerWidth <= 768) {
+          // Mobile: slide sidebar in/out
+          sidebarEl.classList.toggle("mobile-open");
+          var isOpen = sidebarEl.classList.contains("mobile-open");
+          sidebarToggleBtn.setAttribute("aria-expanded", String(isOpen));
+        } else {
+          // Desktop: icon-rail collapse
+          sidebarCollapsed = !sidebarCollapsed;
+          sidebarEl.classList.toggle("collapsed", sidebarCollapsed);
+
+          // Update ARIA on both buttons
+          var expanded = String(!sidebarCollapsed);
+          sidebarToggleBtn.setAttribute("aria-expanded", expanded);
+          sidebarCollapseBtn.setAttribute("aria-expanded", expanded);
+
+          // Update collapse button text (static entities, no user input)
+          sidebarCollapseBtn.textContent = sidebarCollapsed ? "\u00BB" : "\u00AB";
+
+          // Show external toggle when collapsed, hide when expanded
+          sidebarToggleBtn.style.display = sidebarCollapsed ? "flex" : "none";
+        }
+      }
+
+      sidebarCollapseBtn.addEventListener("click", toggleSidebar);
 
       // Sound effects (gated on reduced motion)
       let audioCtx;
@@ -2435,9 +2559,9 @@
       // Auto-collapse sidebar on small screens
       function initSidebarState() {
         if (window.innerWidth <= 768) {
-          sidebarCollapsed = true;
-          sidebarEl.classList.add("collapsed");
-          sidebarToggleBtn.innerHTML = "&#187;";
+          // Mobile: sidebar hidden via CSS transform, toggle shows it
+          sidebarEl.classList.remove("collapsed");
+          sidebarToggleBtn.setAttribute("aria-expanded", "false");
         }
       }
 
