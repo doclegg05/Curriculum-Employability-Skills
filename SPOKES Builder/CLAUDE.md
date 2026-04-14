@@ -2,6 +2,8 @@
 
 You are building an interactive HTML slideshow presentation for **SPOKES** (Strategic Planning in Occupational Knowledge for Employment and Success — Skills for Life), a WV Adult Basic Education program.
 
+> **Design rules are defined in `SPOKES-STANDARD.md` (project root).** This file covers the build process only. If this file and SPOKES-STANDARD.md conflict, the standard wins.
+
 ## What You Build
 
 A **single self-contained `index.html` file** that is a fully interactive classroom presentation. No build tools, no frameworks, no external dependencies beyond Google Fonts. The CSS and JavaScript are embedded in the file.
@@ -171,29 +173,7 @@ Simple arrow-pointed list?             --> content-list
 
 ## Design System Rules
 
-### Colors — 11-Color Strict Palette
-
-> **Canonical source:** `brand-palette.md` — all hex values, contrast ratios, and prohibited colors are defined there. If this summary and `brand-palette.md` diverge, the palette file wins.
-
-7 core colors (`--primary`, `--accent`, `--dark`, `--light`, `--muted`, `--gray`, `--gold`) + 4 extended (`--royal`, `--mauve`, `--offwhite`, `--muted-gold`). No other colors permitted. See `brand-palette.md` for exact hex values, safe text/background combinations, and the full prohibited list.
-
-### Typography
-
-- **Default Headings:** `'DM Serif Display', serif`
-- **Default Body:** `'Outfit', sans-serif`
-- Each lesson overrides these with its own approved font pairing
-- **h1:** 5rem (title slide only)
-- **h2:** 3.5rem (slide titles) or 4rem (section dividers) or 4.5rem (big-statement)
-- **Body text:** 1.25rem-2rem depending on component
-
-### Text Highlighting
-
-Use `<span>` with these classes inside paragraphs:
-
-- `<span class="highlight">blue emphasis</span>`
-- `<span class="accent">green emphasis</span>`
-- `<span class="gold">gold emphasis</span>`
-- `<span class="mauve">mauve emphasis</span>`
+See `SPOKES-STANDARD.md` for the complete rule inventory covering colors (Section 1), typography (Section 2), accessibility (Section 3), components (Section 4), navigation engine (Section 5), theme system (Section 6), mobile/touch (Section 7), performance (Section 8), engagement (Section 9), and reduced motion (Section 10).
 
 ### Global Design Standards
 
@@ -206,20 +186,18 @@ All animations are automatic via CSS. No JS needed. Each component type has stag
 
 ## Important Rules
 
-1. **Single file.** All CSS and JS must be inside `index.html`. No external stylesheets or scripts.
-2. **Copy CSS/JS verbatim.** The `<style>` and `<script>` blocks in `template.html` are the standard. Do not modify the main block.
-3. **Theme override placement.** The `<style id="theme-override">` block goes **AFTER** the main CSS block, not before it.
-4. **Brand colors only.** All 11 CSS variables stay as defined. No additional color variables.
-5. **The only JS you change** is the `chapterNames` object to match the lesson's chapter names.
-6. **data-chapter must be sequential** starting from 1. The sidebar builds itself from these attributes.
-7. **First slide** must be `slide-title` with `active` class and `data-chapter="1"`.
-8. **Last slide** must be `slide-closing` with `id="closingSlide"`.
-9. **Every chapter** must start with a `slide-section` divider.
-10. **Videos** — if a video file is provided, download it to the `videos/` folder and embed it using an HTML5 `<video>` tag. If no video is provided, use the video placeholder component.
-11. **SPOKES-Logo.png** must be in the project root (same directory as index.html).
-12. **File paths in links** must be relative to index.html (e.g., `Handouts/file.pdf`).
-13. **File nesting** must not exceed 3 levels from project root.
-14. **Font pairings require user approval** before applying to any lesson.
+Design constraints are in `SPOKES-STANDARD.md`. Build-process-specific rules:
+
+1. **The only JS you change** is the `chapterNames` object to match the lesson's chapter names.
+2. **data-chapter must be sequential** starting from 1. The sidebar builds itself from these attributes.
+3. **First slide** must be `slide-title` with `active` class and `data-chapter="1"`.
+4. **Last slide** must be `slide-closing` with `id="closingSlide"`.
+5. **Every chapter** must start with a `slide-section` divider.
+6. **Videos** — if a video file is provided, download it to the `videos/` folder and embed it using an HTML5 `<video>` tag. If no video is provided, use the video placeholder component.
+7. **SPOKES-Logo.png** must be in the project root (same directory as index.html).
+8. **File paths in links** must be relative to index.html (e.g., `Handouts/file.pdf`).
+9. **File nesting** must not exceed 3 levels from project root.
+10. **Font pairings require user approval** before applying to any lesson.
 
 ## File Naming Conventions
 
