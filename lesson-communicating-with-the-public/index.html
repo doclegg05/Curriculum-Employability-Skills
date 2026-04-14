@@ -5,6 +5,9 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <link rel="preconnect" href="https://fonts.googleapis.com" />
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <!-- Default fonts (always keep) -->
+    <link href="https://fonts.googleapis.com/css2?family=DM+Serif+Display:ital@0;1&family=Outfit:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <!-- Lesson-specific fonts -->
     <link
       href="https://fonts.googleapis.com/css2?family=Crimson+Pro:wght@400;600;700&family=Work+Sans:wght@400;500;600&display=swap"
       rel="stylesheet"
@@ -35,8 +38,8 @@
         --mauve: #a7253f;
         --offwhite: #d1d3d4;
         --muted-gold: #ad8806;
-        --font-heading: "Crimson Pro", serif;
-        --font-body: "Work Sans", sans-serif;
+        --font-heading: "DM Serif Display", serif;
+        --font-body: "Outfit", sans-serif;
       }
 
       body {
@@ -1291,9 +1294,14 @@
       /* Font pairing: crimson-pro-work-sans */
       body { font-family: 'Work Sans', sans-serif; }
       .slide-title h1, .slide h2, .slide h3, .card h4,
-      .smart-content h4, .matrix-action, .slide-section h2 {
+      .smart-content h4, .matrix-action, .slide-section h2,
+      .area-card h4, .closing-box h2 {
         font-family: 'Crimson Pro', serif;
       }
+
+      /* Missing text highlight classes + contrast fix */
+      .slide .mauve { color: var(--mauve); font-weight: 700; }
+      .slide .gold { color: var(--muted-gold); font-weight: 700; }
 
       /* Background texture: crosshatch */
       .main {
@@ -1307,16 +1315,19 @@
       /* Color lead: dual-blue-green */
       .slide h2 { color: var(--primary); }
       .slide h3 { color: var(--primary); }
-      .download-btn { background: var(--accent); }
+      /* FIX: white on accent (#37b550) = 2.66:1 fails AA; using --dark (10.65:1) */
+      .download-btn { background: var(--dark); }
+      .download-btn:hover { background: var(--dark); box-shadow: 0 5px 20px rgba(0, 64, 113, 0.4); }
       .divider { background: linear-gradient(90deg, var(--primary), var(--accent)); }
       .slide-section { background: linear-gradient(135deg, var(--primary), var(--accent)); }
 
-      /* Title slide: top-banner */
-      .slide-title { background: var(--light); flex-direction: column; }
-      .slide-title::before { content: 'SPOKES \2014  SKILLS FOR LIFE'; background: linear-gradient(90deg, var(--dark), var(--primary), var(--dark)); color: var(--gold); font-size: 0.75rem; letter-spacing: 3px; text-align: center; padding: 0.75rem; width: 100%; }
-      .slide-title::after { content: ''; height: 4px; background: linear-gradient(90deg, var(--primary), var(--gold), var(--accent)); width: 100%; margin-top: auto; }
-      .slide-title h1 { color: var(--dark); }
-      .slide-title .subtitle { color: var(--gray); }
+      /* Title slide updated to geometric gold-to-blue layout */
+      .slide-title { background: linear-gradient(90deg, var(--gold) 0%, var(--primary) 25%, var(--dark) 100%); flex-direction: column; justify-content: center; }
+      .slide-title::before { display: none; }
+      .slide-title::after { display: none; }
+      .slide-title h1 { color: var(--light); text-shadow: 0 4px 10px rgba(0,0,0,0.3); }
+      .slide-title .subtitle { color: var(--light); font-size: 1.8rem; text-shadow: 0 2px 5px rgba(0,0,0,0.3); }
+      .slide-title .copyright { color: rgba(255,255,255,0.6); }
 
 
       /* =================================================================
@@ -1347,10 +1358,12 @@
         border-radius: 6px;
         box-shadow: 0 2px 6px rgba(0,0,0,0.08);
       }
+      /* FIX: gold text (#d3b257) on white bg = 2.04:1; restore gold bg + dark text (4.74:1) */
       [data-chapter="1"] .takeaway-num.alt,
       [data-chapter="3"] .takeaway-num.alt,
       [data-chapter="7"] .takeaway-num.alt {
-        color: var(--gold);
+        background: var(--gold);
+        color: var(--dark);
       }
       [data-chapter="1"] .smart-letter,
       [data-chapter="3"] .smart-letter,
@@ -1460,11 +1473,11 @@
       }
 
       /* --- Uniform Divider Style: bold-full-bleed --- */
-      .slide-section { background: var(--primary); }
-      .slide-section h2 { color: var(--light); }
-      .slide-section .chapter-label { color: rgba(255,255,255,0.7); }
-      .slide-section .divider { background: var(--gold); }
-      .slide-section .section-circle { border-color: rgba(255,255,255,0.3); background: rgba(0,0,0,0.15); }
+      .slide-section { background: linear-gradient(90deg, var(--gold) 0%, var(--primary) 25%, var(--dark) 100%); }
+      .slide-section h2 { color: var(--light); text-shadow: 0 2px 5px rgba(0,0,0,0.3); }
+      .slide-section .chapter-label { color: var(--light); font-weight: 700; letter-spacing: 3px; text-shadow: 0 2px 5px rgba(0,0,0,0.3); margin-top: 0.5rem; }
+      .slide-section .divider { background: var(--light); box-shadow: 0 2px 4px rgba(0,0,0,0.2); }
+      .slide-section .section-circle { border-color: var(--light); background: rgba(0,0,0,0.15); box-shadow: 0 10px 30px rgba(0,0,0,0.3); }
 
       /* --- Secondary Accent: mauve (chapters 2, 4, 6) --- */
       [data-chapter="2"] .card.gold-border,
@@ -1472,12 +1485,52 @@
       [data-chapter="6"] .card.gold-border {
         border-left-color: var(--mauve);
       }
+      /* FIX: dark text (#004071) on mauve (#a7253f) = ~1.4:1; switch to white text (5.34:1) */
       [data-chapter="2"] .takeaway-num.alt,
       [data-chapter="4"] .takeaway-num.alt,
       [data-chapter="6"] .takeaway-num.alt {
         background: var(--mauve);
+        color: var(--light);
       }
 
+
+      /* FIX: .matrix-cell.schedule — white on accent = 2.66:1 fails AA;
+         use dark text (3.67:1 — passes large text, near-pass normal) */
+      .matrix-cell.schedule { color: var(--dark); }
+      .matrix-cell.schedule .matrix-label { opacity: 1; }
+
+      /* FIX: .accent class (#37b550 on white = 2.66:1) fails even the 3:1
+         large-text threshold. Override to --dark (#004071, 10.65:1) for full
+         WCAG AA compliance at all text sizes. */
+      .slide .accent { color: var(--dark); font-weight: 700; }
+
+      /* FIX: .activity-label uses --gold (#d3b257 = 2.04:1 on white) at 0.8rem —
+         fails 4.5:1 normal text. Override to --dark (10.65:1). Gold accent
+         preserved via the activity-box border. */
+      .activity-label { color: var(--dark); }
+
+      /* FIX: .wippea-badge.p uses --light on --accent (#37b550 = 2.66:1) at
+         0.6rem — fails 4.5:1. Switch bg to --primary (4.72:1 passes). */
+      .wippea-badge.p { background: var(--primary); }
+
+      /* FIX: Missing focus-visible styles on interactive elements.
+         Required for keyboard accessibility (WCAG 2.4.7). */
+      .tab-btn:focus-visible,
+      .accordion-header:focus-visible,
+      .download-btn:focus-visible,
+      .key-icon:focus-visible,
+      .sidebar-toggle:focus-visible {
+        outline: 3px solid var(--gold);
+        outline-offset: 2px;
+      }
+      .resource-link:focus-visible {
+        outline: 2px solid var(--gold);
+        outline-offset: 1px;
+      }
+      button:focus-visible {
+        outline: 3px solid var(--gold);
+        outline-offset: 2px;
+      }
 
       /* =================================================================
          LESSON-SPECIFIC INTERACTIVE COMPONENT CSS (preserved)
@@ -1625,6 +1678,77 @@
         .tab-btn { font-size: 0.95rem; padding: 0.6rem 1rem; }
         .video-grid { grid-template-columns: 1fr; }
       }
+
+      /* Fix closing slide visibility */
+      .slide-closing h2 {
+        color: var(--gold) !important;
+        text-shadow: 0 2px 5px rgba(0,0,0,0.3);
+      }
+
+      /* ================================================================
+       INTERACTIVE CARD HOVER EFFECTS (Added via Plan)
+       ================================================================ */
+    
+      /* 1. Component: Standard Cards - The Edge Glow Lift */
+      .card {
+        transition: transform 0.4s cubic-bezier(0.22, 1, 0.36, 1), box-shadow 0.4s ease, border-color 0.4s ease;
+      }
+      .card:hover {
+        transform: translateY(-5px) !important;
+        box-shadow: 0 10px 25px rgba(0,0,0,0.12) !important;
+      }
+      .card:not(.gold-border):hover {
+        border-top-color: var(--gold) !important;
+        border-left-color: var(--gold) !important;
+      }
+      .card.gold-border:hover {
+        border-top-color: var(--accent) !important;
+        border-left-color: var(--accent) !important;
+      }
+
+      /* 2. Component: Area Cards - The Push-in Scale */
+      .area-card {
+        transition: transform 0.5s cubic-bezier(0.34, 1.56, 0.64, 1), box-shadow 0.5s ease;
+      }
+      .area-card:hover {
+        transform: scale(1.03) !important;
+        box-shadow: 0 12px 30px rgba(0,0,0,0.15) !important;
+        z-index: 2; /* Brings above peers when scaling */
+      }
+
+      /* 3. Component: Danger/Flip Cards - The Magnetic Pulse */
+      .danger-card {
+        transition: transform 0.4s cubic-bezier(0.22, 1, 0.36, 1), filter 0.4s ease;
+      }
+      .danger-card:hover, .danger-card:focus {
+        transform: translateY(-4px) !important;
+        filter: drop-shadow(0 8px 20px rgba(211,178,87,0.5)); /* Gold glowing pulse */
+      }
+
+      /* 4. Component: Scenario Cards - The Side-Breeze */
+      .scenario-card {
+        transition: transform 0.4s ease, background-color 0.4s ease, box-shadow 0.4s ease;
+      }
+      .scenario-card:hover {
+        transform: translateX(6px) !important;
+        background-color: rgba(211,178,87,0.05) !important; /* Soft warm glow */
+        box-shadow: -4px 8px 20px rgba(0,64,113,0.08) !important;
+      }
+
+      /* 5. Component: Smart Rows (List Items) - The Shift Edge */
+      .smart-row {
+        transition: transform 0.3s cubic-bezier(0.22, 1, 0.36, 1);
+      }
+      .smart-content {
+        transition: background-color 0.3s ease, box-shadow 0.3s ease;
+      }
+      .smart-row:hover {
+        transform: translateX(8px);
+      }
+      .smart-row:hover .smart-content {
+        background-color: var(--light);
+        box-shadow: -4px 6px 15px rgba(0,64,113,0.08); /* slight drop shadow pop */
+      }
     </style>
   </head>
   <body>
@@ -1693,10 +1817,6 @@
             <span class="download-prompt">Instructor Resource Available</span>
             <a href="Handouts/Communicating with the Public 2026 Handouts.pdf#page=3" target="_blank" class="download-btn">Personal Listening Assessment</a>
           </div>
-          <div class="instructor-prompt" style="display:none; margin-top:1.5rem; padding:1rem 1.5rem; background:rgba(211,178,87,0.1); border:1px solid var(--gold); border-radius:8px;">
-            <p style="font-size:1.1rem; color:var(--gray);"><strong style="color:var(--muted-gold);">Instructor Prompt:</strong> Distribute the Personal Listening Assessment. Have learners complete the first column only. After completion, ask a few volunteers to share their self-ratings and reasoning. This establishes a baseline for the post-assessment later.</p>
-          </div>
-          <button onclick="const p=this.previousElementSibling;p.style.display=p.style.display==='none'?'block':'none';this.textContent=p.style.display==='none'?'View Prompt':'Hide Prompt'" style="margin-top:0.5rem; padding:0.4rem 1rem; background:var(--gold); color:var(--dark); border:none; border-radius:6px; cursor:pointer; font-size:0.85rem; font-weight:600;">View Prompt</button>
         </section>
 
         <!-- ======================== -->
@@ -1726,10 +1846,6 @@
               <div class="visual-circle">&#128483;</div>
             </div>
           </div>
-          <div class="instructor-prompt" style="display:none; margin-top:1.5rem; padding:1rem 1.5rem; background:rgba(211,178,87,0.1); border:1px solid var(--gold); border-radius:8px;">
-            <p style="font-size:1.1rem; color:var(--gray);"><strong style="color:var(--muted-gold);">Instructor Prompt:</strong> Ask: "Have you ever known someone who was really hard to communicate with?" Share real-life examples (someone who never listens, someone who always thinks they're right). Transition into defining what effective communication actually means.</p>
-          </div>
-          <button onclick="const p=this.previousElementSibling;p.style.display=p.style.display==='none'?'block':'none';this.textContent=p.style.display==='none'?'View Prompt':'Hide Prompt'" style="margin-top:0.5rem; padding:0.4rem 1rem; background:var(--gold); color:var(--dark); border:none; border-radius:6px; cursor:pointer; font-size:0.85rem; font-weight:600;">View Prompt</button>
         </section>
 
         <!-- Slide 5: Workplace Communication Stats -->
@@ -1827,10 +1943,6 @@
             <div class="activity-label">Discussion</div>
             <p>Why is this communication process called a <em>cycle</em>? What happens when the cycle breaks down?</p>
           </div>
-          <div class="instructor-prompt" style="display:none; margin-top:1.5rem; padding:1rem 1.5rem; background:rgba(211,178,87,0.1); border:1px solid var(--gold); border-radius:8px;">
-            <p style="font-size:1.1rem; color:var(--gray);"><strong style="color:var(--muted-gold);">Instructor Prompt:</strong> Emphasize that communication is ongoing and interactive, not one-directional. The cycle continues with constant feedback between sender and receiver. Ask students for examples of when the cycle broke down in their own experience.</p>
-          </div>
-          <button onclick="const p=this.previousElementSibling;p.style.display=p.style.display==='none'?'block':'none';this.textContent=p.style.display==='none'?'View Prompt':'Hide Prompt'" style="margin-top:0.5rem; padding:0.4rem 1rem; background:var(--gold); color:var(--dark); border:none; border-radius:6px; cursor:pointer; font-size:0.85rem; font-weight:600;">View Prompt</button>
         </section>
 
         <!-- Slide 11: Communication Cycle Video -->
@@ -1918,10 +2030,6 @@
             <p>Think about the communication cycle we just discussed. Can you recall a time when a message you sent was <strong>decoded differently</strong> than you intended?</p>
             <p style="margin-top:1rem;">What could you have done to ensure your message was received clearly?</p>
           </div>
-          <div class="instructor-prompt" style="display:none; margin-top:1.5rem; padding:1rem 1.5rem; background:rgba(211,178,87,0.1); border:1px solid var(--gold); border-radius:8px;">
-            <p style="font-size:1.1rem; color:var(--gray);"><strong style="color:var(--muted-gold);">Instructor Prompt:</strong> Give students 2-3 minutes to reflect silently, then invite 2-3 volunteers to share their experience. Bridge this into the next chapter on communication styles by noting that HOW we send messages (verbal, body, voice) affects whether they are decoded correctly.</p>
-          </div>
-          <button onclick="const p=this.previousElementSibling;p.style.display=p.style.display==='none'?'block':'none';this.textContent=p.style.display==='none'?'View Prompt':'Hide Prompt'" style="margin-top:0.5rem; padding:0.4rem 1rem; background:var(--gold); color:var(--dark); border:none; border-radius:6px; cursor:pointer; font-size:0.85rem; font-weight:600;">View Prompt</button>
         </section>
 
         <!-- ======================== -->
@@ -2028,10 +2136,6 @@
               <p>Bad Service Rep (2:32)</p>
             </div>
           </div>
-          <div class="instructor-prompt" style="display:none; margin-top:1.5rem; padding:1rem 1.5rem; background:rgba(211,178,87,0.1); border:1px solid var(--gold); border-radius:8px;">
-            <p style="font-size:1.1rem; color:var(--gray);"><strong style="color:var(--muted-gold);">Instructor Prompt:</strong> For each video, have students (1) write how the employee(s) demonstrated bad communication skills and (2) what they could have done differently. This can be done individually, in pairs, or as a class discussion.</p>
-          </div>
-          <button onclick="const p=this.previousElementSibling;p.style.display=p.style.display==='none'?'block':'none';this.textContent=p.style.display==='none'?'View Prompt':'Hide Prompt'" style="margin-top:0.5rem; padding:0.4rem 1rem; background:var(--gold); color:var(--dark); border:none; border-radius:6px; cursor:pointer; font-size:0.85rem; font-weight:600;">View Prompt</button>
         </section>
 
         <!-- Slide 20: Role-Play Activity -->
@@ -2075,10 +2179,6 @@
             <a href="Handouts/Communicating with the Public 2026 Handouts.pdf#page=7" target="_blank" class="download-btn">Role-Play Scenarios</a>
             <a href="Handouts/Communicating with the Public 2026 Handouts.pdf#page=10" target="_blank" class="download-btn">Evaluation Form</a>
           </div>
-          <div class="instructor-prompt" style="display:none; margin-top:1.5rem; padding:1rem 1.5rem; background:rgba(211,178,87,0.1); border:1px solid var(--gold); border-radius:8px;">
-            <p style="font-size:1.1rem; color:var(--gray);"><strong style="color:var(--muted-gold);">Instructor Prompt:</strong> After each role-play, discuss: Was the message clear? Was the tone respectful? Were questions answered accurately? Use the evaluation form for structured feedback.</p>
-          </div>
-          <button onclick="const p=this.previousElementSibling;p.style.display=p.style.display==='none'?'block':'none';this.textContent=p.style.display==='none'?'View Prompt':'Hide Prompt'" style="margin-top:0.5rem; padding:0.4rem 1rem; background:var(--gold); color:var(--dark); border:none; border-radius:6px; cursor:pointer; font-size:0.85rem; font-weight:600;">View Prompt</button>
         </section>
 
         <!-- ======================== -->
@@ -2335,10 +2435,6 @@
             <span class="download-prompt">Instructor Resource Available</span>
             <a href="Handouts/Communicating with the Public 2026 Handouts.pdf#page=3" target="_blank" class="download-btn">Personal Listening Assessment</a>
           </div>
-          <div class="instructor-prompt" style="display:none; margin-top:1.5rem; padding:1rem 1.5rem; background:rgba(211,178,87,0.1); border:1px solid var(--gold); border-radius:8px;">
-            <p style="font-size:1.1rem; color:var(--gray);"><strong style="color:var(--muted-gold);">Instructor Prompt:</strong> Have learners complete the second column. Discuss the answers. Ask: "Did your self-assessment change? What listening skills do you want to keep working on?"</p>
-          </div>
-          <button onclick="const p=this.previousElementSibling;p.style.display=p.style.display==='none'?'block':'none';this.textContent=p.style.display==='none'?'View Prompt':'Hide Prompt'" style="margin-top:0.5rem; padding:0.4rem 1rem; background:var(--gold); color:var(--dark); border:none; border-radius:6px; cursor:pointer; font-size:0.85rem; font-weight:600;">View Prompt</button>
         </section>
 
         <!-- ======================== -->
@@ -2379,17 +2475,13 @@
             <a href="Handouts/Communicating with the Public 2026 Handouts.pdf" target="_blank" class="download-btn">All Handouts (PDF)</a>
             <a href="Handouts/Communicating with the Public 2026 Handouts.pdf#page=12" target="_blank" class="download-btn">Back-to-Back Drawing</a>
           </div>
-          <div class="instructor-prompt" style="display:none; margin-top:1.5rem; padding:1rem 1.5rem; background:rgba(211,178,87,0.1); border:1px solid var(--gold); border-radius:8px;">
-            <p style="font-size:1.1rem; color:var(--gray);"><strong style="color:var(--muted-gold);">Instructor Prompt:</strong> Students will apply their public communication skills by developing a self-advocacy binder. They may choose handouts from the Self-Advocacy Handout Library. Allow 15-20 minutes for selection and organization, then have students share one item and why they selected it.</p>
-          </div>
-          <button onclick="const p=this.previousElementSibling;p.style.display=p.style.display==='none'?'block':'none';this.textContent=p.style.display==='none'?'View Prompt':'Hide Prompt'" style="margin-top:0.5rem; padding:0.4rem 1rem; background:var(--gold); color:var(--dark); border:none; border-radius:6px; cursor:pointer; font-size:0.85rem; font-weight:600;">View Prompt</button>
         </section>
 
         <!-- Slide 33: Closing -->
         <section class="slide slide-closing" data-chapter="7" id="closingSlide">
           <div class="confetti-container" id="confettiContainer"></div>
           <div class="closing-box">
-            <h3 style="color:var(--gold); font-size:1.5rem; margin-bottom:1.5rem;">
+            <h3 style="color:var(--light); font-size:1.5rem; margin-bottom:1.5rem;">
               Congratulations, you have completed this lesson!
             </h3>
             <p>"The single biggest problem in communication is the illusion that it has taken place." &mdash; George Bernard Shaw</p>

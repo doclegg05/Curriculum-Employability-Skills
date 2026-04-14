@@ -1,3 +1,7 @@
+> **ARCHIVED** — This file has been absorbed into `SPOKES-STANDARD.md` (project root).
+> It is kept here as a historical reference. Do not use for design decisions.
+> Archived: 2026-04-14
+
 # SPOKES Brand Palette — Canonical Reference
 
 **This is the single source of truth for all SPOKES brand colors.**
@@ -62,14 +66,14 @@ Calculated against WCAG 2.2 AA thresholds (4.5:1 normal text, 3:1 large text).
 
 | Text Color | Background | Ratio | AA Normal | AA Large |
 |---|---|---|---|---|
-| `--gray` (#60636b) | `--light` (#FFFFFF) | 5.54:1 | PASS | PASS |
+| `--gray` (#60636b) | `--light` (#FFFFFF) | 6.01:1 | PASS | PASS |
 | `--dark` (#004071) | `--light` (#FFFFFF) | 10.65:1 | PASS | PASS |
 | `--light` (#FFFFFF) | `--dark` (#004071) | 10.65:1 | PASS | PASS |
 | `--light` (#FFFFFF) | `--royal` (#00133f) | 18.03:1 | PASS | PASS |
-| `--light` (#FFFFFF) | `--primary` (#007baf) | 3.96:1 | -- | PASS |
-| `--mauve` (#a7253f) | `--light` (#FFFFFF) | 5.34:1 | PASS | PASS |
+| `--light` (#FFFFFF) | `--primary` (#007baf) | 4.72:1 | PASS | PASS |
+| `--mauve` (#a7253f) | `--light` (#FFFFFF) | 7.05:1 | PASS | PASS |
 | `--muted-gold` (#ad8806) | `--light` (#FFFFFF) | 3.33:1 | -- | PASS |
-| `--primary` (#007baf) | `--light` (#FFFFFF) | 3.96:1 | -- | PASS |
+| `--primary` (#007baf) | `--light` (#FFFFFF) | 4.72:1 | PASS | PASS |
 | `--gray` (#60636b) | `--muted` (#EDF3F7) | 5.37:1 | PASS | PASS |
 
 ### Failing Combinations (Do Not Use)
@@ -77,8 +81,8 @@ Calculated against WCAG 2.2 AA thresholds (4.5:1 normal text, 3:1 large text).
 | Text Color | Background | Ratio | Issue |
 |---|---|---|---|
 | `--gold` (#d3b257) | `--light` (#FFFFFF) | 2.04:1 | Fails both AA thresholds |
-| `--accent` (#37b550) | `--light` (#FFFFFF) | 2.66:1 | Fails AA normal text |
-| `--light` (#FFFFFF) | `--accent` (#37b550) | 2.66:1 | Fails AA normal text |
+| `--accent` (#37b550) | `--light` (#FFFFFF) | 2.66:1 | Fails all WCAG AA thresholds |
+| `--light` (#FFFFFF) | `--accent` (#37b550) | 2.66:1 | Fails all WCAG AA thresholds |
 | `--gold` (#d3b257) | `--primary` (#007baf) | 2.31:1 | Fails both thresholds |
 
 ### Safe Text Highlight Usage
@@ -87,10 +91,12 @@ For inline text emphasis on white/light backgrounds:
 
 | Class | Use This Color | Contrast on White | Notes |
 |---|---|---|---|
-| `.highlight` | `--primary` (#007baf) | 3.96:1 | Safe for large text (h2, h3) only |
-| `.accent` | `--accent` (#37b550) | 2.66:1 | Safe for large text only; avoid at body size |
+| `.highlight` | `--primary` (#007baf) | 4.72:1 | Safe for all text sizes |
+| `.accent` | `--accent` (#37b550) | 2.66:1 | FAILS all WCAG AA thresholds; use proposed `--accent-text` darker green instead |
 | `.gold` | `--muted-gold` (#ad8806) | 3.33:1 | Use muted-gold, NOT gold, for text on light |
-| `.mauve` | `--mauve` (#a7253f) | 5.34:1 | Safe for all text sizes |
+| `.mauve` | `--mauve` (#a7253f) | 7.05:1 | Safe for all text sizes |
+
+> **Action needed:** `--accent` (#37b550) fails all WCAG AA contrast thresholds on white (2.66:1 < 3:1). A `--accent-text` variable with a darker green (e.g. `#1e7a2e`, ≈ 5.41:1 on white) should be added to the palette for any text or interactive label that currently uses `--accent` on light backgrounds.
 
 ---
 

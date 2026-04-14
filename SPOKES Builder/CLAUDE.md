@@ -16,7 +16,7 @@ These files are in this directory (`SPOKES Builder/`):
 
 | File                          | Purpose                                                                                         |
 | ----------------------------- | ----------------------------------------------------------------------------------------------- |
-| `brand-palette.md`            | **CANONICAL** source of truth for all 11 SPOKES brand colors. Every other file must match this. |
+| `brand-palette.md`            | **ARCHIVED** — absorbed into `SPOKES-STANDARD.md` (project root). Kept for historical reference only. |
 | `template.html`               | Base skeleton HTML with all CSS/JS intact. Copy this and fill in content.                       |
 | `components.md`               | Copy-paste HTML patterns for every slide type and component.                                    |
 | `build-process.md`            | Step-by-step workflow, WIPPEA mapping, and verification checklist.                              |
@@ -35,7 +35,7 @@ Theme packages are pre-defined in `theme-registry.json` and pre-approved in bulk
 **Reference files:**
 - `theme-registry.json` — Per-lesson theme assignments
 - `theme-library.css` — All reusable CSS snippets
-- `brand-palette.md` — Canonical 11-color system
+- `SPOKES-STANDARD.md` (project root) — Canonical 11-color system and all design rules
 - `font-pairings.md` — Pre-curated font library
 
 ## Build Process (10 Steps)
@@ -150,7 +150,7 @@ Use the preview server to confirm:
 - Download links work
 - Closing slide triggers confetti
 - No console errors
-- **No off-brand colors** — check all CSS values against the 11-color palette in `brand-palette.md`
+- **No off-brand colors** — check all CSS values against the 11-color palette in `SPOKES-STANDARD.md`
 
 ## Component Selection Decision Guide
 
