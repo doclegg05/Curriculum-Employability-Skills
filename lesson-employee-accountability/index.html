@@ -581,7 +581,7 @@
 
     .card.gold-border { border-left-color: var(--gold); }
 
-    .card h4 {
+    .card h3 {
       font-family: 'DM Serif Display', serif;
       font-size: 1.75rem;
       color: var(--primary);
@@ -675,7 +675,7 @@
       border-radius: 8px;
     }
 
-    .smart-content h4 {
+    .smart-content h3 {
       font-family: 'DM Serif Display', serif;
       font-size: 1.15rem;
       color: var(--primary);
@@ -805,7 +805,7 @@
       margin-bottom: 0.75rem;
     }
 
-    .danger-card-front h4 {
+    .danger-card-front h3 {
       font-size: 1.1rem;
       font-weight: 600;
     }
@@ -815,7 +815,7 @@
       line-height: 1.4;
     }
 
-    .danger-card-back h4 {
+    .danger-card-back h3 {
       font-size: 1rem;
       margin-bottom: 0.5rem;
       font-weight: 600;
@@ -858,7 +858,7 @@
 
     .area-card.gold-card .area-icon { background: var(--dark); color: var(--gold); }
 
-    .area-card h4 {
+    .area-card h3 {
       font-family: 'DM Serif Display', serif;
       font-size: 1.5rem;
       font-weight: 400;
@@ -1271,8 +1271,8 @@
   <style id="theme-override">
     /* ── Layer 1: Font Override (Merriweather + Source Sans 3) ── */
     body { font-family: 'Source Sans 3', sans-serif; }
-    .slide-title h1, .slide h2, .slide h3, .card h4,
-    .smart-content h4, .matrix-action, .slide-section h2 {
+    .slide-title h1, .slide h2, .slide h3, .card h3,
+    .smart-content h3, .matrix-action, .slide-section h2 {
       font-family: 'Merriweather', serif;
     }
 
@@ -1435,9 +1435,9 @@
       border-left: none;
       border-radius: 8px;
     }
-    [data-chapter="4"] .card h4,
+    [data-chapter="4"] .card h3,
     [data-chapter="4"] .card p,
-    [data-chapter="7"] .card h4,
+    [data-chapter="7"] .card h3,
     [data-chapter="7"] .card p {
       color: var(--light);
     }
@@ -1445,9 +1445,9 @@
     [data-chapter="7"] .card.gold-border {
       background: linear-gradient(135deg, var(--gold), var(--muted-gold));
     }
-    [data-chapter="4"] .card.gold-border h4,
+    [data-chapter="4"] .card.gold-border h3,
     [data-chapter="4"] .card.gold-border p,
-    [data-chapter="7"] .card.gold-border h4,
+    [data-chapter="7"] .card.gold-border h3,
     [data-chapter="7"] .card.gold-border p {
       color: var(--light);
     }
@@ -1565,7 +1565,7 @@
 
     .debrief-card:hover::before { transform: scaleY(1); }
 
-    .debrief-card h4 {
+    .debrief-card h3 {
       font-family: 'Merriweather', serif;
       font-size: 1.3rem;
       font-weight: 700;
@@ -1574,7 +1574,7 @@
       transition: color 0.6s ease;
     }
 
-    .debrief-card.gold-top h4 {
+    .debrief-card.gold-top h3 {
       color: var(--muted-gold);
       transition: color 0.6s ease;
     }
@@ -1586,8 +1586,8 @@
       transition: color 0.6s ease;
     }
 
-    .debrief-card:hover h4, .debrief-card:hover p { color: var(--light); }
-    .debrief-card.gold-top:hover h4, .debrief-card.gold-top:hover p { color: var(--dark); }
+    .debrief-card:hover h3, .debrief-card:hover p { color: var(--light); }
+    .debrief-card.gold-top:hover h3, .debrief-card.gold-top:hover p { color: var(--dark); }
 
     /* Tabs component for QA interactive pack */
     .tabs-container {
@@ -1649,7 +1649,7 @@
       gap: 1rem;
     }
 
-    .tab-panel h4 {
+    .tab-panel h3 {
       font-family: 'Merriweather', serif;
       font-size: 1.4rem;
       font-weight: 700;
@@ -1968,12 +1968,12 @@
        Needs 4.5:1 for normal text. Override to gold which passes on dark (5.42:1). */
     .sidebar .sidebar-title { color: var(--gold); }
 
-    /* FIX 11: .smart-content h4 — primary on muted bg = 4.21:1 at 1.15rem 400w
+    /* FIX 11: .smart-content h3 — primary on muted bg = 4.21:1 at 1.15rem 400w
        (18.4px normal, NOT large text). Needs 4.5:1. Affects pill chapters (1,3,6)
        and gradient-fill chapters (4,7) where smart-content bg stays muted.
        Shadow-float chapters (2,5) override bg to white (4.72:1 pass), but
        applying --dark universally for consistency. */
-    .smart-content h4 { color: var(--dark); }
+    .smart-content h3 { color: var(--dark); }
 
     /* FIX 12: .activity-label — muted-gold (#ad8806) on near-white bg = 3.33:1
        at 0.8rem 700w (12.8px bold, NOT large text). Needs 4.5:1.
@@ -2106,19 +2106,19 @@
         </div>
         <div class="cards-grid">
           <div class="card">
-            <h4>Question 1</h4>
+            <h3>Question 1</h3>
             <p>Think of a time when <span class="accent">being accountable helped improve a situation</span> — at work, school, or in your personal life.</p>
           </div>
           <div class="card gold-border">
-            <h4>Question 2</h4>
+            <h3>Question 2</h3>
             <p>Think of a time when <span class="highlight">someone avoided accountability</span> — what happened as a result?</p>
           </div>
           <div class="card gold-border">
-            <h4>Question 3</h4>
+            <h3>Question 3</h3>
             <p>What does <strong>being accountable</strong> mean to you in your own words?</p>
           </div>
           <div class="card">
-            <h4>Listen Carefully</h4>
+            <h3>Listen Carefully</h3>
             <p>We will build on these shared stories <strong>throughout the entire lesson</strong> today.</p>
           </div>
         </div>
@@ -2205,7 +2205,7 @@
           <div class="area-card">
             <div class="area-header">
               <div class="area-icon">&#128081;</div>
-              <h4>Builds Trust</h4>
+              <h3>Builds Trust</h3>
             </div>
             <ul>
               <li>Employers rely on people who follow through</li>
@@ -2216,7 +2216,7 @@
           <div class="area-card gold-card">
             <div class="area-header">
               <div class="area-icon">&#128200;</div>
-              <h4>Leads to Growth</h4>
+              <h3>Leads to Growth</h3>
             </div>
             <ul>
               <li>Accountable employees earn more opportunities</li>
@@ -2227,7 +2227,7 @@
           <div class="area-card">
             <div class="area-header">
               <div class="area-icon">&#128260;</div>
-              <h4>Drives Improvement</h4>
+              <h3>Drives Improvement</h3>
             </div>
             <ul>
               <li>Owning mistakes accelerates learning</li>
@@ -2281,27 +2281,27 @@
         <p style="font-size: 1.1rem; color: var(--gray); margin-top: -1.5rem; margin-bottom: 1.5rem;">Distribute Handout 1 — students review all 15 habits, then focus on these key connections:</p>
         <div class="debrief-grid">
           <div class="debrief-card">
-            <h4>Persisting</h4>
+            <h3>Persisting</h3>
             <p>Sticking with a task even when it is hard or uncomfortable</p>
           </div>
           <div class="debrief-card gold-top">
-            <h4>Managing Impulsivity</h4>
+            <h3>Managing Impulsivity</h3>
             <p>Pausing to think before acting or speaking — especially under pressure</p>
           </div>
           <div class="debrief-card gold-top">
-            <h4>Thinking Flexibly</h4>
+            <h3>Thinking Flexibly</h3>
             <p>Considering multiple viewpoints and adapting when plans change</p>
           </div>
           <div class="debrief-card">
-            <h4>Striving for Accuracy</h4>
+            <h3>Striving for Accuracy</h3>
             <p>Checking your work carefully and holding yourself to high standards</p>
           </div>
           <div class="debrief-card">
-            <h4>Taking Responsible Risks</h4>
+            <h3>Taking Responsible Risks</h3>
             <p>Trying new things thoughtfully — not recklessly, not fearfully</p>
           </div>
           <div class="debrief-card gold-top">
-            <h4>Continuous Learning</h4>
+            <h3>Continuous Learning</h3>
             <p>Reflecting, seeking feedback, and always working to improve</p>
           </div>
         </div>
@@ -2368,10 +2368,10 @@
             <div class="danger-card-inner">
               <div class="danger-card-front">
                 <div class="danger-icon">&#129309;</div>
-                <h4>Builds Trust</h4>
+                <h3>Builds Trust</h3>
               </div>
               <div class="danger-card-back">
-                <h4>Builds Trust</h4>
+                <h3>Builds Trust</h3>
                 <p>Team members rely on each other. Trust is earned through consistent follow-through, not promises.</p>
               </div>
             </div>
@@ -2380,10 +2380,10 @@
             <div class="danger-card-inner">
               <div class="danger-card-front">
                 <div class="danger-icon">&#128640;</div>
-                <h4>Increases Output</h4>
+                <h3>Increases Output</h3>
               </div>
               <div class="danger-card-back">
-                <h4>Increases Output</h4>
+                <h3>Increases Output</h3>
                 <p>When everyone pulls their weight, more gets done — faster and at higher quality.</p>
               </div>
             </div>
@@ -2392,10 +2392,10 @@
             <div class="danger-card-inner">
               <div class="danger-card-front">
                 <div class="danger-icon">&#128218;</div>
-                <h4>Reduces Errors</h4>
+                <h3>Reduces Errors</h3>
               </div>
               <div class="danger-card-back">
-                <h4>Reduces Errors</h4>
+                <h3>Reduces Errors</h3>
                 <p>Accountable teams catch mistakes early and communicate them before they become crises.</p>
               </div>
             </div>
@@ -2404,10 +2404,10 @@
             <div class="danger-card-inner">
               <div class="danger-card-front">
                 <div class="danger-icon">&#127775;</div>
-                <h4>Improves Culture</h4>
+                <h3>Improves Culture</h3>
               </div>
               <div class="danger-card-back">
-                <h4>Improves Culture</h4>
+                <h3>Improves Culture</h3>
                 <p>Accountability is contagious. One person who models it raises the bar for everyone around them.</p>
               </div>
             </div>
@@ -2416,10 +2416,10 @@
             <div class="danger-card-inner">
               <div class="danger-card-front">
                 <div class="danger-icon">&#128170;</div>
-                <h4>Grows Leaders</h4>
+                <h3>Grows Leaders</h3>
               </div>
               <div class="danger-card-back">
-                <h4>Grows Leaders</h4>
+                <h3>Grows Leaders</h3>
                 <p>People who demonstrate accountability without being asked are the ones organizations promote.</p>
               </div>
             </div>
@@ -2435,35 +2435,35 @@
           <div class="smart-row">
             <div class="smart-letter">C</div>
             <div class="smart-content">
-              <h4>Clarity</h4>
+              <h3>Clarity</h3>
               <p>Set clear, specific, understandable goals and expectations — for yourself and others</p>
             </div>
           </div>
           <div class="smart-row">
             <div class="smart-letter alt">C</div>
             <div class="smart-content">
-              <h4>Commitment</h4>
+              <h3>Commitment</h3>
               <p>Get genuinely invested in your responsibilities — go beyond "just doing your job"</p>
             </div>
           </div>
           <div class="smart-row">
             <div class="smart-letter">C</div>
             <div class="smart-content">
-              <h4>Communication</h4>
+              <h3>Communication</h3>
               <p>Share expectations, progress, and feedback openly — before problems grow larger</p>
             </div>
           </div>
           <div class="smart-row">
             <div class="smart-letter alt">C</div>
             <div class="smart-content">
-              <h4>Collaboration</h4>
+              <h3>Collaboration</h3>
               <p>Work together and share accountability for outcomes — accountability is a team sport</p>
             </div>
           </div>
           <div class="smart-row">
             <div class="smart-letter">C</div>
             <div class="smart-content">
-              <h4>Consequences</h4>
+              <h3>Consequences</h3>
               <p>Recognize that actions have outcomes — follow-through is not optional, it is essential</p>
             </div>
           </div>
@@ -2483,7 +2483,7 @@
             <button class="tab-btn" id="tab-consequences" onclick="showTab('consequences', this)" role="tab" aria-selected="false" aria-controls="consequences">Consequences</button>
           </div>
           <div id="clarity" class="tab-panel active" role="tabpanel" aria-labelledby="tab-clarity">
-            <h4>Clarity in Action</h4>
+            <h3>Clarity in Action</h3>
             <p>Without clarity, accountability cannot exist. If expectations are vague, people cannot be held to them — and cannot hold themselves to them.</p>
             <ul>
               <li>Ask your supervisor to clarify expectations before starting a task</li>
@@ -2492,7 +2492,7 @@
             </ul>
           </div>
           <div id="commitment" class="tab-panel" role="tabpanel" aria-labelledby="tab-commitment">
-            <h4>Commitment in Action</h4>
+            <h3>Commitment in Action</h3>
             <p>Commitment is the internal decision to care about the outcome — not just completing the task, but doing it well because it matters.</p>
             <ul>
               <li>Connect your daily tasks to your larger career goals</li>
@@ -2501,7 +2501,7 @@
             </ul>
           </div>
           <div id="communication" class="tab-panel" role="tabpanel" aria-labelledby="tab-communication">
-            <h4>Communication in Action</h4>
+            <h3>Communication in Action</h3>
             <p>Accountable people communicate problems early — before they become emergencies. Silence is not a strategy.</p>
             <ul>
               <li>Tell your supervisor immediately if you cannot meet a deadline</li>
@@ -2510,7 +2510,7 @@
             </ul>
           </div>
           <div id="collaboration" class="tab-panel" role="tabpanel" aria-labelledby="tab-collaboration">
-            <h4>Collaboration in Action</h4>
+            <h3>Collaboration in Action</h3>
             <p>Accountability is not just personal — teams succeed or fail together. When one person drops accountability, it affects everyone.</p>
             <ul>
               <li>Check in with teammates about shared deadlines</li>
@@ -2519,7 +2519,7 @@
             </ul>
           </div>
           <div id="consequences" class="tab-panel" role="tabpanel" aria-labelledby="tab-consequences">
-            <h4>Consequences in Action</h4>
+            <h3>Consequences in Action</h3>
             <p>Every action has an outcome. Accountable people accept consequences — both positive and negative — as the natural result of their choices.</p>
             <ul>
               <li>When something goes wrong, focus on what you will do differently</li>
@@ -2637,7 +2637,7 @@
           <div class="area-card">
             <div class="area-header">
               <div class="area-icon">&#128172;</div>
-              <h4>Your Actions &amp; Choices</h4>
+              <h3>Your Actions &amp; Choices</h3>
             </div>
             <ul>
               <li>How you communicate</li>
@@ -2649,7 +2649,7 @@
           <div class="area-card gold-card">
             <div class="area-header">
               <div class="area-icon">&#128203;</div>
-              <h4>Your Responsibilities</h4>
+              <h3>Your Responsibilities</h3>
             </div>
             <ul>
               <li>Returning calls and emails on time</li>
@@ -2661,7 +2661,7 @@
           <div class="area-card">
             <div class="area-header">
               <div class="area-icon">&#127919;</div>
-              <h4>Your Goals</h4>
+              <h3>Your Goals</h3>
             </div>
             <ul>
               <li>Career and professional ambitions</li>
@@ -2715,35 +2715,35 @@
           <div class="smart-row">
             <div class="smart-letter">S</div>
             <div class="smart-content">
-              <h4>Specific</h4>
+              <h3>Specific</h3>
               <p>What exactly will I do? Who is involved? What is the precise action?</p>
             </div>
           </div>
           <div class="smart-row">
             <div class="smart-letter alt">M</div>
             <div class="smart-content">
-              <h4>Measurable</h4>
+              <h3>Measurable</h3>
               <p>How will I track my progress? What does success look like in numbers or observable behaviors?</p>
             </div>
           </div>
           <div class="smart-row">
             <div class="smart-letter">A</div>
             <div class="smart-content">
-              <h4>Achievable</h4>
+              <h3>Achievable</h3>
               <p>Is this realistic for me right now, given my current resources and circumstances?</p>
             </div>
           </div>
           <div class="smart-row">
             <div class="smart-letter alt">R</div>
             <div class="smart-content">
-              <h4>Relevant</h4>
+              <h3>Relevant</h3>
               <p>Why does this goal matter to me? How does it connect to my larger career or life goals?</p>
             </div>
           </div>
           <div class="smart-row">
             <div class="smart-letter">T</div>
             <div class="smart-content">
-              <h4>Time-Bound</h4>
+              <h3>Time-Bound</h3>
               <p>What is my specific deadline? When will I check in on my progress?</p>
             </div>
           </div>
@@ -2763,19 +2763,19 @@
         </div>
         <div class="cards-grid">
           <div class="card">
-            <h4>Choose Your Focus Area</h4>
+            <h3>Choose Your Focus Area</h3>
             <p>Use Handout 2 (self-reflection) to identify <span class="highlight">one accountability area</span> where you want to grow most.</p>
           </div>
           <div class="card gold-border">
-            <h4>Make It Real</h4>
+            <h3>Make It Real</h3>
             <p>Connect your goal to a <strong>real situation</strong> — at work, school, or home — where you want to be more accountable.</p>
           </div>
           <div class="card gold-border">
-            <h4>Name a Barrier</h4>
+            <h3>Name a Barrier</h3>
             <p>Identify <strong>one obstacle</strong> that could get in the way. Then write specifically how you will overcome it.</p>
           </div>
           <div class="card">
-            <h4>Set a Check-In Date</h4>
+            <h3>Set a Check-In Date</h3>
             <p>Pick a <span class="accent">specific date</span> when you will review your progress — write it on the worksheet.</p>
           </div>
         </div>
@@ -2824,7 +2824,7 @@
           <div class="area-card">
             <div class="area-header">
               <div class="area-icon">1</div>
-              <h4>Share Your Goal</h4>
+              <h3>Share Your Goal</h3>
             </div>
             <ul>
               <li>Share your SMART goal with a partner</li>
@@ -2835,7 +2835,7 @@
           <div class="area-card gold-card">
             <div class="area-header">
               <div class="area-icon">2</div>
-              <h4>Name a Barrier</h4>
+              <h3>Name a Barrier</h3>
             </div>
             <ul>
               <li>Tell your partner one barrier you anticipate</li>
@@ -2846,7 +2846,7 @@
           <div class="area-card">
             <div class="area-header">
               <div class="area-icon">3</div>
-              <h4>Make a Pact</h4>
+              <h3>Make a Pact</h3>
             </div>
             <ul>
               <li>Ask: "Will you check in with me next week?"</li>
@@ -3138,7 +3138,14 @@
       const container = document.getElementById('confettiContainer');
       if (!container) return;
       container.innerHTML = '';
-      const colors = ['#37b550', '#007baf', '#d3b257', '#004071', '#FFFFFF'];
+      const style = getComputedStyle(document.documentElement);
+      const colors = [
+        style.getPropertyValue('--accent').trim(),
+        style.getPropertyValue('--primary').trim(),
+        style.getPropertyValue('--gold').trim(),
+        style.getPropertyValue('--dark').trim(),
+        style.getPropertyValue('--light').trim(),
+      ];
       for (let i = 0; i < 100; i++) {
         const confetti = document.createElement('div');
         confetti.className = 'confetti';
@@ -3185,12 +3192,12 @@
     let touchStartX = null;
     document.addEventListener('touchstart', (e) => {
       touchStartX = sidebarEl.contains(e.target) ? null : e.changedTouches[0].screenX;
-    });
+    }, { passive: true });
     document.addEventListener('touchend', (e) => {
       if (touchStartX === null) return;
       const diff = touchStartX - e.changedTouches[0].screenX;
       if (Math.abs(diff) > 50) { diff > 0 ? nextSlide() : prevSlide(); }
-    });
+    }, { passive: true });
 
     // Auto-collapse sidebar on small screens
     function initSidebarState() {
