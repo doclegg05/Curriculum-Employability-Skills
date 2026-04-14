@@ -654,45 +654,57 @@
     /* Gold inline emphasis */
     .gold-emphasis { color: var(--muted-gold); font-weight: 700; }
 
-    /* Video wrapper — centers the video container at a max width */
+    /* Video player appearance fix */
+    video[preload="none"], video:not([src]) {
+      aspect-ratio: 16 / 9;
+      background: var(--royal);
+      width: 100%;
+    }
+
+    /* Video wrapper with toolbar */
     .video-wrapper {
-      position: relative;
-      display: inline-block;
       width: 100%;
       max-width: 1170px;
       margin: 0 auto;
     }
-    .local-video {
-      width: 100%; border-radius: 12px;
-      box-shadow: 0 4px 20px rgba(0,0,0,0.15);
+
+    .video-wrapper video {
+      border-radius: 12px 12px 0 0;
+      display: block;
+    }
+
+    .video-toolbar {
+      display: flex;
+      justify-content: flex-end;
+      align-items: center;
+      background: var(--royal);
+      border-radius: 0 0 12px 12px;
+      padding: 4px 8px;
     }
 
     .cc-toggle {
-      position: absolute;
-      bottom: 16px;
-      right: 16px;
-      z-index: 10;
-      background: rgba(0, 0, 0, 0.7);
-      color: var(--light);
-      border: 2px solid rgba(255, 255, 255, 0.5);
-      border-radius: 6px;
-      padding: 6px 12px;
+      background: transparent;
+      color: rgba(255, 255, 255, 0.7);
+      border: 1.5px solid rgba(255, 255, 255, 0.4);
+      border-radius: 4px;
+      padding: 4px 10px;
       font-family: var(--font-body);
-      font-size: 0.85rem;
+      font-size: 0.75rem;
       font-weight: 700;
       letter-spacing: 1px;
       cursor: pointer;
       transition: all 0.2s ease;
       min-width: 44px;
-      min-height: 44px;
+      min-height: 32px;
       display: flex;
       align-items: center;
       justify-content: center;
     }
 
     .cc-toggle:hover {
-      background: rgba(0, 0, 0, 0.9);
+      color: var(--light);
       border-color: var(--light);
+      background: rgba(255, 255, 255, 0.1);
     }
 
     .cc-toggle.cc-active {
@@ -1607,7 +1619,9 @@
             <track kind="captions" src="videos/big-rocks.vtt" srclang="en" label="English">
             Your browser does not support the video tag.
           </video>
-          <button class="cc-toggle" onclick="toggleCaptions(this)" aria-pressed="false" aria-label="Toggle captions" title="Toggle captions">CC</button>
+          <div class="video-toolbar">
+            <button class="cc-toggle" onclick="toggleCaptions(this)" aria-pressed="false" aria-label="Toggle captions" title="Toggle captions">CC</button>
+          </div>
         </div>
     </section>
 
@@ -1890,7 +1904,9 @@
             <track kind="captions" src="videos/smartphones-focus.vtt" srclang="en" label="English">
             Your browser does not support the video tag.
           </video>
-          <button class="cc-toggle" onclick="toggleCaptions(this)" aria-pressed="false" aria-label="Toggle captions" title="Toggle captions">CC</button>
+          <div class="video-toolbar">
+            <button class="cc-toggle" onclick="toggleCaptions(this)" aria-pressed="false" aria-label="Toggle captions" title="Toggle captions">CC</button>
+          </div>
         </div>
     </section>
 
@@ -1917,7 +1933,9 @@
             <track kind="captions" src="videos/procrastination.vtt" srclang="en" label="English">
             Your browser does not support the video tag.
           </video>
-          <button class="cc-toggle" onclick="toggleCaptions(this)" aria-pressed="false" aria-label="Toggle captions" title="Toggle captions">CC</button>
+          <div class="video-toolbar">
+            <button class="cc-toggle" onclick="toggleCaptions(this)" aria-pressed="false" aria-label="Toggle captions" title="Toggle captions">CC</button>
+          </div>
         </div>
     </section>
 
@@ -1954,7 +1972,9 @@
             <track kind="captions" src="videos/multitasking.vtt" srclang="en" label="English">
             Your browser does not support the video tag.
           </video>
-          <button class="cc-toggle" onclick="toggleCaptions(this)" aria-pressed="false" aria-label="Toggle captions" title="Toggle captions">CC</button>
+          <div class="video-toolbar">
+            <button class="cc-toggle" onclick="toggleCaptions(this)" aria-pressed="false" aria-label="Toggle captions" title="Toggle captions">CC</button>
+          </div>
         </div>
     </section>
 
@@ -2005,7 +2025,9 @@
             <track kind="captions" src="videos/10-habits.vtt" srclang="en" label="English">
             Your browser does not support the video tag.
           </video>
-          <button class="cc-toggle" onclick="toggleCaptions(this)" aria-pressed="false" aria-label="Toggle captions" title="Toggle captions">CC</button>
+          <div class="video-toolbar">
+            <button class="cc-toggle" onclick="toggleCaptions(this)" aria-pressed="false" aria-label="Toggle captions" title="Toggle captions">CC</button>
+          </div>
         </div>
     </section>
 
@@ -2527,7 +2549,7 @@
   // Expose functions used by inline onclick handlers
   // ── CC Toggle ─────────────────────────────────────────────────────
   function toggleCaptions(btn) {
-    const video = btn.parentElement.querySelector('video');
+    const video = btn.closest('.video-wrapper').querySelector('video');
     if (!video || !video.textTracks || !video.textTracks[0]) return;
     const track = video.textTracks[0];
     if (track.mode === 'showing') {

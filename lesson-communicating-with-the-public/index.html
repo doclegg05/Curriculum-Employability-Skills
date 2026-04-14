@@ -940,38 +940,57 @@
 
       .slide-video.active .video-container { animation: fadeUp 0.6s ease-out 0.3s both; }
 
-      .video-wrapper {
-        position: relative;
-        display: inline-block;
+      /* Video player appearance fix */
+      video[preload="none"], video:not([src]) {
+        aspect-ratio: 16 / 9;
+        background: var(--royal);
         width: 100%;
       }
 
+      /* Video wrapper with toolbar */
+      .video-wrapper {
+        width: 100%;
+        max-width: 1170px;
+        margin: 0 auto;
+      }
+
+      .video-wrapper video {
+        border-radius: 12px 12px 0 0;
+        display: block;
+      }
+
+      .video-toolbar {
+        display: flex;
+        justify-content: flex-end;
+        align-items: center;
+        background: var(--royal);
+        border-radius: 0 0 12px 12px;
+        padding: 4px 8px;
+      }
+
       .cc-toggle {
-        position: absolute;
-        bottom: 16px;
-        right: 16px;
-        z-index: 10;
-        background: rgba(0, 0, 0, 0.7);
-        color: var(--light);
-        border: 2px solid rgba(255, 255, 255, 0.5);
-        border-radius: 6px;
-        padding: 6px 12px;
+        background: transparent;
+        color: rgba(255, 255, 255, 0.7);
+        border: 1.5px solid rgba(255, 255, 255, 0.4);
+        border-radius: 4px;
+        padding: 4px 10px;
         font-family: var(--font-body);
-        font-size: 0.85rem;
+        font-size: 0.75rem;
         font-weight: 700;
         letter-spacing: 1px;
         cursor: pointer;
         transition: all 0.2s ease;
         min-width: 44px;
-        min-height: 44px;
+        min-height: 32px;
         display: flex;
         align-items: center;
         justify-content: center;
       }
 
       .cc-toggle:hover {
-        background: rgba(0, 0, 0, 0.9);
+        color: var(--light);
         border-color: var(--light);
+        background: rgba(255, 255, 255, 0.1);
       }
 
       .cc-toggle.cc-active {
@@ -1980,12 +1999,14 @@
           <h2>Watch: The Importance of Effective Communication</h2>
           <div class="video-container" style="position:relative; width:100%; max-width:1200px; margin:0 auto;">
             <div class="video-wrapper">
-              <video controls class="local-video" preload="none" aria-label="The Importance of Effective Communication" style="width:100%; border-radius:12px; box-shadow:0 4px 20px rgba(0,0,0,0.15);">
+              <video controls class="local-video" preload="none" aria-label="The Importance of Effective Communication" style="width:100%; border-radius:12px 12px 0 0; box-shadow:0 4px 20px rgba(0,0,0,0.15);">
                 <source src="videos/importance_of_effective_communication.mp4" type="video/mp4" />
                 <track kind="captions" src="videos/importance_of_effective_communication.vtt" srclang="en" label="English">
                 Your browser does not support the video tag.
               </video>
-              <button class="cc-toggle" onclick="toggleCaptions(this)" aria-pressed="false" aria-label="Toggle captions" title="Toggle captions">CC</button>
+              <div class="video-toolbar">
+                <button class="cc-toggle" onclick="toggleCaptions(this)" aria-pressed="false" aria-label="Toggle captions" title="Toggle captions">CC</button>
+              </div>
             </div>
           </div>
         </section>
@@ -2058,12 +2079,14 @@
           <h2>Watch: The Communication Cycle</h2>
           <div class="video-container" style="position:relative; width:100%; max-width:1200px; margin:0 auto;">
             <div class="video-wrapper">
-              <video controls class="local-video" preload="none" aria-label="The Communication Cycle" style="width:100%; border-radius:12px; box-shadow:0 4px 20px rgba(0,0,0,0.15);">
+              <video controls class="local-video" preload="none" aria-label="The Communication Cycle" style="width:100%; border-radius:12px 12px 0 0; box-shadow:0 4px 20px rgba(0,0,0,0.15);">
                 <source src="videos/communication_cycle.mp4" type="video/mp4" />
                 <track kind="captions" src="videos/communication_cycle.vtt" srclang="en" label="English">
                 Your browser does not support the video tag.
               </video>
-              <button class="cc-toggle" onclick="toggleCaptions(this)" aria-pressed="false" aria-label="Toggle captions" title="Toggle captions">CC</button>
+              <div class="video-toolbar">
+                <button class="cc-toggle" onclick="toggleCaptions(this)" aria-pressed="false" aria-label="Toggle captions" title="Toggle captions">CC</button>
+              </div>
             </div>
           </div>
         </section>
@@ -2128,12 +2151,14 @@
           <h2>Watch: Effective Communication in the Workplace</h2>
           <div class="video-container" style="position:relative; width:100%; max-width:1200px; margin:0 auto;">
             <div class="video-wrapper">
-              <video controls class="local-video" preload="none" aria-label="Effective Communication in the Workplace" style="width:100%; border-radius:12px; box-shadow:0 4px 20px rgba(0,0,0,0.15);">
+              <video controls class="local-video" preload="none" aria-label="Effective Communication in the Workplace" style="width:100%; border-radius:12px 12px 0 0; box-shadow:0 4px 20px rgba(0,0,0,0.15);">
                 <source src="videos/effective_communication_workplace.mp4" type="video/mp4" />
                 <track kind="captions" src="videos/effective_communication_workplace.vtt" srclang="en" label="English">
                 Your browser does not support the video tag.
               </video>
-              <button class="cc-toggle" onclick="toggleCaptions(this)" aria-pressed="false" aria-label="Toggle captions" title="Toggle captions">CC</button>
+              <div class="video-toolbar">
+                <button class="cc-toggle" onclick="toggleCaptions(this)" aria-pressed="false" aria-label="Toggle captions" title="Toggle captions">CC</button>
+              </div>
             </div>
           </div>
         </section>
@@ -2233,41 +2258,49 @@
           <div class="video-grid">
             <div class="video-grid-item">
               <div class="video-wrapper">
-                <video controls preload="none" aria-label="Poor Customer Service Satire - Cleveland Ohio" style="width:100%; border-radius:10px; box-shadow:0 4px 16px rgba(0,0,0,0.12);">
+                <video controls preload="none" aria-label="Poor Customer Service Satire - Cleveland Ohio" style="width:100%; border-radius:10px 10px 0 0; box-shadow:0 4px 16px rgba(0,0,0,0.12);">
                   <source src="videos/poor_customer_service_satire.mp4" type="video/mp4" />
                   <track kind="captions" src="videos/poor_customer_service_satire.vtt" srclang="en" label="English">
                 </video>
-                <button class="cc-toggle" onclick="toggleCaptions(this)" aria-pressed="false" aria-label="Toggle captions" title="Toggle captions">CC</button>
+                <div class="video-toolbar">
+                  <button class="cc-toggle" onclick="toggleCaptions(this)" aria-pressed="false" aria-label="Toggle captions" title="Toggle captions">CC</button>
+                </div>
               </div>
               <p>Cleveland, Ohio &mdash; Satire (3:00)</p>
             </div>
             <div class="video-grid-item">
               <div class="video-wrapper">
-                <video controls preload="none" aria-label="Poor Customer Service Scenario" style="width:100%; border-radius:10px; box-shadow:0 4px 16px rgba(0,0,0,0.12);">
+                <video controls preload="none" aria-label="Poor Customer Service Scenario" style="width:100%; border-radius:10px 10px 0 0; box-shadow:0 4px 16px rgba(0,0,0,0.12);">
                   <source src="videos/poor_customer_service_scenario.mp4" type="video/mp4" />
                   <track kind="captions" src="videos/poor_customer_service_scenario.vtt" srclang="en" label="English">
                 </video>
-                <button class="cc-toggle" onclick="toggleCaptions(this)" aria-pressed="false" aria-label="Toggle captions" title="Toggle captions">CC</button>
+                <div class="video-toolbar">
+                  <button class="cc-toggle" onclick="toggleCaptions(this)" aria-pressed="false" aria-label="Toggle captions" title="Toggle captions">CC</button>
+                </div>
               </div>
               <p>Poor Customer Service (2:46)</p>
             </div>
             <div class="video-grid-item">
               <div class="video-wrapper">
-                <video controls preload="none" aria-label="Bad Customer Service Example" style="width:100%; border-radius:10px; box-shadow:0 4px 16px rgba(0,0,0,0.12);">
+                <video controls preload="none" aria-label="Bad Customer Service Example" style="width:100%; border-radius:10px 10px 0 0; box-shadow:0 4px 16px rgba(0,0,0,0.12);">
                   <source src="videos/bad_customer_service.mp4" type="video/mp4" />
                   <track kind="captions" src="videos/bad_customer_service.vtt" srclang="en" label="English">
                 </video>
-                <button class="cc-toggle" onclick="toggleCaptions(this)" aria-pressed="false" aria-label="Toggle captions" title="Toggle captions">CC</button>
+                <div class="video-toolbar">
+                  <button class="cc-toggle" onclick="toggleCaptions(this)" aria-pressed="false" aria-label="Toggle captions" title="Toggle captions">CC</button>
+                </div>
               </div>
               <p>Bad Customer Service (1:12)</p>
             </div>
             <div class="video-grid-item">
               <div class="video-wrapper">
-                <video controls preload="none" aria-label="Bad Customer Service Representative" style="width:100%; border-radius:10px; box-shadow:0 4px 16px rgba(0,0,0,0.12);">
+                <video controls preload="none" aria-label="Bad Customer Service Representative" style="width:100%; border-radius:10px 10px 0 0; box-shadow:0 4px 16px rgba(0,0,0,0.12);">
                   <source src="videos/bad_customer_service_rep.mp4" type="video/mp4" />
                   <track kind="captions" src="videos/bad_customer_service_rep.vtt" srclang="en" label="English">
                 </video>
-                <button class="cc-toggle" onclick="toggleCaptions(this)" aria-pressed="false" aria-label="Toggle captions" title="Toggle captions">CC</button>
+                <div class="video-toolbar">
+                  <button class="cc-toggle" onclick="toggleCaptions(this)" aria-pressed="false" aria-label="Toggle captions" title="Toggle captions">CC</button>
+                </div>
               </div>
               <p>Bad Service Rep (2:32)</p>
             </div>
@@ -2532,12 +2565,14 @@
           <h2>Watch: Self-Advocacy &mdash; A State of Mind (TEDx)</h2>
           <div class="video-container" style="position:relative; width:100%; max-width:1200px; margin:0 auto;">
             <div class="video-wrapper">
-              <video controls class="local-video" preload="none" aria-label="Self-Advocacy - A State of Mind TEDx Talk" style="width:100%; border-radius:12px; box-shadow:0 4px 20px rgba(0,0,0,0.15);">
+              <video controls class="local-video" preload="none" aria-label="Self-Advocacy - A State of Mind TEDx Talk" style="width:100%; border-radius:12px 12px 0 0; box-shadow:0 4px 20px rgba(0,0,0,0.15);">
                 <source src="videos/self_advocacy_state_of_mind_tedx.mp4" type="video/mp4" />
                 <track kind="captions" src="videos/self_advocacy_state_of_mind_tedx.vtt" srclang="en" label="English">
                 Your browser does not support the video tag.
               </video>
-              <button class="cc-toggle" onclick="toggleCaptions(this)" aria-pressed="false" aria-label="Toggle captions" title="Toggle captions">CC</button>
+              <div class="video-toolbar">
+                <button class="cc-toggle" onclick="toggleCaptions(this)" aria-pressed="false" aria-label="Toggle captions" title="Toggle captions">CC</button>
+              </div>
             </div>
           </div>
         </section>
@@ -3024,7 +3059,7 @@
 
       /* CC Toggle Button */
       function toggleCaptions(btn) {
-        const video = btn.parentElement.querySelector('video');
+        const video = btn.closest('.video-wrapper').querySelector('video');
         if (!video || !video.textTracks || !video.textTracks[0]) return;
         const track = video.textTracks[0];
         if (track.mode === 'showing') {
