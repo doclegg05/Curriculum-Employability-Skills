@@ -1,0 +1,183 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Test Lesson — SPOKES</title>
+  <style>
+    :root {
+      --primary: #007baf;
+      --accent: #37b550;
+      --dark: #004071;
+      --light: #ffffff;
+      --muted: #edf3f7;
+      --gray: #60636b;
+      --gold: #d3b257;
+      --royal: #00133f;
+      --mauve: #a7253f;
+      --offwhite: #d1d3d4;
+      --muted-gold: #ad8806;
+      --font-heading: "DM Serif Display", serif;
+      --font-body: "Outfit", sans-serif;
+    }
+
+    @media (prefers-reduced-motion: reduce) {
+      *, *::before, *::after {
+        animation-duration: 0.01ms !important;
+        transition-duration: 0.01ms !important;
+      }
+      .confetti, .confetti-container { display: none; }
+    }
+
+    body {
+      font-family: var(--font-body);
+      margin: 0;
+      padding: 0;
+      background: var(--light);
+      color: var(--dark);
+    }
+
+    h1, h2, h3 { font-family: var(--font-heading); }
+
+    .skip-link {
+      position: absolute;
+      top: -40px;
+      left: 0;
+      background: var(--primary);
+      color: var(--light);
+      padding: 8px;
+      z-index: 100;
+    }
+    .skip-link:focus { top: 0; }
+
+    .sr-only {
+      position: absolute;
+      width: 1px;
+      height: 1px;
+      padding: 0;
+      margin: -1px;
+      overflow: hidden;
+      clip: rect(0,0,0,0);
+      border: 0;
+    }
+
+    .slide .gold { color: var(--muted-gold); }
+    .slide .accent { color: var(--dark); font-weight: 700; }
+
+    .sidebar-toggle { width: 44px; height: 44px; }
+    .nav-btn { min-width: 44px; min-height: 44px; }
+
+    .tab-btn:focus-visible { outline: 3px solid var(--primary); outline-offset: 2px; }
+    .accordion-header:focus-visible { outline: 3px solid var(--primary); outline-offset: 2px; }
+    .sidebar-toggle:focus-visible { outline: 3px solid var(--primary); outline-offset: 2px; }
+    .danger-card:focus-visible { outline: 3px solid var(--primary); outline-offset: 2px; }
+    button:focus-visible { outline: 3px solid var(--primary); outline-offset: 2px; }
+    a:focus-visible { outline: 3px solid var(--primary); outline-offset: 2px; }
+
+    .progress-bar {
+      height: 4px;
+      background: var(--muted);
+    }
+    .progress-bar::after {
+      content: '';
+      display: block;
+      height: 100%;
+      width: 20%;
+      background: var(--primary);
+    }
+
+    .activity-box {
+      border: 2px solid var(--accent);
+      padding: 1rem;
+      margin: 1rem 0;
+      border-radius: 8px;
+    }
+
+    .checkpoint-box {
+      border: 2px solid var(--gold);
+      padding: 1rem;
+      margin: 1rem 0;
+      border-radius: 8px;
+    }
+  </style>
+  <style id="theme-override"></style>
+</head>
+<body>
+  <a href="#mainContent" class="skip-link">Skip to main content</a>
+
+  <nav aria-label="Lesson chapters">
+    <button class="sidebar-toggle" aria-expanded="true" aria-controls="sidebar-nav">Toggle</button>
+    <div id="sidebar-nav">
+      <ul>
+        <li>Chapter 1</li>
+        <li>Chapter 2</li>
+      </ul>
+    </div>
+  </nav>
+
+  <main id="mainContent">
+    <div aria-live="polite" id="slideAnnouncer" class="sr-only"></div>
+
+    <div class="progress-bar" role="progressbar" aria-valuenow="1" aria-valuemin="1" aria-valuemax="5"></div>
+
+    <div class="slide">
+      <span class="gold">Gold text</span>
+      <span class="accent">Accent text</span>
+
+      <div role="tablist">
+        <button class="tab-btn" role="tab" aria-selected="true" aria-controls="panel1">Tab 1</button>
+      </div>
+      <div role="tabpanel" id="panel1">Content</div>
+
+      <button class="accordion-header" aria-expanded="false" aria-controls="acc1">Section</button>
+      <div id="acc1">Content</div>
+
+      <div class="danger-card" tabindex="0" aria-expanded="false">Card content</div>
+
+      <video preload="none" aria-label="Test video about communication">
+        <source src="test.mp4" type="video/mp4">
+        <track kind="captions" src="test.vtt" srclang="en">
+      </video>
+
+      <div class="activity-box">Activity</div>
+      <div class="checkpoint-box">Check 1</div>
+      <div class="checkpoint-box">Check 2</div>
+    </div>
+
+    <button class="nav-btn prev-btn" aria-label="Previous slide">&#8592;</button>
+    <button class="nav-btn next-btn" aria-label="Next slide">&#8594;</button>
+  </main>
+
+  <script>
+    const prefersReduced = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+    let confettiTriggered = false;
+
+    function doTransition() {}
+
+    const showSlide = (index) => {
+      document.querySelectorAll('.slide.active video').forEach(v => { v.pause(); });
+      document.activeElement?.blur();
+      try { sessionStorage.setItem('spokes_slide_' + document.title, index); } catch(e) {}
+      const slideAnnouncer = document.getElementById('slideAnnouncer');
+      if (slideAnnouncer) slideAnnouncer.textContent = 'Slide ' + index;
+      if (prefersReduced) { doTransition(); } else if (document.startViewTransition) { document.startViewTransition(() => doTransition()); } else { doTransition(); }
+    };
+
+    try { const saved = parseInt(sessionStorage.getItem('spokes_slide_' + document.title)) || 0; showSlide(saved); } catch(e) { showSlide(0); }
+
+    function switchTab(btn, panelId) {}
+    function toggleAccordion(btn) {}
+
+    document.addEventListener('keydown', (e) => {
+      if (e.target.matches('textarea, input, [role="tablist"]')) return;
+    });
+
+    document.querySelector('.main')?.addEventListener('touchstart', () => {}, { passive: true });
+    document.querySelector('.main')?.addEventListener('touchend', () => {}, { passive: true });
+
+    function triggerConfetti() { if (prefersReduced || confettiTriggered) return; confettiTriggered = true; }
+    function playClickSound() { if (prefersReduced) return; }
+    function playSuccessSound() { if (prefersReduced) return; }
+  </script>
+</body>
+</html>
