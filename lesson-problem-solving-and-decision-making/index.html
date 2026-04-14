@@ -1098,6 +1098,51 @@
       animation: fadeUp 0.6s ease-out 0.3s both;
     }
 
+    .video-wrapper {
+      position: relative;
+      display: inline-block;
+      width: 100%;
+    }
+
+    .cc-toggle {
+      position: absolute;
+      bottom: 16px;
+      right: 16px;
+      z-index: 10;
+      background: rgba(0, 0, 0, 0.7);
+      color: var(--light);
+      border: 2px solid rgba(255, 255, 255, 0.5);
+      border-radius: 6px;
+      padding: 6px 12px;
+      font-family: var(--font-body);
+      font-size: 0.85rem;
+      font-weight: 700;
+      letter-spacing: 1px;
+      cursor: pointer;
+      transition: all 0.2s ease;
+      min-width: 44px;
+      min-height: 44px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+
+    .cc-toggle:hover {
+      background: rgba(0, 0, 0, 0.9);
+      border-color: var(--light);
+    }
+
+    .cc-toggle.cc-active {
+      background: var(--primary);
+      border-color: var(--primary);
+      color: var(--light);
+    }
+
+    .cc-toggle:focus-visible {
+      outline: 3px solid var(--gold);
+      outline-offset: 2px;
+    }
+
     /* Activity Callout */
     .activity-box {
       background: rgba(211, 178, 87, 0.1);
@@ -2209,11 +2254,14 @@
       <section class="slide slide-video" data-chapter="1">
         <h2>Watch: 5 Tips to Improve Your Critical Thinking</h2>
         <div class="video-container" style="position:relative; width:100%; max-width:1215px; margin:0 auto;">
+          <div class="video-wrapper">
           <video controls class="local-video" preload="none" aria-label="5 Tips to Improve Your Critical Thinking - TED-Ed" style="width:100%; border-radius:12px; box-shadow:0 4px 20px rgba(0,0,0,0.15);">
             <source src="videos/critical_thinking_tips_ted_ed.mp4" type="video/mp4" />
             <track kind="captions" src="videos/critical_thinking_tips_ted_ed.vtt" srclang="en" label="English">
             Your browser does not support the video tag.
           </video>
+          <button class="cc-toggle" onclick="toggleCaptions(this)" aria-pressed="false" aria-label="Toggle captions" title="Toggle captions">CC</button>
+          </div>
         </div>
       </section>
 
@@ -2302,11 +2350,14 @@
       <section class="slide slide-video" data-chapter="2">
         <h2>Watch: How Critical Thinking Can Change the Game</h2>
         <div class="video-container" style="position:relative; width:100%; max-width:1215px; margin:0 auto;">
+          <div class="video-wrapper">
           <video controls class="local-video" preload="none" aria-label="How Critical Thinking Can Change the Game - Fosbury Flop" style="width:100%; border-radius:12px; box-shadow:0 4px 20px rgba(0,0,0,0.15);">
             <source src="videos/fosbury_flop_critical_thinking.mp4" type="video/mp4" />
             <track kind="captions" src="videos/fosbury_flop_critical_thinking.vtt" srclang="en" label="English">
             Your browser does not support the video tag.
           </video>
+          <button class="cc-toggle" onclick="toggleCaptions(this)" aria-pressed="false" aria-label="Toggle captions" title="Toggle captions">CC</button>
+          </div>
         </div>
       </section>
 
@@ -2401,11 +2452,14 @@
       <section class="slide slide-video" data-chapter="3">
         <h2>Watch: Decision-Making Strategies</h2>
         <div class="video-container" style="position:relative; width:100%; max-width:1215px; margin:0 auto;">
+          <div class="video-wrapper">
           <video controls class="local-video" preload="none" aria-label="Decision-Making Strategies" style="width:100%; border-radius:12px; box-shadow:0 4px 20px rgba(0,0,0,0.15);">
             <source src="videos/decision_making_strategies.mp4" type="video/mp4" />
             <track kind="captions" src="videos/decision_making_strategies.vtt" srclang="en" label="English">
             Your browser does not support the video tag.
           </video>
+          <button class="cc-toggle" onclick="toggleCaptions(this)" aria-pressed="false" aria-label="Toggle captions" title="Toggle captions">CC</button>
+          </div>
         </div>
       </section>
 
@@ -2528,11 +2582,14 @@
       <section class="slide slide-video" data-chapter="4">
         <h2>Watch: Good Teamwork and Bad Teamwork</h2>
         <div class="video-container" style="position:relative; width:100%; max-width:1215px; margin:0 auto;">
+          <div class="video-wrapper">
           <video controls class="local-video" preload="none" aria-label="Good Teamwork and Bad Teamwork" style="width:100%; border-radius:12px; box-shadow:0 4px 20px rgba(0,0,0,0.15);">
             <source src="videos/good_teamwork_bad_teamwork.mp4" type="video/mp4" />
             <track kind="captions" src="videos/good_teamwork_bad_teamwork.vtt" srclang="en" label="English">
             Your browser does not support the video tag.
           </video>
+          <button class="cc-toggle" onclick="toggleCaptions(this)" aria-pressed="false" aria-label="Toggle captions" title="Toggle captions">CC</button>
+          </div>
         </div>
       </section>
 
@@ -3242,6 +3299,28 @@
         btn.textContent = 'Hide Answer';
       }
     }
+
+    // === CC Toggle ===
+    function toggleCaptions(btn) {
+      const video = btn.parentElement.querySelector('video');
+      if (!video || !video.textTracks || !video.textTracks[0]) return;
+      const track = video.textTracks[0];
+      if (track.mode === 'showing') {
+        track.mode = 'hidden';
+        btn.classList.remove('cc-active');
+        btn.setAttribute('aria-pressed', 'false');
+      } else {
+        track.mode = 'showing';
+        btn.classList.add('cc-active');
+        btn.setAttribute('aria-pressed', 'true');
+      }
+    }
+
+    document.querySelectorAll('video').forEach(v => {
+      if (v.textTracks && v.textTracks[0]) {
+        v.textTracks[0].mode = 'hidden';
+      }
+    });
   </script>
 </body>
 </html>

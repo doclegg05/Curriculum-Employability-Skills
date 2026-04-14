@@ -656,11 +656,54 @@
 
     /* Video wrapper — centers the video container at a max width */
     .video-wrapper {
-      position: relative; width: 100%; max-width: 1170px; margin: 0 auto;
+      position: relative;
+      display: inline-block;
+      width: 100%;
+      max-width: 1170px;
+      margin: 0 auto;
     }
     .local-video {
       width: 100%; border-radius: 12px;
       box-shadow: 0 4px 20px rgba(0,0,0,0.15);
+    }
+
+    .cc-toggle {
+      position: absolute;
+      bottom: 16px;
+      right: 16px;
+      z-index: 10;
+      background: rgba(0, 0, 0, 0.7);
+      color: var(--light);
+      border: 2px solid rgba(255, 255, 255, 0.5);
+      border-radius: 6px;
+      padding: 6px 12px;
+      font-family: var(--font-body);
+      font-size: 0.85rem;
+      font-weight: 700;
+      letter-spacing: 1px;
+      cursor: pointer;
+      transition: all 0.2s ease;
+      min-width: 44px;
+      min-height: 44px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+
+    .cc-toggle:hover {
+      background: rgba(0, 0, 0, 0.9);
+      border-color: var(--light);
+    }
+
+    .cc-toggle.cc-active {
+      background: var(--primary);
+      border-color: var(--primary);
+      color: var(--light);
+    }
+
+    .cc-toggle:focus-visible {
+      outline: 3px solid var(--gold);
+      outline-offset: 2px;
     }
 
     /* Info card row — used on Family Chores slide */
@@ -1564,6 +1607,7 @@
             <track kind="captions" src="videos/big-rocks.vtt" srclang="en" label="English">
             Your browser does not support the video tag.
           </video>
+          <button class="cc-toggle" onclick="toggleCaptions(this)" aria-pressed="false" aria-label="Toggle captions" title="Toggle captions">CC</button>
         </div>
     </section>
 
@@ -1846,6 +1890,7 @@
             <track kind="captions" src="videos/smartphones-focus.vtt" srclang="en" label="English">
             Your browser does not support the video tag.
           </video>
+          <button class="cc-toggle" onclick="toggleCaptions(this)" aria-pressed="false" aria-label="Toggle captions" title="Toggle captions">CC</button>
         </div>
     </section>
 
@@ -1872,6 +1917,7 @@
             <track kind="captions" src="videos/procrastination.vtt" srclang="en" label="English">
             Your browser does not support the video tag.
           </video>
+          <button class="cc-toggle" onclick="toggleCaptions(this)" aria-pressed="false" aria-label="Toggle captions" title="Toggle captions">CC</button>
         </div>
     </section>
 
@@ -1908,6 +1954,7 @@
             <track kind="captions" src="videos/multitasking.vtt" srclang="en" label="English">
             Your browser does not support the video tag.
           </video>
+          <button class="cc-toggle" onclick="toggleCaptions(this)" aria-pressed="false" aria-label="Toggle captions" title="Toggle captions">CC</button>
         </div>
     </section>
 
@@ -1958,6 +2005,7 @@
             <track kind="captions" src="videos/10-habits.vtt" srclang="en" label="English">
             Your browser does not support the video tag.
           </video>
+          <button class="cc-toggle" onclick="toggleCaptions(this)" aria-pressed="false" aria-label="Toggle captions" title="Toggle captions">CC</button>
         </div>
     </section>
 
@@ -2477,6 +2525,29 @@
   showSlide(savedSlide);
 
   // Expose functions used by inline onclick handlers
+  // ── CC Toggle ─────────────────────────────────────────────────────
+  function toggleCaptions(btn) {
+    const video = btn.parentElement.querySelector('video');
+    if (!video || !video.textTracks || !video.textTracks[0]) return;
+    const track = video.textTracks[0];
+    if (track.mode === 'showing') {
+      track.mode = 'hidden';
+      btn.classList.remove('cc-active');
+      btn.setAttribute('aria-pressed', 'false');
+    } else {
+      track.mode = 'showing';
+      btn.classList.add('cc-active');
+      btn.setAttribute('aria-pressed', 'true');
+    }
+  }
+
+  document.querySelectorAll('video').forEach(v => {
+    if (v.textTracks && v.textTracks[0]) {
+      v.textTracks[0].mode = 'hidden';
+    }
+  });
+
+  window.toggleCaptions = toggleCaptions;
   window.toggleSidebar = toggleSidebar;
   window.prevSlide = prevSlide;
   window.nextSlide = nextSlide;
