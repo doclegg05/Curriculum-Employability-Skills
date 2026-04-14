@@ -36,7 +36,7 @@
     }
 
     body {
-      font-family: 'Outfit', sans-serif;
+      font-family: var(--font-body);
       background: var(--dark);
       color: var(--gray);
       overflow: hidden;
@@ -515,7 +515,7 @@
     }
 
     .slide-title h1 {
-      font-family: 'DM Serif Display', serif;
+      font-family: var(--font-heading);
       font-size: 5rem;
       color: var(--light);
       margin-bottom: 1.5rem;
@@ -552,7 +552,7 @@
 
     /* Content Slides */
     .slide h2 {
-      font-family: 'DM Serif Display', serif;
+      font-family: var(--font-heading);
       font-size: 3.5rem;
       color: var(--primary);
       margin-bottom: 2.5rem;
@@ -561,7 +561,7 @@
     }
 
     .slide h3 {
-      font-family: 'DM Serif Display', serif;
+      font-family: var(--font-heading);
       font-size: 2.5rem;
       color: var(--dark);
       margin-bottom: 2rem;
@@ -617,7 +617,7 @@
     .card.royal-border { border-left-color: var(--royal); }
 
     .card h3 {
-      font-family: 'DM Serif Display', serif;
+      font-family: var(--font-heading);
       font-size: 1.75rem;
       color: var(--primary);
       margin-bottom: 1rem;
@@ -711,7 +711,7 @@
     }
 
     .smart-content h3 {
-      font-family: 'DM Serif Display', serif;
+      font-family: var(--font-heading);
       font-size: 1.15rem;
       color: var(--dark);
       margin-bottom: 0;
@@ -752,7 +752,7 @@
     }
 
     .matrix-cell .matrix-action {
-      font-family: 'DM Serif Display', serif;
+      font-family: var(--font-heading);
       font-size: 2rem;
       font-weight: 400;
     }
@@ -845,7 +845,7 @@
     .area-card.gold-card .area-icon { background: var(--dark); color: var(--gold); }
 
     .area-card h3 {
-      font-family: 'DM Serif Display', serif;
+      font-family: var(--font-heading);
       font-size: 1.5rem;
       font-weight: 400;
     }
@@ -880,7 +880,7 @@
     }
 
     .big-statement h2 {
-      font-family: 'DM Serif Display', serif;
+      font-family: var(--font-heading);
       font-size: 4.5rem;
       font-weight: 400;
       line-height: 1.3;
@@ -899,7 +899,7 @@
     }
 
     .slide-video h2 {
-      font-family: 'DM Serif Display', serif;
+      font-family: var(--font-heading);
       font-size: 2rem;
       color: var(--primary);
       margin-bottom: 1rem;
@@ -1041,7 +1041,7 @@
     }
 
     .slide-section .chapter-label {
-      font-family: 'Outfit', sans-serif;
+      font-family: var(--font-body);
       font-size: 1.1rem;
       color: var(--gold);
       text-transform: uppercase;
@@ -1051,7 +1051,7 @@
     }
 
     .slide-section h2 {
-      font-family: 'DM Serif Display', serif;
+      font-family: var(--font-heading);
       font-size: 4rem;
       color: var(--light);
       font-weight: 400;
@@ -1071,7 +1071,7 @@
     .slide-section::after {
       content: attr(data-chapter-num);
       position: absolute;
-      font-family: 'DM Serif Display', serif;
+      font-family: var(--font-heading);
       font-size: 28rem;
       font-weight: 400;
       color: rgba(255,255,255,0.04);
@@ -1148,7 +1148,7 @@
     }
 
     .closing-box h2 {
-      font-family: 'DM Serif Display', serif;
+      font-family: var(--font-heading);
       font-size: 3.5rem;
       color: var(--light) !important;
       font-weight: 400;
@@ -1883,6 +1883,31 @@
     /* FIX: .accent class (#37b550 on white = 2.66:1) fails WCAG AA.
        Override to --dark (#004071, 10.65:1) for full compliance at all text sizes. */
     .slide .accent { color: var(--dark); font-weight: 700; }
+
+    /* Checkpoint boxes */
+    .checkpoint-box {
+      background: var(--muted);
+      border-left: 4px solid var(--primary);
+      border-radius: 8px;
+      padding: 1.5rem 2rem;
+      margin-top: 1.5rem;
+    }
+    .checkpoint-label {
+      display: block;
+      font-size: 0.75rem;
+      text-transform: uppercase;
+      letter-spacing: 2px;
+      color: var(--primary);
+      font-weight: 700;
+      margin-bottom: 0.75rem;
+      font-family: var(--font-body);
+    }
+    .checkpoint-box p {
+      font-size: 1.15rem;
+      color: var(--dark);
+      line-height: 1.5;
+      margin: 0;
+    }
   </style>
 </head>
 <body>
@@ -2330,6 +2355,10 @@
             <p><strong>Stay engaged.</strong> Maintain eye contact, show enthusiasm, and listen actively to every question.</p>
           </div>
         </div>
+        <div class="checkpoint-box">
+          <span class="checkpoint-label">CHECK YOUR UNDERSTANDING</span>
+          <p>Name two examples of positive body language you should use during an interview, and explain why each one matters.</p>
+        </div>
       </section>
 
       <!-- ============================================================
@@ -2700,6 +2729,10 @@
             </div>
           </div>
         </div>
+        <div class="checkpoint-box">
+          <span class="checkpoint-label">CHECK YOUR UNDERSTANDING</span>
+          <p>What are three things you should research about a company before going into an interview, and how would that research help you stand out?</p>
+        </div>
       </section>
 
       <!-- Slide 31 — Exit Ticket / Checkpoint -->
@@ -2840,6 +2873,7 @@
     const progressBar = document.getElementById('progressBar');
 
     let currentIndex = 0;
+    const prefersReduced = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
     let sidebarCollapsed = false;
     const sidebarEl = document.querySelector('.sidebar');
     const sidebarToggleBtn = document.getElementById('sidebarToggle');
@@ -2969,55 +3003,63 @@
 
       currentIndex = index;
 
-      slides.forEach((slide, i) => slide.classList.toggle('active', i === index));
+      const doTransition = () => {
+        slides.forEach((slide, i) => slide.classList.toggle('active', i === index));
 
-      const currentChapter = slides[index].dataset.chapter;
-      document.querySelectorAll('.chapter-item').forEach(item => {
-        const isActive = item.dataset.chapter === currentChapter;
-        item.classList.toggle('active', isActive);
-        if (isActive) item.classList.add('expanded');
-      });
+        const currentChapter = slides[index].dataset.chapter;
+        document.querySelectorAll('.chapter-item').forEach(item => {
+          const isActive = item.dataset.chapter === currentChapter;
+          item.classList.toggle('active', isActive);
+          if (isActive) item.classList.add('expanded');
+        });
 
-      document.querySelectorAll('.slide-item').forEach(item => {
-        item.classList.toggle('active', parseInt(item.dataset.slide) === index);
-      });
+        document.querySelectorAll('.slide-item').forEach(item => {
+          item.classList.toggle('active', parseInt(item.dataset.slide) === index);
+        });
 
-      // Auto-scroll sidebar to keep active item visible
-      const activeSlideItem = document.querySelector('.slide-item.active');
-      const activeChapterItem = document.querySelector('.chapter-item.active');
-      const scrollTarget = activeSlideItem || activeChapterItem;
-      if (scrollTarget) {
-        scrollTarget.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
-      }
+        // Auto-scroll sidebar to keep active item visible
+        const activeSlideItem = document.querySelector('.slide-item.active');
+        const activeChapterItem = document.querySelector('.chapter-item.active');
+        const scrollTarget = activeSlideItem || activeChapterItem;
+        if (scrollTarget) {
+          scrollTarget.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+        }
 
-      currentSlideEl.textContent = index + 1;
-      progressBar.style.width = ((index + 1) / slides.length) * 100 + '%';
-      progressBar.setAttribute('aria-valuenow', index + 1);
+        currentSlideEl.textContent = index + 1;
+        progressBar.style.width = ((index + 1) / slides.length) * 100 + '%';
+        progressBar.setAttribute('aria-valuenow', index + 1);
 
-      // Handle branding logo visibility
-      const brandingLogo = document.querySelector('.branding-logo');
-      if (slides[index].classList.contains('slide-title') || slides[index].classList.contains('slide-closing')) {
-        brandingLogo.style.display = 'none';
+        // Handle branding logo visibility
+        const brandingLogo = document.querySelector('.branding-logo');
+        if (slides[index].classList.contains('slide-title') || slides[index].classList.contains('slide-closing')) {
+          brandingLogo.style.display = 'none';
+        } else {
+          brandingLogo.style.display = 'block';
+        }
+
+        if (slides[index].classList.contains('slide-closing')) {
+          triggerGoldStars();
+          playSuccessSound();
+        }
+
+        // Clear focus after slide transition
+        document.activeElement?.blur();
+
+        // Persist current slide in session storage
+        try { sessionStorage.setItem('spokes_slide_' + document.title, currentIndex); } catch(e) {}
+
+        // Announce slide change to screen readers
+        const slideTitle = slides[index].querySelector('h1, h2');
+        const announcer = document.getElementById('slideAnnouncer');
+        if (announcer && slideTitle) {
+          announcer.textContent = 'Slide ' + (index + 1) + ' of ' + slides.length + ': ' + slideTitle.textContent.replace(/\s+/g, ' ').trim();
+        }
+      };
+
+      if (prefersReduced || !document.startViewTransition) {
+        doTransition();
       } else {
-        brandingLogo.style.display = 'block';
-      }
-
-      if (slides[index].classList.contains('slide-closing')) {
-        triggerGoldStars();
-        playSuccessSound();
-      }
-
-      // Clear focus after slide transition
-      document.activeElement?.blur();
-
-      // Persist current slide in session storage
-      try { sessionStorage.setItem('spokes_slide_' + document.title, currentIndex); } catch(e) {}
-
-      // Announce slide change to screen readers
-      const slideTitle = slides[index].querySelector('h1, h2');
-      const announcer = document.getElementById('slideAnnouncer');
-      if (announcer && slideTitle) {
-        announcer.textContent = 'Slide ' + (index + 1) + ' of ' + slides.length + ': ' + slideTitle.textContent.replace(/\s+/g, ' ').trim();
+        document.startViewTransition(() => doTransition());
       }
     }
 
