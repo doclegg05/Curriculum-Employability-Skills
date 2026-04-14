@@ -30,7 +30,7 @@
     }
 
     body {
-      font-family: 'Outfit', sans-serif;
+      font-family: var(--font-body);
       background: var(--dark);
       color: var(--dark);
       overflow: hidden;
@@ -365,7 +365,7 @@
     }
 
     .slide-title h1 {
-      font-family: 'DM Serif Display', serif;
+      font-family: var(--font-heading);
       font-size: 5rem; color: var(--light);
       margin-bottom: 1.5rem; font-weight: 400;
     }
@@ -383,13 +383,13 @@
 
     /* Content Slides */
     .slide h2 {
-      font-family: 'DM Serif Display', serif;
+      font-family: var(--font-heading);
       font-size: 3.5rem; color: var(--primary);
       margin-bottom: 2.5rem; font-weight: 400;
       overflow-wrap: break-word;
     }
     .slide h3 {
-      font-family: 'DM Serif Display', serif;
+      font-family: var(--font-heading);
       font-size: 2.5rem; color: var(--dark);
       margin-bottom: 2rem; font-weight: 400;
     }
@@ -411,7 +411,7 @@
     }
     .card.gold-border { border-left-color: var(--gold); }
     .card h4 {
-      font-family: 'DM Serif Display', serif;
+      font-family: var(--font-heading);
       font-size: 1.75rem; color: var(--primary);
       margin-bottom: 1rem; font-weight: 400;
     }
@@ -459,7 +459,7 @@
       padding: 0.5rem 1.25rem; border-radius: 8px;
     }
     .smart-content h4 {
-      font-family: 'DM Serif Display', serif;
+      font-family: var(--font-heading);
       font-size: 1.15rem; color: var(--primary);
       margin-bottom: 0; font-weight: 400;
     }
@@ -484,7 +484,7 @@
       letter-spacing: 2px; opacity: 0.8;
     }
     .matrix-cell .matrix-action {
-      font-family: 'DM Serif Display', serif;
+      font-family: var(--font-heading);
       font-size: 2rem; font-weight: 400;
     }
     .matrix-cell .matrix-desc { font-size: 1.1rem; opacity: 0.9; }
@@ -534,7 +534,7 @@
     }
     .area-card.gold-card .area-icon { background: var(--dark); color: var(--gold); }
     .area-card h4 {
-      font-family: 'DM Serif Display', serif;
+      font-family: var(--font-heading);
       font-size: 1.5rem; font-weight: 400;
     }
     .area-card ul { list-style: none; }
@@ -553,7 +553,7 @@
       background: radial-gradient(ellipse at 50% 40%, var(--muted) 0%, var(--light) 60%);
     }
     .big-statement h2 {
-      font-family: 'DM Serif Display', serif;
+      font-family: var(--font-heading);
       font-size: 4.5rem; font-weight: 400;
       line-height: 1.3; max-width: 1200px;
     }
@@ -566,7 +566,7 @@
       padding: 2rem 3rem;
     }
     .slide-video h2 {
-      font-family: 'DM Serif Display', serif;
+      font-family: var(--font-heading);
       font-size: 2rem; color: var(--primary);
       margin-bottom: 1rem; font-weight: 400;
     }
@@ -672,7 +672,7 @@
     .info-card.gold-card { background: var(--gold); color: var(--dark); }
     .info-card-icon { font-size: 2rem; flex-shrink: 0; }
     .info-card h4 {
-      font-family: 'DM Serif Display', serif;
+      font-family: var(--font-heading);
       font-size: 1.25rem; font-weight: 400; margin-bottom: 0.25rem;
     }
     .info-card p { font-size: 1rem; line-height: 1.4; }
@@ -757,13 +757,13 @@
     }
 
     .slide-section .chapter-label {
-      font-family: 'Outfit', sans-serif;
+      font-family: var(--font-body);
       font-size: 1.1rem; color: var(--gold);
       text-transform: uppercase; letter-spacing: 4px;
       margin-bottom: 1.5rem; font-weight: 600;
     }
     .slide-section h2 {
-      font-family: 'DM Serif Display', serif;
+      font-family: var(--font-heading);
       font-size: 4rem; color: var(--light);
       font-weight: 400; position: relative; z-index: 2;
     }
@@ -776,7 +776,7 @@
     .slide-section::after {
       content: attr(data-chapter-num);
       position: absolute;
-      font-family: 'DM Serif Display', serif;
+      font-family: var(--font-heading);
       font-size: 28rem; font-weight: 400;
       color: rgba(255,255,255,0.04);
       right: 5%; top: 50%; transform: translateY(-50%);
@@ -826,7 +826,7 @@
       background: var(--gold); margin: 0 auto 2rem;
     }
     .closing-box h2 {
-      font-family: 'DM Serif Display', serif;
+      font-family: var(--font-heading);
       font-size: 3.5rem; color: var(--light); font-weight: 400;
     }
 
@@ -859,7 +859,7 @@
       border: 2px solid transparent;
       border-bottom: none;
       border-radius: 8px 8px 0 0;
-      font-family: 'Outfit', sans-serif;
+      font-family: var(--font-body);
       font-size: 1.1rem; font-weight: 600;
       color: var(--gray); cursor: pointer;
       transition: all 0.25s ease;
@@ -878,7 +878,7 @@
     }
     .tab-panel.active { display: block; }
     .tab-panel h4 {
-      font-family: 'DM Serif Display', serif;
+      font-family: var(--font-heading);
       font-size: 1.6rem; color: var(--primary);
       margin-bottom: 1rem; font-weight: 400;
     }
@@ -899,7 +899,7 @@
       width: 100%; padding: 1.1rem 1.5rem;
       background: var(--muted); border: none;
       display: flex; align-items: center; justify-content: space-between;
-      font-family: 'Outfit', sans-serif;
+      font-family: var(--font-body);
       font-size: 1.2rem; font-weight: 600;
       color: var(--dark); cursor: pointer;
       transition: background 0.2s ease;
@@ -926,7 +926,7 @@
       border: 2px solid var(--offwhite);
     }
     .checkpoint-question {
-      font-family: 'DM Serif Display', serif;
+      font-family: var(--font-heading);
       font-size: 2rem; color: var(--dark);
       margin-bottom: 2rem; font-weight: 400; line-height: 1.4;
     }
@@ -937,7 +937,7 @@
       padding: 1rem 1.5rem;
       background: var(--light); border: 2px solid var(--offwhite);
       border-radius: 10px; cursor: pointer;
-      font-family: 'Outfit', sans-serif;
+      font-family: var(--font-body);
       font-size: 1.15rem; color: var(--dark);
       transition: all 0.25s ease; text-align: left;
     }
@@ -968,7 +968,7 @@
       margin-top: 1rem; padding: 0.6rem 1.4rem;
       background: var(--primary); color: var(--light);
       border: none; border-radius: 8px; cursor: pointer;
-      font-family: 'Outfit', sans-serif;
+      font-family: var(--font-body);
       font-size: 1rem; font-weight: 600;
       transition: background 0.2s ease; display: none;
     }
@@ -1007,7 +1007,7 @@
     
     .debrief-card h4, .debrief-card p { transition: color 0.6s ease; }
     .debrief-card h4 {
-      font-family: 'DM Serif Display', serif;
+      font-family: var(--font-heading);
       font-size: 1.4rem; color: var(--primary);
       margin-bottom: 0.75rem; font-weight: 400;
     }
@@ -1479,19 +1479,19 @@
       <p class="slide-subtitle" style="font-size:1.3rem;">But we each have different challenges:</p>
       <div class="cards-grid">
         <div class="card">
-          <h4>Responsibilities</h4>
+          <h3>Responsibilities</h3>
           <p>Work, school, home, and community demands</p>
         </div>
         <div class="card gold-border">
-          <h4>Financial Obligations</h4>
+          <h3>Financial Obligations</h3>
           <p>Bills, savings goals, and family needs</p>
         </div>
         <div class="card gold-border">
-          <h4>Family Sizes</h4>
+          <h3>Family Sizes</h3>
           <p>Dependents, caregiving, and relationships</p>
         </div>
         <div class="card">
-          <h4>Levels of Support</h4>
+          <h3>Levels of Support</h3>
           <p>Resources, networks, and access to help</p>
         </div>
       </div>
@@ -1668,19 +1668,19 @@
         </div>
         <div id="tab-urgent" class="tab-panel active" role="tabpanel" aria-labelledby="tab-btn-urgent">
           <span class="example-tag">DO FIRST</span>
-          <h4>Urgent + Important</h4>
+          <h3>Urgent + Important</h3>
           <p>Your child has a fever and needs to go to the doctor. Your electricity will be shut off if you don't pay the bill today. Your boss needs a report in one hour.</p>
           <p class="key-question"><strong>Key question:</strong> Does it have a deadline AND real consequences if I ignore it? Then it goes here.</p>
         </div>
         <div id="tab-important" class="tab-panel" role="tabpanel" aria-labelledby="tab-btn-important">
           <span class="example-tag gold">SCHEDULE IT</span>
-          <h4>Not Urgent + Important</h4>
+          <h3>Not Urgent + Important</h3>
           <p>Planning next week's meals. Going to the gym. Applying for a better job. Working toward your GED. These don't feel urgent today — but skipping them has a long-term cost.</p>
           <p class="key-question"><strong>Key question:</strong> Is this aligned with my big rocks and long-term goals?</p>
         </div>
         <div id="tab-timewaster" class="tab-panel" role="tabpanel" aria-labelledby="tab-btn-timewaster">
           <span class="example-tag mauve">ELIMINATE</span>
-          <h4>Not Urgent + Not Important</h4>
+          <h3>Not Urgent + Not Important</h3>
           <p>Scrolling social media for 45 minutes. Watching a third TV episode when you planned to watch one. Reorganizing a drawer that doesn't need it.</p>
           <p class="key-question"><strong>Key question:</strong> Does this move me toward any of my priorities? If not — eliminate or strictly limit it.</p>
         </div>
@@ -1718,21 +1718,21 @@
           <div class="info-card primary">
             <span class="info-card-icon" aria-hidden="true">&#9829;</span>
             <div>
-              <h4>Builds Self-Esteem</h4>
+              <h3>Builds Self-Esteem</h3>
               <p>Children feel valued and capable, gaining a sense of accomplishment and growing confidence in their abilities</p>
             </div>
           </div>
           <div class="info-card gold-card">
             <span class="info-card-icon" aria-hidden="true">&#9881;</span>
             <div>
-              <h4>Teaches Life Skills</h4>
+              <h3>Teaches Life Skills</h3>
               <p>Develops responsibility, ownership, time management habits, and a strong work ethic early on</p>
             </div>
           </div>
           <div class="info-card primary">
             <span class="info-card-icon" aria-hidden="true">&#9734;</span>
             <div>
-              <h4>Fosters Teamwork</h4>
+              <h3>Fosters Teamwork</h3>
               <p>Creates a sense of belonging, shared family commitment, and more quality time for everyone</p>
             </div>
           </div>
@@ -1761,10 +1761,10 @@
           <div class="danger-card-inner">
             <div class="danger-card-front">
               <div class="danger-icon" aria-hidden="true">&#128241;</div>
-              <h4>Distractions</h4>
+              <h3>Distractions</h3>
             </div>
             <div class="danger-card-back">
-              <h4>Distractions</h4>
+              <h3>Distractions</h3>
               <p>Phones, social media, and notifications pull focus away from what matters most.</p>
             </div>
           </div>
@@ -1773,10 +1773,10 @@
           <div class="danger-card-inner">
             <div class="danger-card-front">
               <div class="danger-icon" aria-hidden="true">&#9203;</div>
-              <h4>Procrastination</h4>
+              <h3>Procrastination</h3>
             </div>
             <div class="danger-card-back">
-              <h4>Procrastination</h4>
+              <h3>Procrastination</h3>
               <p>Putting things off creates a cycle of guilt, panic, and rushed work.</p>
             </div>
           </div>
@@ -1785,10 +1785,10 @@
           <div class="danger-card-inner">
             <div class="danger-card-front">
               <div class="danger-icon" aria-hidden="true">&#128260;</div>
-              <h4>Multitasking</h4>
+              <h3>Multitasking</h3>
             </div>
             <div class="danger-card-back">
-              <h4>Multitasking</h4>
+              <h3>Multitasking</h3>
               <p>Doing many things at once actually slows you down and leads to more mistakes.</p>
             </div>
           </div>
@@ -1797,10 +1797,10 @@
           <div class="danger-card-inner">
             <div class="danger-card-front">
               <div class="danger-icon" aria-hidden="true">&#128587;</div>
-              <h4>Over-Commitment</h4>
+              <h3>Over-Commitment</h3>
             </div>
             <div class="danger-card-back">
-              <h4>Over-Commitment</h4>
+              <h3>Over-Commitment</h3>
               <p>Not saying "No" leads to burnout and prevents focus on real priorities.</p>
             </div>
           </div>
@@ -1809,10 +1809,10 @@
           <div class="danger-card-inner">
             <div class="danger-card-front">
               <div class="danger-icon" aria-hidden="true">&#128736;</div>
-              <h4>No Structure</h4>
+              <h3>No Structure</h3>
             </div>
             <div class="danger-card-back">
-              <h4>No Structure</h4>
+              <h3>No Structure</h3>
               <p>Without routines and systems, days become chaotic and goals slip away.</p>
             </div>
           </div>
@@ -1881,19 +1881,19 @@
       <p class="slide-subtext">Often seen as a strength — but science shows it has a real cost</p>
       <div class="cards-grid">
         <div class="card">
-          <h4>Inefficiency</h4>
+          <h3>Inefficiency</h3>
           <p>Switching between tasks wastes time and mental energy with every switch</p>
         </div>
         <div class="card gold-border">
-          <h4>More Mistakes</h4>
+          <h3>More Mistakes</h3>
           <p>Divided attention leads to errors and lower quality results</p>
         </div>
         <div class="card gold-border">
-          <h4>Reduced Creativity</h4>
+          <h3>Reduced Creativity</h3>
           <p>Deep thinking requires focused, uninterrupted blocks of time</p>
         </div>
         <div class="card">
-          <h4>Stress &amp; Burnout</h4>
+          <h3>Stress &amp; Burnout</h3>
           <p>Chronic multitasking drains energy and increases chronic stress</p>
         </div>
       </div>
@@ -2036,19 +2036,19 @@
       <p class="slide-subtext">After completing the paper self-assessment — let's discuss what you found</p>
       <div class="debrief-grid">
         <div class="debrief-card">
-          <h4>What did your score reveal?</h4>
+          <h3>What did your score reveal?</h3>
           <p>Which time management areas did you rate yourself highest on? Which areas had your lowest scores?</p>
         </div>
         <div class="debrief-card alt">
-          <h4>What surprised you?</h4>
+          <h3>What surprised you?</h3>
           <p>Was there a strength you didn't recognize before? A weakness that surprised you when you saw it written down?</p>
         </div>
         <div class="debrief-card alt">
-          <h4>One thing to change</h4>
+          <h3>One thing to change</h3>
           <p>Identify one specific behavior from today's lesson you can change this week. Make it SMART.</p>
         </div>
         <div class="debrief-card">
-          <h4>Accountability partner</h4>
+          <h3>Accountability partner</h3>
           <p>Who can you share your goal with? Having someone check in with you dramatically increases follow-through.</p>
         </div>
       </div>
@@ -2250,7 +2250,14 @@
     currentIndex = index;
     try { sessionStorage.setItem('spokes_slide_' + document.title, currentIndex); } catch(e) {}
 
-    slides.forEach((slide, i) => slide.classList.toggle('active', i === index));
+    const applySlide = () => {
+      slides.forEach((slide, i) => slide.classList.toggle('active', i === index));
+    };
+    if (document.startViewTransition && !prefersReduced) {
+      document.startViewTransition(applySlide);
+    } else {
+      applySlide();
+    }
 
     document.activeElement?.blur();
 

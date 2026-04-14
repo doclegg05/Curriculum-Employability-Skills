@@ -336,7 +336,7 @@ def check_typography(doc: Document) -> list[Result]:
         results.append(Result("TYP-04", "PASS", "No hardcoded body font outside :root", 0))
 
     # TYP-05: Google Fonts display=swap
-    fonts_links = [e for e in doc.link_elements if 'fonts.googleapis.com' in (e.attrs.get('href') or '')]
+    fonts_links = [e for e in doc.link_elements if 'fonts.googleapis.com' in (e.attrs.get('href') or '') and e.attrs.get('rel') != 'preconnect']
     if fonts_links:
         all_have_swap = all('display=swap' in (e.attrs.get('href') or '') for e in fonts_links)
         if all_have_swap:
