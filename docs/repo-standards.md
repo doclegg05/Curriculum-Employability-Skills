@@ -46,10 +46,6 @@ Required root-level governance docs:
 
 ## Quality Enforcement
 
-Before merge/release:
-
-- brand color scan
-- contrast review
-- keyboard navigation check
-- no horizontal overflow at required viewports
-- required interactions present and functional
+Quality checks are automated via `scripts/validate-lesson.py` and enforced by a PostToolUse hook.
+See `SPOKES-STANDARD.md` for the complete rule inventory (~69 rules across 10 sections).
+See the design spec at `docs/superpowers/specs/2026-04-14-curriculum-quality-standard-design.md` for architecture details.
