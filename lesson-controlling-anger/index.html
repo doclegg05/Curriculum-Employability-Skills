@@ -1099,6 +1099,51 @@
       animation: fadeUp 0.6s ease-out 0.3s both;
     }
 
+    .video-wrapper {
+      position: relative;
+      display: inline-block;
+      width: 100%;
+    }
+
+    .cc-toggle {
+      position: absolute;
+      bottom: 16px;
+      right: 16px;
+      z-index: 10;
+      background: rgba(0, 0, 0, 0.7);
+      color: var(--light);
+      border: 2px solid rgba(255, 255, 255, 0.5);
+      border-radius: 6px;
+      padding: 6px 12px;
+      font-family: var(--font-body);
+      font-size: 0.85rem;
+      font-weight: 700;
+      letter-spacing: 1px;
+      cursor: pointer;
+      transition: all 0.2s ease;
+      min-width: 44px;
+      min-height: 44px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+
+    .cc-toggle:hover {
+      background: rgba(0, 0, 0, 0.9);
+      border-color: var(--light);
+    }
+
+    .cc-toggle.cc-active {
+      background: var(--primary);
+      border-color: var(--primary);
+      color: var(--light);
+    }
+
+    .cc-toggle:focus-visible {
+      outline: 3px solid var(--gold);
+      outline-offset: 2px;
+    }
+
     /* Activity Callout */
     .activity-box {
       background: rgba(211, 178, 87, 0.1);
@@ -2346,11 +2391,14 @@
       <section class="slide slide-video" data-chapter="1">
         <h2>Watch: Anger Management &mdash; Rage on a Plane</h2>
         <div class="video-container" style="position:relative; width:100%; max-width:1200px; margin:0 auto;">
-          <video controls preload="none" class="local-video" aria-label="Anger Management - Rage on a Plane video" style="width:100%; border-radius:12px; box-shadow:0 4px 20px rgba(0,0,0,0.15);">
-            <source src="videos/anger_management_rage_on_plane.mp4" type="video/mp4" />
-            <track kind="captions" src="videos/anger_management_rage_on_plane.vtt" srclang="en" label="English">
-            Your browser does not support the video tag.
-          </video>
+          <div class="video-wrapper">
+            <video controls preload="none" class="local-video" aria-label="Anger Management - Rage on a Plane video" style="width:100%; border-radius:12px; box-shadow:0 4px 20px rgba(0,0,0,0.15);">
+              <source src="videos/anger_management_rage_on_plane.mp4" type="video/mp4" />
+              <track kind="captions" src="videos/anger_management_rage_on_plane.vtt" srclang="en" label="English">
+              Your browser does not support the video tag.
+            </video>
+            <button class="cc-toggle" onclick="toggleCaptions(this)" aria-pressed="false" aria-label="Toggle captions" title="Toggle captions">CC</button>
+          </div>
         </div>
       </section>
 
@@ -2478,11 +2526,14 @@
       <section class="slide slide-video" data-chapter="3">
         <h2>Watch: The Iceberg Theory of Anger</h2>
         <div class="video-container" style="position:relative; width:100%; max-width:1200px; margin:0 auto;">
-          <video controls preload="none" class="local-video" aria-label="The Iceberg Theory of Anger video" style="width:100%; border-radius:12px; box-shadow:0 4px 20px rgba(0,0,0,0.15);">
-            <source src="videos/iceberg_theory_of_anger.mp4" type="video/mp4" />
-            <track kind="captions" src="videos/iceberg_theory_of_anger.vtt" srclang="en" label="English">
-            Your browser does not support the video tag.
-          </video>
+          <div class="video-wrapper">
+            <video controls preload="none" class="local-video" aria-label="The Iceberg Theory of Anger video" style="width:100%; border-radius:12px; box-shadow:0 4px 20px rgba(0,0,0,0.15);">
+              <source src="videos/iceberg_theory_of_anger.mp4" type="video/mp4" />
+              <track kind="captions" src="videos/iceberg_theory_of_anger.vtt" srclang="en" label="English">
+              Your browser does not support the video tag.
+            </video>
+            <button class="cc-toggle" onclick="toggleCaptions(this)" aria-pressed="false" aria-label="Toggle captions" title="Toggle captions">CC</button>
+          </div>
         </div>
       </section>
 
@@ -2684,11 +2735,14 @@
       <section class="slide slide-video" data-chapter="4">
         <h2>Watch: Anger Thermometer &mdash; Warning Signs</h2>
         <div class="video-container" style="position:relative; width:100%; max-width:1200px; margin:0 auto;">
-          <video controls preload="none" class="local-video" aria-label="Anger Thermometer - Warning Signs video" style="width:100%; border-radius:12px; box-shadow:0 4px 20px rgba(0,0,0,0.15);">
-            <source src="videos/anger_thermometer_warning_signs.mp4" type="video/mp4" />
-            <track kind="captions" src="videos/anger_thermometer_warning_signs.vtt" srclang="en" label="English">
-            Your browser does not support the video tag.
-          </video>
+          <div class="video-wrapper">
+            <video controls preload="none" class="local-video" aria-label="Anger Thermometer - Warning Signs video" style="width:100%; border-radius:12px; box-shadow:0 4px 20px rgba(0,0,0,0.15);">
+              <source src="videos/anger_thermometer_warning_signs.mp4" type="video/mp4" />
+              <track kind="captions" src="videos/anger_thermometer_warning_signs.vtt" srclang="en" label="English">
+              Your browser does not support the video tag.
+            </video>
+            <button class="cc-toggle" onclick="toggleCaptions(this)" aria-pressed="false" aria-label="Toggle captions" title="Toggle captions">CC</button>
+          </div>
         </div>
       </section>
 
@@ -2866,11 +2920,14 @@
       <section class="slide slide-video" data-chapter="5">
         <h2>Watch: Holding Onto Anger Is Like Drinking Poison</h2>
         <div class="video-container" style="position:relative; width:100%; max-width:1200px; margin:0 auto;">
-          <video controls preload="none" class="local-video" aria-label="Holding Onto Anger Is Like Drinking Poison video" style="width:100%; border-radius:12px; box-shadow:0 4px 20px rgba(0,0,0,0.15);">
-            <source src="videos/holding_onto_anger_drinking_poison.mp4" type="video/mp4" />
-            <track kind="captions" src="videos/holding_onto_anger_drinking_poison.vtt" srclang="en" label="English">
-            Your browser does not support the video tag.
-          </video>
+          <div class="video-wrapper">
+            <video controls preload="none" class="local-video" aria-label="Holding Onto Anger Is Like Drinking Poison video" style="width:100%; border-radius:12px; box-shadow:0 4px 20px rgba(0,0,0,0.15);">
+              <source src="videos/holding_onto_anger_drinking_poison.mp4" type="video/mp4" />
+              <track kind="captions" src="videos/holding_onto_anger_drinking_poison.vtt" srclang="en" label="English">
+              Your browser does not support the video tag.
+            </video>
+            <button class="cc-toggle" onclick="toggleCaptions(this)" aria-pressed="false" aria-label="Toggle captions" title="Toggle captions">CC</button>
+          </div>
         </div>
       </section>
 
@@ -3571,6 +3628,28 @@
     });
 
     buildJeopardyBoard();
+
+    /* CC Toggle Button */
+    function toggleCaptions(btn) {
+      const video = btn.parentElement.querySelector('video');
+      if (!video || !video.textTracks || !video.textTracks[0]) return;
+      const track = video.textTracks[0];
+      if (track.mode === 'showing') {
+        track.mode = 'hidden';
+        btn.classList.remove('cc-active');
+        btn.setAttribute('aria-pressed', 'false');
+      } else {
+        track.mode = 'showing';
+        btn.classList.add('cc-active');
+        btn.setAttribute('aria-pressed', 'true');
+      }
+    }
+
+    document.querySelectorAll('video').forEach(v => {
+      if (v.textTracks && v.textTracks[0]) {
+        v.textTracks[0].mode = 'hidden';
+      }
+    });
   </script>
 </body>
 </html>

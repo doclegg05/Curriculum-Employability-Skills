@@ -940,6 +940,51 @@
 
       .slide-video.active .video-container { animation: fadeUp 0.6s ease-out 0.3s both; }
 
+      .video-wrapper {
+        position: relative;
+        display: inline-block;
+        width: 100%;
+      }
+
+      .cc-toggle {
+        position: absolute;
+        bottom: 16px;
+        right: 16px;
+        z-index: 10;
+        background: rgba(0, 0, 0, 0.7);
+        color: var(--light);
+        border: 2px solid rgba(255, 255, 255, 0.5);
+        border-radius: 6px;
+        padding: 6px 12px;
+        font-family: var(--font-body);
+        font-size: 0.85rem;
+        font-weight: 700;
+        letter-spacing: 1px;
+        cursor: pointer;
+        transition: all 0.2s ease;
+        min-width: 44px;
+        min-height: 44px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+      }
+
+      .cc-toggle:hover {
+        background: rgba(0, 0, 0, 0.9);
+        border-color: var(--light);
+      }
+
+      .cc-toggle.cc-active {
+        background: var(--primary);
+        border-color: var(--primary);
+        color: var(--light);
+      }
+
+      .cc-toggle:focus-visible {
+        outline: 3px solid var(--gold);
+        outline-offset: 2px;
+      }
+
       /* Activity Callout */
       .activity-box {
         background: rgba(211, 178, 87, 0.1);
@@ -1934,11 +1979,14 @@
         <section class="slide slide-video" data-chapter="2">
           <h2>Watch: The Importance of Effective Communication</h2>
           <div class="video-container" style="position:relative; width:100%; max-width:1200px; margin:0 auto;">
-            <video controls class="local-video" preload="none" aria-label="The Importance of Effective Communication" style="width:100%; border-radius:12px; box-shadow:0 4px 20px rgba(0,0,0,0.15);">
-              <source src="videos/importance_of_effective_communication.mp4" type="video/mp4" />
-              <track kind="captions" src="videos/importance_of_effective_communication.vtt" srclang="en" label="English">
-              Your browser does not support the video tag.
-            </video>
+            <div class="video-wrapper">
+              <video controls class="local-video" preload="none" aria-label="The Importance of Effective Communication" style="width:100%; border-radius:12px; box-shadow:0 4px 20px rgba(0,0,0,0.15);">
+                <source src="videos/importance_of_effective_communication.mp4" type="video/mp4" />
+                <track kind="captions" src="videos/importance_of_effective_communication.vtt" srclang="en" label="English">
+                Your browser does not support the video tag.
+              </video>
+              <button class="cc-toggle" onclick="toggleCaptions(this)" aria-pressed="false" aria-label="Toggle captions" title="Toggle captions">CC</button>
+            </div>
           </div>
         </section>
 
@@ -2009,11 +2057,14 @@
         <section class="slide slide-video" data-chapter="3">
           <h2>Watch: The Communication Cycle</h2>
           <div class="video-container" style="position:relative; width:100%; max-width:1200px; margin:0 auto;">
-            <video controls class="local-video" preload="none" aria-label="The Communication Cycle" style="width:100%; border-radius:12px; box-shadow:0 4px 20px rgba(0,0,0,0.15);">
-              <source src="videos/communication_cycle.mp4" type="video/mp4" />
-              <track kind="captions" src="videos/communication_cycle.vtt" srclang="en" label="English">
-              Your browser does not support the video tag.
-            </video>
+            <div class="video-wrapper">
+              <video controls class="local-video" preload="none" aria-label="The Communication Cycle" style="width:100%; border-radius:12px; box-shadow:0 4px 20px rgba(0,0,0,0.15);">
+                <source src="videos/communication_cycle.mp4" type="video/mp4" />
+                <track kind="captions" src="videos/communication_cycle.vtt" srclang="en" label="English">
+                Your browser does not support the video tag.
+              </video>
+              <button class="cc-toggle" onclick="toggleCaptions(this)" aria-pressed="false" aria-label="Toggle captions" title="Toggle captions">CC</button>
+            </div>
           </div>
         </section>
 
@@ -2076,11 +2127,14 @@
         <section class="slide slide-video" data-chapter="3">
           <h2>Watch: Effective Communication in the Workplace</h2>
           <div class="video-container" style="position:relative; width:100%; max-width:1200px; margin:0 auto;">
-            <video controls class="local-video" preload="none" aria-label="Effective Communication in the Workplace" style="width:100%; border-radius:12px; box-shadow:0 4px 20px rgba(0,0,0,0.15);">
-              <source src="videos/effective_communication_workplace.mp4" type="video/mp4" />
-              <track kind="captions" src="videos/effective_communication_workplace.vtt" srclang="en" label="English">
-              Your browser does not support the video tag.
-            </video>
+            <div class="video-wrapper">
+              <video controls class="local-video" preload="none" aria-label="Effective Communication in the Workplace" style="width:100%; border-radius:12px; box-shadow:0 4px 20px rgba(0,0,0,0.15);">
+                <source src="videos/effective_communication_workplace.mp4" type="video/mp4" />
+                <track kind="captions" src="videos/effective_communication_workplace.vtt" srclang="en" label="English">
+                Your browser does not support the video tag.
+              </video>
+              <button class="cc-toggle" onclick="toggleCaptions(this)" aria-pressed="false" aria-label="Toggle captions" title="Toggle captions">CC</button>
+            </div>
           </div>
         </section>
 
@@ -2178,31 +2232,43 @@
           <p style="font-size:1.2rem; color:var(--gray); margin-top:-1.5rem; margin-bottom:1.5rem;">Watch each video, then discuss what went wrong and how it could be improved.</p>
           <div class="video-grid">
             <div class="video-grid-item">
-              <video controls preload="none" aria-label="Poor Customer Service Satire - Cleveland Ohio" style="width:100%; border-radius:10px; box-shadow:0 4px 16px rgba(0,0,0,0.12);">
-                <source src="videos/poor_customer_service_satire.mp4" type="video/mp4" />
-                <track kind="captions" src="videos/poor_customer_service_satire.vtt" srclang="en" label="English">
-              </video>
+              <div class="video-wrapper">
+                <video controls preload="none" aria-label="Poor Customer Service Satire - Cleveland Ohio" style="width:100%; border-radius:10px; box-shadow:0 4px 16px rgba(0,0,0,0.12);">
+                  <source src="videos/poor_customer_service_satire.mp4" type="video/mp4" />
+                  <track kind="captions" src="videos/poor_customer_service_satire.vtt" srclang="en" label="English">
+                </video>
+                <button class="cc-toggle" onclick="toggleCaptions(this)" aria-pressed="false" aria-label="Toggle captions" title="Toggle captions">CC</button>
+              </div>
               <p>Cleveland, Ohio &mdash; Satire (3:00)</p>
             </div>
             <div class="video-grid-item">
-              <video controls preload="none" aria-label="Poor Customer Service Scenario" style="width:100%; border-radius:10px; box-shadow:0 4px 16px rgba(0,0,0,0.12);">
-                <source src="videos/poor_customer_service_scenario.mp4" type="video/mp4" />
-                <track kind="captions" src="videos/poor_customer_service_scenario.vtt" srclang="en" label="English">
-              </video>
+              <div class="video-wrapper">
+                <video controls preload="none" aria-label="Poor Customer Service Scenario" style="width:100%; border-radius:10px; box-shadow:0 4px 16px rgba(0,0,0,0.12);">
+                  <source src="videos/poor_customer_service_scenario.mp4" type="video/mp4" />
+                  <track kind="captions" src="videos/poor_customer_service_scenario.vtt" srclang="en" label="English">
+                </video>
+                <button class="cc-toggle" onclick="toggleCaptions(this)" aria-pressed="false" aria-label="Toggle captions" title="Toggle captions">CC</button>
+              </div>
               <p>Poor Customer Service (2:46)</p>
             </div>
             <div class="video-grid-item">
-              <video controls preload="none" aria-label="Bad Customer Service Example" style="width:100%; border-radius:10px; box-shadow:0 4px 16px rgba(0,0,0,0.12);">
-                <source src="videos/bad_customer_service.mp4" type="video/mp4" />
-                <track kind="captions" src="videos/bad_customer_service.vtt" srclang="en" label="English">
-              </video>
+              <div class="video-wrapper">
+                <video controls preload="none" aria-label="Bad Customer Service Example" style="width:100%; border-radius:10px; box-shadow:0 4px 16px rgba(0,0,0,0.12);">
+                  <source src="videos/bad_customer_service.mp4" type="video/mp4" />
+                  <track kind="captions" src="videos/bad_customer_service.vtt" srclang="en" label="English">
+                </video>
+                <button class="cc-toggle" onclick="toggleCaptions(this)" aria-pressed="false" aria-label="Toggle captions" title="Toggle captions">CC</button>
+              </div>
               <p>Bad Customer Service (1:12)</p>
             </div>
             <div class="video-grid-item">
-              <video controls preload="none" aria-label="Bad Customer Service Representative" style="width:100%; border-radius:10px; box-shadow:0 4px 16px rgba(0,0,0,0.12);">
-                <source src="videos/bad_customer_service_rep.mp4" type="video/mp4" />
-                <track kind="captions" src="videos/bad_customer_service_rep.vtt" srclang="en" label="English">
-              </video>
+              <div class="video-wrapper">
+                <video controls preload="none" aria-label="Bad Customer Service Representative" style="width:100%; border-radius:10px; box-shadow:0 4px 16px rgba(0,0,0,0.12);">
+                  <source src="videos/bad_customer_service_rep.mp4" type="video/mp4" />
+                  <track kind="captions" src="videos/bad_customer_service_rep.vtt" srclang="en" label="English">
+                </video>
+                <button class="cc-toggle" onclick="toggleCaptions(this)" aria-pressed="false" aria-label="Toggle captions" title="Toggle captions">CC</button>
+              </div>
               <p>Bad Service Rep (2:32)</p>
             </div>
           </div>
@@ -2465,11 +2531,14 @@
         <section class="slide slide-video" data-chapter="5">
           <h2>Watch: Self-Advocacy &mdash; A State of Mind (TEDx)</h2>
           <div class="video-container" style="position:relative; width:100%; max-width:1200px; margin:0 auto;">
-            <video controls class="local-video" preload="none" aria-label="Self-Advocacy - A State of Mind TEDx Talk" style="width:100%; border-radius:12px; box-shadow:0 4px 20px rgba(0,0,0,0.15);">
-              <source src="videos/self_advocacy_state_of_mind_tedx.mp4" type="video/mp4" />
-              <track kind="captions" src="videos/self_advocacy_state_of_mind_tedx.vtt" srclang="en" label="English">
-              Your browser does not support the video tag.
-            </video>
+            <div class="video-wrapper">
+              <video controls class="local-video" preload="none" aria-label="Self-Advocacy - A State of Mind TEDx Talk" style="width:100%; border-radius:12px; box-shadow:0 4px 20px rgba(0,0,0,0.15);">
+                <source src="videos/self_advocacy_state_of_mind_tedx.mp4" type="video/mp4" />
+                <track kind="captions" src="videos/self_advocacy_state_of_mind_tedx.vtt" srclang="en" label="English">
+                Your browser does not support the video tag.
+              </video>
+              <button class="cc-toggle" onclick="toggleCaptions(this)" aria-pressed="false" aria-label="Toggle captions" title="Toggle captions">CC</button>
+            </div>
           </div>
         </section>
 
@@ -2952,6 +3021,28 @@
       var savedSlide = 0;
       try { savedSlide = parseInt(sessionStorage.getItem('spokes_slide_' + document.title)) || 0; } catch(e) {}
       showSlide(savedSlide);
+
+      /* CC Toggle Button */
+      function toggleCaptions(btn) {
+        const video = btn.parentElement.querySelector('video');
+        if (!video || !video.textTracks || !video.textTracks[0]) return;
+        const track = video.textTracks[0];
+        if (track.mode === 'showing') {
+          track.mode = 'hidden';
+          btn.classList.remove('cc-active');
+          btn.setAttribute('aria-pressed', 'false');
+        } else {
+          track.mode = 'showing';
+          btn.classList.add('cc-active');
+          btn.setAttribute('aria-pressed', 'true');
+        }
+      }
+
+      document.querySelectorAll('video').forEach(v => {
+        if (v.textTracks && v.textTracks[0]) {
+          v.textTracks[0].mode = 'hidden';
+        }
+      });
     </script>
   </body>
 </html>
