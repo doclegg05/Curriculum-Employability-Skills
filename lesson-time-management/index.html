@@ -2319,6 +2319,18 @@
 
     // Pause any playing videos on the slide we're leaving
     document.querySelectorAll('.slide.active video').forEach(v => { v.pause(); });
+    // Reset captions when leaving a slide
+    document.querySelectorAll('.cc-toggle.cc-active').forEach(btn => {
+      btn.classList.remove('cc-active');
+      btn.setAttribute('aria-pressed', 'false');
+    });
+    document.querySelectorAll('video').forEach(v => {
+      if (v.textTracks && v.textTracks.length > 0) {
+        for (let i = 0; i < v.textTracks.length; i++) {
+          v.textTracks[i].mode = 'disabled';
+        }
+      }
+    });
 
     currentIndex = index;
     try { sessionStorage.setItem('spokes_slide_' + document.title, currentIndex); } catch(e) {}

@@ -3147,6 +3147,18 @@
       var doTransition = function() {
         /* NAV-02: pause any playing videos */
         document.querySelectorAll('.slide.active video').forEach(function(v) { v.pause(); });
+        /* Reset captions when leaving a slide */
+        document.querySelectorAll('.cc-toggle.cc-active').forEach(function(btn) {
+          btn.classList.remove('cc-active');
+          btn.setAttribute('aria-pressed', 'false');
+        });
+        document.querySelectorAll('video').forEach(function(v) {
+          if (v.textTracks && v.textTracks.length > 0) {
+            for (var i = 0; i < v.textTracks.length; i++) {
+              v.textTracks[i].mode = 'disabled';
+            }
+          }
+        });
         /* NAV-03: focus management */
         if (document.activeElement) document.activeElement.blur();
 

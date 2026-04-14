@@ -2844,6 +2844,18 @@
 
         // NAV-02: Pause any playing videos on the current slide
         document.querySelectorAll('.slide.active video').forEach(function(v) { v.pause(); });
+        // Reset captions when leaving a slide
+        document.querySelectorAll('.cc-toggle.cc-active').forEach(function(btn) {
+          btn.classList.remove('cc-active');
+          btn.setAttribute('aria-pressed', 'false');
+        });
+        document.querySelectorAll('video').forEach(function(v) {
+          if (v.textTracks && v.textTracks.length > 0) {
+            for (var i = 0; i < v.textTracks.length; i++) {
+              v.textTracks[i].mode = 'disabled';
+            }
+          }
+        });
 
         var doTransition = function() {
           currentIndex = index;
