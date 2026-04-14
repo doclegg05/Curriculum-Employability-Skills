@@ -3329,10 +3329,11 @@
     // === CC Toggle ===
     function toggleCaptions(btn) {
       const video = btn.closest('.video-wrapper').querySelector('video');
-      if (!video || !video.textTracks || !video.textTracks[0]) return;
+      if (!video || !video.textTracks || video.textTracks.length === 0) return;
       const track = video.textTracks[0];
-      if (track.mode === 'showing') {
-        track.mode = 'hidden';
+      const isActive = btn.classList.contains('cc-active');
+      if (isActive) {
+        track.mode = 'disabled';
         btn.classList.remove('cc-active');
         btn.setAttribute('aria-pressed', 'false');
       } else {
@@ -3343,8 +3344,8 @@
     }
 
     document.querySelectorAll('video').forEach(v => {
-      if (v.textTracks && v.textTracks[0]) {
-        v.textTracks[0].mode = 'hidden';
+      if (v.textTracks && v.textTracks.length > 0) {
+        v.textTracks[0].mode = 'disabled';
       }
     });
   </script>
