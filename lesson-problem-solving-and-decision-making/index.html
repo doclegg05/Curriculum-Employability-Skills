@@ -5,8 +5,8 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <link rel="preconnect" href="https://fonts.googleapis.com" />
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
-  <link href="https://fonts.googleapis.com/css2?family=DM+Serif+Display:ital@0;1&family=Outfit:wght@300;400;500;600;700&display=swap" rel="stylesheet">
-  <link href="https://fonts.googleapis.com/css2?family=Bitter:wght@400;600;700&family=Raleway:wght@400;500;600&display=swap" rel="stylesheet" />
+  <link href="https://fonts.googleapis.com/css2?family=DM+Serif+Display:ital@0;1&amp;family=Outfit:wght@300;400;500;600;700&amp;display=swap" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=Bitter:wght@400;600;700&amp;family=Raleway:wght@400;500;600&amp;display=swap" rel="stylesheet" />
   <title>Problem-Solving &amp; Decision-Making &mdash; SPOKES</title>
   <style>
     /* ================================================================
@@ -698,7 +698,7 @@
       border-left-color: var(--gold);
     }
 
-    .card h4 {
+    .card h3, .card h4 {
       font-family: var(--font-heading);
       font-size: 1.75rem;
       color: var(--primary);
@@ -814,7 +814,7 @@
       border-radius: 8px;
     }
 
-    .smart-content h4 {
+    .smart-content h3, .smart-content h4 {
       font-family: var(--font-heading);
       font-size: 1.15rem;
       color: var(--primary);
@@ -944,7 +944,7 @@
       margin-bottom: 0.75rem;
     }
 
-    .danger-card-front h4 {
+    .danger-card-front h3 {
       font-size: 1.1rem;
       font-weight: 600;
     }
@@ -954,7 +954,7 @@
       line-height: 1.4;
     }
 
-    .danger-card-back h4 {
+    .danger-card-back h3 {
       font-size: 1rem;
       margin-bottom: 0.5rem;
       font-weight: 600;
@@ -1003,7 +1003,7 @@
       color: var(--gold);
     }
 
-    .area-card h4 {
+    .area-card h3, .area-card h4 {
       font-family: var(--font-heading);
       font-size: 1.5rem;
       font-weight: 400;
@@ -1636,8 +1636,8 @@
        FONT PAIRING: bitter-raleway
        ================================================================ */
     body { font-family: 'Raleway', sans-serif; }
-    .slide-title h1, .slide h2, .slide h3, .card h4,
-    .smart-content h4, .matrix-action, .slide-section h2,
+    .slide-title h1, .slide h2, .slide h3, .card h3, .card h4,
+    .smart-content h3, .smart-content h4, .matrix-action, .slide-section h2,
     .closing-box h2 {
       font-family: 'Bitter', serif;
     }
@@ -1903,7 +1903,7 @@
       min-height: 180px;
     }
     .tab-panel.active { display: block; }
-    .tab-panel h4 {
+    .tab-panel h3 {
       font-family: var(--font-heading);
       font-size: 1.5rem;
       color: var(--muted-gold);
@@ -2014,7 +2014,7 @@
       margin-bottom: 0.75rem;
       border-left: 5px solid var(--gold);
     }
-    .quiz-question h4 {
+    .quiz-question h3 {
       font-family: var(--font-heading);
       font-size: 1.3rem;
       color: var(--dark);
@@ -2113,7 +2113,7 @@
 
     /* FIX: Danger-card-back text — inherited gray (#60636b) on gold = 2.94:1. Use --dark (4.7:1) */
     .danger-card-back p,
-    .danger-card-back h4 { color: var(--dark); }
+    .danger-card-back h3 { color: var(--dark); }
 
     /* FIX: Quiz answer text — accent on near-white = 2.66:1 at 1.1rem */
     .quiz-answer p { color: var(--dark); }
@@ -2222,7 +2222,7 @@
         <p style="font-size:1.2rem; color:var(--gray); margin-top:-1.5rem; margin-bottom:1.5rem;">This short quiz was developed to test critical thinking skills. Try to answer each question before revealing the answer!</p>
 
         <div class="quiz-question">
-          <h4>Q1: How do you put a giraffe into a refrigerator?</h4>
+          <h3>Q1: How do you put a giraffe into a refrigerator?</h3>
           <div class="quiz-answer" id="q1a">
             <p>Open the refrigerator, put in the giraffe, and close the door.</p>
             <p class="quiz-why">This tests whether you tend to do simple things in an overly complicated way.</p>
@@ -2231,7 +2231,7 @@
         </div>
 
         <div class="quiz-question">
-          <h4>Q2: How do you put an elephant into a refrigerator?</h4>
+          <h3>Q2: How do you put an elephant into a refrigerator?</h3>
           <div class="quiz-answer" id="q2a">
             <p>Open the refrigerator, take out the giraffe, put in the elephant, and close the door.</p>
             <p class="quiz-why">This tests your ability to think through the repercussions of your previous actions.</p>
@@ -2240,7 +2240,7 @@
         </div>
 
         <div class="quiz-question">
-          <h4>Q3: The Lion King is hosting an animal conference. All animals attend except one &mdash; which one?</h4>
+          <h3>Q3: The Lion King is hosting an animal conference. All animals attend except one &mdash; which one?</h3>
           <div class="quiz-answer" id="q3a">
             <p>The elephant &mdash; it&rsquo;s still in the refrigerator!</p>
             <p class="quiz-why">This tests your memory.</p>
@@ -2249,7 +2249,7 @@
         </div>
 
         <div class="quiz-question">
-          <h4>Q4: You must cross a river used by crocodiles, and you don&rsquo;t have a boat. How do you do it?</h4>
+          <h3>Q4: You must cross a river used by crocodiles, and you don&rsquo;t have a boat. How do you do it?</h3>
           <div class="quiz-answer" id="q4a">
             <p>Jump in and swim across &mdash; all the crocodiles are at the animal conference!</p>
             <p class="quiz-why">This tests whether you learn quickly from your mistakes.</p>
@@ -2336,10 +2336,10 @@
             <div class="danger-card-inner">
               <div class="danger-card-front">
                 <div class="danger-icon">&#128218;</div>
-                <h4>Professor</h4>
+                <h3>Professor</h3>
               </div>
               <div class="danger-card-back">
-                <h4>Professor</h4>
+                <h3>Professor</h3>
                 <p>Seeks background info &amp; theory. Values objectivity. Learns from past situations. <strong>Guard against:</strong> indecision from wanting too much information.</p>
               </div>
             </div>
@@ -2348,10 +2348,10 @@
             <div class="danger-card-inner">
               <div class="danger-card-front">
                 <div class="danger-icon">&#129309;</div>
-                <h4>Diplomat</h4>
+                <h3>Diplomat</h3>
               </div>
               <div class="danger-card-back">
-                <h4>Diplomat</h4>
+                <h3>Diplomat</h3>
                 <p>Seeks consensus by talking to people. Values opinions. Very persuasive. <strong>Guard against:</strong> missing timelines from gathering too many opinions.</p>
               </div>
             </div>
@@ -2360,10 +2360,10 @@
             <div class="danger-card-inner">
               <div class="danger-card-front">
                 <div class="danger-icon">&#128269;</div>
-                <h4>Detective</h4>
+                <h3>Detective</h3>
               </div>
               <div class="danger-card-back">
-                <h4>Detective</h4>
+                <h3>Detective</h3>
                 <p>Finds root causes with facts &amp; observation. Follows consistent methods. <strong>Guard against:</strong> inflexibility and insensitivity to people.</p>
               </div>
             </div>
@@ -2372,10 +2372,10 @@
             <div class="danger-card-inner">
               <div class="danger-card-front">
                 <div class="danger-icon">&#127942;</div>
-                <h4>Champion</h4>
+                <h3>Champion</h3>
               </div>
               <div class="danger-card-back">
-                <h4>Champion</h4>
+                <h3>Champion</h3>
                 <p>Results-oriented, trusts instincts. Tries solutions hands-on. Great in a crisis. <strong>Guard against:</strong> impulsiveness and uncooperativeness.</p>
               </div>
             </div>
@@ -2445,7 +2445,7 @@
             <button class="tab-btn" role="tab" aria-selected="false" aria-controls="step4" onclick="switchTab(event, 'step4')">Step 4: Do It</button>
           </div>
           <div class="tab-panel active" id="step1" role="tabpanel">
-            <h4>Stop! Think About the Problem</h4>
+            <h3>Stop! Think About the Problem</h3>
             <p>When presented with a problem, we sometimes react in an extreme manner &mdash; either by being <strong>impulsive</strong> or by <strong>procrastinating</strong>.</p>
             <ul>
               <li>What might happen if we react impulsively?</li>
@@ -2454,7 +2454,7 @@
             </ul>
           </div>
           <div class="tab-panel" id="step2" role="tabpanel">
-            <h4>What Are Some Options?</h4>
+            <h3>What Are Some Options?</h3>
             <p>Write a list of possible solutions &mdash; also called options or choices.</p>
             <ul>
               <li>Brainstorm random solutions, even &ldquo;outside the box&rdquo; ones</li>
@@ -2463,7 +2463,7 @@
             </ul>
           </div>
           <div class="tab-panel" id="step3" role="tabpanel">
-            <h4>Choose One</h4>
+            <h3>Choose One</h3>
             <p>Look at the remaining options on your list.</p>
             <ul>
               <li>If two choices remain, select the one that is most effective without causing negative effects</li>
@@ -2472,7 +2472,7 @@
             </ul>
           </div>
           <div class="tab-panel" id="step4" role="tabpanel">
-            <h4>Do It!</h4>
+            <h3>Do It!</h3>
             <p>Apply the remaining option to your situation.</p>
             <ul>
               <li>Take action on your chosen solution</li>
@@ -3122,7 +3122,14 @@
     function triggerConfetti() {
       var container = document.getElementById("confettiContainer");
       while (container.firstChild) container.removeChild(container.firstChild);
-      var colors = ["#a7253f", "#d3b257", "#37b550", "#007baf", "#FFFFFF"];
+      var style = getComputedStyle(document.documentElement);
+      var colors = [
+        style.getPropertyValue('--mauve').trim(),
+        style.getPropertyValue('--gold').trim(),
+        style.getPropertyValue('--accent').trim(),
+        style.getPropertyValue('--primary').trim(),
+        style.getPropertyValue('--light').trim(),
+      ];
       for (var i = 0; i < 100; i++) {
         var confetti = document.createElement("div");
         confetti.className = "confetti";
@@ -3155,13 +3162,13 @@
     var touchStartX = 0;
     document.addEventListener("touchstart", function(e) {
       touchStartX = e.changedTouches[0].screenX;
-    });
+    }, { passive: true });
     document.addEventListener("touchend", function(e) {
       var diff = touchStartX - e.changedTouches[0].screenX;
       if (Math.abs(diff) > 50) {
         diff > 0 ? nextSlide() : prevSlide();
       }
-    });
+    }, { passive: true });
 
     function initSidebarState() {
       if (window.innerWidth <= 768) {
