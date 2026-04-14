@@ -136,6 +136,14 @@ def _all_css(doc: Document) -> str:
     return "\n".join(block for block, _line in doc.style_blocks)
 
 
+def _all_css_with_override(doc: Document) -> str:
+    """Return ALL CSS including the theme-override block."""
+    parts = [block for block, _line in doc.style_blocks]
+    if doc.theme_override_css:
+        parts.append(doc.theme_override_css)
+    return "\n".join(parts)
+
+
 def _all_script(doc: Document) -> str:
     """Return all script content concatenated."""
     return "\n".join(block for block, _line in doc.script_blocks)
@@ -150,6 +158,11 @@ def _extract_root_block(css: str) -> str:
 def _css_outside_root(css: str) -> str:
     """Return CSS with :root { ... } blocks removed."""
     return re.sub(r':root\s*\{[^}]*\}', '', css, flags=re.DOTALL)
+
+
+def _css_outside_root_with_override(doc: Document) -> str:
+    """Return all CSS (including theme-override) with :root blocks removed."""
+    return _css_outside_root(_all_css_with_override(doc))
 
 
 def _has_class(elem: Element, cls: str) -> bool:
@@ -185,10 +198,12 @@ def _find_html_line(doc: Document, pattern: str) -> int:
 def check_colors(doc: Document) -> list[Result]:
     results: list[Result] = []
     css = _all_css(doc)
+    css_with_override = _all_css_with_override(doc)
     root_block = _extract_root_block(css)
-    outside_root = _css_outside_root(css)
+    outside_root = _css_outside_root_with_override(doc)
 
     # CLR-01: All 11 canonical variables present with correct hex
+    # (Only checks main style block :root — NOT theme-override)
     missing: list[str] = []
     wrong: list[str] = []
     for var_name, expected_hex in CANONICAL_COLORS.items():
@@ -211,7 +226,7 @@ def check_colors(doc: Document) -> list[Result]:
     else:
         results.append(Result("CLR-01", "PASS", "All 11 canonical palette variables present and correct", 0))
 
-    # CLR-02: Non-canonical hex outside :root
+    # CLR-02: Non-canonical hex outside :root (includes theme-override)
     hex_matches = re.findall(r'#[0-9a-fA-F]{3,8}\b', outside_root)
     non_canonical = [h for h in hex_matches if h.lower() not in CANONICAL_HEX_SET]
     if non_canonical:
@@ -221,8 +236,8 @@ def check_colors(doc: Document) -> list[Result]:
     else:
         results.append(Result("CLR-02", "PASS", "No non-canonical hex colors outside :root", 0))
 
-    # CLR-03: Specifically check for #c9a74a
-    if re.search(r'#c9a74a', css, re.IGNORECASE):
+    # CLR-03: Specifically check for #c9a74a (includes theme-override)
+    if re.search(r'#c9a74a', css_with_override, re.IGNORECASE):
         line = _find_css_line(doc, r'#c9a74a')
         results.append(Result("CLR-03", "FAIL", "Found deprecated color #c9a74a — use var(--muted-gold) instead", line))
     else:
@@ -231,16 +246,17 @@ def check_colors(doc: Document) -> list[Result]:
     # CLR-04: rgba is permitted (INFO)
     results.append(Result("CLR-04", "PASS", "rgba() usage is permitted", 0))
 
-    # CLR-05: .gold should use --muted-gold not --gold
-    gold_rule = re.search(r'\.gold\s*\{[^}]*color\s*:\s*var\(\s*--gold\s*\)', css, re.IGNORECASE)
+    # CLR-05: .gold should use --muted-gold not --gold (includes theme-override)
+    css_outside = _css_outside_root_with_override(doc)
+    gold_rule = re.search(r'\.gold\s*\{[^}]*color\s*:\s*var\(\s*--gold\s*\)', css_outside, re.IGNORECASE)
     if gold_rule:
         line = _find_css_line(doc, r'\.gold.*color.*var\(\s*--gold\s*\)')
         results.append(Result("CLR-05", "FAIL", ".gold text uses var(--gold) — should use var(--muted-gold) for contrast", line))
     else:
         results.append(Result("CLR-05", "PASS", ".gold text correctly uses var(--muted-gold)", 0))
 
-    # CLR-06: .accent should use --dark not --accent
-    accent_bad = re.search(r'\.accent\s*\{[^}]*color\s*:\s*var\(\s*--accent\s*\)', css, re.IGNORECASE)
+    # CLR-06: .accent should use --dark not --accent (includes theme-override)
+    accent_bad = re.search(r'\.accent\s*\{[^}]*color\s*:\s*var\(\s*--accent\s*\)', css_outside, re.IGNORECASE)
     if accent_bad:
         line = _find_css_line(doc, r'\.accent.*color.*var\(\s*--accent\s*\)')
         results.append(Result("CLR-06", "FAIL", ".accent text uses var(--accent) — should use var(--dark)", line))
@@ -254,8 +270,8 @@ def check_colors(doc: Document) -> list[Result]:
     else:
         results.append(Result("CLR-07", "PASS", "No hardcoded confetti colors found", 0))
 
-    # CLR-08: Check against prohibited colors
-    all_hex_in_css = re.findall(r'#[0-9a-fA-F]{3,8}\b', css)
+    # CLR-08: Check against prohibited colors (includes theme-override)
+    all_hex_in_css = re.findall(r'#[0-9a-fA-F]{3,8}\b', css_with_override)
     prohibited_lower = {p.lower() for p in PROHIBITED_COLORS}
     prohibited_found = [h for h in all_hex_in_css if h.lower() in prohibited_lower]
     if prohibited_found:
@@ -356,8 +372,16 @@ def check_accessibility(doc: Document) -> list[Result]:
         has_tablist = any(e.attrs.get("role") == "tablist" for e in doc.elements)
         has_tab_role = any(e.attrs.get("role") == "tab" for e in doc.elements)
         has_tabpanel = any(e.attrs.get("role") == "tabpanel" for e in doc.elements)
-        has_aria_selected = 'aria-selected' in raw
-        has_aria_controls_tabs = 'aria-controls' in raw
+        has_aria_selected = any(
+            'aria-selected' in e.attrs
+            for e in doc.elements
+            if e.attrs.get("role") == "tab" or _has_class(e, "tab-btn")
+        )
+        has_aria_controls_tabs = any(
+            'aria-controls' in e.attrs
+            for e in doc.elements
+            if e.attrs.get("role") == "tab" or _has_class(e, "tab-btn")
+        )
         if has_tablist and has_tab_role and has_tabpanel and has_aria_selected and has_aria_controls_tabs:
             results.append(Result(_acc(1), "PASS", _a11y_msg(1, "Tab ARIA roles and attributes present"), 0))
         else:
@@ -579,7 +603,10 @@ def check_navigation(doc: Document) -> list[Result]:
         results.append(Result("NAV-01", "FAIL", "No const/let declarations found — avoid var", 0))
 
     # NAV-02: Video pause on slide change
-    if '.pause()' in js:
+    video_count = sum(1 for e in doc.elements if e.tag == "video")
+    if video_count == 0:
+        results.append(Result("NAV-02", "PASS", "No videos found (auto-pass)", 0))
+    elif '.pause()' in js:
         results.append(Result("NAV-02", "PASS", "Video pause on navigation detected", 0))
     else:
         results.append(Result("NAV-02", "FAIL", "No .pause() call found — videos may continue on slide change", 0))
@@ -686,7 +713,7 @@ def check_theme(doc: Document) -> list[Result]:
 # ---------------------------------------------------------------------------
 def check_mobile(doc: Document) -> list[Result]:
     results: list[Result] = []
-    css = _all_css(doc)
+    css = _all_css_with_override(doc)
     js = _all_script(doc)
 
     # MOB-01: Danger card hover/click
@@ -838,22 +865,12 @@ def check_reduced_motion(doc: Document) -> list[Result]:
         results.append(Result("RDM-04", "PASS", "No sound functions (auto-pass)", 0))
 
     # RDM-05: .confetti display none in reduced motion CSS block
-    reduced_css = ""
-    reduced_blocks = re.findall(
-        r'@media\s*\(\s*prefers-reduced-motion\s*:\s*reduce\s*\)\s*\{(.*?)\}(?:\s*\})?',
-        css, re.DOTALL,
-    )
-    reduced_css = ' '.join(reduced_blocks)
-    if '.confetti' in reduced_css and 'display' in reduced_css:
-        results.append(Result("RDM-05", "PASS", "Confetti hidden in reduced motion mode", 0))
-    elif 'confetti' not in js.lower() and '.confetti' not in css:
+    if 'confetti' not in js.lower() and '.confetti' not in css:
         results.append(Result("RDM-05", "PASS", "No confetti feature (auto-pass)", 0))
+    elif re.search(r'prefers-reduced-motion.*?\.confetti.*?display\s*:\s*none', css, re.DOTALL):
+        results.append(Result("RDM-05", "PASS", "Confetti hidden in reduced motion mode", 0))
     else:
-        # Broader search — the closing brace matching can be tricky
-        if re.search(r'prefers-reduced-motion.*?\.confetti.*?display\s*:\s*none', css, re.DOTALL):
-            results.append(Result("RDM-05", "PASS", "Confetti hidden in reduced motion mode", 0))
-        else:
-            results.append(Result("RDM-05", "FAIL", "Confetti not hidden in prefers-reduced-motion block", 0))
+        results.append(Result("RDM-05", "FAIL", "Confetti not hidden in prefers-reduced-motion block", 0))
 
     # RDM-06: Reduced motion check near startViewTransition
     if 'startViewTransition' in js:
