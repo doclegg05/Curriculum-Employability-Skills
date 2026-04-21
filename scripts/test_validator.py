@@ -243,5 +243,76 @@ class TestCLR05Boundaries(unittest.TestCase):
         )
 
 
+class TestCLR07ProximityCheck(unittest.TestCase):
+    """Regression tests for CLR-07 proximity-constrained confetti hex check (Fixer-VAL-H)."""
+
+    def _load_mod(self):
+        import importlib.util
+        spec = importlib.util.spec_from_file_location(
+            "validate_lesson", Path(__file__).parent / "validate-lesson.py"
+        )
+        mod = importlib.util.module_from_spec(spec)
+        spec.loader.exec_module(mod)
+        return mod
+
+    def _run_clr07(self, js_fragment: str) -> str:
+        """Return the CLR-07 status for a minimal HTML doc with the given JS."""
+        mod = self._load_mod()
+        html = f"""<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Test</title>
+<style>
+:root {{
+  --primary: #007baf; --accent: #37b550; --dark: #004071; --light: #ffffff;
+  --muted: #edf3f7; --gray: #60636b; --gold: #d3b257; --royal: #00133f;
+  --mauve: #a7253f; --offwhite: #d1d3d4; --muted-gold: #ad8806;
+  --font-heading: "DM Serif Display", serif; --font-body: "Outfit", sans-serif;
+}}
+</style>
+</head>
+<body>
+<script>
+{js_fragment}
+</script>
+</body>
+</html>"""
+        doc = mod.parse_document(html)
+        results = mod.check_colors(doc)
+        clr07 = [r for r in results if r.rule_id == "CLR-07"]
+        self.assertEqual(len(clr07), 1, "CLR-07 result should always be emitted")
+        return clr07[0].status
+
+    def test_clr07_catches_confetti_with_nearby_hex(self):
+        """CLR-07 must WARN when a hex literal appears within the confetti function body."""
+        js = "function triggerConfetti() { const colors = ['#ff0000', '#00ff00']; }"
+        status = self._run_clr07(js)
+        self.assertEqual(
+            status, "WARN",
+            "CLR-07 should WARN: hex literals are within 200 chars of 'confetti'"
+        )
+
+    def test_clr07_ignores_distant_hex(self):
+        """CLR-07 must PASS when the hex literal is 500+ chars away from 'confetti'."""
+        # The two functions are separated by a long comment (>200 chars, no hex in between).
+        separator = "// " + ("x" * 500)
+        js = f"function triggerConfetti() {{ doSomething(); }}\n{separator}\nfunction quiz() {{ const answers = ['#abc']; }}"
+        status = self._run_clr07(js)
+        self.assertEqual(
+            status, "PASS",
+            "CLR-07 should PASS: '#abc' is more than 200 chars away from 'confetti'"
+        )
+
+    def test_clr07_catches_existing_pattern(self):
+        """CLR-07 must still WARN for the canonical bad pattern: confetti called with colors array."""
+        js = "confetti({ colors: ['#e63946', '#457b9d', '#a8dadc'] });"
+        status = self._run_clr07(js)
+        self.assertEqual(
+            status, "WARN",
+            "CLR-07 should WARN: hex literals inside confetti() call"
+        )
+
+
 if __name__ == "__main__":
     unittest.main()

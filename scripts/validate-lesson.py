@@ -279,9 +279,13 @@ def check_colors(doc: Document) -> list[Result]:
     else:
         results.append(Result("CLR-06", "PASS", ".accent text correctly uses var(--dark)", 0))
 
-    # CLR-07: Confetti hex arrays in script
+    # CLR-07: Confetti hex arrays in script — proximity-constrained to avoid false
+    # positives from unrelated hex values (e.g. quiz answer arrays) that happen to
+    # appear in the same file as a confetti function elsewhere.  The pattern requires
+    # the hex literal to appear within ~200 chars of the word "confetti" without
+    # crossing a statement boundary (;).
     all_js = _all_script(doc)
-    if re.search(r'confetti', all_js, re.IGNORECASE) and re.search(r'\[.*#[0-9a-fA-F]{3,8}', all_js):
+    if re.search(r'confetti[^;]{0,200}#[0-9a-fA-F]{3,8}', all_js, re.IGNORECASE | re.DOTALL):
         results.append(Result("CLR-07", "WARN", "Hardcoded hex colors found in confetti script block", 0))
     else:
         results.append(Result("CLR-07", "PASS", "No hardcoded confetti colors found", 0))
