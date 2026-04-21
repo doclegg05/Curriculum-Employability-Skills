@@ -159,5 +159,89 @@ class TestValidatorOutput(unittest.TestCase):
         self.assertIn("v1.0", stdout)
 
 
+class TestCLR05Boundaries(unittest.TestCase):
+    """Regression tests for CLR-05 class and property boundary fixes (Fixer-VAL-2)."""
+
+    def _run_check_on_css(self, css_fragment: str) -> list:
+        """Return CLR-05 results for a minimal HTML doc containing the given CSS."""
+        import importlib.util
+        spec = importlib.util.spec_from_file_location(
+            "validate_lesson", Path(__file__).parent / "validate-lesson.py"
+        )
+        mod = importlib.util.module_from_spec(spec)
+        spec.loader.exec_module(mod)
+        parse_document = mod.parse_document
+        check_colors = mod.check_colors
+
+        html = f"""<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Test</title>
+<style>
+:root {{
+  --primary: #007baf;
+  --accent: #37b550;
+  --dark: #004071;
+  --light: #ffffff;
+  --muted: #edf3f7;
+  --gray: #60636b;
+  --gold: #d3b257;
+  --royal: #00133f;
+  --mauve: #a7253f;
+  --offwhite: #d1d3d4;
+  --muted-gold: #ad8806;
+  --font-heading: "DM Serif Display", serif;
+  --font-body: "Outfit", sans-serif;
+}}
+{css_fragment}
+</style>
+</head>
+<body></body>
+</html>"""
+        doc = parse_document(html)
+        return [r for r in check_colors(doc) if r.rule_id == "CLR-05"]
+
+    def test_clr05_ignores_gold_border_class(self):
+        """CLR-05 must PASS for .card.gold-border {{ border-left-color: var(--gold); }}."""
+        css = ".card.gold-border { border-left-color: var(--gold); }"
+        results = self._run_check_on_css(css)
+        self.assertEqual(len(results), 1)
+        self.assertEqual(
+            results[0].status, "PASS",
+            "CLR-05 should PASS: .gold-border is not .gold, and border-left-color is not color"
+        )
+
+    def test_clr05_ignores_gold_card_descendant_background(self):
+        """.area-card.gold-card .area-icon {{ background-color: var(--gold); }} must PASS CLR-05."""
+        css = ".area-card.gold-card .area-icon { background-color: var(--gold); }"
+        results = self._run_check_on_css(css)
+        self.assertEqual(len(results), 1)
+        self.assertEqual(
+            results[0].status, "PASS",
+            "CLR-05 should PASS: background-color is not color"
+        )
+
+    def test_clr05_still_catches_plain_gold_selector(self):
+        """.gold {{ color: var(--gold); }} must still FAIL CLR-05."""
+        css = ".gold { color: var(--gold); }"
+        results = self._run_check_on_css(css)
+        self.assertEqual(len(results), 1)
+        self.assertEqual(
+            results[0].status, "FAIL",
+            "CLR-05 should FAIL: .gold with color: var(--gold)"
+        )
+
+    def test_clr05_still_catches_comma_grouped_gold_selector(self):
+        """.gold, .highlight {{ color: var(--gold); }} must still FAIL CLR-05."""
+        css = ".gold, .highlight { color: var(--gold); }"
+        results = self._run_check_on_css(css)
+        self.assertEqual(len(results), 1)
+        self.assertEqual(
+            results[0].status, "FAIL",
+            "CLR-05 should FAIL: comma-grouped .gold, .highlight with color: var(--gold)"
+        )
+
+
 if __name__ == "__main__":
     unittest.main()

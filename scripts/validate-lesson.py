@@ -252,20 +252,29 @@ def check_colors(doc: Document) -> list[Result]:
     results.append(Result("CLR-04", "PASS", "rgba() usage is permitted", 0))
 
     # CLR-05: .gold should use --muted-gold not --gold (includes theme-override)
-    # Use [^{]* instead of \s* so comma-grouped selectors like `.gold, .highlight {` are caught.
+    # \.gold(?![\w-]) ensures .gold-border etc. are not matched (class boundary).
+    # (?:^|[;{\s])color\s*: ensures only the 'color' property is matched, not
+    # border-color / border-left-color / background-color etc. (property boundary).
     css_outside = _css_outside_root_with_override(doc)
-    gold_rule = re.search(r'\.gold[^{]*\{[^}]*color\s*:\s*var\(\s*--gold\s*\)', css_outside, re.IGNORECASE)
+    gold_rule = re.search(
+        r'\.gold(?![\w-])[^{]*\{[^}]*(?:^|[;{\s])color\s*:\s*var\(\s*--gold\s*\)',
+        css_outside, re.IGNORECASE | re.MULTILINE
+    )
     if gold_rule:
-        line = _find_css_line(doc, r'\.gold.*color.*var\(\s*--gold\s*\)')
+        line = _find_css_line(doc, r'\.gold(?![\w-]).*color.*var\(\s*--gold\s*\)')
         results.append(Result("CLR-05", "FAIL", ".gold text uses var(--gold) — should use var(--muted-gold) for contrast", line))
     else:
         results.append(Result("CLR-05", "PASS", ".gold text correctly uses var(--muted-gold)", 0))
 
     # CLR-06: .accent should use --dark not --accent (includes theme-override)
-    # Use [^{]* instead of \s* so comma-grouped selectors are caught.
-    accent_bad = re.search(r'\.accent[^{]*\{[^}]*color\s*:\s*var\(\s*--accent\s*\)', css_outside, re.IGNORECASE)
+    # Same dual-boundary approach: \.accent(?![\w-]) for class boundary,
+    # (?:^|[;{\s])color\s*: for property boundary.
+    accent_bad = re.search(
+        r'\.accent(?![\w-])[^{]*\{[^}]*(?:^|[;{\s])color\s*:\s*var\(\s*--accent\s*\)',
+        css_outside, re.IGNORECASE | re.MULTILINE
+    )
     if accent_bad:
-        line = _find_css_line(doc, r'\.accent.*color.*var\(\s*--accent\s*\)')
+        line = _find_css_line(doc, r'\.accent(?![\w-]).*color.*var\(\s*--accent\s*\)')
         results.append(Result("CLR-06", "FAIL", ".accent text uses var(--accent) — should use var(--dark)", line))
     else:
         results.append(Result("CLR-06", "PASS", ".accent text correctly uses var(--dark)", 0))
