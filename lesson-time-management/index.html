@@ -690,7 +690,7 @@
       color: rgba(255, 255, 255, 0.7);
       border: 1.5px solid rgba(255, 255, 255, 0.4);
       border-radius: 4px;
-      padding: 4px 10px;
+      padding: 6px 12px;
       font-family: var(--font-body);
       font-size: 0.75rem;
       font-weight: 700;
@@ -698,7 +698,7 @@
       cursor: pointer;
       transition: all 0.2s ease;
       min-width: 44px;
-      min-height: 32px;
+      min-height: 44px;
       display: flex;
       align-items: center;
       justify-content: center;
@@ -2205,9 +2205,9 @@
 
     <!-- Navigation Hint -->
     <div class="nav-hint" role="navigation" aria-label="Slide navigation controls">
-      <span class="key-icon" id="prevBtn" onclick="prevSlide()" role="button" tabindex="0" aria-label="Previous slide">&#8592;</span>
+      <button type="button" class="key-icon" id="prevBtn" onclick="prevSlide()" aria-label="Previous slide">&#8592;</button>
       <span>to navigate</span>
-      <span class="key-icon" id="nextBtn" onclick="nextSlide()" role="button" tabindex="0" aria-label="Next slide">&#8594;</span>
+      <button type="button" class="key-icon" id="nextBtn" onclick="nextSlide()" aria-label="Next slide">&#8594;</button>
     </div>
 
     <!-- Branding Logo -->
@@ -2420,18 +2420,17 @@
   function nextSlide() { showSlide(currentIndex + 1); }
   function prevSlide() { showSlide(currentIndex - 1); }
 
-  document.addEventListener('keydown', e => {
+  document.addEventListener('keydown', (e) => {
     const target = e.target;
-    if (!target) return;
-    const isFormField = target.closest('input, textarea, select, [contenteditable="true"]');
+    const isFormField = target && target.closest('input, textarea, select, [contenteditable="true"]');
     if (isFormField) return;
     if (e.defaultPrevented) return;
-
-    const isInteractive = target.closest('button, a, input, textarea, select, [role="button"], [role="tab"], .checkpoint-option, .accordion-btn');
-
-    // Space should not navigate when focused on an interactive element
+    // Only suppress arrow keys for elements that use them internally (tabs)
+    const usesArrowKeys = target && target.closest('[role="tab"]');
+    if (usesArrowKeys && (e.key === 'ArrowRight' || e.key === 'ArrowLeft')) return;
+    // Suppress space only on focusable interactive elements (buttons, links, etc.)
+    const isInteractive = target && target.closest('button, a, [role="button"], [role="tab"]');
     if (isInteractive && e.key === ' ') return;
-
     if (e.key === 'ArrowRight') { e.preventDefault(); nextSlide(); }
     else if (e.key === 'ArrowLeft') { e.preventDefault(); prevSlide(); }
     else if (e.key === ' ') { e.preventDefault(); nextSlide(); }
