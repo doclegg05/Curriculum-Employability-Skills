@@ -2,6 +2,8 @@
 
 You are building an interactive HTML slideshow presentation for **SPOKES** (Strategic Planning in Occupational Knowledge for Employment and Success — Skills for Life), a WV Adult Basic Education program.
 
+> **Design rules are defined in `SPOKES-STANDARD.md` (project root).** This file covers the build process only. If this file and SPOKES-STANDARD.md conflict, the standard wins.
+
 ## What You Build
 
 A **single self-contained `index.html` file** that is a fully interactive classroom presentation. No build tools, no frameworks, no external dependencies beyond Google Fonts. The CSS and JavaScript are embedded in the file.
@@ -14,7 +16,7 @@ These files are in this directory (`SPOKES Builder/`):
 
 | File                          | Purpose                                                                                         |
 | ----------------------------- | ----------------------------------------------------------------------------------------------- |
-| `brand-palette.md`            | **CANONICAL** source of truth for all 11 SPOKES brand colors. Every other file must match this. |
+| `brand-palette.md`            | **ARCHIVED** — absorbed into `SPOKES-STANDARD.md` (project root). Kept for historical reference only. |
 | `template.html`               | Base skeleton HTML with all CSS/JS intact. Copy this and fill in content.                       |
 | `components.md`               | Copy-paste HTML patterns for every slide type and component.                                    |
 | `build-process.md`            | Step-by-step workflow, WIPPEA mapping, and verification checklist.                              |
@@ -23,17 +25,18 @@ These files are in this directory (`SPOKES Builder/`):
 
 ## Design Philosophy
 
-Each SPOKES lesson must be **visually distinct** from every other lesson while staying within the brand. Think of it like PowerPoint Slide Masters — the same guardrails, but no two presentations look alike.
+Each SPOKES lesson has a unique visual identity created by the **two-layer theme system**:
 
-Visual identity comes from **Combinatorial Design**:
+- **Layer 1 (Lesson Identity):** Color lead, sidebar color, background texture, title slide design, and font pairing stay constant across the entire lesson.
+- **Layer 2 (Chapter Variation):** Card styles, section divider styles, lead components, and secondary accents rotate between chapters for visual freshness.
 
-1. **Template variant selection** (3-4 distinct layout styles)
-2. **Combinatorics (Backgrounds & Textures)** (Adding subtle CSS textures to the `.main` background via CSS overrides)
-3. **Google Font pairings** (unique heading + body fonts per lesson)
-4. **Accent emphasis shifts** (which of the 7 core brand colors gets featured most)
-5. **Component selection** (different mix of cards-grid, takeaways, split-layout, etc.)
+Theme packages are pre-defined in `theme-registry.json` and pre-approved in bulk. The agent applies the assigned package — no design proposals or approval loops at build time.
 
-**NEVER introduce colors outside the 11 approved brand colors (see `brand-palette.md`).** See `AGENT_THEMING_GUIDELINES.md` for the full palette.
+**Reference files:**
+- `theme-registry.json` — Per-lesson theme assignments
+- `theme-library.css` — All reusable CSS snippets
+- `SPOKES-STANDARD.md` (project root) — Canonical 11-color system and all design rules
+- `font-pairings.md` — Pre-curated font library
 
 ## Build Process (10 Steps)
 
@@ -64,23 +67,28 @@ Additional Presentation chapters (P4, P5, etc.) may be added if the lesson has m
 
 **Target: 25-35 slides total.**
 
-### Step 3: Select Template Variant & Font Pairing
+### Step 3: Read Theme Package
 
-Before building:
-
-1. Review existing lessons to see which template variants are in use
-2. Select a variant that creates visual contrast with adjacent lessons
-3. **Propose a Google Font pairing to the user for approval**
-4. Do not proceed until the font pairing is approved
+1. Look up the lesson in `theme-registry.json`
+2. Read Layer 1 properties: colorLead, sidebarColor, backgroundTexture, titleSlide, fontPairing
+3. Read Layer 2 chapterStyles: per-chapter divider, cards, leadComponent, secondaryAccent
+4. If the lesson is not in the registry, STOP — do not build without a theme package
 
 ### Step 4: Copy Template & Apply Theme
 
 1. Copy `template.html` to the new project directory as `index.html`
-2. Add lesson-specific Google Font `<link>` tags in `<head>`
-3. Add a `<style id="theme-override">` block **AFTER** the main CSS block with:
+2. Add lesson-specific Google Font `<link>` tags in `<head>` (look up import URL in `font-pairings.md`)
+3. Generate a `<style id="theme-override">` block AFTER the main CSS block by assembling snippets from `theme-library.css`:
    - Font family overrides
-   - Combinatorial design overrides (Subtle CSS pattern backgrounds on `.main`, or card shadow/border variations)
-   - Video placeholder CSS (from `AGENT_THEMING_GUIDELINES.md`)
+   - Background texture for the assigned `backgroundTexture`
+   - Color lead overrides for the assigned `colorLead`
+   - Sidebar color override if `sidebarColor` is "royal"
+   - Dark theme inversion if `backgroundTexture` is "dark-royal" (add `class="theme-dark"` to `.main`)
+   - Title slide design CSS for the assigned `titleSlide`
+   - Per-chapter card style CSS scoped to `[data-chapter="N"]` (replace SCOPE prefix)
+   - Per-chapter section divider CSS scoped to `.slide-section[data-chapter="N"]` (replace DIVIDER_SCOPE prefix)
+   - Per-chapter secondary accent overrides
+   - Video placeholder CSS
 
 ### Step 5: Fill in Lesson Metadata
 
@@ -142,7 +150,7 @@ Use the preview server to confirm:
 - Download links work
 - Closing slide triggers confetti
 - No console errors
-- **No off-brand colors** — check all CSS values against the 11-color palette in `brand-palette.md`
+- **No off-brand colors** — check all CSS values against the 11-color palette in `SPOKES-STANDARD.md`
 
 ## Component Selection Decision Guide
 
@@ -165,29 +173,7 @@ Simple arrow-pointed list?             --> content-list
 
 ## Design System Rules
 
-### Colors — 11-Color Strict Palette
-
-> **Canonical source:** `brand-palette.md` — all hex values, contrast ratios, and prohibited colors are defined there. If this summary and `brand-palette.md` diverge, the palette file wins.
-
-7 core colors (`--primary`, `--accent`, `--dark`, `--light`, `--muted`, `--gray`, `--gold`) + 4 extended (`--royal`, `--mauve`, `--offwhite`, `--muted-gold`). No other colors permitted. See `brand-palette.md` for exact hex values, safe text/background combinations, and the full prohibited list.
-
-### Typography
-
-- **Default Headings:** `'DM Serif Display', serif`
-- **Default Body:** `'Outfit', sans-serif`
-- Each lesson overrides these with its own approved font pairing
-- **h1:** 5rem (title slide only)
-- **h2:** 3.5rem (slide titles) or 4rem (section dividers) or 4.5rem (big-statement)
-- **Body text:** 1.25rem-2rem depending on component
-
-### Text Highlighting
-
-Use `<span>` with these classes inside paragraphs:
-
-- `<span class="highlight">blue emphasis</span>`
-- `<span class="accent">green emphasis</span>`
-- `<span class="gold">gold emphasis</span>`
-- `<span class="mauve">mauve emphasis</span>`
+See `SPOKES-STANDARD.md` for the complete rule inventory covering colors (Section 1), typography (Section 2), accessibility (Section 3), components (Section 4), navigation engine (Section 5), theme system (Section 6), mobile/touch (Section 7), performance (Section 8), engagement (Section 9), and reduced motion (Section 10).
 
 ### Global Design Standards
 
@@ -200,20 +186,18 @@ All animations are automatic via CSS. No JS needed. Each component type has stag
 
 ## Important Rules
 
-1. **Single file.** All CSS and JS must be inside `index.html`. No external stylesheets or scripts.
-2. **Copy CSS/JS verbatim.** The `<style>` and `<script>` blocks in `template.html` are the standard. Do not modify the main block.
-3. **Theme override placement.** The `<style id="theme-override">` block goes **AFTER** the main CSS block, not before it.
-4. **Brand colors only.** All 11 CSS variables stay as defined. No additional color variables.
-5. **The only JS you change** is the `chapterNames` object to match the lesson's chapter names.
-6. **data-chapter must be sequential** starting from 1. The sidebar builds itself from these attributes.
-7. **First slide** must be `slide-title` with `active` class and `data-chapter="1"`.
-8. **Last slide** must be `slide-closing` with `id="closingSlide"`.
-9. **Every chapter** must start with a `slide-section` divider.
-10. **Videos** — if a video file is provided, download it to the `videos/` folder and embed it using an HTML5 `<video>` tag. If no video is provided, use the video placeholder component.
-11. **SPOKES-Logo.png** must be in the project root (same directory as index.html).
-12. **File paths in links** must be relative to index.html (e.g., `Handouts/file.pdf`).
-13. **File nesting** must not exceed 3 levels from project root.
-14. **Font pairings require user approval** before applying to any lesson.
+Design constraints are in `SPOKES-STANDARD.md`. Build-process-specific rules:
+
+1. **The only JS you change** is the `chapterNames` object to match the lesson's chapter names.
+2. **data-chapter must be sequential** starting from 1. The sidebar builds itself from these attributes.
+3. **First slide** must be `slide-title` with `active` class and `data-chapter="1"`.
+4. **Last slide** must be `slide-closing` with `id="closingSlide"`.
+5. **Every chapter** must start with a `slide-section` divider.
+6. **Videos** — if a video file is provided, download it to the `videos/` folder and embed it using an HTML5 `<video>` tag. If no video is provided, use the video placeholder component.
+7. **SPOKES-Logo.png** must be in the project root (same directory as index.html).
+8. **File paths in links** must be relative to index.html (e.g., `Handouts/file.pdf`).
+9. **File nesting** must not exceed 3 levels from project root.
+10. **Font pairings require user approval** before applying to any lesson.
 
 ## File Naming Conventions
 

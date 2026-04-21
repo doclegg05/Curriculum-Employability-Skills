@@ -1,0 +1,801 @@
+/* ==========================================================================
+   SPOKES Two-Layer Theme System — CSS Library
+   ==========================================================================
+
+   This file is the central reference for the SPOKES two-layer theme system.
+   Agents copy relevant sections into <style id="theme-override"> blocks
+   when building or restyling lesson HTML files.
+
+   SCOPE prefix mechanism:
+     When building a theme-override block, agents replace the literal text
+     SCOPE with [data-chapter="N"] to target chapter-level styles.
+     Example:  SCOPE .slide h2  -->  [data-chapter="3"] .slide h2
+
+   DIVIDER_SCOPE prefix mechanism:
+     Agents replace the literal text DIVIDER_SCOPE with
+     .slide-section[data-chapter="N"] to target section dividers.
+     Example:  DIVIDER_SCOPE .divider-title  -->  .slide-section[data-chapter="2"] .divider-title
+
+   Brand palette variables (defined in template.html :root):
+     --primary   #007baf
+     --accent    #37b550
+     --dark      #004071
+     --light     #FFFFFF
+     --muted     #EDF3F7
+     --gray      #60636b
+     --gold      #d3b257
+     --royal     #00133f
+     --mauve     #a7253f
+     --offwhite  #d1d3d4
+     --muted-gold #ad8806
+
+   No other colors are permitted.
+   ========================================================================== */
+
+
+/* ==========================================================================
+   BACKGROUND TEXTURES
+   --------------------------------------------------------------------------
+   Six texture options. Each is wrapped in comments. Agents uncomment the
+   one they need and place it inside a <style id="theme-override"> block.
+   The "plain" texture uses var(--light) which is already the default, so
+   no override is needed — it is listed here only for completeness.
+   ========================================================================== */
+
+/* --- plain --- */
+/* Default background. No override needed.
+   .main {
+     background: var(--light);
+   }
+*/
+
+/* --- dot-grid --- */
+/* .main {
+     background-color: var(--light);
+     background-image: radial-gradient(rgba(0,123,175,0.08) 1px, transparent 1px);
+     background-size: 16px 16px;
+   }
+*/
+
+/* --- diagonal --- */
+/* .main {
+     background-color: var(--light);
+     background-image: repeating-linear-gradient(45deg, rgba(211,178,87,0.05), rgba(211,178,87,0.05) 1px, transparent 1px, transparent 14px);
+   }
+*/
+
+/* --- crosshatch --- */
+/* .main {
+     background-color: var(--muted);
+     background-image: linear-gradient(rgba(0,64,113,0.04) 1px, transparent 1px), linear-gradient(90deg, rgba(0,64,113,0.04) 1px, transparent 1px);
+     background-size: 24px 24px;
+   }
+*/
+
+/* --- soft-gradient --- */
+/* .main {
+     background: linear-gradient(180deg, var(--light) 0%, var(--muted) 100%);
+   }
+*/
+
+/* --- dark-royal --- */
+/* .main {
+     background-color: var(--royal);
+     background-image: repeating-linear-gradient(45deg, rgba(211,178,87,0.03), rgba(211,178,87,0.03) 1px, transparent 1px, transparent 20px);
+   }
+*/
+
+
+/* ==========================================================================
+   DARK THEME INVERSION
+   --------------------------------------------------------------------------
+   Live CSS — included directly when the dark-royal texture is active.
+   Apply the .theme-dark class to the container element so these selectors
+   take effect. Overrides text to var(--light) and adjusts card/component
+   backgrounds for readability on dark surfaces.
+   ========================================================================== */
+
+/* --- Text color overrides --- */
+.theme-dark .slide h2,
+.theme-dark .slide h3,
+.theme-dark .slide p,
+.theme-dark .card h4,
+.theme-dark .card p,
+.theme-dark .smart-content h4,
+.theme-dark .smart-content p,
+.theme-dark .area-card ul li,
+.theme-dark .takeaway-item p,
+.theme-dark .activity-box p,
+.theme-dark .matrix-label,
+.theme-dark .matrix-desc,
+.theme-dark ul.content-list li {
+  color: var(--light);
+}
+
+/* --- Card / component backgrounds --- */
+.theme-dark .card,
+.theme-dark .smart-content,
+.theme-dark .matrix-cell {
+  background: rgba(237,243,247,0.08);
+  border-color: rgba(255,255,255,0.1);
+}
+
+/* --- Activity box --- */
+.theme-dark .activity-box {
+  background: rgba(211,178,87,0.08);
+  border-color: rgba(211,178,87,0.3);
+}
+
+/* --- Download prompt --- */
+.theme-dark .download-resource .download-prompt {
+  color: rgba(255,255,255,0.7);
+}
+
+
+/* ==========================================================================
+   COLOR LEADS
+   --------------------------------------------------------------------------
+   Nine color-lead options. Each is a COMMENTED CSS block. Agents uncomment
+   the one matching the lesson's lead color and place the rules inside a
+   <style id="theme-override"> block. The "blue" lead is the default palette
+   so it requires minimal overrides — it is listed here for completeness.
+   ========================================================================== */
+
+/* IMPORTANT: Every color lead MUST include these two lines after the
+   .slide-section background to preserve white text on dark dividers:
+     .slide-section h2 { color: var(--light); }
+     .slide-section .chapter-label { color: rgba(255,255,255,0.7); }
+   Without these, the .slide h2 color lead override (same specificity as
+   the base .slide-section h2) wins by cascade order, causing low-contrast
+   heading text on gradient divider backgrounds. */
+
+/* --- blue (default — minimal overrides needed) --- */
+/* .slide h2 { color: var(--primary); }
+   .download-btn { background: var(--primary); }
+   .chapter-item.active > .chapter-header { background: rgba(0,123,175,0.25); }
+   .divider { background: linear-gradient(90deg, var(--primary), var(--gold)); }
+   .slide-section { background: linear-gradient(135deg, var(--primary), var(--dark)); }
+   .slide-section h2 { color: var(--light); }
+   .slide-section .chapter-label { color: rgba(255,255,255,0.7); } */
+
+/* --- mauve --- */
+/* .slide h2 { color: var(--mauve); }
+   .download-btn { background: var(--mauve); }
+   .download-btn:hover { background: #8b1e33; }
+   .chapter-item.active > .chapter-header { background: rgba(167,37,63,0.25); }
+   .divider { background: linear-gradient(90deg, var(--mauve), var(--gold)); }
+   .slide-section { background: linear-gradient(135deg, var(--mauve), var(--royal)); } */
+
+/* --- gold --- */
+/* .slide h2 { color: var(--muted-gold); }
+   .download-btn { background: var(--muted-gold); }
+   .download-btn:hover { background: #8a6d04; }
+   .chapter-item.active > .chapter-header { background: rgba(211,178,87,0.2); }
+   .divider { background: linear-gradient(90deg, var(--gold), var(--primary)); }
+   .slide-section { background: linear-gradient(135deg, var(--muted-gold), var(--dark)); } */
+
+/* --- green --- */
+/* .slide h2 { color: var(--primary); }
+   .download-btn { background: var(--accent); }
+   .chapter-item.active > .chapter-header { background: rgba(55,181,80,0.2); }
+   .sidebar .sidebar-title { color: var(--accent); }
+   .divider { background: linear-gradient(90deg, var(--accent), var(--gold)); }
+   .slide-section { background: linear-gradient(135deg, var(--accent), var(--dark)); } */
+
+/* --- royal --- */
+/* .main { background-color: var(--muted); }
+   .slide h2 { color: var(--royal); }
+   .download-btn { background: var(--royal); color: var(--gold); }
+   .chapter-item.active > .chapter-header { background: rgba(0,19,63,0.3); }
+   .divider { background: linear-gradient(90deg, var(--royal), var(--gold)); }
+   .slide-section { background: linear-gradient(135deg, var(--royal), var(--dark)); } */
+
+/* --- dual-mauve-blue --- */
+/* .slide h2 { color: var(--mauve); }
+   .slide h3 { color: var(--primary); }
+   .download-btn { background: var(--primary); }
+   .divider { background: linear-gradient(90deg, var(--mauve), var(--primary)); }
+   .slide-section { background: linear-gradient(135deg, var(--mauve), var(--primary)); } */
+
+/* --- dual-gold-green --- */
+/* .slide h2 { color: var(--muted-gold); }
+   .slide h3 { color: var(--primary); }
+   .download-btn { background: var(--accent); }
+   .divider { background: linear-gradient(90deg, var(--gold), var(--accent)); }
+   .slide-section { background: linear-gradient(135deg, var(--gold), var(--accent)); } */
+
+/* --- dual-mauve-gold --- */
+/* .slide h2 { color: var(--mauve); }
+   .slide h3 { color: var(--muted-gold); }
+   .download-btn { background: var(--mauve); }
+   .divider { background: linear-gradient(90deg, var(--mauve), var(--gold)); }
+   .slide-section { background: linear-gradient(135deg, var(--mauve), var(--gold)); } */
+
+/* --- dual-blue-green --- */
+/* .slide h2 { color: var(--primary); }
+   .slide h3 { color: var(--primary); }
+   .download-btn { background: var(--accent); }
+   .divider { background: linear-gradient(90deg, var(--primary), var(--accent)); }
+   .slide-section { background: linear-gradient(135deg, var(--primary), var(--accent)); } */
+
+
+/* ==========================================================================
+   SIDEBAR COLORS
+   --------------------------------------------------------------------------
+   Two sidebar background options. Agents uncomment the desired option.
+   The "dark" sidebar is the default, so no override is needed — it is
+   listed here for completeness.
+   ========================================================================== */
+
+/* --- dark (default) --- */
+/* .sidebar { background: var(--dark); } */
+
+/* --- royal --- */
+/* .sidebar { background: var(--royal); } */
+
+
+/* ==========================================================================
+   CARD STYLES
+   --------------------------------------------------------------------------
+   Eight card-style options. Each is a COMMENTED CSS block using the SCOPE
+   prefix. When an agent builds a theme-override, it replaces the literal
+   text SCOPE with [data-chapter="N"] for the assigned chapter.
+   Example:  SCOPE .card  -->  [data-chapter="3"] .card
+
+   Every card style overrides ALL of the following component selectors:
+     cards-grid    .card, .card.gold-border
+     takeaways     .takeaway-num, .takeaway-num.alt
+     smart-stack   .smart-letter, .smart-letter.alt, .smart-content
+     matrix-grid   .matrix-cell (.do-first, .schedule, .delegate, .eliminate)
+     dangers-grid  .danger-card-front, .danger-card-back
+     areas-grid    .area-card, .area-card.gold-card
+     activity-box  .activity-box
+     download      .download-btn
+   ========================================================================== */
+
+
+/* --- 1. left-border (default — template matches this already) --- */
+/* No overrides needed — this is the template default. */
+
+
+/* --- 2. shadow-float --- */
+/*
+   SCOPE .card {
+     background: var(--light);
+     border-left: none;
+     border-top: 3px solid var(--primary);
+     border-radius: 10px;
+     box-shadow: 0 4px 15px rgba(0,64,113,0.08);
+   }
+   SCOPE .card.gold-border {
+     border-top-color: var(--gold);
+     border-left: none;
+   }
+   SCOPE .takeaway-num {
+     background: var(--light);
+     color: var(--primary);
+     border-radius: 6px;
+     box-shadow: 0 2px 6px rgba(0,0,0,0.08);
+   }
+   SCOPE .takeaway-num.alt {
+     color: var(--gold);
+   }
+   SCOPE .smart-letter {
+     border-radius: 6px;
+     box-shadow: 0 2px 6px rgba(0,0,0,0.08);
+   }
+   SCOPE .smart-content {
+     background: var(--light);
+     border-radius: 10px;
+     box-shadow: 0 2px 8px rgba(0,0,0,0.06);
+   }
+   SCOPE .matrix-cell {
+     border-radius: 10px;
+     box-shadow: 0 4px 12px rgba(0,0,0,0.08);
+   }
+   SCOPE .danger-card-front,
+   SCOPE .danger-card-back {
+     border-radius: 12px;
+     box-shadow: 0 4px 15px rgba(0,0,0,0.1);
+   }
+   SCOPE .area-card {
+     border-radius: 12px;
+     box-shadow: 0 4px 15px rgba(0,0,0,0.08);
+   }
+   SCOPE .activity-box {
+     border-radius: 10px;
+     box-shadow: 0 2px 8px rgba(0,0,0,0.06);
+   }
+   SCOPE .download-btn {
+     border-radius: 8px;
+     box-shadow: 0 2px 6px rgba(0,0,0,0.1);
+   }
+*/
+
+
+/* --- 3. sharp-border --- */
+/*
+   SCOPE .card {
+     background: var(--light);
+     border: 2px solid var(--dark);
+     border-radius: 0;
+   }
+   SCOPE .card.gold-border {
+     border-color: var(--gold);
+   }
+   SCOPE .takeaway-num {
+     border-radius: 0;
+   }
+   SCOPE .takeaway-num.alt {
+     border-radius: 0;
+   }
+   SCOPE .smart-letter {
+     border-radius: 0;
+   }
+   SCOPE .smart-letter.alt {
+     border-radius: 0;
+   }
+   SCOPE .smart-content {
+     border-radius: 0;
+     border: 1px solid var(--offwhite);
+   }
+   SCOPE .matrix-cell {
+     border-radius: 0;
+     border: 2px solid var(--dark);
+   }
+   SCOPE .danger-card-front,
+   SCOPE .danger-card-back {
+     border-radius: 0;
+   }
+   SCOPE .area-card {
+     border-radius: 0;
+   }
+   SCOPE .activity-box {
+     border-radius: 0;
+     border: 2px solid var(--gold);
+   }
+   SCOPE .download-btn {
+     border-radius: 0;
+   }
+*/
+
+
+/* --- 4. glass --- */
+/*
+   SCOPE .card {
+     background: rgba(237,243,247,0.6);
+     backdrop-filter: blur(16px) saturate(1.8);
+     -webkit-backdrop-filter: blur(16px) saturate(1.8);
+     border: 1px solid rgba(255,255,255,0.3);
+     border-left: 1px solid rgba(255,255,255,0.3);
+     border-radius: 16px;
+     box-shadow: 0 8px 32px rgba(0,64,113,0.08);
+   }
+   SCOPE .card.gold-border {
+     border: 1px solid rgba(255,255,255,0.3);
+     border-left: 1px solid rgba(255,255,255,0.3);
+   }
+   SCOPE .takeaway-num {
+     background: rgba(255,255,255,0.15);
+     border: 1px solid rgba(255,255,255,0.3);
+   }
+   SCOPE .takeaway-num.alt {
+     background: rgba(211,178,87,0.2);
+     border-color: rgba(211,178,87,0.4);
+   }
+   SCOPE .smart-letter {
+     background: rgba(255,255,255,0.15);
+     border: 1px solid rgba(255,255,255,0.2);
+   }
+   SCOPE .smart-content {
+     background: rgba(237,243,247,0.4);
+     backdrop-filter: blur(8px);
+     border: 1px solid rgba(255,255,255,0.2);
+     border-radius: 12px;
+   }
+   SCOPE .matrix-cell {
+     backdrop-filter: blur(8px);
+     border: 1px solid rgba(255,255,255,0.2);
+     border-radius: 12px;
+   }
+   SCOPE .danger-card-front,
+   SCOPE .danger-card-back {
+     backdrop-filter: blur(8px);
+     border: 1px solid rgba(255,255,255,0.2);
+     border-radius: 16px;
+   }
+   SCOPE .area-card {
+     backdrop-filter: blur(8px);
+     border: 1px solid rgba(255,255,255,0.2);
+     border-radius: 16px;
+   }
+   SCOPE .activity-box {
+     background: rgba(211,178,87,0.08);
+     border: 1px solid rgba(211,178,87,0.3);
+     border-radius: 12px;
+   }
+   SCOPE .download-btn {
+     border-radius: 12px;
+     backdrop-filter: blur(4px);
+   }
+*/
+
+
+/* --- 5. outlined --- */
+/*
+   SCOPE .card {
+     background: var(--light);
+     border: 1px solid var(--offwhite);
+     border-bottom: 3px solid var(--primary);
+     border-left: 1px solid var(--offwhite);
+     border-radius: 8px;
+   }
+   SCOPE .card.gold-border {
+     border-bottom-color: var(--gold);
+   }
+   SCOPE .takeaway-num {
+     background: var(--light);
+     border: 2px solid var(--primary);
+     color: var(--primary);
+   }
+   SCOPE .takeaway-num.alt {
+     border-color: var(--gold);
+     color: var(--gold);
+   }
+   SCOPE .smart-letter {
+     background: var(--light);
+     border: 2px solid var(--primary);
+     color: var(--primary);
+   }
+   SCOPE .smart-letter.alt {
+     border-color: var(--gold);
+     color: var(--gold);
+   }
+   SCOPE .smart-content {
+     background: var(--light);
+     border: 1px solid var(--offwhite);
+     border-radius: 8px;
+   }
+   SCOPE .matrix-cell {
+     border: 1px solid var(--offwhite);
+     border-bottom: 3px solid;
+     border-radius: 8px;
+   }
+   SCOPE .danger-card-front,
+   SCOPE .danger-card-back {
+     border: 1px solid var(--offwhite);
+     border-radius: 8px;
+   }
+   SCOPE .area-card {
+     border: 1px solid var(--offwhite);
+     border-bottom: 3px solid var(--primary);
+     border-radius: 8px;
+   }
+   SCOPE .activity-box {
+     border: 1px solid var(--offwhite);
+     border-bottom: 3px solid var(--gold);
+     border-radius: 8px;
+   }
+   SCOPE .download-btn {
+     border-radius: 8px;
+   }
+*/
+
+
+/* --- 6. gradient-fill --- */
+/*
+   SCOPE .card {
+     background: linear-gradient(135deg, var(--primary), var(--dark));
+     color: var(--light);
+     border: none;
+     border-left: none;
+     border-radius: 8px;
+   }
+   SCOPE .card h4,
+   SCOPE .card p {
+     color: var(--light);
+   }
+   SCOPE .card.gold-border {
+     background: linear-gradient(135deg, var(--gold), var(--muted-gold));
+   }
+   SCOPE .card.gold-border h4,
+   SCOPE .card.gold-border p {
+     color: var(--light);
+   }
+   SCOPE .takeaway-num {
+     background: linear-gradient(135deg, var(--primary), var(--dark));
+   }
+   SCOPE .takeaway-num.alt {
+     background: linear-gradient(135deg, var(--gold), var(--muted-gold));
+   }
+   SCOPE .smart-letter {
+     background: linear-gradient(135deg, var(--primary), var(--dark));
+   }
+   SCOPE .smart-letter.alt {
+     background: linear-gradient(135deg, var(--gold), var(--muted-gold));
+   }
+   SCOPE .area-card {
+     background: linear-gradient(135deg, var(--primary), var(--dark));
+   }
+   SCOPE .area-card.gold-card {
+     background: linear-gradient(135deg, var(--gold), var(--muted-gold));
+   }
+   SCOPE .matrix-cell.do-first {
+     background: linear-gradient(135deg, var(--primary), var(--dark));
+   }
+   SCOPE .matrix-cell.schedule {
+     background: linear-gradient(135deg, var(--accent), #2e9a44);
+   }
+   SCOPE .matrix-cell.delegate {
+     background: linear-gradient(135deg, var(--gold), var(--muted-gold));
+   }
+   SCOPE .activity-box {
+     background: linear-gradient(135deg, rgba(211,178,87,0.1), rgba(211,178,87,0.05));
+   }
+   SCOPE .download-btn {
+     border-radius: 8px;
+   }
+*/
+
+
+/* --- 7. pill --- */
+/*
+   SCOPE .card {
+     background: var(--light);
+     border: 1px solid var(--offwhite);
+     border-left: 1px solid var(--offwhite);
+     border-radius: 24px;
+     padding: 1.25rem 1.5rem;
+   }
+   SCOPE .card.gold-border {
+     border-color: var(--offwhite);
+   }
+   SCOPE .takeaway-num {
+     border-radius: 50%;
+   }
+   SCOPE .takeaway-num.alt {
+     border-radius: 50%;
+   }
+   SCOPE .smart-letter {
+     border-radius: 50%;
+   }
+   SCOPE .smart-content {
+     border-radius: 16px;
+     border: 1px solid var(--offwhite);
+   }
+   SCOPE .matrix-cell {
+     border-radius: 16px;
+   }
+   SCOPE .danger-card-front,
+   SCOPE .danger-card-back {
+     border-radius: 20px;
+   }
+   SCOPE .area-card {
+     border-radius: 20px;
+   }
+   SCOPE .activity-box {
+     border-radius: 16px;
+   }
+   SCOPE .download-btn {
+     border-radius: 20px;
+   }
+*/
+
+
+/* --- 8. layered --- */
+/*
+   SCOPE .card {
+     background: var(--light);
+     border: 1px solid var(--offwhite);
+     border-left: 1px solid var(--offwhite);
+     border-radius: 6px;
+     box-shadow: 4px 4px 0 rgba(0,123,175,0.15);
+   }
+   SCOPE .card.gold-border {
+     box-shadow: 4px 4px 0 rgba(211,178,87,0.2);
+   }
+   SCOPE .takeaway-num {
+     box-shadow: 2px 2px 0 rgba(0,123,175,0.2);
+   }
+   SCOPE .takeaway-num.alt {
+     box-shadow: 2px 2px 0 rgba(211,178,87,0.2);
+   }
+   SCOPE .smart-letter {
+     box-shadow: 3px 3px 0 rgba(0,123,175,0.15);
+   }
+   SCOPE .smart-content {
+     box-shadow: 3px 3px 0 rgba(0,0,0,0.06);
+     border-radius: 6px;
+   }
+   SCOPE .matrix-cell {
+     box-shadow: 4px 4px 0 rgba(0,0,0,0.08);
+     border-radius: 6px;
+   }
+   SCOPE .danger-card-front,
+   SCOPE .danger-card-back {
+     box-shadow: 4px 4px 0 rgba(0,0,0,0.1);
+     border-radius: 8px;
+   }
+   SCOPE .area-card {
+     box-shadow: 4px 4px 0 rgba(0,123,175,0.12);
+     border-radius: 8px;
+   }
+   SCOPE .activity-box {
+     box-shadow: 3px 3px 0 rgba(211,178,87,0.15);
+     border-radius: 6px;
+   }
+   SCOPE .download-btn {
+     box-shadow: 2px 2px 0 rgba(55,181,80,0.2);
+     border-radius: 6px;
+   }
+*/
+
+
+/* ==========================================================================
+   SECTION DIVIDER STYLES
+   --------------------------------------------------------------------------
+   Five divider-style options. Each is a COMMENTED CSS block using the
+   DIVIDER_SCOPE prefix. When an agent builds a theme-override, it replaces
+   the literal text DIVIDER_SCOPE with .slide-section[data-chapter="N"] for
+   the assigned chapter.
+   Example:  DIVIDER_SCOPE h2  -->  .slide-section[data-chapter="3"] h2
+   ========================================================================== */
+
+
+/* --- 1. gradient-sweep (default — matches base template) --- */
+/* No overrides needed — this is the template default. */
+
+
+/* --- 2. framed-gold --- */
+/*
+   DIVIDER_SCOPE { background: var(--royal); align-items: center; justify-content: center; }
+   DIVIDER_SCOPE h2 { border: 2px solid var(--gold); border-radius: 8px; padding: 1.5rem 2.5rem; color: var(--light); }
+   DIVIDER_SCOPE .chapter-label { color: var(--gold); }
+   DIVIDER_SCOPE .divider { background: var(--gold); }
+*/
+
+
+/* --- 3. bold-full-bleed --- */
+/* For mauve-led lessons, agent replaces var(--primary) with var(--mauve).
+   For other leads, replace accordingly. */
+/*
+   DIVIDER_SCOPE { background: var(--primary); }
+   DIVIDER_SCOPE h2 { color: var(--light); }
+   DIVIDER_SCOPE .chapter-label { color: rgba(255,255,255,0.7); }
+   DIVIDER_SCOPE .divider { background: var(--gold); }
+   DIVIDER_SCOPE .section-circle { border-color: rgba(255,255,255,0.3); background: rgba(0,0,0,0.15); }
+*/
+
+
+/* --- 4. split-panel --- */
+/*
+   DIVIDER_SCOPE { flex-direction: row; }
+   DIVIDER_SCOPE::before { content: ''; display: block; width: 40%; background: var(--dark); }
+   DIVIDER_SCOPE::after { content: ''; display: block; flex: 1; background: var(--muted); }
+   DIVIDER_SCOPE h2 { color: var(--dark); position: relative; z-index: 1; }
+   DIVIDER_SCOPE .chapter-label { color: var(--gold); position: absolute; left: 2rem; }
+   DIVIDER_SCOPE .section-circle { position: absolute; left: 5%; top: 50%; transform: translateY(-50%); z-index: 1; }
+*/
+
+
+/* --- 5. centered-badge --- */
+/*
+   DIVIDER_SCOPE { background: linear-gradient(180deg, var(--muted) 0%, var(--light) 100%); flex-direction: column; align-items: center; justify-content: center; }
+   DIVIDER_SCOPE h2 { color: var(--dark); }
+   DIVIDER_SCOPE .chapter-label { color: var(--primary); }
+   DIVIDER_SCOPE .divider { background: linear-gradient(90deg, transparent, var(--gold), transparent); }
+   DIVIDER_SCOPE .section-circle { position: relative; left: auto; margin-bottom: 1rem; width: 80px; height: 80px; background: linear-gradient(135deg, var(--primary), var(--dark)); box-shadow: 0 4px 15px rgba(0,64,113,0.25); }
+*/
+
+
+/* ==========================================================================
+   TITLE SLIDE DESIGNS
+   --------------------------------------------------------------------------
+   Twelve title-slide design options. Each is a COMMENTED CSS block targeting
+   .slide-title and its children. Agents uncomment the one matching the
+   lesson's chosen title design and place the rules inside a
+   <style id="theme-override"> block.
+   ========================================================================== */
+
+
+/* --- 1. centered-gradient (default — matches base template) --- */
+/* No overrides needed — this is the template default. */
+
+
+/* --- 2. split-hero --- */
+/*
+   .slide-title { flex-direction: row; align-items: stretch; text-align: left; background: none; }
+   .slide-title::before { content: ''; width: 45%; background: var(--royal); display: block; }
+   .slide-title::after { content: ''; flex: 1; background: linear-gradient(135deg, var(--primary), var(--dark)); display: block; }
+   .slide-title h1, .slide-title .subtitle, .slide-title .logo, .slide-title .copyright { position: absolute; left: 3rem; z-index: 1; }
+   .slide-title .logo { top: 2rem; }
+   .slide-title h1 { top: 50%; transform: translateY(-50%); font-size: 3.5rem; }
+   .slide-title .subtitle { top: calc(50% + 3rem); }
+   .slide-title .copyright { bottom: 2rem; }
+   .slide-title .divider { position: absolute; left: 3rem; top: calc(50% + 1.5rem); z-index: 1; }
+*/
+
+
+/* --- 3. full-bleed --- */
+/*
+   .slide-title { background: var(--primary); position: relative; overflow: hidden; }
+   .slide-title::before { content: ''; position: absolute; top: -15%; right: -10%; width: 300px; height: 300px; border-radius: 50%; background: rgba(211,178,87,0.08); }
+   .slide-title::after { content: ''; position: absolute; bottom: -20%; left: -10%; width: 200px; height: 200px; border-radius: 50%; background: rgba(0,19,63,0.15); }
+   .slide-title h1, .slide-title .subtitle { color: var(--light); }
+*/
+
+
+/* --- 4. bottom-anchored --- */
+/*
+   .slide-title { background: linear-gradient(180deg, var(--muted) 0%, var(--light) 60%, var(--light) 60%); flex-direction: column; }
+   .slide-title h1 { color: var(--dark); }
+   .slide-title .subtitle { color: var(--gray); }
+   .slide-title .copyright { background: var(--dark); color: rgba(255,255,255,0.6); padding: 0.75rem; margin-top: auto; width: 100%; text-align: center; }
+*/
+
+
+/* --- 5. offset-left --- */
+/*
+   .slide-title { background: linear-gradient(135deg, var(--dark), var(--royal)); text-align: left; padding-left: 5rem; position: relative; overflow: hidden; }
+   .slide-title::after { content: ''; position: absolute; right: 5rem; top: 50%; transform: translateY(-50%); width: 200px; height: 200px; border-radius: 50%; border: 2px solid rgba(211,178,87,0.15); }
+   .slide-title h1 { text-align: left; }
+   .slide-title .divider { margin: 0.5rem 0; }
+*/
+
+
+/* --- 6. diagonal-split --- */
+/*
+   .slide-title { position: relative; overflow: hidden; background: var(--dark); }
+   .slide-title::after { content: ''; position: absolute; top: 0; right: 0; width: 60%; height: 100%; background: var(--primary); clip-path: polygon(20% 0, 100% 0, 100% 100%, 0% 100%); }
+   .slide-title h1, .slide-title .subtitle, .slide-title .logo { position: relative; z-index: 1; }
+*/
+
+
+/* --- 7. framed-center --- */
+/*
+   .slide-title { background: var(--royal); }
+   .slide-title h1 { border: 1.5px solid var(--gold); border-radius: 8px; padding: 2rem 3rem; display: inline-block; }
+   .slide-title .divider { background: var(--gold); }
+*/
+
+
+/* --- 8. top-banner --- */
+/*
+   .slide-title { background: var(--light); flex-direction: column; }
+   .slide-title::before { content: 'SPOKES \2014  SKILLS FOR LIFE'; background: linear-gradient(90deg, var(--dark), var(--primary), var(--dark)); color: var(--gold); font-size: 0.75rem; letter-spacing: 3px; text-align: center; padding: 0.75rem; width: 100%; }
+   .slide-title::after { content: ''; height: 4px; background: linear-gradient(90deg, var(--primary), var(--gold), var(--accent)); width: 100%; margin-top: auto; }
+   .slide-title h1 { color: var(--dark); }
+   .slide-title .subtitle { color: var(--gray); }
+*/
+
+
+/* --- 9. radial-glow --- */
+/*
+   .slide-title { background: var(--royal); position: relative; overflow: hidden; }
+   .slide-title::before { content: ''; position: absolute; width: 400px; height: 400px; border-radius: 50%; background: radial-gradient(circle, rgba(0,123,175,0.25) 0%, transparent 70%); top: 50%; left: 50%; transform: translate(-50%, -50%); }
+*/
+
+
+/* --- 10. vertical-strip --- */
+/*
+   .slide-title { background: var(--light); text-align: left; padding-left: 4rem; position: relative; }
+   .slide-title::before { content: ''; position: absolute; left: 0; top: 0; bottom: 0; width: 8px; background: linear-gradient(180deg, var(--primary), var(--gold), var(--accent)); }
+   .slide-title h1 { color: var(--dark); text-align: left; }
+   .slide-title .subtitle { color: var(--gray); text-align: left; }
+   .slide-title .divider { margin: 0.5rem 0; }
+*/
+
+
+/* --- 11. corner-accent --- */
+/*
+   .slide-title { background: var(--dark); position: relative; overflow: hidden; }
+   .slide-title::before { content: ''; position: absolute; top: 0; left: 0; border-left: 120px solid rgba(211,178,87,0.3); border-bottom: 120px solid transparent; }
+   .slide-title::after { content: ''; position: absolute; bottom: 0; right: 0; border-right: 90px solid rgba(0,123,175,0.4); border-top: 90px solid transparent; }
+*/
+
+
+/* --- 12. horizon-line --- */
+/*
+   .slide-title { background: linear-gradient(180deg, var(--royal) 0%, var(--dark) 50%, var(--dark) 50%, var(--primary) 100%); flex-direction: column; align-items: center; justify-content: center; }
+   .slide-title .divider { width: 200px; height: 3px; background: linear-gradient(90deg, transparent, var(--gold), transparent); margin: 1rem auto; }
+*/

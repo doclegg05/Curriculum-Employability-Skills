@@ -3,8 +3,10 @@
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <link rel="preconnect" href="https://fonts.googleapis.com" />
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <!-- Default fonts (always keep) -->
+    <link href="https://fonts.googleapis.com/css2?family=DM+Serif+Display:ital@0;1&family=Outfit:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <!-- Lesson-specific fonts -->
     <link
       href="https://fonts.googleapis.com/css2?family=Crimson+Pro:wght@400;600;700&family=Work+Sans:wght@400;500;600&display=swap"
       rel="stylesheet"
@@ -35,8 +37,8 @@
         --mauve: #a7253f;
         --offwhite: #d1d3d4;
         --muted-gold: #ad8806;
-        --font-heading: "Crimson Pro", serif;
-        --font-body: "Work Sans", sans-serif;
+        --font-heading: "DM Serif Display", serif;
+        --font-body: "Outfit", sans-serif;
       }
 
       body {
@@ -82,8 +84,8 @@
         background: var(--dark);
         color: var(--light);
         border: none;
-        width: 36px;
-        height: 36px;
+        width: 44px;
+        height: 44px;
         border-radius: 8px;
         cursor: pointer;
         font-size: 1.1rem;
@@ -635,8 +637,8 @@
       }
 
       .slide .highlight { color: var(--primary); font-weight: 700; }
-      .slide .accent { color: var(--accent); font-weight: 700; }
-      .slide .gold { color: var(--gold); font-weight: 700; }
+      .slide .accent { color: var(--dark); font-weight: 700; }
+      .slide .gold { color: var(--muted-gold); font-weight: 700; }
 
       /* Cards Grid */
       .cards-grid {
@@ -658,7 +660,7 @@
 
       .card.gold-border { border-left-color: var(--gold); }
 
-      .card h4 {
+      .card h3 {
         font-family: var(--font-heading);
         font-size: 1.75rem;
         color: var(--primary);
@@ -740,7 +742,7 @@
         border-radius: 8px;
       }
 
-      .smart-content h4 {
+      .smart-content h3 {
         font-family: var(--font-heading);
         font-size: 1.15rem;
         color: var(--primary);
@@ -829,9 +831,9 @@
       .danger-card-front { background: var(--dark); color: var(--light); }
       .danger-card-back { background: var(--gold); color: var(--dark); transform: rotateY(180deg); }
       .danger-icon { font-size: 2.5rem; margin-bottom: 0.75rem; }
-      .danger-card-front h4 { font-size: 1.1rem; font-weight: 600; }
+      .danger-card-front h3 { font-size: 1.1rem; font-weight: 600; }
       .danger-card-back p { font-size: 0.85rem; line-height: 1.4; }
-      .danger-card-back h4 { font-size: 1rem; margin-bottom: 0.5rem; font-weight: 600; }
+      .danger-card-back h3 { font-size: 1rem; margin-bottom: 0.5rem; font-weight: 600; }
 
       /* Area Cards (3 column) */
       .areas-grid { display: flex; gap: 2rem; flex: 1; }
@@ -862,7 +864,7 @@
 
       .area-card.gold-card .area-icon { background: var(--dark); color: var(--gold); }
 
-      .area-card h4 {
+      .area-card h3 {
         font-family: var(--font-heading);
         font-size: 1.5rem;
         font-weight: 400;
@@ -895,7 +897,7 @@
         font-size: 4.5rem;
         font-weight: 400;
         line-height: 1.3;
-        max-width: 900px;
+        max-width: 1200px;
       }
 
       .big-statement p { max-width: 700px; }
@@ -921,10 +923,6 @@
         position: relative;
         width: 100%;
         max-width: 1200px;
-        aspect-ratio: 16 / 9;
-        border-radius: 12px;
-        overflow: hidden;
-        box-shadow: 0 8px 30px rgba(0, 0, 0, 0.15);
       }
 
       .video-container iframe {
@@ -937,6 +935,73 @@
       }
 
       .slide-video.active .video-container { animation: fadeUp 0.6s ease-out 0.3s both; }
+
+      /* Video player appearance fix */
+      video[preload="none"], video:not([src]) {
+        aspect-ratio: 16 / 9;
+        background: var(--royal);
+        width: 100%;
+      }
+
+      /* Video wrapper with toolbar */
+      .video-wrapper {
+        width: 100%;
+        max-width: 1170px;
+        margin: 0 auto;
+        border-radius: 12px;
+        box-shadow: 0 8px 30px rgba(0, 0, 0, 0.15);
+        overflow: hidden;
+      }
+
+      .video-wrapper video {
+        border-radius: 0;
+        display: block;
+      }
+
+      .video-toolbar {
+        display: flex;
+        justify-content: flex-end;
+        align-items: center;
+        background: var(--royal);
+        border-radius: 0;
+        padding: 6px 12px;
+      }
+
+      .cc-toggle {
+        background: transparent;
+        color: rgba(255, 255, 255, 0.7);
+        border: 1.5px solid rgba(255, 255, 255, 0.4);
+        border-radius: 4px;
+        padding: 6px 12px;
+        font-family: var(--font-body);
+        font-size: 0.75rem;
+        font-weight: 700;
+        letter-spacing: 1px;
+        cursor: pointer;
+        transition: all 0.2s ease;
+        min-width: 44px;
+        min-height: 44px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+      }
+
+      .cc-toggle:hover {
+        color: var(--light);
+        border-color: var(--light);
+        background: rgba(255, 255, 255, 0.1);
+      }
+
+      .cc-toggle.cc-active {
+        background: var(--primary);
+        border-color: var(--primary);
+        color: var(--light);
+      }
+
+      .cc-toggle:focus-visible {
+        outline: 3px solid var(--gold);
+        outline-offset: 2px;
+      }
 
       /* Activity Callout */
       .activity-box {
@@ -952,7 +1017,7 @@
         font-size: 0.8rem;
         text-transform: uppercase;
         letter-spacing: 2px;
-        color: var(--gold);
+        color: var(--muted-gold);
         font-weight: 700;
         margin-bottom: 0.5rem;
       }
@@ -1103,13 +1168,7 @@
         z-index: 1;
       }
 
-      .slide-section[data-chapter-num="W"] { background: linear-gradient(135deg, var(--primary) 0%, var(--dark) 100%); }
-      .slide-section[data-chapter-num="I"] { background: linear-gradient(225deg, var(--dark) 0%, var(--royal) 100%); }
-      .slide-section[data-chapter-num="P1"] { background: linear-gradient(160deg, var(--primary) 0%, var(--royal) 100%); }
-      .slide-section[data-chapter-num="P2"] { background: linear-gradient(200deg, var(--dark) 0%, var(--primary) 100%); }
-      .slide-section[data-chapter-num="P3"] { background: linear-gradient(145deg, var(--royal) 0%, var(--primary) 100%); }
-      .slide-section[data-chapter-num="E"] { background: linear-gradient(190deg, var(--primary) 0%, var(--dark) 100%); }
-      .slide-section[data-chapter-num="A"] { background: linear-gradient(170deg, var(--royal) 0%, var(--dark) 100%); }
+      /* Per-chapter divider backgrounds removed — uniform divider style in theme-override */
 
       /* Closing Slide */
       .slide-closing {
@@ -1283,38 +1342,298 @@
       ::view-transition-new(root) { animation: vt-fade-in 250ms ease-in; }
       @keyframes vt-fade-out { to { opacity: 0; } }
       @keyframes vt-fade-in { from { opacity: 0; } }
+
+      /* ===== Focus-Visible Styles (ACC-12) ===== */
+      .tab-btn:focus-visible {
+        outline: 3px solid var(--gold);
+        outline-offset: 2px;
+      }
+      .accordion-header:focus-visible {
+        outline: 3px solid var(--gold);
+        outline-offset: 2px;
+      }
+      .sidebar-toggle:focus-visible {
+        outline: 3px solid var(--gold);
+        outline-offset: 2px;
+      }
+      .danger-card:focus-visible {
+        outline: 3px solid var(--gold);
+        outline-offset: 2px;
+      }
+      button:focus-visible {
+        outline: 3px solid var(--gold);
+        outline-offset: 2px;
+      }
+      a:focus-visible {
+        outline: 3px solid var(--gold);
+        outline-offset: 2px;
+      }
     </style>
 
-    <!-- Theme Override — Lesson-specific styling AFTER main CSS -->
+    <!-- Theme Override: Two-Layer Theme System — lesson-communicating-with-the-public -->
+    <!-- Layer 1: dual-blue-green lead, dark sidebar, crosshatch texture, top-banner title, crimson-pro-work-sans fonts -->
+    <!-- Layer 2: Per-chapter card styles, dividers, and secondary accents from theme-registry.json -->
     <style id="theme-override">
-      /* Subtle dot grid background texture */
+
+      /* =================================================================
+         LAYER 1 — LESSON IDENTITY
+         ================================================================= */
+
+      /* Font pairing: crimson-pro-work-sans */
+      body { font-family: 'Work Sans', sans-serif; }
+      .slide-title h1, .slide h2, .slide h3, .card h3,
+      .smart-content h3, .matrix-action, .slide-section h2,
+      .area-card h3, .closing-box h2 {
+        font-family: 'Crimson Pro', serif;
+      }
+
+      /* Missing text highlight classes + contrast fix */
+      .slide .mauve { color: var(--mauve); font-weight: 700; }
+      .slide .gold { color: var(--muted-gold); font-weight: 700; }
+
+      /* Background texture: crosshatch */
       .main {
-        background-color: var(--light);
-        background-image: radial-gradient(var(--primary) 1px, transparent 1px);
-        background-size: 20px 20px;
+        background-color: var(--muted);
+        background-image: linear-gradient(rgba(0,64,113,0.04) 1px, transparent 1px), linear-gradient(90deg, rgba(0,64,113,0.04) 1px, transparent 1px);
+        background-size: 24px 24px;
       }
 
-      .card, .smart-content, .matrix-cell {
-        background-color: var(--light);
-        border: 1px solid var(--muted);
-      }
-      .card { background: var(--muted); }
-      .matrix-cell.do-first { background: var(--primary); border-color: var(--primary); }
-      .matrix-cell.schedule { background: var(--accent); border-color: var(--accent); }
-      .matrix-cell.delegate { background: var(--gold); border-color: var(--gold); }
+      /* Sidebar color: dark (default — no override needed) */
 
-      /* Blue-gold emphasis: subtle gold underline on h2 */
-      .slide h2 {
-        border-bottom: 3px solid rgba(211, 178, 87, 0.2);
-        padding-bottom: 0.75rem;
+      /* Color lead: dual-blue-green */
+      .slide h2 { color: var(--primary); }
+      .slide h3 { color: var(--primary); }
+      /* FIX: white on accent (#37b550) = 2.66:1 fails AA; using --dark (10.65:1) */
+      .download-btn { background: var(--dark); }
+      .download-btn:hover { background: var(--dark); box-shadow: 0 5px 20px rgba(0, 64, 113, 0.4); }
+      .divider { background: linear-gradient(90deg, var(--primary), var(--accent)); }
+      .slide-section { background: linear-gradient(135deg, var(--primary), var(--accent)); }
+
+      /* Title slide updated to geometric gold-to-blue layout */
+      .slide-title { background: linear-gradient(90deg, var(--gold) 0%, var(--primary) 25%, var(--dark) 100%); flex-direction: column; justify-content: center; }
+      .slide-title::before { display: none; }
+      .slide-title::after { display: none; }
+      .slide-title h1 { color: var(--light); text-shadow: 0 4px 10px rgba(0,0,0,0.3); }
+      .slide-title .subtitle { color: var(--light); font-size: 1.8rem; text-shadow: 0 2px 5px rgba(0,0,0,0.3); }
+      .slide-title .copyright { color: rgba(255,255,255,0.6); }
+
+
+      /* =================================================================
+         LAYER 2 — CHAPTER STYLES
+         ================================================================= */
+
+      /* --- Card Style: shadow-float (chapters 1, 3, 7) --- */
+      [data-chapter="1"] .card,
+      [data-chapter="3"] .card,
+      [data-chapter="7"] .card {
+        background: var(--light);
+        border-left: none;
+        border-top: 3px solid var(--primary);
+        border-radius: 10px;
+        box-shadow: 0 4px 15px rgba(0,64,113,0.08);
       }
-      .slide-section h2,
-      .slide-title h1,
-      .big-statement h2,
-      .closing-box h2 {
-        border-bottom: none;
-        padding-bottom: 0;
+      [data-chapter="1"] .card.gold-border,
+      [data-chapter="3"] .card.gold-border,
+      [data-chapter="7"] .card.gold-border {
+        border-top-color: var(--gold);
+        border-left: none;
       }
+      [data-chapter="1"] .takeaway-num,
+      [data-chapter="3"] .takeaway-num,
+      [data-chapter="7"] .takeaway-num {
+        background: var(--light);
+        color: var(--primary);
+        border-radius: 6px;
+        box-shadow: 0 2px 6px rgba(0,0,0,0.08);
+      }
+      /* FIX: gold text (#d3b257) on white bg = 2.04:1; restore gold bg + dark text (4.74:1) */
+      [data-chapter="1"] .takeaway-num.alt,
+      [data-chapter="3"] .takeaway-num.alt,
+      [data-chapter="7"] .takeaway-num.alt {
+        background: var(--gold);
+        color: var(--dark);
+      }
+      [data-chapter="1"] .smart-letter,
+      [data-chapter="3"] .smart-letter,
+      [data-chapter="7"] .smart-letter {
+        border-radius: 6px;
+        box-shadow: 0 2px 6px rgba(0,0,0,0.08);
+      }
+      [data-chapter="1"] .smart-content,
+      [data-chapter="3"] .smart-content,
+      [data-chapter="7"] .smart-content {
+        background: var(--light);
+        border-radius: 10px;
+        box-shadow: 0 2px 8px rgba(0,0,0,0.06);
+      }
+      [data-chapter="1"] .matrix-cell,
+      [data-chapter="3"] .matrix-cell,
+      [data-chapter="7"] .matrix-cell {
+        border-radius: 10px;
+        box-shadow: 0 4px 12px rgba(0,0,0,0.08);
+      }
+      [data-chapter="1"] .danger-card-front,
+      [data-chapter="1"] .danger-card-back,
+      [data-chapter="3"] .danger-card-front,
+      [data-chapter="3"] .danger-card-back,
+      [data-chapter="7"] .danger-card-front,
+      [data-chapter="7"] .danger-card-back {
+        border-radius: 12px;
+        box-shadow: 0 4px 15px rgba(0,0,0,0.1);
+      }
+      [data-chapter="1"] .area-card,
+      [data-chapter="3"] .area-card,
+      [data-chapter="7"] .area-card {
+        border-radius: 12px;
+        box-shadow: 0 4px 15px rgba(0,0,0,0.08);
+      }
+      [data-chapter="1"] .activity-box,
+      [data-chapter="3"] .activity-box,
+      [data-chapter="7"] .activity-box {
+        border-radius: 10px;
+        box-shadow: 0 2px 8px rgba(0,0,0,0.06);
+      }
+      [data-chapter="1"] .download-btn,
+      [data-chapter="3"] .download-btn,
+      [data-chapter="7"] .download-btn {
+        border-radius: 8px;
+        box-shadow: 0 2px 6px rgba(0,0,0,0.1);
+      }
+
+      /* --- Card Style: left-border (chapters 2, 5) — default, no overrides needed --- */
+
+      /* --- Card Style: layered (chapters 4, 6) --- */
+      [data-chapter="4"] .card,
+      [data-chapter="6"] .card {
+        background: var(--light);
+        border: 1px solid var(--offwhite);
+        border-left: 1px solid var(--offwhite);
+        border-radius: 6px;
+        box-shadow: 4px 4px 0 rgba(0,123,175,0.15);
+      }
+      [data-chapter="4"] .card.gold-border,
+      [data-chapter="6"] .card.gold-border {
+        box-shadow: 4px 4px 0 rgba(211,178,87,0.2);
+      }
+      [data-chapter="4"] .takeaway-num,
+      [data-chapter="6"] .takeaway-num {
+        box-shadow: 2px 2px 0 rgba(0,123,175,0.2);
+      }
+      [data-chapter="4"] .takeaway-num.alt,
+      [data-chapter="6"] .takeaway-num.alt {
+        box-shadow: 2px 2px 0 rgba(211,178,87,0.2);
+      }
+      [data-chapter="4"] .smart-letter,
+      [data-chapter="6"] .smart-letter {
+        box-shadow: 3px 3px 0 rgba(0,123,175,0.15);
+      }
+      [data-chapter="4"] .smart-content,
+      [data-chapter="6"] .smart-content {
+        box-shadow: 3px 3px 0 rgba(0,0,0,0.06);
+        border-radius: 6px;
+      }
+      [data-chapter="4"] .matrix-cell,
+      [data-chapter="6"] .matrix-cell {
+        box-shadow: 4px 4px 0 rgba(0,0,0,0.08);
+        border-radius: 6px;
+      }
+      [data-chapter="4"] .danger-card-front,
+      [data-chapter="4"] .danger-card-back,
+      [data-chapter="6"] .danger-card-front,
+      [data-chapter="6"] .danger-card-back {
+        box-shadow: 4px 4px 0 rgba(0,0,0,0.1);
+        border-radius: 8px;
+      }
+      [data-chapter="4"] .area-card,
+      [data-chapter="6"] .area-card {
+        box-shadow: 4px 4px 0 rgba(0,123,175,0.12);
+        border-radius: 8px;
+      }
+      [data-chapter="4"] .activity-box,
+      [data-chapter="6"] .activity-box {
+        box-shadow: 3px 3px 0 rgba(211,178,87,0.15);
+        border-radius: 6px;
+      }
+      [data-chapter="4"] .download-btn,
+      [data-chapter="6"] .download-btn {
+        box-shadow: 2px 2px 0 rgba(55,181,80,0.2);
+        border-radius: 6px;
+      }
+
+      /* --- Uniform Divider Style: bold-full-bleed --- */
+      .slide-section { background: linear-gradient(90deg, var(--gold) 0%, var(--primary) 25%, var(--dark) 100%); }
+      .slide-section h2 { color: var(--light); text-shadow: 0 2px 5px rgba(0,0,0,0.3); }
+      .slide-section .chapter-label { color: var(--light); font-weight: 700; letter-spacing: 3px; text-shadow: 0 2px 5px rgba(0,0,0,0.3); margin-top: 0.5rem; }
+      .slide-section .divider { background: var(--light); box-shadow: 0 2px 4px rgba(0,0,0,0.2); }
+      .slide-section .section-circle { border-color: var(--light); background: rgba(0,0,0,0.15); box-shadow: 0 10px 30px rgba(0,0,0,0.3); }
+
+      /* --- Secondary Accent: mauve (chapters 2, 4, 6) --- */
+      [data-chapter="2"] .card.gold-border,
+      [data-chapter="4"] .card.gold-border,
+      [data-chapter="6"] .card.gold-border {
+        border-left-color: var(--mauve);
+      }
+      /* FIX: dark text (#004071) on mauve (#a7253f) = ~1.4:1; switch to white text (5.34:1) */
+      [data-chapter="2"] .takeaway-num.alt,
+      [data-chapter="4"] .takeaway-num.alt,
+      [data-chapter="6"] .takeaway-num.alt {
+        background: var(--mauve);
+        color: var(--light);
+      }
+
+
+      /* FIX: .matrix-cell.schedule — white on accent = 2.66:1 fails AA;
+         use dark text (3.67:1 — passes large text, near-pass normal) */
+      .matrix-cell.schedule { color: var(--dark); }
+      .matrix-cell.schedule .matrix-label { opacity: 1; }
+
+      /* FIX: .accent class (#37b550 on white = 2.66:1) fails even the 3:1
+         large-text threshold. Override to --dark (#004071, 10.65:1) for full
+         WCAG AA compliance at all text sizes. */
+      .slide .accent { color: var(--dark); font-weight: 700; }
+
+      /* FIX: .activity-label uses --gold (#d3b257 = 2.04:1 on white) at 0.8rem —
+         fails 4.5:1 normal text. Override to --muted-gold (#ad8806 ~3.3:1 large text). */
+      .activity-label { color: var(--muted-gold); }
+
+      /* FIX: .wippea-badge.p uses --light on --accent (#37b550 = 2.66:1) at
+         0.6rem — fails 4.5:1. Switch bg to --primary (4.72:1 passes). */
+      .wippea-badge.p { background: var(--primary); }
+
+      /* FIX: Missing focus-visible styles on interactive elements.
+         Required for keyboard accessibility (WCAG 2.4.7). */
+      .tab-btn:focus-visible {
+        outline: 3px solid var(--gold);
+        outline-offset: 2px;
+      }
+      .accordion-header:focus-visible {
+        outline: 3px solid var(--gold);
+        outline-offset: 2px;
+      }
+      .download-btn:focus-visible {
+        outline: 3px solid var(--gold);
+        outline-offset: 2px;
+      }
+      .key-icon:focus-visible {
+        outline: 3px solid var(--gold);
+        outline-offset: 2px;
+      }
+      .sidebar-toggle:focus-visible {
+        outline: 3px solid var(--gold);
+        outline-offset: 2px;
+      }
+      .resource-link:focus-visible {
+        outline: 2px solid var(--gold);
+        outline-offset: 1px;
+      }
+      button:focus-visible {
+        outline: 3px solid var(--gold);
+        outline-offset: 2px;
+      }
+
+      /* =================================================================
+         LESSON-SPECIFIC INTERACTIVE COMPONENT CSS (preserved)
+         ================================================================= */
 
       /* Tabs Component */
       .tabs-container { width: 100%; flex: 1; }
@@ -1352,7 +1671,7 @@
         margin-top: -2px;
       }
       .tab-panel.active { display: block; }
-      .tab-panel h4 { font-family: var(--font-heading); font-size: 1.5rem; color: var(--primary); margin-bottom: 0.75rem; }
+      .tab-panel h3 { font-family: var(--font-heading); font-size: 1.5rem; color: var(--primary); margin-bottom: 0.75rem; }
       .tab-panel p { font-size: 1.2rem; color: var(--gray); line-height: 1.6; }
       .tab-panel ul { list-style: none; margin-top: 0.5rem; }
       .tab-panel ul li {
@@ -1458,12 +1777,104 @@
         .tab-btn { font-size: 0.95rem; padding: 0.6rem 1rem; }
         .video-grid { grid-template-columns: 1fr; }
       }
+
+      /* Fix closing slide visibility */
+      .slide-closing h2 {
+        color: var(--gold) !important;
+        text-shadow: 0 2px 5px rgba(0,0,0,0.3);
+      }
+
+      /* ================================================================
+       INTERACTIVE CARD HOVER EFFECTS (Added via Plan)
+       ================================================================ */
+    
+      /* 1. Component: Standard Cards - The Edge Glow Lift */
+      .card {
+        transition: transform 0.4s cubic-bezier(0.22, 1, 0.36, 1), box-shadow 0.4s ease, border-color 0.4s ease;
+      }
+      .card:hover {
+        transform: translateY(-5px) !important;
+        box-shadow: 0 10px 25px rgba(0,0,0,0.12) !important;
+      }
+      .card:not(.gold-border):hover {
+        border-top-color: var(--gold) !important;
+        border-left-color: var(--gold) !important;
+      }
+      .card.gold-border:hover {
+        border-top-color: var(--accent) !important;
+        border-left-color: var(--accent) !important;
+      }
+
+      /* 2. Component: Area Cards - The Push-in Scale */
+      .area-card {
+        transition: transform 0.5s cubic-bezier(0.34, 1.56, 0.64, 1), box-shadow 0.5s ease;
+      }
+      .area-card:hover {
+        transform: scale(1.03) !important;
+        box-shadow: 0 12px 30px rgba(0,0,0,0.15) !important;
+        z-index: 2; /* Brings above peers when scaling */
+      }
+
+      /* 3. Component: Danger/Flip Cards - The Magnetic Pulse */
+      .danger-card {
+        transition: transform 0.4s cubic-bezier(0.22, 1, 0.36, 1), filter 0.4s ease;
+      }
+      .danger-card:hover, .danger-card:focus {
+        transform: translateY(-4px) !important;
+        filter: drop-shadow(0 8px 20px rgba(211,178,87,0.5)); /* Gold glowing pulse */
+      }
+
+      /* 4. Component: Scenario Cards - The Side-Breeze */
+      .scenario-card {
+        transition: transform 0.4s ease, background-color 0.4s ease, box-shadow 0.4s ease;
+      }
+      .scenario-card:hover {
+        transform: translateX(6px) !important;
+        background-color: rgba(211,178,87,0.05) !important; /* Soft warm glow */
+        box-shadow: -4px 8px 20px rgba(0,64,113,0.08) !important;
+      }
+
+      /* 5. Component: Smart Rows (List Items) - The Shift Edge */
+      .smart-row {
+        transition: transform 0.3s cubic-bezier(0.22, 1, 0.36, 1);
+      }
+      .smart-content {
+        transition: background-color 0.3s ease, box-shadow 0.3s ease;
+      }
+      .smart-row:hover {
+        transform: translateX(8px);
+      }
+      .smart-row:hover .smart-content {
+        background-color: var(--light);
+        box-shadow: -4px 6px 15px rgba(0,64,113,0.08); /* slight drop shadow pop */
+      }
+
+      /* ACC-04: Skip navigation link */
+      .skip-link { position: absolute; top: -40px; left: 0; background: var(--dark); color: var(--light); padding: 8px 16px; z-index: 10000; font-size: 14px; transition: top 0.2s; text-decoration: none; }
+      .skip-link:focus { top: 0; }
+
+      /* ACC-05: Screen-reader-only utility */
+      .sr-only { position: absolute; width: 1px; height: 1px; padding: 0; margin: -1px; overflow: hidden; clip: rect(0,0,0,0); white-space: nowrap; border: 0; }
+
+      /* ACC-03: Flip card flipped state for click/keyboard */
+      .danger-card.flipped .danger-card-inner { transform: rotateY(180deg); }
+
+      /* ACC-12: Focus-visible styles */
+      .danger-card:focus-visible {
+        outline: 3px solid var(--gold);
+        outline-offset: 2px;
+      }
+      a:focus-visible {
+        outline: 3px solid var(--gold);
+        outline-offset: 2px;
+      }
     </style>
   </head>
   <body>
+    <a href="#main-content" class="skip-link">Skip to main content</a>
     <div class="container">
       <!-- Sidebar -->
-      <nav class="sidebar">
+      <nav class="sidebar" id="sidebar" aria-label="Lesson chapters">
         <div class="sidebar-title">Communicating with the Public</div>
         <ul class="chapter-list" id="chapterList"></ul>
 
@@ -1485,8 +1896,9 @@
       </nav>
 
       <!-- Main Content -->
-      <main class="main">
-        <button class="sidebar-toggle" id="sidebarToggle" onclick="toggleSidebar()" title="Toggle sidebar">&#171;</button>
+      <main class="main" id="main-content">
+        <div aria-live="polite" id="slideAnnouncer" class="sr-only" aria-atomic="true"></div>
+        <button class="sidebar-toggle" id="sidebarToggle" onclick="toggleSidebar()" title="Toggle sidebar" aria-expanded="true" aria-controls="sidebar" aria-label="Toggle navigation">&#171;</button>
 
         <!-- ======================== -->
         <!-- CH 1 - WARM-UP          -->
@@ -1526,10 +1938,6 @@
             <span class="download-prompt">Instructor Resource Available</span>
             <a href="Handouts/Communicating with the Public 2026 Handouts.pdf#page=3" target="_blank" class="download-btn">Personal Listening Assessment</a>
           </div>
-          <div class="instructor-prompt" style="display:none; margin-top:1.5rem; padding:1rem 1.5rem; background:rgba(211,178,87,0.1); border:1px solid var(--gold); border-radius:8px;">
-            <p style="font-size:1.1rem; color:var(--gray);"><strong style="color:var(--muted-gold);">Instructor Prompt:</strong> Distribute the Personal Listening Assessment. Have learners complete the first column only. After completion, ask a few volunteers to share their self-ratings and reasoning. This establishes a baseline for the post-assessment later.</p>
-          </div>
-          <button onclick="const p=this.previousElementSibling;p.style.display=p.style.display==='none'?'block':'none';this.textContent=p.style.display==='none'?'View Prompt':'Hide Prompt'" style="margin-top:0.5rem; padding:0.4rem 1rem; background:var(--gold); color:var(--dark); border:none; border-radius:6px; cursor:pointer; font-size:0.85rem; font-weight:600;">View Prompt</button>
         </section>
 
         <!-- ======================== -->
@@ -1559,10 +1967,6 @@
               <div class="visual-circle">&#128483;</div>
             </div>
           </div>
-          <div class="instructor-prompt" style="display:none; margin-top:1.5rem; padding:1rem 1.5rem; background:rgba(211,178,87,0.1); border:1px solid var(--gold); border-radius:8px;">
-            <p style="font-size:1.1rem; color:var(--gray);"><strong style="color:var(--muted-gold);">Instructor Prompt:</strong> Ask: "Have you ever known someone who was really hard to communicate with?" Share real-life examples (someone who never listens, someone who always thinks they're right). Transition into defining what effective communication actually means.</p>
-          </div>
-          <button onclick="const p=this.previousElementSibling;p.style.display=p.style.display==='none'?'block':'none';this.textContent=p.style.display==='none'?'View Prompt':'Hide Prompt'" style="margin-top:0.5rem; padding:0.4rem 1rem; background:var(--gold); color:var(--dark); border:none; border-radius:6px; cursor:pointer; font-size:0.85rem; font-weight:600;">View Prompt</button>
         </section>
 
         <!-- Slide 5: Workplace Communication Stats -->
@@ -1570,19 +1974,19 @@
           <h2>Communication in the Workplace</h2>
           <div class="cards-grid">
             <div class="card">
-              <h4>Employer Priority</h4>
+              <h3>Employer Priority</h3>
               <p>Over <strong>70% of employers</strong> prioritize strong communication skills in job candidates &mdash; sometimes more than a specific degree or major.</p>
             </div>
             <div class="card gold-border">
-              <h4>Top Skill in Job Postings</h4>
+              <h3>Top Skill in Job Postings</h3>
               <p>Communication consistently ranks as the <strong>#1 skill</strong> in job postings, yet many employers report a shortage of candidates with these abilities.</p>
             </div>
             <div class="card gold-border">
-              <h4>Professional Growth</h4>
+              <h3>Professional Growth</h3>
               <p>Strong communication skills build <strong>self-confidence</strong> and help you achieve both personal and professional goals.</p>
             </div>
             <div class="card">
-              <h4>Forms of Communication</h4>
+              <h3>Forms of Communication</h3>
               <p>Written, verbal, nonverbal, digital &mdash; modern workplaces require <strong>all forms</strong> of communication mastery.</p>
             </div>
           </div>
@@ -1591,11 +1995,17 @@
         <!-- Slide 6: Video -->
         <section class="slide slide-video" data-chapter="2">
           <h2>Watch: The Importance of Effective Communication</h2>
-          <div class="video-container" style="position:relative; width:100%; max-width:900px; margin:0 auto;">
-            <video controls class="local-video" style="width:100%; border-radius:12px; box-shadow:0 4px 20px rgba(0,0,0,0.15);">
-              <source src="videos/importance_of_effective_communication.mp4" type="video/mp4" />
-              Your browser does not support the video tag.
-            </video>
+          <div class="video-container" style="position:relative; width:100%; max-width:1200px; margin:0 auto;">
+            <div class="video-wrapper">
+              <video controls class="local-video" preload="none" poster="videos/importance_of_effective_communication.jpg" aria-label="The Importance of Effective Communication" style="width:100%;">
+                <source src="videos/importance_of_effective_communication.mp4" type="video/mp4" />
+                <track kind="captions" src="videos/importance_of_effective_communication.vtt" srclang="en" label="English">
+                Your browser does not support the video tag.
+              </video>
+              <div class="video-toolbar">
+                <button class="cc-toggle" onclick="toggleCaptions(this)" aria-pressed="false" aria-label="Toggle captions" title="Toggle captions">CC</button>
+              </div>
+            </div>
           </div>
         </section>
 
@@ -1625,11 +2035,11 @@
           <p style="font-size:1.3rem; color:var(--gray); margin-top:-1.5rem; margin-bottom:2rem;">The two sides of every message</p>
           <div class="cards-grid">
             <div class="card">
-              <h4>&#128228; Encoding (Sender)</h4>
+              <h3>&#128228; Encoding (Sender)</h3>
               <p>The process of converting thoughts, ideas, or information into a message using symbols &mdash; words, gestures, images, or sounds &mdash; that the receiver can understand.</p>
             </div>
             <div class="card gold-border">
-              <h4>&#128229; Decoding (Receiver)</h4>
+              <h3>&#128229; Decoding (Receiver)</h3>
               <p>The process by which a receiver interprets and makes sense of a message. Tone, body language, and personal experiences all influence interpretation.</p>
             </div>
           </div>
@@ -1660,20 +2070,22 @@
             <div class="activity-label">Discussion</div>
             <p>Why is this communication process called a <em>cycle</em>? What happens when the cycle breaks down?</p>
           </div>
-          <div class="instructor-prompt" style="display:none; margin-top:1.5rem; padding:1rem 1.5rem; background:rgba(211,178,87,0.1); border:1px solid var(--gold); border-radius:8px;">
-            <p style="font-size:1.1rem; color:var(--gray);"><strong style="color:var(--muted-gold);">Instructor Prompt:</strong> Emphasize that communication is ongoing and interactive, not one-directional. The cycle continues with constant feedback between sender and receiver. Ask students for examples of when the cycle broke down in their own experience.</p>
-          </div>
-          <button onclick="const p=this.previousElementSibling;p.style.display=p.style.display==='none'?'block':'none';this.textContent=p.style.display==='none'?'View Prompt':'Hide Prompt'" style="margin-top:0.5rem; padding:0.4rem 1rem; background:var(--gold); color:var(--dark); border:none; border-radius:6px; cursor:pointer; font-size:0.85rem; font-weight:600;">View Prompt</button>
         </section>
 
         <!-- Slide 11: Communication Cycle Video -->
         <section class="slide slide-video" data-chapter="3">
           <h2>Watch: The Communication Cycle</h2>
-          <div class="video-container" style="position:relative; width:100%; max-width:900px; margin:0 auto;">
-            <video controls class="local-video" style="width:100%; border-radius:12px; box-shadow:0 4px 20px rgba(0,0,0,0.15);">
-              <source src="videos/communication_cycle.mp4" type="video/mp4" />
-              Your browser does not support the video tag.
-            </video>
+          <div class="video-container" style="position:relative; width:100%; max-width:1200px; margin:0 auto;">
+            <div class="video-wrapper">
+              <video controls class="local-video" preload="none" poster="videos/communication_cycle.jpg" aria-label="The Communication Cycle" style="width:100%;">
+                <source src="videos/communication_cycle.mp4" type="video/mp4" />
+                <track kind="captions" src="videos/communication_cycle.vtt" srclang="en" label="English">
+                Your browser does not support the video tag.
+              </video>
+              <div class="video-toolbar">
+                <button class="cc-toggle" onclick="toggleCaptions(this)" aria-pressed="false" aria-label="Toggle captions" title="Toggle captions">CC</button>
+              </div>
+            </div>
           </div>
         </section>
 
@@ -1682,11 +2094,11 @@
           <h2>Hearing vs. Listening</h2>
           <div class="cards-grid">
             <div class="card">
-              <h4>Hearing</h4>
+              <h3>Hearing</h3>
               <p>A <strong>passive, physical</strong> process. Sound waves enter your ears automatically &mdash; no effort required.</p>
             </div>
             <div class="card gold-border">
-              <h4>Listening</h4>
+              <h3>Listening</h3>
               <p>An <strong>active, intentional</strong> process. It requires effort, attention, and the desire to understand the speaker's message.</p>
             </div>
           </div>
@@ -1704,28 +2116,28 @@
             <div class="smart-row">
               <div class="smart-letter">&#127919;</div>
               <div class="smart-content">
-                <h4>Attention Skills</h4>
+                <h3>Attention Skills</h3>
                 <p>Pay attention to the speaker's words and body language. Don't allow yourself to be distracted.</p>
               </div>
             </div>
             <div class="smart-row">
               <div class="smart-letter alt">&#128269;</div>
               <div class="smart-content">
-                <h4>Clarifying Questions</h4>
+                <h3>Clarifying Questions</h3>
                 <p>Ask questions about unclear statements, missing information, or anything that could be interpreted more than one way.</p>
               </div>
             </div>
             <div class="smart-row">
               <div class="smart-letter">&#128161;</div>
               <div class="smart-content">
-                <h4>Reflective Skills</h4>
+                <h3>Reflective Skills</h3>
                 <p>Reflect back to the speaker the message as you understood it. What emotions did you hear? Did you understand the concept?</p>
               </div>
             </div>
             <div class="smart-row">
               <div class="smart-letter alt">&#128683;</div>
               <div class="smart-content">
-                <h4>Overcoming Obstacles</h4>
+                <h3>Overcoming Obstacles</h3>
                 <p>Recognize distractions, personal emotions, opinions of the speaker, and other things on your mind that interfere with listening.</p>
               </div>
             </div>
@@ -1735,11 +2147,17 @@
         <!-- Slide 14: Video -->
         <section class="slide slide-video" data-chapter="3">
           <h2>Watch: Effective Communication in the Workplace</h2>
-          <div class="video-container" style="position:relative; width:100%; max-width:900px; margin:0 auto;">
-            <video controls class="local-video" style="width:100%; border-radius:12px; box-shadow:0 4px 20px rgba(0,0,0,0.15);">
-              <source src="videos/effective_communication_workplace.mp4" type="video/mp4" />
-              Your browser does not support the video tag.
-            </video>
+          <div class="video-container" style="position:relative; width:100%; max-width:1200px; margin:0 auto;">
+            <div class="video-wrapper">
+              <video controls class="local-video" preload="none" poster="videos/effective_communication_workplace.jpg" aria-label="Effective Communication in the Workplace" style="width:100%;">
+                <source src="videos/effective_communication_workplace.mp4" type="video/mp4" />
+                <track kind="captions" src="videos/effective_communication_workplace.vtt" srclang="en" label="English">
+                Your browser does not support the video tag.
+              </video>
+              <div class="video-toolbar">
+                <button class="cc-toggle" onclick="toggleCaptions(this)" aria-pressed="false" aria-label="Toggle captions" title="Toggle captions">CC</button>
+              </div>
+            </div>
           </div>
         </section>
 
@@ -1751,10 +2169,6 @@
             <p>Think about the communication cycle we just discussed. Can you recall a time when a message you sent was <strong>decoded differently</strong> than you intended?</p>
             <p style="margin-top:1rem;">What could you have done to ensure your message was received clearly?</p>
           </div>
-          <div class="instructor-prompt" style="display:none; margin-top:1.5rem; padding:1rem 1.5rem; background:rgba(211,178,87,0.1); border:1px solid var(--gold); border-radius:8px;">
-            <p style="font-size:1.1rem; color:var(--gray);"><strong style="color:var(--muted-gold);">Instructor Prompt:</strong> Give students 2-3 minutes to reflect silently, then invite 2-3 volunteers to share their experience. Bridge this into the next chapter on communication styles by noting that HOW we send messages (verbal, body, voice) affects whether they are decoded correctly.</p>
-          </div>
-          <button onclick="const p=this.previousElementSibling;p.style.display=p.style.display==='none'?'block':'none';this.textContent=p.style.display==='none'?'View Prompt':'Hide Prompt'" style="margin-top:0.5rem; padding:0.4rem 1rem; background:var(--gold); color:var(--dark); border:none; border-radius:6px; cursor:pointer; font-size:0.85rem; font-weight:600;">View Prompt</button>
         </section>
 
         <!-- ======================== -->
@@ -1773,13 +2187,13 @@
         <section class="slide" data-chapter="4">
           <h2>Three Communication Styles</h2>
           <div class="tabs-container">
-            <div class="tabs-nav">
-              <button class="tab-btn active" onclick="switchTab(event, 'tab-verbal')">&#128172; Verbal</button>
-              <button class="tab-btn" onclick="switchTab(event, 'tab-body')">&#128587; Body</button>
-              <button class="tab-btn" onclick="switchTab(event, 'tab-voice')">&#127925; Voice</button>
+            <div class="tabs-nav" role="tablist">
+              <button class="tab-btn active" id="btn-tab-verbal" onclick="switchTab(event, 'tab-verbal')" role="tab" aria-selected="true" aria-controls="tab-verbal">&#128172; Verbal</button>
+              <button class="tab-btn" id="btn-tab-body" onclick="switchTab(event, 'tab-body')" role="tab" aria-selected="false" aria-controls="tab-body">&#128587; Body</button>
+              <button class="tab-btn" id="btn-tab-voice" onclick="switchTab(event, 'tab-voice')" role="tab" aria-selected="false" aria-controls="tab-voice">&#127925; Voice</button>
             </div>
-            <div id="tab-verbal" class="tab-panel active">
-              <h4>Verbal Message</h4>
+            <div id="tab-verbal" class="tab-panel active" role="tabpanel">
+              <h3>Verbal Message</h3>
               <p>The words you choose carry your meaning. Pay attention to:</p>
               <ul>
                 <li><strong>Pronunciation</strong> &mdash; Pronounce words correctly</li>
@@ -1789,8 +2203,8 @@
                 <li><strong>Swearing</strong> &mdash; Avoid at all costs in public communication</li>
               </ul>
             </div>
-            <div id="tab-body" class="tab-panel">
-              <h4>Body Message</h4>
+            <div id="tab-body" class="tab-panel" role="tabpanel">
+              <h3>Body Message</h3>
               <p>Your body speaks even when your mouth is closed:</p>
               <ul>
                 <li><strong>Facial Expressions</strong> &mdash; Ensure your expression matches the message you want to convey, not necessarily how you feel</li>
@@ -1799,8 +2213,8 @@
                 <li><strong>Gestures</strong> &mdash; Use intentional hand movements to reinforce your message</li>
               </ul>
             </div>
-            <div id="tab-voice" class="tab-panel">
-              <h4>Voice Message</h4>
+            <div id="tab-voice" class="tab-panel" role="tabpanel">
+              <h3>Voice Message</h3>
               <p>How you say it matters as much as what you say:</p>
               <ul>
                 <li><strong>Pitch</strong> &mdash; The highness or lowness of your voice</li>
@@ -1829,6 +2243,10 @@
               <div class="visual-circle" style="background:linear-gradient(135deg, var(--accent), var(--primary)); font-size:3rem;">&#9989;</div>
             </div>
           </div>
+          <div class="activity-box">
+            <span class="activity-label">DISCUSSION</span>
+            <p>Describe a time when someone&rsquo;s body language or tone of voice contradicted their words. How did the mixed message make you feel, and how did you decide which message to believe?</p>
+          </div>
         </section>
 
         <!-- Slide 19: Bad Communication Videos -->
@@ -1837,34 +2255,54 @@
           <p style="font-size:1.2rem; color:var(--gray); margin-top:-1.5rem; margin-bottom:1.5rem;">Watch each video, then discuss what went wrong and how it could be improved.</p>
           <div class="video-grid">
             <div class="video-grid-item">
-              <video controls style="width:100%; border-radius:10px; box-shadow:0 4px 16px rgba(0,0,0,0.12);">
-                <source src="videos/poor_customer_service_satire.mp4" type="video/mp4" />
-              </video>
+              <div class="video-wrapper">
+                <video controls preload="none" poster="videos/poor_customer_service_satire.jpg" aria-label="Poor Customer Service Satire - Cleveland Ohio" style="width:100%;">
+                  <source src="videos/poor_customer_service_satire.mp4" type="video/mp4" />
+                  <track kind="captions" src="videos/poor_customer_service_satire.vtt" srclang="en" label="English">
+                </video>
+                <div class="video-toolbar">
+                  <button class="cc-toggle" onclick="toggleCaptions(this)" aria-pressed="false" aria-label="Toggle captions" title="Toggle captions">CC</button>
+                </div>
+              </div>
               <p>Cleveland, Ohio &mdash; Satire (3:00)</p>
             </div>
             <div class="video-grid-item">
-              <video controls style="width:100%; border-radius:10px; box-shadow:0 4px 16px rgba(0,0,0,0.12);">
-                <source src="videos/poor_customer_service_scenario.mp4" type="video/mp4" />
-              </video>
+              <div class="video-wrapper">
+                <video controls preload="none" poster="videos/poor_customer_service_scenario.jpg" aria-label="Poor Customer Service Scenario" style="width:100%;">
+                  <source src="videos/poor_customer_service_scenario.mp4" type="video/mp4" />
+                  <track kind="captions" src="videos/poor_customer_service_scenario.vtt" srclang="en" label="English">
+                </video>
+                <div class="video-toolbar">
+                  <button class="cc-toggle" onclick="toggleCaptions(this)" aria-pressed="false" aria-label="Toggle captions" title="Toggle captions">CC</button>
+                </div>
+              </div>
               <p>Poor Customer Service (2:46)</p>
             </div>
             <div class="video-grid-item">
-              <video controls style="width:100%; border-radius:10px; box-shadow:0 4px 16px rgba(0,0,0,0.12);">
-                <source src="videos/bad_customer_service.mp4" type="video/mp4" />
-              </video>
+              <div class="video-wrapper">
+                <video controls preload="none" poster="videos/bad_customer_service.jpg" aria-label="Bad Customer Service Example" style="width:100%;">
+                  <source src="videos/bad_customer_service.mp4" type="video/mp4" />
+                  <track kind="captions" src="videos/bad_customer_service.vtt" srclang="en" label="English">
+                </video>
+                <div class="video-toolbar">
+                  <button class="cc-toggle" onclick="toggleCaptions(this)" aria-pressed="false" aria-label="Toggle captions" title="Toggle captions">CC</button>
+                </div>
+              </div>
               <p>Bad Customer Service (1:12)</p>
             </div>
             <div class="video-grid-item">
-              <video controls style="width:100%; border-radius:10px; box-shadow:0 4px 16px rgba(0,0,0,0.12);">
-                <source src="videos/bad_customer_service_rep.mp4" type="video/mp4" />
-              </video>
+              <div class="video-wrapper">
+                <video controls preload="none" poster="videos/bad_customer_service_rep.jpg" aria-label="Bad Customer Service Representative" style="width:100%;">
+                  <source src="videos/bad_customer_service_rep.mp4" type="video/mp4" />
+                  <track kind="captions" src="videos/bad_customer_service_rep.vtt" srclang="en" label="English">
+                </video>
+                <div class="video-toolbar">
+                  <button class="cc-toggle" onclick="toggleCaptions(this)" aria-pressed="false" aria-label="Toggle captions" title="Toggle captions">CC</button>
+                </div>
+              </div>
               <p>Bad Service Rep (2:32)</p>
             </div>
           </div>
-          <div class="instructor-prompt" style="display:none; margin-top:1.5rem; padding:1rem 1.5rem; background:rgba(211,178,87,0.1); border:1px solid var(--gold); border-radius:8px;">
-            <p style="font-size:1.1rem; color:var(--gray);"><strong style="color:var(--muted-gold);">Instructor Prompt:</strong> For each video, have students (1) write how the employee(s) demonstrated bad communication skills and (2) what they could have done differently. This can be done individually, in pairs, or as a class discussion.</p>
-          </div>
-          <button onclick="const p=this.previousElementSibling;p.style.display=p.style.display==='none'?'block':'none';this.textContent=p.style.display==='none'?'View Prompt':'Hide Prompt'" style="margin-top:0.5rem; padding:0.4rem 1rem; background:var(--gold); color:var(--dark); border:none; border-radius:6px; cursor:pointer; font-size:0.85rem; font-weight:600;">View Prompt</button>
         </section>
 
         <!-- Slide 20: Role-Play Activity -->
@@ -1872,34 +2310,34 @@
           <h2>Practice: Role-Play Scenarios</h2>
           <p style="font-size:1.2rem; color:var(--gray); margin-top:-1.5rem; margin-bottom:1.5rem;">Break into pairs or small groups. Assign roles: Communicator and Public.</p>
           <div class="dangers-grid">
-            <div class="danger-card">
+            <div class="danger-card" tabindex="0" aria-expanded="false">
               <div class="danger-card-inner">
-                <div class="danger-card-front"><div class="danger-icon">&#128227;</div><h4>Community Event</h4></div>
-                <div class="danger-card-back"><h4>Scenario</h4><p>Announce a community event clearly and answer public questions.</p></div>
+                <div class="danger-card-front"><div class="danger-icon">&#128227;</div><h3>Community Event</h3></div>
+                <div class="danger-card-back"><h3>Scenario</h3><p>Announce a community event clearly and answer public questions.</p></div>
               </div>
             </div>
-            <div class="danger-card">
+            <div class="danger-card" tabindex="0" aria-expanded="false">
               <div class="danger-card-inner">
-                <div class="danger-card-front"><div class="danger-icon">&#128548;</div><h4>Complaint</h4></div>
-                <div class="danger-card-back"><h4>Scenario</h4><p>Respond to a customer complaint with empathy and solutions.</p></div>
+                <div class="danger-card-front"><div class="danger-icon">&#128548;</div><h3>Complaint</h3></div>
+                <div class="danger-card-back"><h3>Scenario</h3><p>Respond to a customer complaint with empathy and solutions.</p></div>
               </div>
             </div>
-            <div class="danger-card">
+            <div class="danger-card" tabindex="0" aria-expanded="false">
               <div class="danger-card-inner">
-                <div class="danger-card-front"><div class="danger-icon">&#128680;</div><h4>Emergency</h4></div>
-                <div class="danger-card-back"><h4>Scenario</h4><p>Communicate an emergency alert calmly and accurately.</p></div>
+                <div class="danger-card-front"><div class="danger-icon">&#128680;</div><h3>Emergency</h3></div>
+                <div class="danger-card-back"><h3>Scenario</h3><p>Communicate an emergency alert calmly and accurately.</p></div>
               </div>
             </div>
-            <div class="danger-card">
+            <div class="danger-card" tabindex="0" aria-expanded="false">
               <div class="danger-card-inner">
-                <div class="danger-card-front"><div class="danger-icon">&#128220;</div><h4>New Policy</h4></div>
-                <div class="danger-card-back"><h4>Scenario</h4><p>Explain a new workplace policy so everyone understands it.</p></div>
+                <div class="danger-card-front"><div class="danger-icon">&#128220;</div><h3>New Policy</h3></div>
+                <div class="danger-card-back"><h3>Scenario</h3><p>Explain a new workplace policy so everyone understands it.</p></div>
               </div>
             </div>
-            <div class="danger-card">
+            <div class="danger-card" tabindex="0" aria-expanded="false">
               <div class="danger-card-inner">
-                <div class="danger-card-front"><div class="danger-icon">&#128681;</div><h4>Misinformation</h4></div>
-                <div class="danger-card-back"><h4>Scenario</h4><p>Handle misinformation with facts, patience, and respect.</p></div>
+                <div class="danger-card-front"><div class="danger-icon">&#128681;</div><h3>Misinformation</h3></div>
+                <div class="danger-card-back"><h3>Scenario</h3><p>Handle misinformation with facts, patience, and respect.</p></div>
               </div>
             </div>
           </div>
@@ -1908,10 +2346,6 @@
             <a href="Handouts/Communicating with the Public 2026 Handouts.pdf#page=7" target="_blank" class="download-btn">Role-Play Scenarios</a>
             <a href="Handouts/Communicating with the Public 2026 Handouts.pdf#page=10" target="_blank" class="download-btn">Evaluation Form</a>
           </div>
-          <div class="instructor-prompt" style="display:none; margin-top:1.5rem; padding:1rem 1.5rem; background:rgba(211,178,87,0.1); border:1px solid var(--gold); border-radius:8px;">
-            <p style="font-size:1.1rem; color:var(--gray);"><strong style="color:var(--muted-gold);">Instructor Prompt:</strong> After each role-play, discuss: Was the message clear? Was the tone respectful? Were questions answered accurately? Use the evaluation form for structured feedback.</p>
-          </div>
-          <button onclick="const p=this.previousElementSibling;p.style.display=p.style.display==='none'?'block':'none';this.textContent=p.style.display==='none'?'View Prompt':'Hide Prompt'" style="margin-top:0.5rem; padding:0.4rem 1rem; background:var(--gold); color:var(--dark); border:none; border-radius:6px; cursor:pointer; font-size:0.85rem; font-weight:600;">View Prompt</button>
         </section>
 
         <!-- ======================== -->
@@ -2007,11 +2441,11 @@
           <h2>Building Self-Advocacy Skills</h2>
           <div class="accordion">
             <div class="accordion-item open">
-              <div class="accordion-header" onclick="toggleAccordion(this)">
+              <button type="button" class="accordion-header" onclick="toggleAccordion(this)" aria-expanded="true" aria-controls="accordion-panel-1">
                 <span>Key Components of Self-Advocacy</span>
-                <span class="accordion-arrow">&#9660;</span>
-              </div>
-              <div class="accordion-body">
+                <span class="accordion-arrow" aria-hidden="true">&#9660;</span>
+              </button>
+              <div class="accordion-body" id="accordion-panel-1">
                 <ul>
                   <li><strong>Know Yourself</strong> &mdash; Understand your strengths, needs, and goals</li>
                   <li><strong>Know Your Rights</strong> &mdash; Be aware of legal and workplace protections</li>
@@ -2021,11 +2455,11 @@
               </div>
             </div>
             <div class="accordion-item">
-              <div class="accordion-header" onclick="toggleAccordion(this)">
+              <button type="button" class="accordion-header" onclick="toggleAccordion(this)" aria-expanded="false" aria-controls="accordion-panel-2">
                 <span>How to Practice Self-Advocacy</span>
-                <span class="accordion-arrow">&#9660;</span>
-              </div>
-              <div class="accordion-body">
+                <span class="accordion-arrow" aria-hidden="true">&#9660;</span>
+              </button>
+              <div class="accordion-body" id="accordion-panel-2">
                 <ul>
                   <li><strong>Identify Your Needs</strong> &mdash; Reflect on what you require in a situation</li>
                   <li><strong>Gather Information</strong> &mdash; Research your options and resources</li>
@@ -2036,11 +2470,11 @@
               </div>
             </div>
             <div class="accordion-item">
-              <div class="accordion-header" onclick="toggleAccordion(this)">
+              <button type="button" class="accordion-header" onclick="toggleAccordion(this)" aria-expanded="false" aria-controls="accordion-panel-3">
                 <span>Overcoming Barriers to Self-Advocacy</span>
-                <span class="accordion-arrow">&#9660;</span>
-              </div>
-              <div class="accordion-body">
+                <span class="accordion-arrow" aria-hidden="true">&#9660;</span>
+              </button>
+              <div class="accordion-body" id="accordion-panel-3">
                 <ul>
                   <li><strong>Fear of Rejection or Conflict</strong> &mdash; Start small; practice in low-stakes situations first</li>
                   <li><strong>Lack of Knowledge</strong> &mdash; Research your rights and available resources</li>
@@ -2086,7 +2520,7 @@
             <div class="area-card">
               <div class="area-header">
                 <div class="area-icon">&#127891;</div>
-                <h4>Programs &amp; Groups</h4>
+                <h3>Programs &amp; Groups</h3>
               </div>
               <ul>
                 <li>Community organizations</li>
@@ -2097,7 +2531,7 @@
             <div class="area-card gold-card">
               <div class="area-header">
                 <div class="area-icon">&#129309;</div>
-                <h4>People &amp; Networks</h4>
+                <h3>People &amp; Networks</h3>
               </div>
               <ul>
                 <li>Counselors and advisors</li>
@@ -2108,7 +2542,7 @@
             <div class="area-card">
               <div class="area-header">
                 <div class="area-icon">&#128187;</div>
-                <h4>Online &amp; Digital</h4>
+                <h3>Online &amp; Digital</h3>
               </div>
               <ul>
                 <li>Online communities</li>
@@ -2127,11 +2561,17 @@
         <!-- Slide 28: TEDx Video -->
         <section class="slide slide-video" data-chapter="5">
           <h2>Watch: Self-Advocacy &mdash; A State of Mind (TEDx)</h2>
-          <div class="video-container" style="position:relative; width:100%; max-width:900px; margin:0 auto;">
-            <video controls class="local-video" style="width:100%; border-radius:12px; box-shadow:0 4px 20px rgba(0,0,0,0.15);">
-              <source src="videos/self_advocacy_state_of_mind_tedx.mp4" type="video/mp4" />
-              Your browser does not support the video tag.
-            </video>
+          <div class="video-container" style="position:relative; width:100%; max-width:1200px; margin:0 auto;">
+            <div class="video-wrapper">
+              <video controls class="local-video" preload="none" poster="videos/self_advocacy_state_of_mind_tedx.jpg" aria-label="Self-Advocacy - A State of Mind TEDx Talk" style="width:100%;">
+                <source src="videos/self_advocacy_state_of_mind_tedx.mp4" type="video/mp4" />
+                <track kind="captions" src="videos/self_advocacy_state_of_mind_tedx.vtt" srclang="en" label="English">
+                Your browser does not support the video tag.
+              </video>
+              <div class="video-toolbar">
+                <button class="cc-toggle" onclick="toggleCaptions(this)" aria-pressed="false" aria-label="Toggle captions" title="Toggle captions">CC</button>
+              </div>
+            </div>
           </div>
         </section>
 
@@ -2168,10 +2608,6 @@
             <span class="download-prompt">Instructor Resource Available</span>
             <a href="Handouts/Communicating with the Public 2026 Handouts.pdf#page=3" target="_blank" class="download-btn">Personal Listening Assessment</a>
           </div>
-          <div class="instructor-prompt" style="display:none; margin-top:1.5rem; padding:1rem 1.5rem; background:rgba(211,178,87,0.1); border:1px solid var(--gold); border-radius:8px;">
-            <p style="font-size:1.1rem; color:var(--gray);"><strong style="color:var(--muted-gold);">Instructor Prompt:</strong> Have learners complete the second column. Discuss the answers. Ask: "Did your self-assessment change? What listening skills do you want to keep working on?"</p>
-          </div>
-          <button onclick="const p=this.previousElementSibling;p.style.display=p.style.display==='none'?'block':'none';this.textContent=p.style.display==='none'?'View Prompt':'Hide Prompt'" style="margin-top:0.5rem; padding:0.4rem 1rem; background:var(--gold); color:var(--dark); border:none; border-radius:6px; cursor:pointer; font-size:0.85rem; font-weight:600;">View Prompt</button>
         </section>
 
         <!-- ======================== -->
@@ -2212,17 +2648,13 @@
             <a href="Handouts/Communicating with the Public 2026 Handouts.pdf" target="_blank" class="download-btn">All Handouts (PDF)</a>
             <a href="Handouts/Communicating with the Public 2026 Handouts.pdf#page=12" target="_blank" class="download-btn">Back-to-Back Drawing</a>
           </div>
-          <div class="instructor-prompt" style="display:none; margin-top:1.5rem; padding:1rem 1.5rem; background:rgba(211,178,87,0.1); border:1px solid var(--gold); border-radius:8px;">
-            <p style="font-size:1.1rem; color:var(--gray);"><strong style="color:var(--muted-gold);">Instructor Prompt:</strong> Students will apply their public communication skills by developing a self-advocacy binder. They may choose handouts from the Self-Advocacy Handout Library. Allow 15-20 minutes for selection and organization, then have students share one item and why they selected it.</p>
-          </div>
-          <button onclick="const p=this.previousElementSibling;p.style.display=p.style.display==='none'?'block':'none';this.textContent=p.style.display==='none'?'View Prompt':'Hide Prompt'" style="margin-top:0.5rem; padding:0.4rem 1rem; background:var(--gold); color:var(--dark); border:none; border-radius:6px; cursor:pointer; font-size:0.85rem; font-weight:600;">View Prompt</button>
         </section>
 
         <!-- Slide 33: Closing -->
         <section class="slide slide-closing" data-chapter="7" id="closingSlide">
           <div class="confetti-container" id="confettiContainer"></div>
           <div class="closing-box">
-            <h3 style="color:var(--gold); font-size:1.5rem; margin-bottom:1.5rem;">
+            <h3 style="color:var(--light); font-size:1.5rem; margin-bottom:1.5rem;">
               Congratulations, you have completed this lesson!
             </h3>
             <p>"The single biggest problem in communication is the illusion that it has taken place." &mdash; George Bernard Shaw</p>
@@ -2233,16 +2665,16 @@
 
         <!-- Navigation Hint -->
         <div class="nav-hint">
-          <span class="key-icon" id="prevBtn" onclick="prevSlide()">&#8592;</span>
+          <button type="button" class="key-icon" id="prevBtn" aria-label="Previous slide">&#8592;</button>
           <span>to navigate</span>
-          <span class="key-icon" id="nextBtn" onclick="nextSlide()">&#8594;</span>
+          <button type="button" class="key-icon" id="nextBtn" aria-label="Next slide">&#8594;</button>
         </div>
 
         <!-- Branding Logo -->
         <img src="SPOKES-Logo.png" alt="SPOKES" class="branding-logo" />
 
         <!-- Progress Bar -->
-        <div class="progress-bar" id="progressBar"></div>
+        <div class="progress-bar" id="progressBar" role="progressbar" aria-valuenow="0" aria-valuemin="0" aria-valuemax="100" aria-label="Lesson progress"></div>
       </main>
     </div>
 
@@ -2263,6 +2695,7 @@
       const progressBar = document.getElementById("progressBar");
 
       let currentIndex = 0;
+      let confettiTriggered = false;
       let sidebarCollapsed = false;
       const sidebarEl = document.querySelector(".sidebar");
       const sidebarToggleBtn = document.getElementById("sidebarToggle");
@@ -2272,6 +2705,7 @@
         sidebarCollapsed = !sidebarCollapsed;
         sidebarEl.classList.toggle("collapsed", sidebarCollapsed);
         sidebarToggleBtn.textContent = sidebarCollapsed ? "\u00BB" : "\u00AB";
+        sidebarToggleBtn.setAttribute('aria-expanded', String(!sidebarCollapsed));
       }
 
       let audioCtx;
@@ -2362,6 +2796,8 @@
         chapterListEl.insertAdjacentHTML("beforeend", html);
 
         document.querySelectorAll(".chapter-header").forEach(function(header) {
+          header.setAttribute('tabindex', '0');
+          header.setAttribute('role', 'button');
           header.addEventListener("click", function() {
             var chapterItem = header.parentElement;
             var wasExpanded = chapterItem.classList.contains("expanded");
@@ -2371,12 +2807,20 @@
             var targetIndex = Array.from(slides).findIndex(function(slide) { return slide.dataset.chapter === chapter; });
             if (targetIndex !== -1) showSlide(targetIndex);
           });
+          header.addEventListener('keydown', function(e) {
+            if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); header.click(); }
+          });
         });
 
         document.querySelectorAll(".slide-item").forEach(function(item) {
+          item.setAttribute('tabindex', '0');
+          item.setAttribute('role', 'button');
           item.addEventListener("click", function(e) {
             e.stopPropagation();
             showSlide(parseInt(item.dataset.slide));
+          });
+          item.addEventListener('keydown', function(e) {
+            if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); item.click(); }
           });
         });
       }
@@ -2409,8 +2853,26 @@
         if (index < 0) index = 0;
         if (index >= slides.length) index = slides.length - 1;
 
+        // NAV-02: Pause any playing videos on the current slide
+        document.querySelectorAll('.slide.active video').forEach(function(v) { v.pause(); });
+        // Reset captions when leaving a slide
+        document.querySelectorAll('.cc-toggle.cc-active').forEach(function(btn) {
+          btn.classList.remove('cc-active');
+          btn.setAttribute('aria-pressed', 'false');
+        });
+        document.querySelectorAll('video').forEach(function(v) {
+          if (v.textTracks && v.textTracks.length > 0) {
+            for (var i = 0; i < v.textTracks.length; i++) {
+              v.textTracks[i].mode = 'disabled';
+            }
+          }
+        });
+
         var doTransition = function() {
           currentIndex = index;
+
+          // NAV-06: Persist current slide to sessionStorage
+          try { sessionStorage.setItem('spokes_slide_' + document.title, currentIndex); } catch(e) {}
 
           slides.forEach(function(slide, i) {
             if (i !== index) {
@@ -2440,7 +2902,9 @@
           }
 
           currentSlideEl.textContent = index + 1;
-          progressBar.style.width = ((index + 1) / slides.length) * 100 + "%";
+          var progressPercent = Math.round(((index + 1) / slides.length) * 100);
+          progressBar.style.width = progressPercent + "%";
+          progressBar.setAttribute("aria-valuenow", String(progressPercent));
 
           var brandingLogo = document.querySelector(".branding-logo");
           if (slides[index].classList.contains("slide-title") || slides[index].classList.contains("slide-closing")) {
@@ -2451,7 +2915,22 @@
 
           observeSlideContent(slides[index]);
 
-          if (slides[index].classList.contains("slide-closing") && !prefersReduced) {
+          // NAV-03: Focus management — blur active element after slide transition
+          document.activeElement?.blur();
+
+          // NAV-04: Announce slide change to screen readers
+          var slideTitle = slides[index].querySelector('h1, h2');
+          var announcer = document.getElementById('slideAnnouncer');
+          if (announcer && slideTitle) {
+            announcer.textContent = 'Slide ' + (index + 1) + ' of ' + slides.length + ': ' + slideTitle.textContent.replace(/\s+/g, ' ').trim();
+          }
+
+          if (!slides[index].classList.contains("slide-closing")) {
+            confettiTriggered = false;
+          }
+
+          if (slides[index].classList.contains("slide-closing") && !prefersReduced && !confettiTriggered) {
+            confettiTriggered = true;
             triggerConfetti();
             playSuccessSound();
           }
@@ -2467,7 +2946,14 @@
       function triggerConfetti() {
         var container = document.getElementById("confettiContainer");
         container.textContent = "";
-        var colors = ["#37b550", "#007baf", "#d3b257", "#a7253f", "#FFFFFF"];
+        var style = getComputedStyle(document.documentElement);
+        var colors = [
+          style.getPropertyValue('--accent').trim(),
+          style.getPropertyValue('--primary').trim(),
+          style.getPropertyValue('--gold').trim(),
+          style.getPropertyValue('--mauve').trim(),
+          style.getPropertyValue('--light').trim(),
+        ];
         for (var i = 0; i < 100; i++) {
           var confetti = document.createElement("div");
           confetti.className = "confetti";
@@ -2486,23 +2972,39 @@
       function nextSlide() { showSlide(currentIndex + 1); }
       function prevSlide() { showSlide(currentIndex - 1); }
 
-      document.addEventListener("keydown", function(e) {
-        if (e.key === "ArrowRight" || e.key === " ") { e.preventDefault(); nextSlide(); }
-        else if (e.key === "ArrowLeft") { e.preventDefault(); prevSlide(); }
+      document.getElementById('prevBtn').addEventListener('click', prevSlide);
+      document.getElementById('nextBtn').addEventListener('click', nextSlide);
+
+      document.addEventListener('keydown', function(e) {
+        var target = e.target;
+        var isFormField = target && target.closest('input, textarea, select, [contenteditable="true"]');
+        if (isFormField) return;
+        if (e.defaultPrevented) return;
+        // Only suppress arrow keys for elements that use them internally (tabs)
+        var usesArrowKeys = target && target.closest('[role="tab"]');
+        if (usesArrowKeys && (e.key === 'ArrowRight' || e.key === 'ArrowLeft')) return;
+        // Suppress space only on focusable interactive elements (buttons, links, etc.)
+        var isInteractive = target && target.closest('button, a, [role="button"], [role="tab"]');
+        if (isInteractive && e.key === ' ') return;
+        if (e.key === 'ArrowRight') { e.preventDefault(); nextSlide(); }
+        else if (e.key === 'ArrowLeft') { e.preventDefault(); prevSlide(); }
+        else if (e.key === ' ') { e.preventDefault(); nextSlide(); }
       });
 
       var touchStartX = 0;
-      document.addEventListener("touchstart", function(e) { touchStartX = e.changedTouches[0].screenX; });
-      document.addEventListener("touchend", function(e) {
+      var mainEl = document.querySelector('.main');
+      mainEl.addEventListener('touchstart', function(e) { touchStartX = e.changedTouches[0].screenX; }, { passive: true });
+      mainEl.addEventListener('touchend', function(e) {
         var diff = touchStartX - e.changedTouches[0].screenX;
         if (Math.abs(diff) > 50) { diff > 0 ? nextSlide() : prevSlide(); }
-      });
+      }, { passive: true });
 
       function initSidebarState() {
         if (window.innerWidth <= 768) {
           sidebarCollapsed = true;
           sidebarEl.classList.add("collapsed");
           sidebarToggleBtn.textContent = "\u00BB";
+          sidebarToggleBtn.setAttribute('aria-expanded', 'false');
         }
       }
 
@@ -2523,10 +3025,99 @@
         if (!wasOpen) item.classList.add('open');
       }
 
+      // ACC-02: Toggle aria-expanded on accordion headers
+      var origToggleAccordion = toggleAccordion;
+      toggleAccordion = function(header) {
+        var item = header.parentElement;
+        var wasOpen = item.classList.contains('open');
+        // Reset all aria-expanded in this accordion
+        item.parentElement.querySelectorAll('.accordion-header').forEach(function(h) { h.setAttribute('aria-expanded', 'false'); });
+        origToggleAccordion(header);
+        if (!wasOpen) header.setAttribute('aria-expanded', 'true');
+      };
+
+      // ACC-02: Accordion keyboard handler (Enter/Space)
+      document.querySelectorAll('.accordion-header').forEach(function(header) {
+        header.setAttribute('tabindex', '0');
+        header.addEventListener('keydown', function(e) {
+          if (e.key === 'Enter' || e.key === ' ') {
+            e.preventDefault();
+            toggleAccordion(header);
+          }
+        });
+      });
+
+      // ACC-01: Tab ARIA updates in switchTab
+      var origSwitchTab = switchTab;
+      switchTab = function(event, tabId) {
+        var container = event.target.closest('.slide');
+        container.querySelectorAll('[role="tab"]').forEach(function(btn) { btn.setAttribute('aria-selected', 'false'); });
+        origSwitchTab(event, tabId);
+        event.target.setAttribute('aria-selected', 'true');
+      };
+
+      // ACC-01: Tab arrow-key navigation (ARIA tablist pattern)
+      document.querySelectorAll('[role="tablist"]').forEach(function(tablist) {
+        tablist.addEventListener('keydown', function(e) {
+          var tabs = Array.from(tablist.querySelectorAll('[role="tab"]'));
+          var idx = tabs.indexOf(document.activeElement);
+          if (idx === -1) return;
+          var next = -1;
+          if (e.key === 'ArrowRight') next = (idx + 1) % tabs.length;
+          else if (e.key === 'ArrowLeft') next = (idx - 1 + tabs.length) % tabs.length;
+          if (next !== -1) {
+            e.preventDefault();
+            tabs[next].focus();
+            tabs[next].click();
+          }
+        });
+      });
+
+      // ACC-03: Flip card click and keyboard handler
+      document.querySelectorAll('.danger-card').forEach(function(card) {
+        card.addEventListener('click', function() {
+          var isFlipped = card.classList.toggle('flipped');
+          card.setAttribute('aria-expanded', isFlipped ? 'true' : 'false');
+        });
+        card.addEventListener('keydown', function(e) {
+          if (e.key === 'Enter' || e.key === ' ') {
+            e.preventDefault();
+            var isFlipped = card.classList.toggle('flipped');
+            card.setAttribute('aria-expanded', isFlipped ? 'true' : 'false');
+          }
+        });
+      });
+
       // Initialize
       buildSidebar();
       initSidebarState();
-      showSlide(0);
+      // NAV-06: Restore saved slide position from sessionStorage
+      var savedSlide = 0;
+      try { savedSlide = parseInt(sessionStorage.getItem('spokes_slide_' + document.title)) || 0; } catch(e) {}
+      showSlide(savedSlide);
+
+      /* CC Toggle Button */
+      function toggleCaptions(btn) {
+        const video = btn.closest('.video-wrapper').querySelector('video');
+        if (!video || !video.textTracks || video.textTracks.length === 0) return;
+        const track = video.textTracks[0];
+        const isActive = btn.classList.contains('cc-active');
+        if (isActive) {
+          track.mode = 'disabled';
+          btn.classList.remove('cc-active');
+          btn.setAttribute('aria-pressed', 'false');
+        } else {
+          track.mode = 'showing';
+          btn.classList.add('cc-active');
+          btn.setAttribute('aria-pressed', 'true');
+        }
+      }
+
+      document.querySelectorAll('video').forEach(v => {
+        if (v.textTracks && v.textTracks.length > 0) {
+          v.textTracks[0].mode = 'disabled';
+        }
+      });
     </script>
   </body>
 </html>

@@ -94,7 +94,7 @@
 - **Heading:** `'Bitter', serif` — slab serif designed for comfortable reading
 - **Body:** `'Raleway', sans-serif` — elegant thin-to-bold weight range
 - **Import:** `family=Bitter:wght@400;600;700&family=Raleway:wght@400;500;600`
-- **Status:** Available
+- **Status:** ASSIGNED — Problem Solving & Decision Making
 
 ---
 
@@ -248,5 +248,6 @@
 | 2 | Playfair Display + Inter | Interview Skills | Yes |
 | 7 | Crimson Pro + Work Sans | Communicating with the Public | Yes (2026-04-02) |
 | 10 | Vollkorn + Fira Sans | Controlling Anger | Yes (2026-04-02) |
+| 6 | Bitter + Raleway | Problem Solving & Decision Making | Yes (2026-04-09) |
 
 **Available:** 16 pairings remaining for 13 lessons to build.

@@ -1,3 +1,5 @@
+> **Card styling note:** Component HTML patterns below are the same regardless of card style. Visual differences (border-radius, shadows, backgrounds) are applied via the `<style id="theme-override">` block using `[data-chapter="N"]` scoped CSS from `theme-library.css`. Do not add card-style-specific classes or inline styles to component HTML.
+
 # SPOKES Component Library Reference
 
 This document defines every slide type and content component available in the SPOKES presentation system. Use it as a copy-paste reference when building slides.
