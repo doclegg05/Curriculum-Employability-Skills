@@ -226,9 +226,14 @@ def check_colors(doc: Document) -> list[Result]:
     else:
         results.append(Result("CLR-01", "PASS", "All 11 canonical palette variables present and correct", 0))
 
-    # CLR-02: Non-canonical hex outside :root (includes theme-override)
+    # CLR-02: Non-canonical hex outside :root (includes theme-override and inline style= attributes)
     hex_matches = re.findall(r'#[0-9a-fA-F]{3,8}\b', outside_root)
-    non_canonical = [h for h in hex_matches if h.lower() not in CANONICAL_HEX_SET]
+    inline_hex = re.findall(
+        r'style=["\'][^"\']*#([0-9a-fA-F]{3,8})\b[^"\']*["\']',
+        doc.raw_html, re.IGNORECASE
+    )
+    all_hex_matches = hex_matches + [f'#{h}' for h in inline_hex]
+    non_canonical = [h for h in all_hex_matches if h.lower() not in CANONICAL_HEX_SET]
     if non_canonical:
         unique = sorted(set(h.lower() for h in non_canonical))
         line = _find_css_line(doc, re.escape(non_canonical[0]))
@@ -247,8 +252,9 @@ def check_colors(doc: Document) -> list[Result]:
     results.append(Result("CLR-04", "PASS", "rgba() usage is permitted", 0))
 
     # CLR-05: .gold should use --muted-gold not --gold (includes theme-override)
+    # Use [^{]* instead of \s* so comma-grouped selectors like `.gold, .highlight {` are caught.
     css_outside = _css_outside_root_with_override(doc)
-    gold_rule = re.search(r'\.gold\s*\{[^}]*color\s*:\s*var\(\s*--gold\s*\)', css_outside, re.IGNORECASE)
+    gold_rule = re.search(r'\.gold[^{]*\{[^}]*color\s*:\s*var\(\s*--gold\s*\)', css_outside, re.IGNORECASE)
     if gold_rule:
         line = _find_css_line(doc, r'\.gold.*color.*var\(\s*--gold\s*\)')
         results.append(Result("CLR-05", "FAIL", ".gold text uses var(--gold) — should use var(--muted-gold) for contrast", line))
@@ -256,7 +262,8 @@ def check_colors(doc: Document) -> list[Result]:
         results.append(Result("CLR-05", "PASS", ".gold text correctly uses var(--muted-gold)", 0))
 
     # CLR-06: .accent should use --dark not --accent (includes theme-override)
-    accent_bad = re.search(r'\.accent\s*\{[^}]*color\s*:\s*var\(\s*--accent\s*\)', css_outside, re.IGNORECASE)
+    # Use [^{]* instead of \s* so comma-grouped selectors are caught.
+    accent_bad = re.search(r'\.accent[^{]*\{[^}]*color\s*:\s*var\(\s*--accent\s*\)', css_outside, re.IGNORECASE)
     if accent_bad:
         line = _find_css_line(doc, r'\.accent.*color.*var\(\s*--accent\s*\)')
         results.append(Result("CLR-06", "FAIL", ".accent text uses var(--accent) — should use var(--dark)", line))
@@ -453,15 +460,21 @@ def check_accessibility(doc: Document) -> list[Result]:
     else:
         results.append(Result(_acc(6), "PASS", _a11y_msg(6, "No videos found (auto-pass)"), 0))
 
-    # A11Y-07: Video captions
+    # A11Y-07: Video captions — per-video check (not total track count).
+    # Counts videos whose <video>...</video> block contains a <track kind="captions"> child.
+    # This catches cases where one video has multiple tracks and another has none.
     video_count = len(videos)
-    track_count = sum(1 for e in doc.elements if e.tag == "track" and e.attrs.get("kind") == "captions")
     if video_count == 0:
         results.append(Result(_acc(7), "PASS", _a11y_msg(7, "No videos — captions check auto-pass"), 0))
-    elif track_count >= video_count:
-        results.append(Result(_acc(7), "PASS", _a11y_msg(7, f"All {video_count} video(s) have caption tracks"), 0))
     else:
-        results.append(Result(_acc(7), "FAIL", _a11y_msg(7, f"Only {track_count} caption track(s) for {video_count} video(s)"), 0))
+        videos_with_captions = len(re.findall(
+            r'<video[^>]*>(?:(?!</video>).)*?<track[^>]*\bkind=["\']captions["\'][^>]*/?>',
+            doc.raw_html, re.DOTALL | re.IGNORECASE
+        ))
+        if videos_with_captions >= video_count:
+            results.append(Result(_acc(7), "PASS", _a11y_msg(7, f"All {video_count} video(s) have caption tracks"), 0))
+        else:
+            results.append(Result(_acc(7), "FAIL", _a11y_msg(7, f"Only {videos_with_captions} of {video_count} video(s) have caption tracks"), 0))
 
     # A11Y-08: Nav aria-label
     navs = [e for e in doc.elements if e.tag == "nav"]

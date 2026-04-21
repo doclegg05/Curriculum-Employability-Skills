@@ -108,6 +108,37 @@ class TestValidatorEdgeCases(unittest.TestCase):
         self.assertNotIn("FAIL", a11y07_lines[0], "A11Y-07 should NOT be FAIL with --caption-grace")
 
 
+class TestValidatorFalseNegativeFixes(unittest.TestCase):
+    """Regression tests for the 3 false-negative gaps closed in VAL-CR1/CR2/CR3."""
+
+    def test_a11y07_catches_unbalanced_tracks(self):
+        """VAL-CR1: 2 videos where both caption tracks nest inside video 1 should FAIL A11Y-07."""
+        _, stdout, _ = run_validator("minimal-fail.html")
+        fail_lines = [l for l in stdout.splitlines() if "A11Y-07" in l and "FAIL" in l]
+        self.assertGreater(
+            len(fail_lines), 0,
+            "A11Y-07 should FAIL when one video has 2 tracks and the other has none"
+        )
+
+    def test_clr05_catches_grouped_selector(self):
+        """VAL-CR2: CSS '.gold, .highlight { color: var(--gold); }' should FAIL CLR-05."""
+        _, stdout, _ = run_validator("minimal-fail.html")
+        fail_lines = [l for l in stdout.splitlines() if "CLR-05" in l and "FAIL" in l]
+        self.assertGreater(
+            len(fail_lines), 0,
+            "CLR-05 should FAIL for comma-grouped selector .gold, .highlight { color: var(--gold); }"
+        )
+
+    def test_clr02_catches_inline_style_hex(self):
+        """VAL-CR3: inline style='color: #dc2626' should FAIL CLR-02."""
+        _, stdout, _ = run_validator("minimal-fail.html")
+        fail_lines = [l for l in stdout.splitlines() if "CLR-02" in l and "FAIL" in l]
+        self.assertGreater(
+            len(fail_lines), 0,
+            "CLR-02 should FAIL for non-canonical hex in inline style= attribute"
+        )
+
+
 class TestValidatorOutput(unittest.TestCase):
     """Output format matches spec."""
 
