@@ -1017,7 +1017,7 @@
         font-size: 0.8rem;
         text-transform: uppercase;
         letter-spacing: 2px;
-        color: var(--gold);
+        color: var(--muted-gold);
         font-weight: 700;
         margin-bottom: 0.5rem;
       }
@@ -1593,9 +1593,8 @@
       .slide .accent { color: var(--dark); font-weight: 700; }
 
       /* FIX: .activity-label uses --gold (#d3b257 = 2.04:1 on white) at 0.8rem —
-         fails 4.5:1 normal text. Override to --dark (10.65:1). Gold accent
-         preserved via the activity-box border. */
-      .activity-label { color: var(--dark); }
+         fails 4.5:1 normal text. Override to --muted-gold (#ad8806 ~3.3:1 large text). */
+      .activity-label { color: var(--muted-gold); }
 
       /* FIX: .wippea-badge.p uses --light on --accent (#37b550 = 2.66:1) at
          0.6rem — fails 4.5:1. Switch bg to --primary (4.72:1 passes). */
@@ -1875,7 +1874,7 @@
     <a href="#main-content" class="skip-link">Skip to main content</a>
     <div class="container">
       <!-- Sidebar -->
-      <nav class="sidebar" aria-label="Lesson chapters">
+      <nav class="sidebar" id="sidebar" aria-label="Lesson chapters">
         <div class="sidebar-title">Communicating with the Public</div>
         <ul class="chapter-list" id="chapterList"></ul>
 
@@ -1899,7 +1898,7 @@
       <!-- Main Content -->
       <main class="main" id="main-content">
         <div aria-live="polite" id="slideAnnouncer" class="sr-only" aria-atomic="true"></div>
-        <button class="sidebar-toggle" id="sidebarToggle" onclick="toggleSidebar()" title="Toggle sidebar">&#171;</button>
+        <button class="sidebar-toggle" id="sidebarToggle" onclick="toggleSidebar()" title="Toggle sidebar" aria-expanded="true" aria-controls="sidebar" aria-label="Toggle navigation">&#171;</button>
 
         <!-- ======================== -->
         <!-- CH 1 - WARM-UP          -->
@@ -2675,7 +2674,7 @@
         <img src="SPOKES-Logo.png" alt="SPOKES" class="branding-logo" />
 
         <!-- Progress Bar -->
-        <div class="progress-bar" id="progressBar"></div>
+        <div class="progress-bar" id="progressBar" role="progressbar" aria-valuenow="0" aria-valuemin="0" aria-valuemax="100" aria-label="Lesson progress"></div>
       </main>
     </div>
 
@@ -2696,6 +2695,7 @@
       const progressBar = document.getElementById("progressBar");
 
       let currentIndex = 0;
+      let confettiTriggered = false;
       let sidebarCollapsed = false;
       const sidebarEl = document.querySelector(".sidebar");
       const sidebarToggleBtn = document.getElementById("sidebarToggle");
@@ -2705,6 +2705,7 @@
         sidebarCollapsed = !sidebarCollapsed;
         sidebarEl.classList.toggle("collapsed", sidebarCollapsed);
         sidebarToggleBtn.textContent = sidebarCollapsed ? "\u00BB" : "\u00AB";
+        sidebarToggleBtn.setAttribute('aria-expanded', String(!sidebarCollapsed));
       }
 
       let audioCtx;
@@ -2795,6 +2796,8 @@
         chapterListEl.insertAdjacentHTML("beforeend", html);
 
         document.querySelectorAll(".chapter-header").forEach(function(header) {
+          header.setAttribute('tabindex', '0');
+          header.setAttribute('role', 'button');
           header.addEventListener("click", function() {
             var chapterItem = header.parentElement;
             var wasExpanded = chapterItem.classList.contains("expanded");
@@ -2804,12 +2807,20 @@
             var targetIndex = Array.from(slides).findIndex(function(slide) { return slide.dataset.chapter === chapter; });
             if (targetIndex !== -1) showSlide(targetIndex);
           });
+          header.addEventListener('keydown', function(e) {
+            if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); header.click(); }
+          });
         });
 
         document.querySelectorAll(".slide-item").forEach(function(item) {
+          item.setAttribute('tabindex', '0');
+          item.setAttribute('role', 'button');
           item.addEventListener("click", function(e) {
             e.stopPropagation();
             showSlide(parseInt(item.dataset.slide));
+          });
+          item.addEventListener('keydown', function(e) {
+            if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); item.click(); }
           });
         });
       }
@@ -2891,7 +2902,9 @@
           }
 
           currentSlideEl.textContent = index + 1;
-          progressBar.style.width = ((index + 1) / slides.length) * 100 + "%";
+          var progressPercent = Math.round(((index + 1) / slides.length) * 100);
+          progressBar.style.width = progressPercent + "%";
+          progressBar.setAttribute("aria-valuenow", String(progressPercent));
 
           var brandingLogo = document.querySelector(".branding-logo");
           if (slides[index].classList.contains("slide-title") || slides[index].classList.contains("slide-closing")) {
@@ -2912,7 +2925,12 @@
             announcer.textContent = 'Slide ' + (index + 1) + ' of ' + slides.length + ': ' + slideTitle.textContent.replace(/\s+/g, ' ').trim();
           }
 
-          if (slides[index].classList.contains("slide-closing") && !prefersReduced) {
+          if (!slides[index].classList.contains("slide-closing")) {
+            confettiTriggered = false;
+          }
+
+          if (slides[index].classList.contains("slide-closing") && !prefersReduced && !confettiTriggered) {
+            confettiTriggered = true;
             triggerConfetti();
             playSuccessSound();
           }
@@ -2986,6 +3004,7 @@
           sidebarCollapsed = true;
           sidebarEl.classList.add("collapsed");
           sidebarToggleBtn.textContent = "\u00BB";
+          sidebarToggleBtn.setAttribute('aria-expanded', 'false');
         }
       }
 
