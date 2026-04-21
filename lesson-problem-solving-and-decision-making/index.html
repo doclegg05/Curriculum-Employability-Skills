@@ -1175,7 +1175,7 @@
       font-size: 0.8rem;
       text-transform: uppercase;
       letter-spacing: 2px;
-      color: var(--gold);
+      color: var(--muted-gold);
       font-weight: 700;
       margin-bottom: 0.5rem;
     }
@@ -2234,7 +2234,7 @@
   <a href="#main-content" class="skip-link">Skip to main content</a>
   <div class="container">
     <!-- Sidebar -->
-    <nav class="sidebar" aria-label="Lesson chapters">
+    <nav class="sidebar" id="sidebar" aria-label="Lesson chapters">
       <div class="sidebar-title">Problem-Solving &amp; Decision-Making</div>
       <ul class="chapter-list" id="chapterList"></ul>
 
@@ -2255,7 +2255,7 @@
 
     <!-- Main Content -->
     <main class="main" id="main-content">
-      <button class="sidebar-toggle" id="sidebarToggle" onclick="toggleSidebar()" title="Toggle sidebar">&#171;</button>
+      <button class="sidebar-toggle" id="sidebarToggle" onclick="toggleSidebar()" title="Toggle sidebar" aria-expanded="true" aria-controls="sidebar" aria-label="Toggle navigation">&#171;</button>
       <div aria-live="polite" id="slideAnnouncer" class="sr-only" aria-atomic="true"></div>
 
       <!-- ======================== -->
@@ -2408,7 +2408,7 @@
       <!-- Slide 8: Four Styles — Flip Cards -->
       <section class="slide" data-chapter="2">
         <h2>The Four Styles</h2>
-        <p style="font-size:1.1rem; color:var(--gray); margin-top:-1.5rem; margin-bottom:1.5rem;">Hover over each card to learn more about the style.</p>
+        <p style="font-size:1.1rem; color:var(--gray); margin-top:-1.5rem; margin-bottom:1.5rem;">Click or tap each card to learn more about the style.</p>
         <div class="dangers-grid">
           <div class="danger-card" tabindex="0" aria-expanded="false">
             <div class="danger-card-inner">
@@ -2956,7 +2956,7 @@
       <img src="SPOKES-Logo.png" alt="SPOKES" class="branding-logo" />
 
       <!-- Progress Bar -->
-      <div class="progress-bar" id="progressBar"></div>
+      <div class="progress-bar" id="progressBar" role="progressbar" aria-valuenow="0" aria-valuemin="0" aria-valuemax="100" aria-label="Lesson progress"></div>
     </main>
   </div>
 
@@ -2989,6 +2989,7 @@
       sidebarCollapsed = !sidebarCollapsed;
       sidebarEl.classList.toggle("collapsed", sidebarCollapsed);
       sidebarToggleBtn.textContent = sidebarCollapsed ? "\u00BB" : "\u00AB";
+      sidebarToggleBtn.setAttribute("aria-expanded", String(!sidebarCollapsed));
     }
 
     let audioCtx;
@@ -3066,6 +3067,11 @@
 
         var header = document.createElement("div");
         header.className = "chapter-header";
+        header.setAttribute('tabindex', '0');
+        header.setAttribute('role', 'button');
+        header.addEventListener('keydown', function(e) {
+          if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); this.click(); }
+        });
 
         var arrow = document.createElement("span");
         arrow.className = "chapter-arrow";
@@ -3090,6 +3096,11 @@
           slideItem.className = "slide-item";
           slideItem.dataset.slide = s.index;
           slideItem.textContent = s.title;
+          slideItem.setAttribute('tabindex', '0');
+          slideItem.setAttribute('role', 'button');
+          slideItem.addEventListener('keydown', function(e) {
+            if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); this.click(); }
+          });
           ul.appendChild(slideItem);
         });
 
@@ -3195,7 +3206,9 @@
         }
 
         currentSlideEl.textContent = index + 1;
-        progressBar.style.width = ((index + 1) / slides.length) * 100 + "%";
+        var progressPercent = ((index + 1) / slides.length) * 100;
+        progressBar.style.width = progressPercent + "%";
+        progressBar.setAttribute('aria-valuenow', String(Math.round(progressPercent)));
 
         var brandingLogo = document.querySelector(".branding-logo");
         if (slides[index].classList.contains("slide-title") || slides[index].classList.contains("slide-closing")) {
@@ -3296,6 +3309,7 @@
         sidebarCollapsed = true;
         sidebarEl.classList.add("collapsed");
         sidebarToggleBtn.textContent = "\u00BB";
+        sidebarToggleBtn.setAttribute("aria-expanded", "false");
       }
     }
 
