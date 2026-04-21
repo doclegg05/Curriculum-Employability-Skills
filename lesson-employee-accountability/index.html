@@ -3197,12 +3197,10 @@
     });
 
     // Touch/swipe support
-    let touchStartX = null;
-    document.addEventListener('touchstart', (e) => {
-      touchStartX = sidebarEl.contains(e.target) ? null : e.changedTouches[0].screenX;
-    }, { passive: true });
-    document.addEventListener('touchend', (e) => {
-      if (touchStartX === null) return;
+    let touchStartX = 0;
+    const mainEl = document.querySelector('.main');
+    mainEl.addEventListener('touchstart', (e) => { touchStartX = e.changedTouches[0].screenX; }, { passive: true });
+    mainEl.addEventListener('touchend', (e) => {
       const diff = touchStartX - e.changedTouches[0].screenX;
       if (Math.abs(diff) > 50) { diff > 0 ? nextSlide() : prevSlide(); }
     }, { passive: true });
