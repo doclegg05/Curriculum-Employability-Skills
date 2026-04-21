@@ -1130,7 +1130,7 @@
       color: rgba(255, 255, 255, 0.7);
       border: 1.5px solid rgba(255, 255, 255, 0.4);
       border-radius: 4px;
-      padding: 4px 10px;
+      padding: 6px 12px;
       font-family: var(--font-body);
       font-size: 0.75rem;
       font-weight: 700;
@@ -1138,7 +1138,7 @@
       cursor: pointer;
       transition: all 0.2s ease;
       min-width: 44px;
-      min-height: 32px;
+      min-height: 44px;
       display: flex;
       align-items: center;
       justify-content: center;
@@ -1492,6 +1492,9 @@
       padding: 0.5rem 0.75rem;
       border-radius: 6px;
       font-family: monospace;
+      font-size: 1rem;
+      color: inherit;
+      border: none;
       cursor: pointer;
       transition: all 0.2s ease;
       user-select: none;
@@ -2944,9 +2947,9 @@
 
       <!-- Navigation Hint -->
       <div class="nav-hint">
-        <span class="key-icon" id="prevBtn" onclick="prevSlide()">&#8592;</span>
+        <button type="button" class="key-icon" id="prevBtn" aria-label="Previous slide">&#8592;</button>
         <span>to navigate</span>
-        <span class="key-icon" id="nextBtn" onclick="nextSlide()">&#8594;</span>
+        <button type="button" class="key-icon" id="nextBtn" aria-label="Next slide">&#8594;</button>
       </div>
 
       <!-- Branding Logo -->
@@ -2977,6 +2980,7 @@
 
     let currentIndex = 0;
     let sidebarCollapsed = false;
+    let confettiTriggered = false;
     const sidebarEl = document.querySelector(".sidebar");
     const sidebarToggleBtn = document.getElementById("sidebarToggle");
     totalSlidesEl.textContent = slides.length;
@@ -3204,14 +3208,23 @@
 
         /* NAV-04: announce slide change to screen readers */
         var announcer = document.getElementById('slideAnnouncer');
-        if (announcer) announcer.textContent = 'Slide ' + (index + 1) + ' of ' + slides.length;
+        var slideTitle = slides[index].querySelector('h1, h2');
+        if (announcer && slideTitle) {
+          announcer.textContent = 'Slide ' + (index + 1) + ' of ' + slides.length + ': ' + slideTitle.textContent.replace(/\s+/g, ' ').trim();
+        } else if (announcer) {
+          announcer.textContent = 'Slide ' + (index + 1) + ' of ' + slides.length;
+        }
 
         /* NAV-06: persist current slide in session storage */
         try { sessionStorage.setItem('spokes_slide_' + document.title, currentIndex); } catch(e) {}
 
-        if (slides[index].classList.contains("slide-closing") && !prefersReduced) {
+        if (!slides[index].classList.contains('slide-closing')) {
+          confettiTriggered = false;
+        }
+        if (slides[index].classList.contains('slide-closing') && !confettiTriggered && !prefersReduced) {
+          confettiTriggered = true;
           triggerConfetti();
-          playSuccessSound();
+          if (typeof playSuccessSound === 'function') playSuccessSound();
         }
       };
 
@@ -3251,26 +3264,31 @@
     function nextSlide() { showSlide(currentIndex + 1); }
     function prevSlide() { showSlide(currentIndex - 1); }
 
-    document.addEventListener("keydown", function(e) {
-      if (e.target.tagName === "TEXTAREA" || e.target.tagName === "INPUT") return;
-      if (e.key === "ArrowRight" || e.key === " ") {
-        e.preventDefault();
-        nextSlide();
-      } else if (e.key === "ArrowLeft") {
-        e.preventDefault();
-        prevSlide();
-      }
+    document.getElementById('prevBtn').addEventListener('click', prevSlide);
+    document.getElementById('nextBtn').addEventListener('click', nextSlide);
+
+    document.addEventListener('keydown', (e) => {
+      const target = e.target;
+      const isFormField = target && target.closest('input, textarea, select, [contenteditable="true"]');
+      if (isFormField) return;
+      if (e.defaultPrevented) return;
+      // Only suppress arrow keys for elements that use them internally (tabs)
+      const usesArrowKeys = target && target.closest('[role="tab"]');
+      if (usesArrowKeys && (e.key === 'ArrowRight' || e.key === 'ArrowLeft')) return;
+      // Suppress space only on focusable interactive elements (buttons, links, etc.)
+      const isInteractive = target && target.closest('button, a, [role="button"], [role="tab"]');
+      if (isInteractive && e.key === ' ') return;
+      if (e.key === 'ArrowRight') { e.preventDefault(); nextSlide(); }
+      else if (e.key === 'ArrowLeft') { e.preventDefault(); prevSlide(); }
+      else if (e.key === ' ') { e.preventDefault(); nextSlide(); }
     });
 
-    var touchStartX = 0;
-    document.addEventListener("touchstart", function(e) {
-      touchStartX = e.changedTouches[0].screenX;
-    }, { passive: true });
-    document.addEventListener("touchend", function(e) {
-      var diff = touchStartX - e.changedTouches[0].screenX;
-      if (Math.abs(diff) > 50) {
-        diff > 0 ? nextSlide() : prevSlide();
-      }
+    let touchStartX = 0;
+    const mainEl = document.querySelector('.main');
+    mainEl.addEventListener('touchstart', (e) => { touchStartX = e.changedTouches[0].screenX; }, { passive: true });
+    mainEl.addEventListener('touchend', (e) => {
+      const diff = touchStartX - e.changedTouches[0].screenX;
+      if (Math.abs(diff) > 50) { diff > 0 ? nextSlide() : prevSlide(); }
     }, { passive: true });
 
     function initSidebarState() {
