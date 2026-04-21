@@ -11,13 +11,7 @@ from typing import Optional
 # Constants
 # ---------------------------------------------------------------------------
 
-LESSONS_NEEDING_CAPTIONS = [
-    "lesson-communicating-with-the-public",
-    "lesson-controlling-anger",
-    "lesson-interview-skills",
-    "lesson-problem-solving-and-decision-making",
-]
-
+# Authoritative list of lessons that have video files; used by --all flag.
 ALL_LESSONS_WITH_VIDEOS = [
     "lesson-communicating-with-the-public",
     "lesson-controlling-anger",
@@ -118,7 +112,10 @@ def transcribe_video(video_path: Path) -> Optional[str]:
     """
     from elevenlabs import ElevenLabs
 
-    client = ElevenLabs(api_key=os.environ["ELEVENLABS_API_KEY"])
+    client = ElevenLabs(
+        api_key=os.environ["ELEVENLABS_API_KEY"],
+        timeout=300.0,  # 5-minute timeout per video
+    )
 
     with open(video_path, "rb") as f:
         response = client.speech_to_text.convert(
@@ -162,7 +159,7 @@ def check_track_tags(lesson_dir: Path, vtt_files: list[Path]) -> list[str]:
     return warnings
 
 
-def process_lesson(lesson_name: str) -> None:
+def process_lesson(lesson_name: str, overwrite: bool = False) -> None:
     """Process all MP4 files in a lesson's videos/ directory."""
     lesson_dir = PROJECT_ROOT / lesson_name
     videos_dir = lesson_dir / "videos"
@@ -186,6 +183,10 @@ def process_lesson(lesson_name: str) -> None:
     for i, mp4_path in enumerate(mp4_files, 1):
         vtt_path = mp4_path.with_suffix(".vtt")
         print(f"[{i}/{total}] Transcribing {mp4_path.name}...", end=" ", flush=True)
+
+        if vtt_path.exists() and not overwrite:
+            print(f"  SKIP (VTT exists — use --overwrite to replace)")
+            continue
 
         try:
             vtt_content = transcribe_video(mp4_path)
@@ -214,7 +215,7 @@ def process_lesson(lesson_name: str) -> None:
                 print(w)
 
 
-def process_single_file(file_path: str) -> None:
+def process_single_file(file_path: str, overwrite: bool = False) -> None:
     """Process a single MP4 file."""
     mp4_path = Path(file_path).resolve()
 
@@ -227,6 +228,11 @@ def process_single_file(file_path: str) -> None:
         sys.exit(1)
 
     vtt_path = mp4_path.with_suffix(".vtt")
+
+    if vtt_path.exists() and not overwrite:
+        print(f"  SKIP (VTT exists — use --overwrite to replace)")
+        return
+
     print(f"[1/1] Transcribing {mp4_path.name}...", end=" ", flush=True)
 
     try:
@@ -278,6 +284,11 @@ def main() -> None:
         type=str,
         help="Path to a single MP4 file to transcribe",
     )
+    parser.add_argument(
+        "--overwrite",
+        action="store_true",
+        help="Overwrite existing VTT files (default: skip if VTT already exists)",
+    )
 
     args = parser.parse_args()
 
@@ -288,12 +299,12 @@ def main() -> None:
 
     # Determine what to process
     if args.file:
-        process_single_file(args.file)
+        process_single_file(args.file, overwrite=args.overwrite)
     elif args.all:
         for lesson in ALL_LESSONS_WITH_VIDEOS:
-            process_lesson(lesson)
+            process_lesson(lesson, overwrite=args.overwrite)
     elif args.lesson:
-        process_lesson(args.lesson)
+        process_lesson(args.lesson, overwrite=args.overwrite)
     else:
         parser.print_help()
         sys.exit(1)
