@@ -972,7 +972,7 @@
         color: rgba(255, 255, 255, 0.7);
         border: 1.5px solid rgba(255, 255, 255, 0.4);
         border-radius: 4px;
-        padding: 4px 10px;
+        padding: 6px 12px;
         font-family: var(--font-body);
         font-size: 0.75rem;
         font-weight: 700;
@@ -980,7 +980,7 @@
         cursor: pointer;
         transition: all 0.2s ease;
         min-width: 44px;
-        min-height: 32px;
+        min-height: 44px;
         display: flex;
         align-items: center;
         justify-content: center;
@@ -2442,10 +2442,10 @@
           <h2>Building Self-Advocacy Skills</h2>
           <div class="accordion">
             <div class="accordion-item open">
-              <div class="accordion-header" onclick="toggleAccordion(this)" aria-expanded="true" aria-controls="accordion-panel-1">
+              <button type="button" class="accordion-header" onclick="toggleAccordion(this)" aria-expanded="true" aria-controls="accordion-panel-1">
                 <span>Key Components of Self-Advocacy</span>
-                <span class="accordion-arrow">&#9660;</span>
-              </div>
+                <span class="accordion-arrow" aria-hidden="true">&#9660;</span>
+              </button>
               <div class="accordion-body" id="accordion-panel-1">
                 <ul>
                   <li><strong>Know Yourself</strong> &mdash; Understand your strengths, needs, and goals</li>
@@ -2456,10 +2456,10 @@
               </div>
             </div>
             <div class="accordion-item">
-              <div class="accordion-header" onclick="toggleAccordion(this)" aria-expanded="false" aria-controls="accordion-panel-2">
+              <button type="button" class="accordion-header" onclick="toggleAccordion(this)" aria-expanded="false" aria-controls="accordion-panel-2">
                 <span>How to Practice Self-Advocacy</span>
-                <span class="accordion-arrow">&#9660;</span>
-              </div>
+                <span class="accordion-arrow" aria-hidden="true">&#9660;</span>
+              </button>
               <div class="accordion-body" id="accordion-panel-2">
                 <ul>
                   <li><strong>Identify Your Needs</strong> &mdash; Reflect on what you require in a situation</li>
@@ -2471,10 +2471,10 @@
               </div>
             </div>
             <div class="accordion-item">
-              <div class="accordion-header" onclick="toggleAccordion(this)" aria-expanded="false" aria-controls="accordion-panel-3">
+              <button type="button" class="accordion-header" onclick="toggleAccordion(this)" aria-expanded="false" aria-controls="accordion-panel-3">
                 <span>Overcoming Barriers to Self-Advocacy</span>
-                <span class="accordion-arrow">&#9660;</span>
-              </div>
+                <span class="accordion-arrow" aria-hidden="true">&#9660;</span>
+              </button>
               <div class="accordion-body" id="accordion-panel-3">
                 <ul>
                   <li><strong>Fear of Rejection or Conflict</strong> &mdash; Start small; practice in low-stakes situations first</li>
@@ -2666,9 +2666,9 @@
 
         <!-- Navigation Hint -->
         <div class="nav-hint">
-          <span class="key-icon" id="prevBtn" onclick="prevSlide()">&#8592;</span>
+          <button type="button" class="key-icon" id="prevBtn" aria-label="Previous slide">&#8592;</button>
           <span>to navigate</span>
-          <span class="key-icon" id="nextBtn" onclick="nextSlide()">&#8594;</span>
+          <button type="button" class="key-icon" id="nextBtn" aria-label="Next slide">&#8594;</button>
         </div>
 
         <!-- Branding Logo -->
@@ -2906,8 +2906,11 @@
           document.activeElement?.blur();
 
           // NAV-04: Announce slide change to screen readers
+          var slideTitle = slides[index].querySelector('h1, h2');
           var announcer = document.getElementById('slideAnnouncer');
-          if (announcer) announcer.textContent = 'Slide ' + (index + 1) + ' of ' + slides.length;
+          if (announcer && slideTitle) {
+            announcer.textContent = 'Slide ' + (index + 1) + ' of ' + slides.length + ': ' + slideTitle.textContent.replace(/\s+/g, ' ').trim();
+          }
 
           if (slides[index].classList.contains("slide-closing") && !prefersReduced) {
             triggerConfetti();
@@ -2951,23 +2954,29 @@
       function nextSlide() { showSlide(currentIndex + 1); }
       function prevSlide() { showSlide(currentIndex - 1); }
 
-      document.addEventListener("keydown", function(e) {
-        if (e.target.matches('textarea, input, [role="tablist"] *, select')) return;
-        var target = e.target;
-        // Suppress arrow keys inside tablists (tabs need arrow navigation)
-        var inTablist = target.closest('[role="tablist"]');
-        if (inTablist && (e.key === 'ArrowRight' || e.key === 'ArrowLeft')) return;
-        // Suppress space on interactive elements so they activate instead of advancing slides
-        var isInteractive = target.closest('button, a, [role="button"], [role="tab"], .accordion-header, .danger-card');
-        if (isInteractive && e.key === ' ') return;
+      document.getElementById('prevBtn').addEventListener('click', prevSlide);
+      document.getElementById('nextBtn').addEventListener('click', nextSlide);
 
-        if (e.key === "ArrowRight" || e.key === " ") { e.preventDefault(); nextSlide(); }
-        else if (e.key === "ArrowLeft") { e.preventDefault(); prevSlide(); }
+      document.addEventListener('keydown', function(e) {
+        var target = e.target;
+        var isFormField = target && target.closest('input, textarea, select, [contenteditable="true"]');
+        if (isFormField) return;
+        if (e.defaultPrevented) return;
+        // Only suppress arrow keys for elements that use them internally (tabs)
+        var usesArrowKeys = target && target.closest('[role="tab"]');
+        if (usesArrowKeys && (e.key === 'ArrowRight' || e.key === 'ArrowLeft')) return;
+        // Suppress space only on focusable interactive elements (buttons, links, etc.)
+        var isInteractive = target && target.closest('button, a, [role="button"], [role="tab"]');
+        if (isInteractive && e.key === ' ') return;
+        if (e.key === 'ArrowRight') { e.preventDefault(); nextSlide(); }
+        else if (e.key === 'ArrowLeft') { e.preventDefault(); prevSlide(); }
+        else if (e.key === ' ') { e.preventDefault(); nextSlide(); }
       });
 
       var touchStartX = 0;
-      document.addEventListener("touchstart", function(e) { touchStartX = e.changedTouches[0].screenX; }, { passive: true });
-      document.addEventListener("touchend", function(e) {
+      var mainEl = document.querySelector('.main');
+      mainEl.addEventListener('touchstart', function(e) { touchStartX = e.changedTouches[0].screenX; }, { passive: true });
+      mainEl.addEventListener('touchend', function(e) {
         var diff = touchStartX - e.changedTouches[0].screenX;
         if (Math.abs(diff) > 50) { diff > 0 ? nextSlide() : prevSlide(); }
       }, { passive: true });
