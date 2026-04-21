@@ -1131,7 +1131,7 @@
       color: rgba(255, 255, 255, 0.7);
       border: 1.5px solid rgba(255, 255, 255, 0.4);
       border-radius: 4px;
-      padding: 4px 10px;
+      padding: 6px 12px;
       font-family: var(--font-body);
       font-size: 0.75rem;
       font-weight: 700;
@@ -1139,7 +1139,7 @@
       cursor: pointer;
       transition: all 0.2s ease;
       min-width: 44px;
-      min-height: 32px;
+      min-height: 44px;
       display: flex;
       align-items: center;
       justify-content: center;
@@ -1490,9 +1490,12 @@
 
     .key-icon {
       background: var(--muted);
+      border: none;
+      color: inherit;
       padding: 0.5rem 0.75rem;
       border-radius: 6px;
       font-family: monospace;
+      font-size: 1rem;
       cursor: pointer;
       transition: all 0.2s ease;
       user-select: none;
@@ -2131,8 +2134,11 @@
       display: flex;
       align-items: center;
       justify-content: space-between;
+      width: 100%;
       padding: 0.85rem 1.25rem;
       background: var(--muted);
+      border: none;
+      text-align: left;
       cursor: pointer;
       font-family: var(--font-body);
       font-size: 1.1rem;
@@ -2876,10 +2882,10 @@
         <p style="font-size:1.2rem; color:rgba(255,255,255,0.7); margin-top:-1.5rem; margin-bottom:1rem;">Click each category to explore techniques</p>
         <div class="accordion">
           <div class="accordion-item">
-            <div class="accordion-header" aria-expanded="false" aria-controls="acc-physical" onclick="toggleAccordion(this)">
+            <button type="button" class="accordion-header" aria-expanded="false" aria-controls="acc-physical" onclick="toggleAccordion(this)">
               <span>Physical Techniques</span>
-              <span class="acc-icon">+</span>
-            </div>
+              <span class="acc-icon" aria-hidden="true">+</span>
+            </button>
             <div class="accordion-body" id="acc-physical">
               <ul>
                 <li><strong>Deep breathing:</strong> Inhale for 4 counts, hold 4, exhale 8. Repeat until calm.</li>
@@ -2889,10 +2895,10 @@
             </div>
           </div>
           <div class="accordion-item">
-            <div class="accordion-header" aria-expanded="false" aria-controls="acc-mental" onclick="toggleAccordion(this)">
+            <button type="button" class="accordion-header" aria-expanded="false" aria-controls="acc-mental" onclick="toggleAccordion(this)">
               <span>Mental Techniques</span>
-              <span class="acc-icon">+</span>
-            </div>
+              <span class="acc-icon" aria-hidden="true">+</span>
+            </button>
             <div class="accordion-body" id="acc-mental">
               <ul>
                 <li><strong>Cognitive reframing:</strong> Challenge angry thoughts. Is there another explanation?</li>
@@ -2902,10 +2908,10 @@
             </div>
           </div>
           <div class="accordion-item">
-            <div class="accordion-header" aria-expanded="false" aria-controls="acc-social" onclick="toggleAccordion(this)">
+            <button type="button" class="accordion-header" aria-expanded="false" aria-controls="acc-social" onclick="toggleAccordion(this)">
               <span>Social Techniques</span>
-              <span class="acc-icon">+</span>
-            </div>
+              <span class="acc-icon" aria-hidden="true">+</span>
+            </button>
             <div class="accordion-body" id="acc-social">
               <ul>
                 <li><strong>Talk it out:</strong> Share your feelings with a trusted friend, family member, or counselor.</li>
@@ -2915,10 +2921,10 @@
             </div>
           </div>
           <div class="accordion-item">
-            <div class="accordion-header" aria-expanded="false" aria-controls="acc-mindfulness" onclick="toggleAccordion(this)">
+            <button type="button" class="accordion-header" aria-expanded="false" aria-controls="acc-mindfulness" onclick="toggleAccordion(this)">
               <span>Mindfulness Techniques</span>
-              <span class="acc-icon">+</span>
-            </div>
+              <span class="acc-icon" aria-hidden="true">+</span>
+            </button>
             <div class="accordion-body" id="acc-mindfulness">
               <ul>
                 <li><strong>Grounding (5-4-3-2-1):</strong> Name 5 things you see, 4 you touch, 3 you hear, 2 you smell, 1 you taste.</li>
@@ -3079,9 +3085,9 @@
 
       <!-- Navigation Hint -->
       <div class="nav-hint">
-        <span class="key-icon" id="prevBtn" onclick="prevSlide()">&#8592;</span>
+        <button type="button" class="key-icon" id="prevBtn" aria-label="Previous slide">&#8592;</button>
         <span>to navigate</span>
-        <span class="key-icon" id="nextBtn" onclick="nextSlide()">&#8594;</span>
+        <button type="button" class="key-icon" id="nextBtn" aria-label="Next slide">&#8594;</button>
       </div>
 
       <!-- Branding Logo -->
@@ -3103,6 +3109,8 @@
     const prefersReduced = window.matchMedia(
       "(prefers-reduced-motion: reduce)",
     ).matches;
+
+    let confettiTriggered = false;
 
     const slides = document.querySelectorAll(".slide");
     const chapterListEl = document.getElementById("chapterList");
@@ -3335,17 +3343,29 @@
 
         observeSlideContent(slides[index]);
 
-        if (slides[index].classList.contains("slide-closing") && !prefersReduced) {
-          triggerConfetti();
-          playSuccessSound();
-        }
-
         // NAV-03: Focus management
         if (document.activeElement) document.activeElement.blur();
 
-        // NAV-04: Slide announcer
+        // NAV-04: Slide announcer (A11Y-05: "Slide X of Y: title")
+        var slideTitle = slides[index].querySelector('h1, h2');
         var announcer = document.getElementById('slideAnnouncer');
-        if (announcer) announcer.textContent = 'Slide ' + (index + 1) + ' of ' + slides.length;
+        if (announcer && slideTitle) {
+          announcer.textContent = 'Slide ' + (index + 1) + ' of ' + slides.length + ': ' + slideTitle.textContent.replace(/\s+/g, ' ').trim();
+        } else if (announcer) {
+          announcer.textContent = 'Slide ' + (index + 1) + ' of ' + slides.length;
+        }
+
+        // NAV-08: Confetti guard — reset when leaving closing slide
+        if (!slides[index].classList.contains('slide-closing')) {
+          confettiTriggered = false;
+        }
+
+        // Fire confetti exactly once per visit to the closing slide
+        if (slides[index].classList.contains('slide-closing') && !confettiTriggered && !prefersReduced) {
+          confettiTriggered = true;
+          triggerConfetti();
+          playSuccessSound();
+        }
 
         // NAV-06: Session persistence
         try { sessionStorage.setItem('spokes_slide_' + document.title, currentIndex); } catch(e) {}
@@ -3387,27 +3407,43 @@
     function nextSlide() { showSlide(currentIndex + 1); }
     function prevSlide() { showSlide(currentIndex - 1); }
 
-    document.addEventListener("keydown", function(e) {
-      if (e.target.tagName === "TEXTAREA" || e.target.tagName === "INPUT") return;
-      if (e.key === "ArrowRight" || e.key === " ") {
-        e.preventDefault();
-        nextSlide();
-      } else if (e.key === "ArrowLeft") {
-        e.preventDefault();
-        prevSlide();
-      }
+    // Wire up prev/next buttons (A11Y-09)
+    var prevBtnEl = document.getElementById('prevBtn');
+    var nextBtnEl = document.getElementById('nextBtn');
+    if (prevBtnEl) prevBtnEl.addEventListener('click', prevSlide);
+    if (nextBtnEl) nextBtnEl.addEventListener('click', nextSlide);
+
+    // NAV-09: Keyboard handler with early-return guards
+    document.addEventListener('keydown', function(e) {
+      var target = e.target;
+      var isFormField = target && target.closest && target.closest('input, textarea, select, [contenteditable="true"]');
+      if (isFormField) return;
+      if (e.defaultPrevented) return;
+      // Only suppress arrow keys for elements that use them internally (tabs)
+      var usesArrowKeys = target && target.closest && target.closest('[role="tab"]');
+      if (usesArrowKeys && (e.key === 'ArrowRight' || e.key === 'ArrowLeft')) return;
+      // Suppress space only on focusable interactive elements (buttons, links, etc.)
+      var isInteractive = target && target.closest && target.closest('button, a, [role="button"], [role="tab"]');
+      if (isInteractive && e.key === ' ') return;
+      if (e.key === 'ArrowRight') { e.preventDefault(); nextSlide(); }
+      else if (e.key === 'ArrowLeft') { e.preventDefault(); prevSlide(); }
+      else if (e.key === ' ') { e.preventDefault(); nextSlide(); }
     });
 
+    // NAV-10: Touch/swipe scoped to .main with { passive: true }
     var touchStartX = 0;
-    document.addEventListener("touchstart", function(e) {
-      touchStartX = e.changedTouches[0].screenX;
-    }, { passive: true });
-    document.addEventListener("touchend", function(e) {
-      var diff = touchStartX - e.changedTouches[0].screenX;
-      if (Math.abs(diff) > 50) {
-        diff > 0 ? nextSlide() : prevSlide();
-      }
-    }, { passive: true });
+    var mainEl = document.querySelector('.main');
+    if (mainEl) {
+      mainEl.addEventListener('touchstart', function(e) {
+        touchStartX = e.changedTouches[0].screenX;
+      }, { passive: true });
+      mainEl.addEventListener('touchend', function(e) {
+        var diff = touchStartX - e.changedTouches[0].screenX;
+        if (Math.abs(diff) > 50) {
+          diff > 0 ? nextSlide() : prevSlide();
+        }
+      }, { passive: true });
+    }
 
     function initSidebarState() {
       if (window.innerWidth <= 768) {
@@ -3443,7 +3479,8 @@
       var wasOpen = item.classList.contains('open');
       item.closest('.accordion').querySelectorAll('.accordion-item').forEach(function(i) {
         i.classList.remove('open');
-        i.querySelector('.accordion-header').setAttribute('aria-expanded', 'false');
+        var h = i.querySelector('.accordion-header');
+        if (h) h.setAttribute('aria-expanded', 'false');
       });
       if (!wasOpen) {
         item.classList.add('open');
