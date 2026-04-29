@@ -4,7 +4,11 @@ Combines the Teachers Guide PDF format with Presenter Notes content.
 Each PDF is themed to match its corresponding HTML presentation.
 """
 from fpdf import FPDF
+from fpdf.enums import MethodReturnValue
+from html.parser import HTMLParser
 import os
+from pathlib import Path
+import re
 
 LOGO = "C:/Users/Instructor/Dev/Employability Skills Curriculum/SPOKES-Logo.png"
 
@@ -31,44 +35,112 @@ THEME_ACCOUNTABILITY = dict(
 )
 
 THEME_TIME = dict(
-    primary=(0, 123, 175),
-    accent=(55, 181, 80),
-    dark=(0, 64, 113),
-    gold=(211, 178, 87),
-    gray=(96, 99, 107),
-    light=(237, 243, 247),
+    primary=(8, 120, 154),       # #08789a
+    accent=(0, 167, 157),        # #00a79d
+    dark=(16, 32, 51),           # #102033
+    navy=(18, 63, 92),           # #123f5c
+    gold=(240, 184, 63),         # #f0b83f
+    coral=(216, 93, 63),         # #d85d3f
+    leaf=(101, 183, 65),         # #65b741
+    gray=(91, 97, 111),
+    light=(255, 248, 234),       # #fff8ea
+    cream=(244, 239, 226),
     mauve=(167, 37, 63),
-    text=(51, 51, 51),
+    text=(43, 54, 68),
     white=(255, 255, 255),
-    cover_grad_top=(0, 64, 113),
-    cover_grad_bot=(0, 40, 90),
-    accent_line=(211, 178, 87),  # gold accent stripe
-    badge_w=(55, 181, 80),
-    badge_i=(0, 123, 175),
-    badge_p=(0, 64, 113),
+    cover_grad_top=(16, 32, 51),
+    cover_grad_bot=(8, 120, 154),
+    accent_line=(240, 184, 63),
+    cover_layout="time_architect",
+    cover_image="lesson-time-management/images/toolbox.webp",
+    heading_font="heading",
+    background="time_grid",
+    chapter_gradient=True,
+    slide_marker=True,
+    callout_soft_fill={
+        "discussion": (235, 250, 246),
+        "tip": (255, 248, 226),
+        "materials": (235, 247, 252),
+    },
+    callout_text={
+        "discussion": (16, 93, 83),
+        "tip": (132, 88, 14),
+        "materials": (18, 63, 92),
+    },
+    badge_w=(240, 184, 63),
+    badge_i=(8, 120, 154),
+    badge_p=(101, 183, 65),
     badge_e=(167, 37, 63),
-    badge_a=(211, 178, 87),
+    badge_a=(240, 184, 63),
 )
 
 THEME_INTERVIEW = dict(
     primary=(0, 123, 175),
     accent=(55, 181, 80),
+    royal=(0, 19, 63),
     dark=(0, 19, 63),            # #00133f royal navy
     gold=(211, 178, 87),
+    muted_gold=(173, 136, 6),
     gray=(96, 99, 107),
     light=(237, 243, 247),
+    offwhite=(209, 211, 212),
     mauve=(167, 37, 63),         # prominent in this theme
     text=(51, 51, 51),
     white=(255, 255, 255),
     cover_grad_top=(0, 19, 63),  # royal
-    cover_grad_bot=(167, 37, 63),# mauve gradient
-    accent_line=(167, 37, 63),   # mauve accent stripe
-    badge_w=(55, 181, 80),
+    cover_grad_bot=(0, 64, 113), # lesson dark blue
+    accent_line=(211, 178, 87),  # lesson gold accent
+    cover_layout="interview_title",
+    heading_font="heading",
+    background="interview_soft",
+    chapter_gradient=True,
+    slide_marker=True,
+    callout_soft_fill={
+        "discussion": (235, 247, 252),
+        "tip": (255, 250, 232),
+        "materials": (237, 243, 247),
+    },
+    badge_w=(211, 178, 87),
     badge_i=(0, 123, 175),
-    badge_p=(0, 19, 63),         # royal dark
+    badge_p=(0, 123, 175),
     badge_e=(211, 178, 87),      # gold (matches HTML)
-    badge_a=(0, 123, 175),
+    badge_a=(0, 19, 63),
 )
+
+THEME_COMMUNICATION = {
+    **THEME_TIME,
+    "cover_grad_top": (0, 64, 113),
+    "cover_grad_bot": (0, 123, 175),
+    "accent_line": (55, 181, 80),
+    "cover_layout": "presentation",
+    "cover_image": "lesson-communicating-with-the-public/images/ppt-inspiration/image1.png",
+    "cover_image_x": -244,
+    "cover_image_h": 297,
+    "heading_font": "heading",
+    "accent_font": "accent",
+    "background": "crosshatch",
+    "chapter_gradient": True,
+    "slide_marker": True,
+    "callout_soft_fill": {
+        "discussion": (235, 249, 240),
+        "tip": (255, 250, 232),
+        "materials": (235, 247, 252),
+    },
+}
+
+THEME_ANGER = {
+    **THEME_ACCOUNTABILITY,
+    "cover_grad_top": (167, 37, 63),
+    "cover_grad_bot": (0, 19, 63),
+    "accent_line": (55, 181, 80),
+}
+
+THEME_PROBLEM_SOLVING = {
+    **THEME_TIME,
+    "cover_grad_top": (0, 64, 113),
+    "cover_grad_bot": (55, 181, 80),
+    "accent_line": (211, 178, 87),
+}
 
 
 class TeachersGuidePDF(FPDF):
@@ -86,14 +158,66 @@ class TeachersGuidePDF(FPDF):
         self.add_font("ui", "B", "C:/Windows/Fonts/segoeuib.ttf")
         self.add_font("ui", "I", "C:/Windows/Fonts/segoeuii.ttf")
         self.add_font("ui", "BI", "C:/Windows/Fonts/segoeuiz.ttf")
+        self.add_font("heading", "", "C:/Windows/Fonts/BOOKOS.TTF")
+        self.add_font("heading", "B", "C:/Windows/Fonts/BOOKOSB.TTF")
+        self.add_font("heading", "I", "C:/Windows/Fonts/BOOKOSI.TTF")
+        self.add_font("accent", "", "C:/Windows/Fonts/Inkfree.ttf")
+
+    def _font(self, role="body"):
+        if role == "heading":
+            return self.t.get("heading_font", "ui")
+        if role == "accent":
+            return self.t.get("accent_font", "ui")
+        return "ui"
+
+    def _page_background(self):
+        if self.t.get("background") == "time_grid":
+            self.set_fill_color(255, 251, 242)
+            self.rect(0, 0, 210, 297, "F")
+            self.set_draw_color(233, 228, 213)
+            self.set_line_width(0.06)
+            for x in range(0, 211, 14):
+                self.line(x, 0, x, 297)
+            for y in range(0, 298, 14):
+                self.line(0, y, 210, y)
+            self.set_fill_color(240, 184, 63)
+            self.rect(0, 0, 210, 2.5, "F")
+            self.set_fill_color(0, 167, 157)
+            self.rect(0, 2.5, 70, 1.2, "F")
+            return
+        if self.t.get("background") == "interview_soft":
+            self.set_fill_color(248, 251, 253)
+            self.rect(0, 0, 210, 297, "F")
+            self.set_draw_color(237, 243, 247)
+            self.set_line_width(0.08)
+            for y in range(24, 297, 18):
+                self.line(0, y, 210, y)
+            return
+        if self.t.get("background") != "crosshatch":
+            return
+        self.set_fill_color(248, 251, 253)
+        self.rect(0, 0, 210, 297, "F")
+        self.set_draw_color(229, 239, 244)
+        self.set_line_width(0.08)
+        for x in range(0, 211, 14):
+            self.line(x, 0, x, 297)
+        for y in range(0, 298, 14):
+            self.line(0, y, 210, y)
 
     def _badge_color(self, letter):
         key = f"badge_{letter.lower()}"
         return self.t.get(key, self.t["dark"])
 
+    def _contrast_text_color(self, rgb):
+        # WCAG-ish luminance check for small PDF badge text.
+        r, g, b = rgb
+        luminance = (0.299 * r + 0.587 * g + 0.114 * b)
+        return self.t["dark"] if luminance > 150 else self.t["white"]
+
     def header(self):
         if self.page_no() <= 1:
             return
+        self._page_background()
         # Row 1: Logo (10mm wide, ~6.6mm tall) with text to its right, vertically centered
         logo_w = 10
         logo_h = logo_w * 532 / 800  # maintain aspect ratio = 6.65mm
@@ -108,7 +232,7 @@ class TeachersGuidePDF(FPDF):
         self.cell(88, 3, f"(c) 2026 WV Adult Basic Education  |  Page {self.page_no()}", align="R")
         # Separator line with generous clearance below logo
         line_y = logo_y + logo_h + 2
-        self.set_draw_color(*self.t["primary"])
+        self.set_draw_color(*self.t["accent_line"])
         self.set_line_width(0.5)
         self.line(10, line_y, 200, line_y)
         # Reset cursor below header for body content
@@ -126,6 +250,15 @@ class TeachersGuidePDF(FPDF):
     def cover_page(self):
         self.add_page()
         self.alias_nb_pages()
+        if self.t.get("cover_layout") == "presentation":
+            self._presentation_cover()
+            return
+        if self.t.get("cover_layout") == "interview_title":
+            self._interview_cover()
+            return
+        if self.t.get("cover_layout") == "time_architect":
+            self._time_architect_cover()
+            return
         # Gradient-style cover block (simulated with two rects)
         self.set_fill_color(*self.t["cover_grad_top"])
         self.rect(0, 0, 210, 55, "F")
@@ -147,7 +280,7 @@ class TeachersGuidePDF(FPDF):
         self.multi_cell(0, 7, self._subtitle, align="C")
         # Below the accent stripe
         self.set_y(116)
-        self.set_font("ui", "B", 20)
+        self.set_font(self._font("heading"), "B", 20)
         self.set_text_color(*self.t["dark"])
         self.cell(0, 10, "Teacher's Guide", align="C")
         self.ln(9)
@@ -181,25 +314,223 @@ class TeachersGuidePDF(FPDF):
         self.ln(4)
         self.cell(0, 5, "Strategic Planning in Occupational Knowledge for Employment and Success", align="C")
 
+    def _time_architect_cover(self):
+        self.set_fill_color(*self.t["dark"])
+        self.rect(0, 0, 210, 297, "F")
+        self.set_fill_color(*self.t["navy"])
+        self.rect(0, 0, 84, 297, "F")
+        self.set_fill_color(*self.t["primary"])
+        self.rect(84, 0, 126, 297, "F")
+        self.set_fill_color(*self.t["dark"])
+        self.rect(0, 0, 118, 297, "F")
+        self.set_fill_color(*self.t["accent_line"])
+        self.rect(0, 0, 210, 3, "F")
+        self.set_fill_color(*self.t["coral"])
+        self.rect(0, 3, 42, 1.5, "F")
+        self.set_fill_color(*self.t["accent"])
+        self.rect(42, 3, 42, 1.5, "F")
+
+        cover_image = self.t.get("cover_image")
+        if cover_image and Path(cover_image).is_file():
+            self.image(cover_image, 124, 66, 62)
+            self.set_draw_color(255, 248, 234)
+            self.set_line_width(0.35)
+            self.rect(120, 61, 70, 86)
+            self.set_fill_color(*self.t["accent_line"])
+            self.rect(126, 139, 44, 8, "F")
+            self.set_xy(128, 140.7)
+            self.set_font("ui", "B", 8)
+            self.set_text_color(*self.t["dark"])
+            self.cell(40, 4, "PLAN THE DAY", align="C")
+
+        self.set_fill_color(*self.t["white"])
+        self.rect(18, 22, 58, 33, "F")
+        self.image(LOGO, 21, 26, 52)
+
+        self.set_xy(18, 74)
+        self.set_font("ui", "B", 8)
+        self.set_text_color(*self.t["accent_line"])
+        self.cell(0, 5, "TIME ARCHITECT")
+        self.set_xy(18, 84)
+        self.set_font(self._font("heading"), "B", 29)
+        self.set_text_color(*self.t["light"])
+        self.multi_cell(108, 11, self._title)
+        self.set_x(18)
+        self.set_font("ui", "", 13)
+        self.set_text_color(235, 241, 240)
+        self.multi_cell(98, 7, self._subtitle)
+        y = self.get_y() + 8
+        self.set_fill_color(*self.t["coral"])
+        self.rect(18, y, 24, 3, "F")
+        self.set_fill_color(*self.t["accent_line"])
+        self.rect(42, y, 24, 3, "F")
+        self.set_fill_color(*self.t["accent"])
+        self.rect(66, y, 24, 3, "F")
+
+        panel_y = y + 19
+        self.set_fill_color(255, 248, 234)
+        self.rect(18, panel_y, 174, 70, "F")
+        self.set_draw_color(*self.t["accent_line"])
+        self.set_line_width(0.9)
+        self.line(18, panel_y + 70, 192, panel_y + 70)
+        self.set_xy(25, panel_y + 12)
+        self.set_font(self._font("heading"), "B", 22)
+        self.set_text_color(*self.t["dark"])
+        self.cell(0, 9, "Teacher's Guide")
+        self.set_xy(25, panel_y + 27)
+        self.set_font("ui", "", 10)
+        self.set_text_color(*self.t["text"])
+        self.multi_cell(150, 5.5, "Instructor speaking notes, discussion prompts, linked resources, and class-prep checklist.")
+        self.set_xy(25, panel_y + 49)
+        self.set_font("ui", "B", 9)
+        self.set_text_color(*self.t["primary"])
+        self.cell(0, 5, "WIPPEA Lesson Format")
+
+        self.set_xy(18, 244)
+        self.set_font("ui", "", 8.5)
+        self.set_text_color(215, 225, 225)
+        self.multi_cell(96, 5, "(c) 2026 WV Adult Basic Education\nStrategic Planning in Occupational Knowledge for Employment and Success")
+
+    def _presentation_cover(self):
+        cover_image = self.t.get("cover_image")
+        if cover_image and Path(cover_image).is_file():
+            # Keep the source image's aspect ratio and let the page crop it.
+            # The image is a wide landscape; forcing it into the portrait cover
+            # panel makes notebooks and pencils look unnaturally stretched.
+            self.image(
+                cover_image,
+                self.t.get("cover_image_x", 0),
+                0,
+                h=self.t.get("cover_image_h", 297),
+            )
+        else:
+            self.set_fill_color(*self.t["light"])
+            self.rect(0, 0, 210, 297, "F")
+        # White editorial panel echoes the presentation title slide overlay.
+        self.set_fill_color(255, 255, 255)
+        self.rect(0, 0, 124, 297, "F")
+        self.set_fill_color(237, 243, 247)
+        self.rect(124, 0, 5, 297, "F")
+        self.set_fill_color(*self.t["accent"])
+        self.rect(129, 0, 3, 297, "F")
+        self.set_fill_color(*self.t["primary"])
+        self.rect(132, 0, 3, 297, "F")
+        self.set_fill_color(*self.t["gold"])
+        self.rect(135, 0, 3, 297, "F")
+
+        self.image(LOGO, 17, 24, 62)
+        self.set_xy(18, 76)
+        self.set_font(self._font("heading"), "B", 28)
+        self.set_text_color(*self.t["dark"])
+        self.multi_cell(94, 11, self._title)
+        self.set_x(18)
+        self.set_font(self._font("accent"), "", 17)
+        self.set_text_color(*self.t["primary"])
+        self.multi_cell(88, 9, self._subtitle)
+        y = self.get_y() + 4
+        self.set_fill_color(*self.t["accent"])
+        self.rect(18, y, 28, 3, "F")
+        self.set_fill_color(*self.t["primary"])
+        self.rect(46, y, 28, 3, "F")
+        self.set_fill_color(*self.t["gold"])
+        self.rect(74, y, 28, 3, "F")
+
+        self.set_xy(18, y + 16)
+        self.set_font(self._font("heading"), "B", 20)
+        self.set_text_color(*self.t["dark"])
+        self.cell(0, 9, "Teacher's Guide")
+        self.set_xy(18, y + 29)
+        self.set_font("ui", "", 10)
+        self.set_text_color(*self.t["gray"])
+        self.multi_cell(88, 5.5, "Instructor speaking notes, discussion prompts, linked resources, and class-prep checklist.")
+
+        self.set_xy(18, 218)
+        self.set_font(self._font("accent"), "", 14)
+        self.set_text_color(*self.t["accent"])
+        self.cell(0, 8, "WIPPEA Lesson Format")
+        self.set_xy(18, 238)
+        self.set_font("ui", "", 8.5)
+        self.set_text_color(*self.t["gray"])
+        self.multi_cell(88, 5, "(c) 2026 WV Adult Basic Education\nStrategic Planning in Occupational Knowledge for Employment and Success")
+
+    def _interview_cover(self):
+        # Match the lesson title slide: royal field, SPOKES blue field, gold rule.
+        self.set_fill_color(*self.t["royal"])
+        self.rect(0, 0, 84, 297, "F")
+        self.set_fill_color(*self.t["primary"])
+        self.rect(84, 0, 126, 297, "F")
+        self.set_fill_color(*self.t["dark"])
+        self.rect(84, 0, 126, 297, "F")
+        self.set_fill_color(*self.t["primary"])
+        self.rect(84, 0, 126, 92, "F")
+        self.set_fill_color(*self.t["accent_line"])
+        self.rect(0, 0, 210, 3, "F")
+        self.rect(84, 92, 126, 2.2, "F")
+
+        self.set_fill_color(*self.t["white"])
+        self.rect(18, 22, 58, 33, "F")
+        self.image(LOGO, 21, 26, 52)
+
+        self.set_xy(18, 82)
+        self.set_font(self._font("heading"), "", 25)
+        self.set_text_color(*self.t["white"])
+        self.multi_cell(150, 10.5, self._title, align="L")
+        self.set_x(18)
+        self.set_font("ui", "", 13)
+        self.set_text_color(*self.t["gold"])
+        self.multi_cell(150, 7, self._subtitle, align="L")
+        y = self.get_y() + 8
+        self.set_fill_color(*self.t["gold"])
+        self.rect(18, y, 28, 3, "F")
+        self.set_fill_color(*self.t["primary"])
+        self.rect(46, y, 28, 3, "F")
+        self.set_fill_color(*self.t["accent"])
+        self.rect(74, y, 28, 3, "F")
+
+        panel_y = y + 18
+        self.set_fill_color(255, 255, 255)
+        self.rect(18, panel_y, 174, 72, "F")
+        self.set_draw_color(*self.t["gold"])
+        self.set_line_width(0.8)
+        self.line(18, panel_y + 72, 192, panel_y + 72)
+        self.set_xy(25, panel_y + 12)
+        self.set_font(self._font("heading"), "B", 22)
+        self.set_text_color(*self.t["royal"])
+        self.cell(0, 9, "Teacher's Guide")
+        self.set_xy(25, panel_y + 27)
+        self.set_font("ui", "", 10)
+        self.set_text_color(*self.t["gray"])
+        self.multi_cell(150, 5.5, "Instructor speaking notes, discussion prompts, linked resources, and class-prep checklist.")
+        self.set_xy(25, panel_y + 48)
+        self.set_font("ui", "B", 9)
+        self.set_text_color(*self.t["mauve"])
+        self.cell(0, 5, "WIPPEA Lesson Format")
+
+        self.set_xy(18, 244)
+        self.set_font("ui", "", 8.5)
+        self.set_text_color(215, 225, 235)
+        self.multi_cell(90, 5, "(c) 2026 WV Adult Basic Education\nStrategic Planning in Occupational Knowledge for Employment and Success")
+
     # ── Table of contents ──
     def toc(self, chapters):
         self.add_page()
-        self.set_font("ui", "B", 16)
+        self.set_font(self._font("heading"), "B", 16)
         self.set_text_color(*self.t["dark"])
         self.cell(0, 10, "Table of Contents")
         self.ln(12)
         for badge, title, slides in chapters:
             y = self.get_y()
             # Badge with WIPPEA-specific color
-            self.set_fill_color(*self._badge_color(badge))
+            badge_color = self._badge_color(badge)
+            self.set_fill_color(*badge_color)
             self.rect(15, y, 14, 8, "F")
             self.set_xy(15, y)
             self.set_font("ui", "B", 9)
-            self.set_text_color(*self.t["white"])
+            self.set_text_color(*self._contrast_text_color(badge_color))
             self.cell(14, 8, badge, align="C")
             # Title
             self.set_xy(33, y)
-            self.set_font("ui", "B", 11)
+            self.set_font(self._font("heading"), "B", 11)
             self.set_text_color(*self.t["dark"])
             self.cell(100, 8, title)
             # Slide range
@@ -219,12 +550,19 @@ class TeachersGuidePDF(FPDF):
         self.cell(0, 6, "Printable Resources Checklist -- See the final page")
 
     # ── Chapter heading ──
-    def chapter_head(self, badge, title, wippea_label):
-        self.add_page()
-        top = 18  # clear the header area
+    def chapter_head(self, badge, title, wippea_label, force_new_page=True):
+        if force_new_page or self.page_no() == 0:
+            self.add_page()
+            top = 18  # clear the header area
+        else:
+            self.ln(5)
+            top = self.get_y()
         # Banner with theme dark color
         self.set_fill_color(*self.t["dark"])
-        self.rect(0, top, 210, 20, "F")
+        self.rect(0, top, 105, 20, "F")
+        fill = self.t["primary"] if self.t.get("chapter_gradient") else self.t["dark"]
+        self.set_fill_color(*fill)
+        self.rect(105, top, 105, 20, "F")
         # Accent stripe under banner
         self.set_fill_color(*self.t["accent_line"])
         self.rect(0, top + 20, 210, 1.5, "F")
@@ -234,17 +572,17 @@ class TeachersGuidePDF(FPDF):
         self.rect(14, top + 1, 18, 18, "F")
         self.set_xy(14, top + 3)
         self.set_font("ui", "B", 13)
-        self.set_text_color(*self.t["white"])
+        self.set_text_color(*self._contrast_text_color(bc))
         self.cell(18, 14, badge, align="C")
         # Chapter title
         self.set_xy(37, top + 3)
-        self.set_font("ui", "B", 14)
+        self.set_font(self._font("heading"), "B", 14)
         self.set_text_color(*self.t["white"])
         self.cell(0, 14, title)
         # WIPPEA label below banner
         self.set_y(top + 24)
-        self.set_font("ui", "I", 9)
-        self.set_text_color(*self.t["gold"])
+        self.set_font(self._font("accent"), "", 10)
+        self.set_text_color(*self.t["primary"])
         self.cell(0, 6, wippea_label, align="L")
         self.ln(8)
 
@@ -258,17 +596,86 @@ class TeachersGuidePDF(FPDF):
         """True if needed_mm of content fits on the current page."""
         return self.get_y() + needed_mm <= self._page_bottom
 
+    def _fresh_page_capacity(self):
+        """Estimated writable height on a new body page."""
+        return self._page_bottom - 18
+
     def _ensure_space(self, needed_mm):
         """Break to next page if needed_mm won't fit."""
         if not self._fits(needed_mm):
             self.add_page()
 
+    def _ensure_block_space(self, needed_mm, min_start_mm=14):
+        """Apply keep-together and widow/orphan page-break rules."""
+        remaining = self._page_bottom - self.get_y()
+        if needed_mm <= self._fresh_page_capacity() and needed_mm > remaining:
+            self.add_page()
+        elif remaining < min_start_mm:
+            self.add_page()
+
+    def _measure_text_height(self, text, width, line_h):
+        """Measure wrapped text height using fpdf2's dry-run layout."""
+        if width == 0:
+            width = self.w - self.l_margin - self.r_margin
+        return self.multi_cell(
+            width,
+            line_h,
+            text,
+            dry_run=True,
+            output=MethodReturnValue.HEIGHT,
+        )
+
+    def _ensure_text_space(self, text, width, line_h, label_h=10, trailing_h=2, min_lines=2):
+        """Keep short text blocks together and avoid single-line widows/orphans."""
+        text_h = self._measure_text_height(text, width, line_h)
+        total_h = label_h + text_h + trailing_h
+        min_start = label_h + (min_lines * line_h)
+        remaining = self._page_bottom - self.get_y()
+        # Keep short/medium blocks together. Long notes may split, but the
+        # label must stay with at least two lines of body text.
+        keep_together_limit = 90
+        if total_h <= keep_together_limit and total_h > remaining:
+            self.add_page()
+        elif remaining < min_start:
+            self.add_page()
+        return text_h
+
+    def ensure_slide_intro_space(self, notes, slide_type=""):
+        """Keep a slide heading with its first speaking-notes paragraph."""
+        marker_h = 2 if self.t.get("slide_marker") else 0
+        slide_h = 19 + marker_h + (6 if slide_type else 0)
+        self.set_font("ui", "", 10)
+        notes_h = self._measure_text_height(notes, 0, 5.5)
+        total_h = slide_h + 10 + notes_h + 2
+        min_start = slide_h + 10 + 11
+        remaining = self._page_bottom - self.get_y()
+        if total_h <= 100 and total_h > remaining:
+            self.add_page()
+        elif remaining < min_start:
+            self.add_page()
+
+    def ensure_chapter_intro_space(self, notes, slide_type="", force_new_page=False):
+        """Keep a chapter banner with the first slide and opening notes."""
+        if force_new_page or self.page_no() == 0:
+            self.add_page()
+            return
+        chapter_h = 36
+        marker_h = 2 if self.t.get("slide_marker") else 0
+        slide_h = 19 + marker_h + (6 if slide_type else 0)
+        self.set_font("ui", "", 10)
+        notes_h = self._measure_text_height(notes, 0, 5.5)
+        total_h = chapter_h + slide_h + 10 + notes_h + 2
+        min_start = chapter_h + slide_h + 10 + 11
+        remaining = self._page_bottom - self.get_y()
+        if total_h <= 135 and total_h > remaining:
+            self.add_page()
+        elif remaining < min_start:
+            self.add_page()
+
     def _estimate_box(self, text, width=165, line_h=5):
         """Estimate height of a boxed text block."""
         self.set_font("ui", "", 9)
-        # Use fpdf2 multi_cell dry-run to count lines
-        n_lines = max(1, len(text) / (width * 0.48) + 1)
-        return 12 + n_lines * line_h
+        return 12 + self._measure_text_height(text, width, line_h)
 
     # ── Slide entry ──
     def slide_entry(self, num, title, slide_type=""):
@@ -276,19 +683,28 @@ class TeachersGuidePDF(FPDF):
         # the "Speaking Notes:" label and 2 lines of text (~25mm)
         self._ensure_space(40)
         self.ln(3)
+        if self.t.get("slide_marker"):
+            y = self.get_y() - 0.5
+            self.set_fill_color(*self.t["accent"])
+            self.rect(15, y, 9, 2.2, "F")
+            self.set_fill_color(*self.t["primary"])
+            self.rect(24, y, 9, 2.2, "F")
+            self.set_fill_color(*self.t["gold"])
+            self.rect(33, y, 9, 2.2, "F")
+            self.ln(2)
         # Thin accent line above each slide
         self.set_draw_color(*self.t["light"])
         self.set_line_width(0.2)
         self.line(15, self.get_y(), 195, self.get_y())
         self.ln(3)
-        self.set_font("ui", "B", 11)
+        self.set_font("ui", "B", 10)
         self.set_text_color(*self.t["dark"])
         txt = f"SLIDE {num}"
         self.cell(self.get_string_width(txt), 6, txt)
         self.set_font("ui", "", 11)
         self.set_text_color(*self.t["gray"])
         self.cell(5, 6, " -- ")
-        self.set_font("ui", "B", 11)
+        self.set_font(self._font("heading"), "B", 11)
         self.set_text_color(*self.t["primary"])
         self.cell(0, 6, title)
         if slide_type:
@@ -300,8 +716,9 @@ class TeachersGuidePDF(FPDF):
 
     # ── Speaking notes ──
     def speaking_notes(self, text):
-        # Ensure the label + at least 3 lines stay together (~25mm)
-        self._ensure_space(25)
+        # Keep the label with the first two lines and prevent one-line carryover.
+        self.set_font("ui", "", 10)
+        self._ensure_text_space(text, 0, 5.5, label_h=10, min_lines=2)
         self.set_font("ui", "B", 10)
         self.set_text_color(*self.t["dark"])
         self.cell(0, 5, "Speaking Notes:")
@@ -314,60 +731,60 @@ class TeachersGuidePDF(FPDF):
     # ── Discussion prompt ──
     def discussion(self, text):
         h = self._estimate_box(text)
-        self._ensure_space(h)
+        self._ensure_block_space(h, min_start_mm=22)
         y = self.get_y()
         self.set_draw_color(*self.t["accent"])
-        self.set_fill_color(240, 255, 240)
+        self.set_fill_color(*self.t.get("callout_soft_fill", {}).get("discussion", (240, 255, 240)))
         self.rect(15, y, 180, h, "DF")
         self.set_xy(20, y + 3)
         self.set_font("ui", "B", 9)
         self.set_text_color(*self.t["accent"])
-        self.cell(0, 5, ">> DISCUSSION PROMPT")
+        self.cell(0, 5, "DISCUSSION PROMPT")
         self.set_xy(20, y + 9)
         self.set_font("ui", "I", 9)
-        self.set_text_color(40, 80, 40)
+        self.set_text_color(*self.t.get("callout_text", {}).get("discussion", (40, 80, 40)))
         self.multi_cell(165, 5, text)
         self.set_y(max(self.get_y() + 2, y + h + 3))
 
     # ── Teaching tip ──
     def tip(self, text):
         h = self._estimate_box(text)
-        self._ensure_space(h)
+        self._ensure_block_space(h, min_start_mm=22)
         y = self.get_y()
         self.set_draw_color(*self.t["gold"])
-        self.set_fill_color(255, 250, 230)
+        self.set_fill_color(*self.t.get("callout_soft_fill", {}).get("tip", (255, 250, 230)))
         self.rect(15, y, 180, h, "DF")
         self.set_xy(20, y + 3)
         self.set_font("ui", "B", 9)
         self.set_text_color(*self.t["gold"])
-        self.cell(0, 5, "* TEACHING TIP")
+        self.cell(0, 5, "TEACHING TIP")
         self.set_xy(20, y + 9)
         self.set_font("ui", "", 9)
-        self.set_text_color(100, 80, 40)
+        self.set_text_color(*self.t.get("callout_text", {}).get("tip", (100, 80, 40)))
         self.multi_cell(165, 5, text)
         self.set_y(max(self.get_y() + 2, y + h + 3))
 
     # ── Materials callout ──
     def materials(self, text):
         h = self._estimate_box(text, width=140)
-        self._ensure_space(h)
+        self._ensure_block_space(h, min_start_mm=20)
         y = self.get_y()
         self.set_draw_color(*self.t["primary"])
-        self.set_fill_color(230, 242, 250)
+        self.set_fill_color(*self.t.get("callout_soft_fill", {}).get("materials", (230, 242, 250)))
         self.rect(15, y, 180, h, "DF")
         self.set_xy(20, y + 3)
         self.set_font("ui", "B", 9)
         self.set_text_color(*self.t["primary"])
-        self.cell(0, 5, "[HANDOUT]")
+        self.cell(0, 5, "HANDOUT")
         self.set_xy(55, y + 3)
         self.set_font("ui", "", 9)
-        self.set_text_color(*self.t["gray"])
+        self.set_text_color(*self.t.get("callout_text", {}).get("materials", self.t["gray"]))
         self.multi_cell(140, 5, text)
         self.set_y(max(self.get_y() + 2, y + h + 3))
 
     # ── Video callout ──
     def video(self, title):
-        self._ensure_space(12)
+        self._ensure_block_space(12, min_start_mm=12)
         self.set_font("ui", "B", 9)
         self.set_text_color(*self.t["primary"])
         self.cell(0, 5, f"[VIDEO] {title}")
@@ -375,8 +792,14 @@ class TeachersGuidePDF(FPDF):
 
     # ── Checklist page ──
     def checklist(self, items):
-        self.add_page()
-        self.set_font("ui", "B", 16)
+        needed_h = 10 + 12 + 6 + 12 + 8 + (len(items) * 7) + 22
+        if self.page_no() == 0:
+            self.add_page()
+        elif not self._fits(needed_h):
+            self.add_page()
+        else:
+            self.ln(8)
+        self.set_font(self._font("heading"), "B", 16)
         self.set_text_color(*self.t["dark"])
         self.cell(0, 10, "Materials Checklist")
         self.ln(12)
@@ -782,7 +1205,7 @@ def build_time_management_guide():
 # LESSON 3: INTERVIEW SKILLS
 # =====================================================================
 def build_interview_skills_guide():
-    pdf = TeachersGuidePDF("Interview Skills", "Mastering Key Techniques to Secure Your Dream Job", THEME_INTERVIEW)
+    pdf = TeachersGuidePDF("Interview Skills for Employment Success", "Mastering Key Techniques to Land Your Dream Job", THEME_INTERVIEW)
     pdf.cover_page()
     pdf.toc([
         ("W", "Chapter 1: Introduction & Warm-Up", "Slides 1-2"),
@@ -942,8 +1365,543 @@ def build_interview_skills_guide():
     print(f"Created: {out}")
 
 
+class SlideMapParser(HTMLParser):
+    """Small parser for turning lesson HTML into teacher-guide slide notes."""
+
+    def __init__(self):
+        super().__init__()
+        self.slides = []
+        self._slide = None
+        self._capture = None
+        self._buf = []
+        self._anchor = None
+
+    def handle_starttag(self, tag, attrs):
+        attrs = dict(attrs)
+        classes = attrs.get("class", "")
+        if tag == "section" and "slide" in classes.split():
+            self._slide = {
+                "chapter": attrs.get("data-chapter", ""),
+                "classes": classes,
+                "texts": [],
+                "links": [],
+                "has_video": False,
+            }
+        if self._slide is None:
+            return
+        if tag == "video":
+            self._slide["has_video"] = True
+        if tag in ("h1", "h2", "h3", "p", "li"):
+            self._capture = tag
+            self._buf = []
+        if tag == "a" and attrs.get("href"):
+            self._anchor = {"href": attrs["href"], "text": ""}
+
+    def handle_data(self, data):
+        if self._capture:
+            self._buf.append(data)
+        if self._anchor is not None:
+            self._anchor["text"] += data
+
+    def handle_endtag(self, tag):
+        if self._slide is not None and self._capture == tag:
+            text = _pdf_text(" ".join("".join(self._buf).split()))
+            if text:
+                self._slide["texts"].append((tag, text))
+            self._capture = None
+            self._buf = []
+        if tag == "a" and self._anchor is not None:
+            label = _pdf_text(" ".join(self._anchor["text"].split()) or self._anchor["href"])
+            self._slide["links"].append((label, self._anchor["href"]))
+            self._anchor = None
+        if tag == "section" and self._slide is not None:
+            self.slides.append(self._slide)
+            self._slide = None
+
+
+def _lesson_slides(lesson_dir):
+    parser = SlideMapParser()
+    html = (Path(lesson_dir) / "index.html").read_text(encoding="utf-8")
+    parser.feed(html)
+    return parser.slides
+
+
+def _pdf_text(text):
+    replacements = {
+        "\u2610": "[ ]",
+    }
+    for old, new in replacements.items():
+        text = text.replace(old, new)
+    return "".join(ch for ch in text if ord(ch) <= 0xFFFF)
+
+
+def _normalize_speaker_note_text(text):
+    """Clean PDF-extracted speaker notes while preserving the author's wording."""
+    text = _pdf_text(" ".join(text.split()))
+    replacements = {
+        "\u25cf": "-",
+        "\u2022": "-",
+        "\uf0fc": "-",
+        "\uf0b7": "-",
+        "resolution.Healthy": "resolution.\n\nHealthy",
+        "does notkeep": "does not keep",
+        "may feeltoo": "may feel too",
+        "might theyfeel": "might they feel",
+        "likelyto": "likely to",
+        "Managment": "Management",
+        "Teachers if": "Teacher: If",
+        "Teachers go": "Teacher: Go",
+        "Teacher script:“": "Teacher script: \"",
+        "Teacher script:”": "Teacher script: \"",
+        "Teacher script:": "\n\nTeacher script:",
+        "Teacher:": "\n\nTeacher:",
+        "From the worksheet:": "\n\nFrom the worksheet:",
+        "Have students": "\n\nHave students",
+    }
+    for old, new in replacements.items():
+        text = text.replace(old, new)
+    text = re.sub(r"[\uf000-\uf8ff]", "-", text)
+    text = re.sub(r"---This slide references information from the following file:.*", "", text)
+    text = re.sub(r"This Photo\s*by Unknown Author[^.]*\.?", "", text)
+    text = re.sub(r"This Photoby Unknown Author[^.]*\.?", "", text)
+    text = re.sub(r"\b\d{1,2}/\d{1,2}/\d{4}\b", "", text)
+    text = text.replace("worksheet::", "worksheet:")
+    text = text.replace("anger- Might", "anger\n- Might")
+    text = re.sub(r"(?<=[a-z])\.(?=[A-Z])", ". ", text)
+    text = re.sub(r"(?<=[.!?”])(?=[A-Z])", " ", text)
+    text = re.sub(r"(?<=[a-z0-9)])(?=[A-Z])", " ", text)
+    text = re.sub(r"(?<=:)(?=[A-Z])", " ", text)
+    text = re.sub(r"(?<=:)-\s*", ":\n- ", text)
+    text = re.sub(r"(?<=[.!?”])\s*-\s*", "\n- ", text)
+    text = text.replace("worksheet::", "worksheet:")
+    text = re.sub(r"\s+([,.;:])", r"\1", text)
+    text = re.sub(r"\n{3,}", "\n\n", text)
+    return text.strip()
+
+
+def _pdf_note_overrides(lesson_dir, source_pdf, page_to_slide):
+    """Return slide-numbered notes from a source PDF using an explicit page map."""
+    path = Path(lesson_dir) / source_pdf
+    if not path.is_file():
+        return {}
+    try:
+        from pypdf import PdfReader
+    except Exception:
+        return {}
+
+    notes = {}
+    reader = PdfReader(str(path))
+    for page_no, page in enumerate(reader.pages, start=1):
+        slide_no = page_to_slide.get(page_no)
+        if not slide_no:
+            continue
+        text = _normalize_speaker_note_text(page.extract_text() or "")
+        if not text:
+            continue
+        notes[slide_no] = f"{notes[slide_no]}\n\n{text}" if slide_no in notes else text
+    return notes
+
+
+def _speaker_note_overrides(lesson_dir):
+    """Return slide-numbered notes from Controlling_Anger_Speaker_Notes.pdf."""
+    # The speaker notes PDF is exported as one note page per original deck slide,
+    # with blank pages omitted here. Map authored notes onto the current 30-slide
+    # HTML lesson structure.
+    return _pdf_note_overrides(lesson_dir, "Teacher-Resources/Controlling_Anger_Speaker_Notes.pdf", {
+        2: 1,   # title/introduction
+        4: 3,   # What Makes Us Angry?
+        5: 6,   # What Is Healthy Anger?
+        6: 9,   # Anger Iceberg activity setup
+        7: 11,  # Iceberg reflection prompts
+        8: 12,  # Support networks
+        9: 13,  # Anger at work
+        10: 13, # Interviews and perception
+        11: 15, # Embrace, Express & Work Through
+        13: 14, # Strategies section/toolbox setup
+        14: 16, # Recognize triggers
+        15: 17, # Anger Thermometer video
+        16: 18, # Fair fighting setup
+        17: 20, # Pair & Share
+        18: 18, # Fair fighting rationale
+        19: 18, # Fair fighting rules and Speak/Listen connection
+        20: 21, # Choice wheel classroom management
+        21: 21, # Choice wheel backup link
+        22: 22, # 12 ways intro
+        24: 22, # Toolbox methods
+        25: 26, # Jeopardy review
+    })
+
+
+def _communicating_note_overrides(lesson_dir):
+    return _pdf_note_overrides(lesson_dir, "Teacher-Resources/Communicating_With_the_Public_Speakers_Notes.pdf", {
+        1: 1,
+        2: 1,
+        3: 2,
+        4: 4,
+        5: 9,
+        6: 10,
+        7: 11,
+        8: 12,
+        9: 13,
+        10: 16,
+        11: 17,
+        12: 17,
+        13: 17,
+        14: 18,
+        15: 21,
+        16: 22,
+        17: 23,
+        18: 23,
+        19: 24,
+        20: 25,
+        21: 26,
+        22: 23,
+        23: 25,
+        24: 26,
+        25: 27,
+        26: 27,
+        27: 33,
+        28: 33,
+    })
+
+
+def _problem_solving_note_overrides(lesson_dir):
+    return _pdf_note_overrides(lesson_dir, "Teacher-Resources/Problem_Solving_Decision_Making_Speaking_Notes.pdf", {
+        1: 1,
+        2: 3,
+        3: 4,
+        4: 6,
+        5: 7,
+        6: 8,
+        7: 8,
+        8: 8,
+        9: 8,
+        10: 9,
+        11: 12,
+        12: 12,
+        13: 12,
+        14: 12,
+        15: 13,
+        16: 16,
+        17: 19,
+        18: 24,
+    })
+
+
+def _interview_note_overrides(lesson_dir):
+    return _pdf_note_overrides(lesson_dir, "Teacher-Resources/Presenter Script.pdf", {
+        1: 1,
+        2: 3,
+        3: 4,
+        4: 5,
+        5: 6,
+        6: 7,
+        7: 9,
+        8: 10,
+        9: 11,
+        10: 13,
+        11: 14,
+        12: 15,
+        13: 16,
+        14: 17,
+        15: 19,
+        16: 20,
+        17: 21,
+        18: 22,
+        19: 23,
+        20: 24,
+        21: 25,
+        22: 25,
+        23: 26,
+        24: 28,
+        25: 34,
+        26: 28,
+        27: 27,
+        28: 35,
+    })
+
+
+def _time_management_note_overrides(lesson_dir):
+    return _pdf_note_overrides(lesson_dir, "Source Material/Presentation Notes.pdf", {
+        1: 1,
+        2: 2,
+        3: 3,
+        4: 8,
+        5: 9,
+        6: 11,
+        7: 13,
+        8: 14,
+        9: 15,
+        10: 17,
+        11: 18,
+        12: 20,
+        13: 21,
+        14: 23,
+        15: 25,
+        16: 27,
+        17: 28,
+        18: 34,
+        19: 36,
+    })
+
+
+def _accountability_note_overrides(lesson_dir):
+    return _pdf_note_overrides(lesson_dir, "Source Material/Employee Accountability_Instructor Script.pdf", {
+        1: 3,
+        2: 8,
+        3: 13,
+        4: 15,
+        5: 17,
+        6: 18,
+        7: 23,
+        8: 23,
+        9: 27,
+        10: 29,
+        11: 32,
+        12: 32,
+        13: 34,
+    })
+
+
+def _slide_title(slide):
+    return next((text for tag, text in slide["texts"] if tag in ("h1", "h2")), "Untitled Slide")
+
+
+def _slide_summary(slide):
+    title = _slide_title(slide)
+    chunks = []
+    for _tag, text in slide["texts"]:
+        if text == title or len(text) < 8:
+            continue
+        chunks.append(text)
+        if len(chunks) == 3:
+            break
+    if not chunks:
+        return "Use this slide to transition, orient learners, and connect the topic to workplace success."
+    return " ".join(chunks)
+
+
+def _generic_notes(title, summary, has_video=False, is_section=False):
+    if is_section:
+        return f"Transition into this section: {title}. Preview why this topic matters and connect it back to the lesson objectives."
+    if has_video:
+        return f"Play the embedded video and ask students to listen for examples connected to {title}. After viewing, pause for reactions before moving into discussion."
+    lower = title.lower()
+    if "checkpoint" in lower or "assess" in lower or "reflection" in lower:
+        return f"Use this slide as a comprehension check. Invite students to respond individually first, then discuss patterns or questions as a group. Key content: {summary}"
+    if "activity" in lower or "practice" in lower or "role-play" in lower:
+        return f"Frame this as active practice. Give clear directions, set a time limit, circulate while students work, and debrief the workplace skill being practiced. Key content: {summary}"
+    return f"Walk students through the key idea on this slide and tie it to a real workplace situation. Key content: {summary}"
+
+
+def _generic_discussion(title):
+    lower = title.lower()
+    if "video" in lower or "watch" in lower:
+        return "What stood out from the video? Where did you see an example of effective or ineffective workplace behavior?"
+    if "reflection" in lower or "assess" in lower:
+        return "What is one answer you feel confident about, and what is one area where you want more practice?"
+    if "activity" in lower or "practice" in lower:
+        return "What made this activity easy or difficult? How would this skill show up at work?"
+    return f"How does {title.lower()} connect to a situation you might face at work, school, or in daily life?"
+
+
+def _chapter_toc(chapters, slides):
+    toc = []
+    for ch in chapters:
+        nums = [idx for idx, slide in enumerate(slides, 1) if slide["chapter"] == ch["chapter"]]
+        if not nums:
+            continue
+        slide_range = f"Slides {nums[0]}-{nums[-1]}" if nums[0] != nums[-1] else f"Slide {nums[0]}"
+        toc.append((ch["badge"], ch["title"], slide_range))
+    return toc
+
+
+def _checklist_items(lesson_dir):
+    lesson = Path(lesson_dir)
+    items = []
+    for folder in ("Handouts", "Teacher-Resources", "resources"):
+        base = lesson / folder
+        if not base.exists():
+            continue
+        for path in sorted(base.iterdir()):
+            if not path.is_file() or path.suffix.lower() != ".pdf":
+                continue
+            stem = path.stem.lower()
+            if folder != "Handouts" and not any(keyword in stem for keyword in ("guide", "lesson_plan", "lesson plan")):
+                continue
+            if any(keyword in stem for keyword in ("speaker", "speaking", "presenter", "instructor_notes", "outline", "talking points")):
+                continue
+            items.append((_pdf_text(path.stem.replace("_", " ")), folder))
+    return items or [("Lesson presentation", "index.html"), ("Class discussion prompts", "Teacher's Guide")]
+
+
+def build_html_lesson_guide(lesson_dir, title, subtitle, chapters, theme, output_name, note_overrides=None, output_folder="Teacher-Resources"):
+    slides = _lesson_slides(lesson_dir)
+    note_overrides = note_overrides or {}
+    pdf = TeachersGuidePDF(title, subtitle, theme)
+    pdf.cover_page()
+    pdf.toc(_chapter_toc(chapters, slides))
+
+    current_chapter = None
+    chapter_by_id = {chapter["chapter"]: chapter for chapter in chapters}
+    for index, slide in enumerate(slides, 1):
+        chapter_id = slide["chapter"]
+        chapter = chapter_by_id.get(chapter_id)
+        title_text = _slide_title(slide)
+        is_section = "slide-section" in slide["classes"].split()
+        slide_type = "Video" if slide["has_video"] else ("Section Title" if is_section else "")
+        notes = note_overrides.get(index) or _generic_notes(title_text, _slide_summary(slide), slide["has_video"], is_section)
+        if chapter_id != current_chapter and chapter:
+            pdf.chapter_head(chapter["badge"], chapter["heading"], chapter["wippea"])
+            current_chapter = chapter_id
+        else:
+            pdf.ensure_slide_intro_space(notes, slide_type)
+        pdf.slide_entry(index, title_text, slide_type)
+        pdf.speaking_notes(notes)
+        if slide["has_video"]:
+            pdf.video(title_text.replace("Watch: ", ""))
+        handouts = [f"{label} ({href})" for label, href in slide["links"] if "Handouts/" in href or "Teacher-Resources/" in href]
+        if handouts:
+            pdf.materials("Linked resource(s): " + "; ".join(handouts[:4]))
+        if index == 1 or index % 3 == 0 or slide["has_video"] or "activity" in title_text.lower():
+            pdf.discussion(_generic_discussion(title_text))
+
+    pdf.checklist(_checklist_items(lesson_dir))
+    out = Path(lesson_dir) / output_folder / output_name
+    out.parent.mkdir(parents=True, exist_ok=True)
+    pdf.output(str(out))
+    print(f"Created: {out}")
+
+
+def build_communicating_public_guide():
+    build_html_lesson_guide(
+        "lesson-communicating-with-the-public",
+        "Communicating with the Public",
+        "Active Listening, Communication Styles & Self-Advocacy",
+        [
+            {"chapter": "1", "badge": "W", "title": "Chapter 1: Warm-Up", "heading": "CHAPTER 1: WARM-UP", "wippea": "WARM-UP"},
+            {"chapter": "2", "badge": "I", "title": "Chapter 2: Why Communication Matters", "heading": "CHAPTER 2: WHY COMMUNICATION MATTERS", "wippea": "INTRODUCTION"},
+            {"chapter": "3", "badge": "P", "title": "Chapter 3: Elements of Communication", "heading": "CHAPTER 3: ELEMENTS OF COMMUNICATION", "wippea": "PRESENTATION"},
+            {"chapter": "4", "badge": "P", "title": "Chapter 4: Communication Styles", "heading": "CHAPTER 4: COMMUNICATION STYLES", "wippea": "PRESENTATION"},
+            {"chapter": "5", "badge": "P", "title": "Chapter 5: Self-Advocacy", "heading": "CHAPTER 5: SELF-ADVOCACY", "wippea": "PRESENTATION"},
+            {"chapter": "6", "badge": "E", "title": "Chapter 6: Reflect & Assess", "heading": "CHAPTER 6: REFLECT & ASSESS", "wippea": "EVALUATION"},
+            {"chapter": "7", "badge": "A", "title": "Chapter 7: Apply Your Skills", "heading": "CHAPTER 7: APPLY YOUR SKILLS", "wippea": "APPLICATION"},
+        ],
+        THEME_COMMUNICATION,
+        "Communicating_With_the_Public_Teachers_Guide.pdf",
+        note_overrides=_communicating_note_overrides("lesson-communicating-with-the-public"),
+    )
+
+
+def build_controlling_anger_guide():
+    build_html_lesson_guide(
+        "lesson-controlling-anger",
+        "Controlling Anger",
+        "Understanding, Expressing & Managing Anger in Life and Work",
+        [
+            {"chapter": "1", "badge": "W", "title": "Chapter 1: Warm-Up", "heading": "CHAPTER 1: WARM-UP", "wippea": "WARM-UP"},
+            {"chapter": "2", "badge": "I", "title": "Chapter 2: Healthy vs. Unhealthy Anger", "heading": "CHAPTER 2: HEALTHY VS. UNHEALTHY ANGER", "wippea": "INTRODUCTION"},
+            {"chapter": "3", "badge": "P", "title": "Chapter 3: The Anger Iceberg", "heading": "CHAPTER 3: THE ANGER ICEBERG", "wippea": "PRESENTATION"},
+            {"chapter": "4", "badge": "P", "title": "Chapter 4: Strategies for Managing Anger", "heading": "CHAPTER 4: STRATEGIES FOR MANAGING ANGER", "wippea": "PRESENTATION"},
+            {"chapter": "5", "badge": "P", "title": "Chapter 5: Hands-On Activities", "heading": "CHAPTER 5: HANDS-ON ACTIVITIES", "wippea": "PRESENTATION"},
+            {"chapter": "6", "badge": "E", "title": "Chapter 6: Review & Assess", "heading": "CHAPTER 6: REVIEW & ASSESS", "wippea": "EVALUATION"},
+            {"chapter": "7", "badge": "A", "title": "Chapter 7: Reflect & Apply", "heading": "CHAPTER 7: REFLECT & APPLY", "wippea": "APPLICATION"},
+        ],
+        THEME_ANGER,
+        "Controlling_Anger_Teachers_Guide.pdf",
+        note_overrides=_speaker_note_overrides("lesson-controlling-anger"),
+    )
+
+
+def build_problem_solving_guide():
+    build_html_lesson_guide(
+        "lesson-problem-solving-and-decision-making",
+        "Problem-Solving & Decision-Making",
+        "Think Critically. Decide Wisely. Act Confidently.",
+        [
+            {"chapter": "1", "badge": "W", "title": "Chapter 1: Warm-Up", "heading": "CHAPTER 1: WARM-UP", "wippea": "WARM-UP"},
+            {"chapter": "2", "badge": "I", "title": "Chapter 2: Critical Thinking in Action", "heading": "CHAPTER 2: CRITICAL THINKING IN ACTION", "wippea": "INTRODUCTION"},
+            {"chapter": "3", "badge": "P", "title": "Chapter 3: The Four-Step Process", "heading": "CHAPTER 3: THE FOUR-STEP PROCESS", "wippea": "PRESENTATION"},
+            {"chapter": "4", "badge": "P", "title": "Chapter 4: Group Scenarios", "heading": "CHAPTER 4: GROUP SCENARIOS", "wippea": "PRESENTATION"},
+            {"chapter": "5", "badge": "P", "title": "Chapter 5: Survival Challenge", "heading": "CHAPTER 5: SURVIVAL CHALLENGE", "wippea": "PRESENTATION"},
+            {"chapter": "6", "badge": "E", "title": "Chapter 6: 3-2-1 Reflection", "heading": "CHAPTER 6: 3-2-1 REFLECTION", "wippea": "EVALUATION"},
+            {"chapter": "7", "badge": "A", "title": "Chapter 7: Share & Apply", "heading": "CHAPTER 7: SHARE & APPLY", "wippea": "APPLICATION"},
+        ],
+        THEME_PROBLEM_SOLVING,
+        "Problem_Solving_Decision_Making_Teachers_Guide.pdf",
+        note_overrides=_problem_solving_note_overrides("lesson-problem-solving-and-decision-making"),
+    )
+
+
+# Current HTML-driven builders for lessons that began with hand-authored guide
+# functions earlier in this file. These keep the guides aligned to the live
+# slide decks and fold in the available source-note PDFs.
+def build_accountability_guide():
+    build_html_lesson_guide(
+        "lesson-employee-accountability",
+        "Employee Accountability",
+        "Own It. Grow From It. Lead With It.",
+        [
+            {"chapter": "1", "badge": "W", "title": "Chapter 1: Warm-Up", "heading": "CHAPTER 1: WARM-UP", "wippea": "WARM-UP"},
+            {"chapter": "2", "badge": "I", "title": "Chapter 2: Accountability Basics", "heading": "CHAPTER 2: ACCOUNTABILITY BASICS", "wippea": "INTRODUCTION"},
+            {"chapter": "3", "badge": "P", "title": "Chapter 3: Habits of Mind", "heading": "CHAPTER 3: HABITS OF MIND", "wippea": "PRESENTATION"},
+            {"chapter": "4", "badge": "P", "title": "Chapter 4: Team Success", "heading": "CHAPTER 4: ACCOUNTABILITY & TEAM SUCCESS", "wippea": "PRESENTATION"},
+            {"chapter": "5", "badge": "P", "title": "Chapter 5: Workplace Application", "heading": "CHAPTER 5: PRINCIPLES, MINDSET & WORKPLACE APPLICATION", "wippea": "PRESENTATION"},
+            {"chapter": "6", "badge": "E", "title": "Chapter 6: SMART Goals & Assessment", "heading": "CHAPTER 6: SMART GOALS & ASSESSMENT", "wippea": "EVALUATION"},
+            {"chapter": "7", "badge": "A", "title": "Chapter 7: Apply & Commit", "heading": "CHAPTER 7: APPLY & COMMIT", "wippea": "APPLICATION"},
+        ],
+        THEME_ACCOUNTABILITY,
+        "Employee_Accountability_Teachers_Guide.pdf",
+        note_overrides=_accountability_note_overrides("lesson-employee-accountability"),
+        output_folder="resources",
+    )
+
+
+def build_time_management_guide():
+    build_html_lesson_guide(
+        "lesson-time-management",
+        "Time Management",
+        "Maximizing Productivity & Achieving Goals",
+        [
+            {"chapter": "1", "badge": "W", "title": "Chapter 1: Warm-Up", "heading": "CHAPTER 1: WARM-UP", "wippea": "WARM-UP"},
+            {"chapter": "2", "badge": "I", "title": "Chapter 2: Module Objective", "heading": "CHAPTER 2: MODULE OBJECTIVE", "wippea": "INTRODUCTION"},
+            {"chapter": "3", "badge": "P", "title": "Chapter 3: Setting Priorities", "heading": "CHAPTER 3: SETTING PRIORITIES", "wippea": "PRESENTATION"},
+            {"chapter": "4", "badge": "P", "title": "Chapter 4: Tools & Strategies", "heading": "CHAPTER 4: TOOLS & STRATEGIES", "wippea": "PRESENTATION"},
+            {"chapter": "5", "badge": "P", "title": "Chapter 5: Common Challenges", "heading": "CHAPTER 5: COMMON CHALLENGES", "wippea": "PRESENTATION"},
+            {"chapter": "6", "badge": "E", "title": "Chapter 6: Check Your Knowledge", "heading": "CHAPTER 6: CHECK YOUR KNOWLEDGE", "wippea": "EVALUATION"},
+            {"chapter": "7", "badge": "A", "title": "Chapter 7: Put It Into Practice", "heading": "CHAPTER 7: PUT IT INTO PRACTICE", "wippea": "APPLICATION"},
+        ],
+        THEME_TIME,
+        "Time_Management_Teachers_Guide.pdf",
+        note_overrides=_time_management_note_overrides("lesson-time-management"),
+    )
+
+
+def build_interview_skills_guide():
+    build_html_lesson_guide(
+        "lesson-interview-skills",
+        "Interview Skills for Employment Success",
+        "Mastering Key Techniques to Land Your Dream Job",
+        [
+            {"chapter": "1", "badge": "W", "title": "Chapter 1: Warm-Up", "heading": "CHAPTER 1: WARM-UP", "wippea": "WARM-UP"},
+            {"chapter": "2", "badge": "I", "title": "Chapter 2: Understanding Interviews", "heading": "CHAPTER 2: UNDERSTANDING INTERVIEWS", "wippea": "INTRODUCTION"},
+            {"chapter": "3", "badge": "P", "title": "Chapter 3: Preparing for the Interview", "heading": "CHAPTER 3: PREPARING FOR THE INTERVIEW", "wippea": "PRESENTATION"},
+            {"chapter": "4", "badge": "P", "title": "Chapter 4: Professional Presentation", "heading": "CHAPTER 4: PROFESSIONAL PRESENTATION", "wippea": "PRESENTATION"},
+            {"chapter": "5", "badge": "P", "title": "Chapter 5: Interview Techniques", "heading": "CHAPTER 5: INTERVIEW TECHNIQUES & FOLLOW-UP", "wippea": "PRESENTATION"},
+            {"chapter": "6", "badge": "E", "title": "Chapter 6: Check Your Knowledge", "heading": "CHAPTER 6: CHECK YOUR KNOWLEDGE", "wippea": "EVALUATION"},
+            {"chapter": "7", "badge": "A", "title": "Chapter 7: Put It Into Practice", "heading": "CHAPTER 7: PUT IT INTO PRACTICE", "wippea": "APPLICATION"},
+        ],
+        THEME_INTERVIEW,
+        "Interview_Skills_Teachers_Guide.pdf",
+        note_overrides=_interview_note_overrides("lesson-interview-skills"),
+    )
+
+
 if __name__ == "__main__":
     build_accountability_guide()
     build_time_management_guide()
     build_interview_skills_guide()
+    build_communicating_public_guide()
+    build_controlling_anger_guide()
+    build_problem_solving_guide()
     print("\nAll Teacher's Guides generated successfully!")

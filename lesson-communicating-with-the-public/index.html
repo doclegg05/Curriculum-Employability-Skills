@@ -868,7 +868,9 @@
         font-family: var(--font-heading);
         font-size: 1.5rem;
         font-weight: 400;
+        color: var(--light);
       }
+      .area-card.gold-card h3 { color: var(--dark); }
 
       .area-card ul { list-style: none; }
 
@@ -1384,7 +1386,15 @@
       .slide-title h1, .slide h2, .slide h3, .card h3,
       .smart-content h3, .matrix-action, .slide-section h2,
       .area-card h3, .closing-box h2 {
-        font-family: 'Crimson Pro', serif;
+        font-family: 'Bookman Old Style', 'Crimson Pro', serif;
+      }
+      .chapter-label,
+      .activity-label,
+      .download-prompt,
+      .checkpoint-label {
+        font-family: 'Ink Free', 'Comic Sans MS', cursive;
+        text-transform: none;
+        letter-spacing: 0;
       }
 
       /* Missing text highlight classes + contrast fix */
@@ -1393,9 +1403,11 @@
 
       /* Background texture: crosshatch */
       .main {
-        background-color: var(--muted);
-        background-image: linear-gradient(rgba(0,64,113,0.04) 1px, transparent 1px), linear-gradient(90deg, rgba(0,64,113,0.04) 1px, transparent 1px);
-        background-size: 24px 24px;
+        background-color: var(--light);
+        background-image:
+          linear-gradient(rgba(0,64,113,0.035) 1px, transparent 1px),
+          linear-gradient(90deg, rgba(55,181,80,0.035) 1px, transparent 1px);
+        background-size: 28px 28px;
       }
 
       /* Sidebar color: dark (default — no override needed) */
@@ -1403,6 +1415,8 @@
       /* Color lead: dual-blue-green */
       .slide h2 { color: var(--primary); }
       .slide h3 { color: var(--primary); }
+      .slide .area-card h3 { color: var(--light); }
+      .slide .area-card.gold-card h3 { color: var(--dark); }
       /* FIX: white on accent (#37b550) = 2.66:1 fails AA; using --dark (10.65:1) */
       .download-btn { background: var(--dark); }
       .download-btn:hover { background: var(--dark); box-shadow: 0 5px 20px rgba(0, 64, 113, 0.4); }
@@ -1410,12 +1424,89 @@
       .slide-section { background: linear-gradient(135deg, var(--primary), var(--accent)); }
 
       /* Title slide updated to geometric gold-to-blue layout */
-      .slide-title { background: linear-gradient(90deg, var(--gold) 0%, var(--primary) 25%, var(--dark) 100%); flex-direction: column; justify-content: center; }
+      .slide-title {
+        background:
+          linear-gradient(90deg, rgba(255,255,255,0.96) 0%, rgba(255,255,255,0.82) 42%, rgba(255,255,255,0.22) 100%),
+          url("images/ppt-inspiration/image1.png") center / cover no-repeat;
+        flex-direction: column;
+        justify-content: center;
+        align-items: flex-start;
+        padding-left: clamp(3rem, 8vw, 8rem);
+        text-align: left;
+      }
       .slide-title::before { display: none; }
       .slide-title::after { display: none; }
-      .slide-title h1 { color: var(--light); text-shadow: 0 4px 10px rgba(0,0,0,0.3); }
-      .slide-title .subtitle { color: var(--light); font-size: 1.8rem; text-shadow: 0 2px 5px rgba(0,0,0,0.3); }
-      .slide-title .copyright { color: rgba(255,255,255,0.6); }
+      .slide-title .logo {
+        margin: 0 0 1.5rem;
+        width: min(320px, 36vw);
+        background: rgba(255,255,255,0.82);
+        border-radius: 12px;
+        padding: 0.25rem;
+      }
+      .slide-title h1 {
+        max-width: 780px;
+        color: var(--dark);
+        font-size: clamp(3.6rem, 7vw, 7rem);
+        line-height: 0.92;
+        text-shadow: none;
+      }
+      .slide-title .subtitle {
+        color: var(--primary);
+        font-family: 'Ink Free', 'Comic Sans MS', cursive;
+        font-size: clamp(1.7rem, 2.8vw, 2.8rem);
+        font-weight: 700;
+        text-shadow: none;
+        margin-top: 0.7rem;
+      }
+      .slide-title .divider {
+        width: 340px;
+        height: 10px;
+        background: linear-gradient(90deg, var(--accent), var(--primary), var(--gold));
+        border-radius: 999px;
+        margin: 1rem 0;
+      }
+      .title-actions {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 0.85rem;
+        margin-top: 1.5rem;
+      }
+      .title-resource-btn {
+        display: inline-flex;
+        align-items: center;
+        gap: 0.55rem;
+        min-height: 44px;
+        padding: 0.75rem 1.2rem;
+        border-radius: 10px;
+        background: var(--dark);
+        color: var(--light);
+        border: 2px solid rgba(255,255,255,0.72);
+        box-shadow: 6px 6px 0 rgba(0,123,175,0.18);
+        font-size: 1rem;
+        font-weight: 700;
+        text-decoration: none;
+        transition: transform 0.2s ease, box-shadow 0.2s ease, filter 0.2s ease;
+      }
+      .title-resource-btn:hover {
+        filter: brightness(1.08);
+        transform: translateY(-2px);
+        box-shadow: 8px 8px 0 rgba(0,123,175,0.22);
+      }
+      .title-resource-btn.secondary {
+        background: var(--accent);
+        color: var(--dark);
+        border-color: rgba(0,64,113,0.25);
+      }
+      .title-resource-btn::before {
+        content: "\2193";
+        font-size: 1.1rem;
+      }
+      .slide-title .copyright {
+        color: var(--gray);
+        text-align: left;
+        left: clamp(3rem, 8vw, 8rem);
+        right: auto;
+      }
 
 
       /* =================================================================
@@ -1561,11 +1652,236 @@
       }
 
       /* --- Uniform Divider Style: bold-full-bleed --- */
-      .slide-section { background: linear-gradient(90deg, var(--gold) 0%, var(--primary) 25%, var(--dark) 100%); }
+      .slide-section {
+        background:
+          linear-gradient(110deg, rgba(55,181,80,0.96) 0%, rgba(0,123,175,0.94) 45%, rgba(0,64,113,0.96) 100%),
+          url("images/ppt-inspiration/image24.png") center / cover no-repeat;
+        padding-left: clamp(22rem, 32vw, 34rem);
+        padding-right: clamp(2rem, 5vw, 6rem);
+      }
       .slide-section h2 { color: var(--light); text-shadow: 0 2px 5px rgba(0,0,0,0.3); }
-      .slide-section .chapter-label { color: var(--light); font-weight: 700; letter-spacing: 3px; text-shadow: 0 2px 5px rgba(0,0,0,0.3); margin-top: 0.5rem; }
+      .slide-section .chapter-label {
+        color: var(--light);
+        font-size: 2rem;
+        font-weight: 700;
+        text-shadow: 0 2px 5px rgba(0,0,0,0.3);
+        margin-top: 0.5rem;
+      }
       .slide-section .divider { background: var(--light); box-shadow: 0 2px 4px rgba(0,0,0,0.2); }
-      .slide-section .section-circle { border-color: var(--light); background: rgba(0,0,0,0.15); box-shadow: 0 10px 30px rgba(0,0,0,0.3); }
+      .slide-section .section-circle {
+        border-color: var(--light);
+        background: rgba(255,255,255,0.92);
+        box-shadow: 0 10px 30px rgba(0,0,0,0.3);
+        overflow: hidden;
+        width: clamp(210px, 18vw, 280px);
+        height: clamp(210px, 18vw, 280px);
+        left: clamp(2rem, 7vw, 8rem);
+      }
+      .slide-section .section-circle img,
+      .ppt-image-frame img {
+        width: 100%;
+        height: 100%;
+        display: block;
+      }
+      .slide-section .section-circle img { object-fit: cover; }
+      .ppt-image-frame img {
+        object-fit: contain;
+        background: var(--light);
+      }
+      .slide-section .chapter-label,
+      .slide-section h2,
+      .slide-section .divider {
+        margin-left: 0;
+      }
+      .slide-section h2 {
+        max-width: 100%;
+        font-size: clamp(3rem, 4.6vw, 4rem);
+      }
+      .slide:not(.slide-title):not(.slide-section):not(.slide-closing) {
+        padding-bottom: 7rem;
+      }
+      .slide-video {
+        padding-bottom: 7rem;
+      }
+
+      /* PowerPoint-inspired classroom visuals */
+      .ppt-hero-card {
+        position: relative;
+        background: var(--light);
+        border: 4px solid var(--accent);
+        border-radius: 16px;
+        box-shadow: 12px 12px 0 rgba(0,123,175,0.18);
+        overflow: hidden;
+      }
+      .ppt-hero-card::before {
+        content: "";
+        position: absolute;
+        inset: 0;
+        border: 2px dashed rgba(0,64,113,0.22);
+        border-radius: 12px;
+        pointer-events: none;
+      }
+      .ppt-image-frame {
+        width: min(38vw, 440px);
+        aspect-ratio: 16 / 9;
+      }
+      .ppt-cycle-layout {
+        display: grid;
+        grid-template-columns: minmax(280px, 0.95fr) minmax(360px, 1.05fr);
+        gap: 2rem;
+        align-items: center;
+      }
+      .ppt-cycle-layout .takeaways { gap: 0.75rem; }
+      .ppt-cycle-art {
+        width: 100%;
+        max-width: 560px;
+        margin: 0 auto;
+        aspect-ratio: 16 / 10;
+      }
+      .ppt-cycle-art img,
+      .ppt-listening-art img,
+      .ppt-advocacy-mark img {
+        width: 100%;
+        height: 100%;
+        display: block;
+      }
+      .ppt-cycle-art img {
+        object-fit: contain;
+        background: var(--light);
+      }
+      .ppt-listening-art img,
+      .ppt-advocacy-mark img {
+        object-fit: cover;
+      }
+      .ppt-listening-layout {
+        display: grid;
+        grid-template-columns: 1fr minmax(320px, 0.75fr);
+        gap: 2rem;
+        align-items: center;
+      }
+      .ppt-listening-art {
+        aspect-ratio: 16 / 9;
+      }
+      .ppt-advocacy-mark {
+        width: min(34vw, 380px);
+        aspect-ratio: 1 / 1;
+        border-radius: 28px;
+        background: var(--light);
+      }
+      .card,
+      .takeaway-item,
+      .smart-content,
+      .accordion-item,
+      .checkpoint-box,
+      .tabs-container {
+        position: relative;
+        background:
+          linear-gradient(rgba(255,255,255,0.94), rgba(255,255,255,0.94)),
+          url("images/ppt-inspiration/image21.jpeg") center / cover no-repeat;
+        border: 2px solid rgba(0,64,113,0.12);
+        box-shadow: 8px 8px 0 rgba(0,123,175,0.10);
+      }
+      .card {
+        border-left: 0;
+        border-top: 6px solid var(--accent);
+        overflow: hidden;
+        padding: 1.45rem 2rem;
+      }
+      .card.gold-border { border-top-color: var(--gold); }
+      .card h3 { font-size: 1.45rem; }
+      .card p {
+        font-size: 1.22rem;
+        line-height: 1.45;
+      }
+      .card::before,
+      .takeaway-item::before,
+      .checkpoint-box::before {
+        content: "";
+        position: absolute;
+        top: -10px;
+        left: 1.25rem;
+        width: 84px;
+        height: 18px;
+        background: rgba(211,178,87,0.42);
+        transform: rotate(-2deg);
+      }
+      .takeaway-item {
+        padding: 0.7rem 1rem;
+        border-radius: 12px;
+      }
+      .takeaway-num {
+        border-radius: 8px;
+        box-shadow: 4px 4px 0 rgba(0,64,113,0.10);
+      }
+      .ppt-card-icon {
+        width: 48px;
+        height: 48px;
+        object-fit: contain;
+        margin-bottom: 0.55rem;
+      }
+      .ppt-media-layout {
+        display: grid;
+        grid-template-columns: minmax(300px, 1fr) minmax(280px, 0.6fr);
+        gap: 2.5rem;
+        align-items: center;
+        flex: 1;
+      }
+      .ppt-speech-visual {
+        aspect-ratio: 1 / 1;
+        width: min(100%, 340px);
+        border-radius: 50%;
+      }
+      .ppt-speech-visual img {
+        width: 100%;
+        height: 100%;
+        object-fit: cover;
+        display: block;
+      }
+      .ppt-statement-mark {
+        width: min(420px, 50vw);
+        margin: 0 auto 2rem;
+      }
+      .ppt-statement-mark img {
+        width: 100%;
+        display: block;
+      }
+      .big-statement {
+        background:
+          linear-gradient(rgba(255,255,255,0.92), rgba(255,255,255,0.86)),
+          url("images/ppt-inspiration/image24.png") center / cover no-repeat;
+      }
+      .tabs-container {
+        border-radius: 16px;
+        padding: 1.25rem;
+      }
+      .tabs-nav {
+        background: rgba(255,255,255,0.72);
+        border-radius: 12px;
+        padding: 0.35rem;
+      }
+      .tab-panel {
+        background: rgba(255,255,255,0.72);
+        border: 2px dashed rgba(0,64,113,0.16);
+        border-radius: 12px;
+        margin-top: 1rem;
+      }
+      .smart-row {
+        align-items: stretch;
+      }
+      .smart-letter {
+        border-radius: 12px;
+        box-shadow: 4px 4px 0 rgba(0,64,113,0.10);
+      }
+      .matrix-cell,
+      .area-card,
+      .danger-card-front,
+      .danger-card-back {
+        box-shadow: 8px 8px 0 rgba(0,64,113,0.12);
+      }
+      .download-resource {
+        background: rgba(255,255,255,0.72);
+        border: 2px dashed rgba(0,64,113,0.16);
+      }
 
       /* --- Secondary Accent: mauve (chapters 2, 4, 6) --- */
       [data-chapter="2"] .card.gold-border,
@@ -1772,10 +2088,77 @@
       }
       .video-grid-item p { font-size: 0.95rem; color: var(--gray); margin-top: 0.5rem; }
 
+      @media (max-width: 900px) {
+        .slide-title {
+          align-items: center;
+          padding-left: 2rem;
+          padding-right: 2rem;
+          text-align: center;
+        }
+        .slide-title .logo { width: min(300px, 70vw); }
+        .slide-title .divider { width: min(340px, 70vw); }
+        .title-actions { justify-content: center; }
+        .slide-title .copyright {
+          left: 2rem;
+          right: 2rem;
+          text-align: center;
+        }
+        .ppt-cycle-layout,
+        .ppt-listening-layout,
+        .ppt-media-layout {
+          grid-template-columns: 1fr;
+          gap: 1.25rem;
+        }
+        .ppt-image-frame,
+        .ppt-cycle-art,
+        .ppt-listening-art,
+        .ppt-advocacy-mark,
+        .ppt-speech-visual {
+          width: min(100%, 420px);
+          justify-self: center;
+        }
+        .ppt-statement-mark { width: min(360px, 70vw); }
+        .ppt-cycle-art { aspect-ratio: 16 / 11; }
+      }
+
       @media (max-width: 768px) {
+        .slide:not(.slide-title):not(.slide-closing) {
+          padding-top: 4.75rem;
+          padding-bottom: 8.5rem;
+        }
+        .slide-section {
+          padding-top: 4.75rem;
+          padding-left: 2rem;
+          padding-right: 2rem;
+        }
+        .slide-section .section-circle {
+          position: static;
+          transform: none;
+          width: 170px;
+          height: 170px;
+          margin: 0 auto 1rem;
+        }
+        .slide-section.active .section-circle {
+          animation: none;
+          transform: none;
+        }
+        .slide-section .chapter-label,
+        .slide-section h2,
+        .slide-section .divider {
+          margin-left: 0;
+        }
+        .slide-section h2 {
+          max-width: 100%;
+          font-size: 2.6rem;
+        }
         .tabs-nav { flex-wrap: wrap; }
         .tab-btn { font-size: 0.95rem; padding: 0.6rem 1rem; }
         .video-grid { grid-template-columns: 1fr; }
+        .card {
+          padding: 1.2rem 1.4rem;
+        }
+        .card h3 { font-size: 1.3rem; }
+        .card p { font-size: 1.1rem; }
       }
 
       /* Fix closing slide visibility */
@@ -1880,13 +2263,16 @@
 
         <div class="resources-section">
           <div class="resources-title">Resources</div>
-          <a href="Handouts/Communicating with the Public 2026 Handouts.pdf" target="_blank" class="resource-link">All Handouts (PDF)</a>
-          <a href="Handouts/Communicating with the Public 2026 Handouts.pdf#page=3" target="_blank" class="resource-link">Personal Listening Assessment</a>
-          <a href="Handouts/Communicating with the Public 2026 Handouts.pdf#page=7" target="_blank" class="resource-link">Role-Play Scenarios</a>
-          <a href="Handouts/Communicating with the Public 2026 Handouts.pdf#page=10" target="_blank" class="resource-link">Role-Play Evaluation Form</a>
-          <a href="Handouts/Communicating with the Public 2026 Handouts.pdf#page=12" target="_blank" class="resource-link">Back-to-Back Drawing</a>
-          <a href="Handouts/Communicating with the Public 2026 Handouts.pdf#page=30" target="_blank" class="resource-link">Self-Advocacy Organizer</a>
-          <a href="Handouts/Communicating with the Public 2026 Handouts.pdf#page=32" target="_blank" class="resource-link">Self-Advocacy for Adults</a>
+          <a href="Teacher-Resources/Communicating_With_the_Public_Teachers_Guide.pdf" target="_blank" rel="noopener noreferrer" class="resource-link">Teacher's Guide</a>
+          <a href="Teacher-Resources/Communicating_with_the_Public_Lesson_Plan.pdf" target="_blank" rel="noopener noreferrer" class="resource-link">Lesson Plan</a>
+          <a href="Handouts/Communicating with the Public 2026 Handouts.pdf" target="_blank" rel="noopener noreferrer" class="resource-link">All Handouts (PDF)</a>
+          <a href="Handouts/Communicating with the Public 2026 Handouts.pdf#page=3" target="_blank" rel="noopener noreferrer" class="resource-link">Personal Listening Assessment</a>
+          <a href="Handouts/Communicating with the Public 2026 Handouts.pdf#page=7" target="_blank" rel="noopener noreferrer" class="resource-link">Role-Play Scenarios</a>
+          <a href="Handouts/Communicating with the Public 2026 Handouts.pdf#page=10" target="_blank" rel="noopener noreferrer" class="resource-link">Role-Play Evaluation Form</a>
+          <a href="Handouts/Communicating with the Public 2026 Handouts.pdf#page=12" target="_blank" rel="noopener noreferrer" class="resource-link">Back-to-Back Drawing</a>
+          <a href="Handouts/Communicating with the Public 2026 Handouts.pdf#page=30" target="_blank" rel="noopener noreferrer" class="resource-link">Self-Advocacy Organizer</a>
+          <a href="Handouts/Communicating with the Public 2026 Handouts.pdf#page=32" target="_blank" rel="noopener noreferrer" class="resource-link">Self-Advocacy for Adults</a>
+          <a href="Handouts/Communicating_with_the_Public_Rubric.pdf" target="_blank" rel="noopener noreferrer" class="resource-link">Course Rubric</a>
         </div>
 
         <div class="slide-counter">
@@ -1910,6 +2296,10 @@
           <h1>Communicating with the Public</h1>
           <div class="divider"></div>
           <p class="subtitle">Building Confidence Through Effective Communication</p>
+          <div class="title-actions" aria-label="Instructor resources">
+            <a href="Teacher-Resources/Communicating_with_the_Public_Lesson_Plan.pdf" target="_blank" rel="noopener noreferrer" class="title-resource-btn">Lesson Plan</a>
+            <a href="Teacher-Resources/Communicating_With_the_Public_Teachers_Guide.pdf" target="_blank" rel="noopener noreferrer" class="title-resource-btn secondary">Teacher's Guide</a>
+          </div>
           <p class="copyright">Copyright &copy; 2026 WV Adult Basic Education</p>
         </section>
 
@@ -1931,12 +2321,14 @@
               </div>
             </div>
             <div class="split-visual">
-              <div class="visual-circle" style="background:linear-gradient(135deg, var(--gold), var(--muted-gold)); font-size:3.5rem;">&#128066;</div>
+              <div class="ppt-hero-card ppt-image-frame">
+                <img src="images/ppt-inspiration/image10.png" alt="Hearing or listening concept image from the PowerPoint deck" loading="lazy" />
+              </div>
             </div>
           </div>
           <div class="download-resource">
             <span class="download-prompt">Instructor Resource Available</span>
-            <a href="Handouts/Communicating with the Public 2026 Handouts.pdf#page=3" target="_blank" class="download-btn">Personal Listening Assessment</a>
+            <a href="Handouts/Communicating with the Public 2026 Handouts.pdf#page=3" target="_blank" rel="noopener noreferrer" class="download-btn">Personal Listening Assessment</a>
           </div>
         </section>
 
@@ -1945,7 +2337,9 @@
         <!-- ======================== -->
 
         <section class="slide slide-section" data-chapter="2" data-chapter-num="I">
-          <div class="section-circle" style="display:flex;align-items:center;justify-content:center;font-size:3rem;">&#128172;</div>
+          <div class="section-circle">
+            <img src="images/ppt-inspiration/image24.png" alt="Colorful speech bubbles representing communication" loading="lazy" />
+          </div>
           <p class="chapter-label">Introduction</p>
           <h2>Why Communication Matters</h2>
           <div class="divider"></div>
@@ -1954,8 +2348,8 @@
         <!-- Slide 4: What is Communication? -->
         <section class="slide" data-chapter="2">
           <h2>What is Communication?</h2>
-          <div class="split-layout">
-            <div class="split-text">
+          <div class="ppt-media-layout">
+            <div>
               <p style="font-size:1.6rem; margin-bottom:1.5rem;">
                 Effective communication is the <span class="highlight">exchange of information, intention, and emotion</span>.
               </p>
@@ -1963,8 +2357,8 @@
                 It goes beyond just speaking &mdash; it includes <span class="accent">understanding</span>, <span class="gold">active listening</span>, and reading nonverbal cues.
               </p>
             </div>
-            <div class="split-visual">
-              <div class="visual-circle">&#128483;</div>
+            <div class="ppt-hero-card ppt-speech-visual">
+              <img src="images/ppt-inspiration/image24.png" alt="Layered speech bubbles representing an exchange of messages" loading="lazy" />
             </div>
           </div>
         </section>
@@ -1974,18 +2368,22 @@
           <h2>Communication in the Workplace</h2>
           <div class="cards-grid">
             <div class="card">
+              <img class="ppt-card-icon" src="images/ppt-inspiration/image14.png" alt="" loading="lazy" />
               <h3>Employer Priority</h3>
               <p>Over <strong>70% of employers</strong> prioritize strong communication skills in job candidates &mdash; sometimes more than a specific degree or major.</p>
             </div>
             <div class="card gold-border">
+              <img class="ppt-card-icon" src="images/ppt-inspiration/image16.png" alt="" loading="lazy" />
               <h3>Top Skill in Job Postings</h3>
               <p>Communication consistently ranks as the <strong>#1 skill</strong> in job postings, yet many employers report a shortage of candidates with these abilities.</p>
             </div>
             <div class="card gold-border">
+              <img class="ppt-card-icon" src="images/ppt-inspiration/image18.png" alt="" loading="lazy" />
               <h3>Professional Growth</h3>
               <p>Strong communication skills build <strong>self-confidence</strong> and help you achieve both personal and professional goals.</p>
             </div>
             <div class="card">
+              <img class="ppt-card-icon" src="images/ppt-inspiration/image12.png" alt="" loading="lazy" />
               <h3>Forms of Communication</h3>
               <p>Written, verbal, nonverbal, digital &mdash; modern workplaces require <strong>all forms</strong> of communication mastery.</p>
             </div>
@@ -2011,6 +2409,9 @@
 
         <!-- Slide 7: Big Statement -->
         <section class="slide big-statement" data-chapter="2">
+          <div class="ppt-statement-mark">
+            <img src="images/ppt-inspiration/image24.png" alt="Colorful speech bubbles" loading="lazy" />
+          </div>
           <h2>
             Communication is not just about <span class="accent">speaking</span> &mdash;<br>
             it's about being <span class="gold">understood</span>.
@@ -2023,7 +2424,9 @@
         <!-- ======================== -->
 
         <section class="slide slide-section" data-chapter="3" data-chapter-num="P1">
-          <div class="section-circle" style="display:flex;align-items:center;justify-content:center;font-size:3rem;">&#128260;</div>
+          <div class="section-circle">
+            <img src="images/ppt-inspiration/image8.png" alt="Communication cycle diagram from the PowerPoint deck" loading="lazy" />
+          </div>
           <p class="chapter-label">Presentation</p>
           <h2>Elements of Communication</h2>
           <div class="divider"></div>
@@ -2035,10 +2438,12 @@
           <p style="font-size:1.3rem; color:var(--gray); margin-top:-1.5rem; margin-bottom:2rem;">The two sides of every message</p>
           <div class="cards-grid">
             <div class="card">
+              <img class="ppt-card-icon" src="images/ppt-inspiration/image12.png" alt="" loading="lazy" />
               <h3>&#128228; Encoding (Sender)</h3>
               <p>The process of converting thoughts, ideas, or information into a message using symbols &mdash; words, gestures, images, or sounds &mdash; that the receiver can understand.</p>
             </div>
             <div class="card gold-border">
+              <img class="ppt-card-icon" src="images/ppt-inspiration/image18.png" alt="" loading="lazy" />
               <h3>&#128229; Decoding (Receiver)</h3>
               <p>The process by which a receiver interprets and makes sense of a message. Tone, body language, and personal experiences all influence interpretation.</p>
             </div>
@@ -2048,27 +2453,34 @@
         <!-- Slide 10: The Communication Cycle -->
         <section class="slide" data-chapter="3">
           <h2>The Communication Cycle</h2>
-          <div class="takeaways">
-            <div class="takeaway-item">
-              <div class="takeaway-num">1</div>
-              <p><strong>Sender encodes</strong> &mdash; Person #1 formulates and sends a message</p>
+          <div class="ppt-cycle-layout">
+            <div>
+              <div class="takeaways">
+                <div class="takeaway-item">
+                  <div class="takeaway-num">1</div>
+                  <p><strong>Sender encodes</strong> &mdash; Person #1 formulates and sends a message</p>
+                </div>
+                <div class="takeaway-item">
+                  <div class="takeaway-num alt">2</div>
+                  <p><strong>Receiver decodes</strong> &mdash; Person #2 receives and interprets the message</p>
+                </div>
+                <div class="takeaway-item">
+                  <div class="takeaway-num">3</div>
+                  <p><strong>Receiver becomes sender</strong> &mdash; Person #2 encodes a response</p>
+                </div>
+                <div class="takeaway-item">
+                  <div class="takeaway-num alt">4</div>
+                  <p><strong>Original sender decodes</strong> &mdash; Person #1 receives and interprets the response</p>
+                </div>
+              </div>
+              <div class="activity-box">
+                <div class="activity-label">Discussion</div>
+                <p>Why is this communication process called a <em>cycle</em>? What happens when the cycle breaks down?</p>
+              </div>
             </div>
-            <div class="takeaway-item">
-              <div class="takeaway-num alt">2</div>
-              <p><strong>Receiver decodes</strong> &mdash; Person #2 receives and interprets the message</p>
+            <div class="ppt-hero-card ppt-cycle-art">
+              <img src="images/ppt-inspiration/image8.png" alt="Illustrated communication cycle showing sender, message, encoding, channel, receiver, feedback, decode, and noise" loading="lazy" />
             </div>
-            <div class="takeaway-item">
-              <div class="takeaway-num">3</div>
-              <p><strong>Receiver becomes sender</strong> &mdash; Person #2 encodes a response</p>
-            </div>
-            <div class="takeaway-item">
-              <div class="takeaway-num alt">4</div>
-              <p><strong>Original sender decodes</strong> &mdash; Person #1 receives and interprets the response</p>
-            </div>
-          </div>
-          <div class="activity-box">
-            <div class="activity-label">Discussion</div>
-            <p>Why is this communication process called a <em>cycle</em>? What happens when the cycle breaks down?</p>
           </div>
         </section>
 
@@ -2092,21 +2504,28 @@
         <!-- Slide 12: Hearing vs. Listening -->
         <section class="slide" data-chapter="3">
           <h2>Hearing vs. Listening</h2>
-          <div class="cards-grid">
-            <div class="card">
-              <h3>Hearing</h3>
-              <p>A <strong>passive, physical</strong> process. Sound waves enter your ears automatically &mdash; no effort required.</p>
+          <div class="ppt-listening-layout">
+            <div>
+              <div class="cards-grid">
+                <div class="card">
+                  <h3>Hearing</h3>
+                  <p>A <strong>passive, physical</strong> process. Sound waves enter your ears automatically &mdash; no effort required.</p>
+                </div>
+                <div class="card gold-border">
+                  <h3>Listening</h3>
+                  <p>An <strong>active, intentional</strong> process. It requires effort, attention, and the desire to understand the speaker's message.</p>
+                </div>
+              </div>
+              <ul class="content-list" style="margin-top:1.5rem;">
+                <li>Listening is <strong>NOT</strong> a natural process &mdash; it requires effort</li>
+                <li>All listeners do <strong>NOT</strong> receive the same message</li>
+                <li>Personal experiences and biases shape how we interpret what we hear</li>
+              </ul>
             </div>
-            <div class="card gold-border">
-              <h3>Listening</h3>
-              <p>An <strong>active, intentional</strong> process. It requires effort, attention, and the desire to understand the speaker's message.</p>
+            <div class="ppt-hero-card ppt-listening-art">
+              <img src="images/ppt-inspiration/image10.png" alt="Hearing or listening image from the PowerPoint deck" loading="lazy" />
             </div>
           </div>
-          <ul class="content-list" style="margin-top:1.5rem;">
-            <li>Listening is <strong>NOT</strong> a natural process &mdash; it requires effort</li>
-            <li>All listeners do <strong>NOT</strong> receive the same message</li>
-            <li>Personal experiences and biases shape how we interpret what we hear</li>
-          </ul>
         </section>
 
         <!-- Slide 13: Listening Skills -->
@@ -2177,7 +2596,9 @@
         <!-- ======================== -->
 
         <section class="slide slide-section" data-chapter="4" data-chapter-num="P2">
-          <div class="section-circle" style="display:flex;align-items:center;justify-content:center;font-size:3rem;">&#127908;</div>
+          <div class="section-circle">
+            <img src="images/ppt-inspiration/image4.png" alt="Microphone graphic representing voice and communication style" loading="lazy" />
+          </div>
           <p class="chapter-label">Presentation</p>
           <h2>Communication Styles</h2>
           <div class="divider"></div>
@@ -2230,8 +2651,8 @@
         <!-- Slide 18: Congruent Messages -->
         <section class="slide" data-chapter="4">
           <h2>Congruent Messages</h2>
-          <div class="split-layout">
-            <div class="split-text">
+          <div class="ppt-media-layout">
+            <div>
               <p style="font-size:1.5rem; margin-bottom:1.5rem;">
                 When your <span class="highlight">verbal message</span>, <span class="accent">body message</span>, and <span class="gold">voice message</span> all align, you send a <strong>congruent message</strong>.
               </p>
@@ -2239,8 +2660,8 @@
                 Incongruent messages &mdash; where your words say one thing but your body or voice say another &mdash; create confusion and erode trust.
               </p>
             </div>
-            <div class="split-visual">
-              <div class="visual-circle" style="background:linear-gradient(135deg, var(--accent), var(--primary)); font-size:3rem;">&#9989;</div>
+            <div class="ppt-hero-card ppt-speech-visual">
+              <img src="images/ppt-inspiration/image2.png" alt="Two people talking across a table" loading="lazy" />
             </div>
           </div>
           <div class="activity-box">
@@ -2343,8 +2764,8 @@
           </div>
           <div class="download-resource">
             <span class="download-prompt">Instructor Resource Available</span>
-            <a href="Handouts/Communicating with the Public 2026 Handouts.pdf#page=7" target="_blank" class="download-btn">Role-Play Scenarios</a>
-            <a href="Handouts/Communicating with the Public 2026 Handouts.pdf#page=10" target="_blank" class="download-btn">Evaluation Form</a>
+            <a href="Handouts/Communicating with the Public 2026 Handouts.pdf#page=7" target="_blank" rel="noopener noreferrer" class="download-btn">Role-Play Scenarios</a>
+            <a href="Handouts/Communicating with the Public 2026 Handouts.pdf#page=10" target="_blank" rel="noopener noreferrer" class="download-btn">Evaluation Form</a>
           </div>
         </section>
 
@@ -2354,7 +2775,9 @@
         <!-- ======================== -->
 
         <section class="slide slide-section" data-chapter="5" data-chapter-num="P3">
-          <div class="section-circle" style="display:flex;align-items:center;justify-content:center;font-size:3rem;">&#128170;</div>
+          <div class="section-circle">
+            <img src="images/ppt-inspiration/image34.png" alt="Be your own advocate artwork from the PowerPoint deck" loading="lazy" />
+          </div>
           <p class="chapter-label">Presentation</p>
           <h2>Self-Advocacy</h2>
           <div class="divider"></div>
@@ -2373,7 +2796,9 @@
               </p>
             </div>
             <div class="split-visual">
-              <div class="visual-circle" style="background:linear-gradient(135deg, var(--gold), var(--muted-gold)); font-size:3.5rem;">&#128170;</div>
+              <div class="ppt-hero-card ppt-advocacy-mark">
+                <img src="images/ppt-inspiration/image34.png" alt="Be your own advocate artwork from the PowerPoint deck" loading="lazy" />
+              </div>
             </div>
           </div>
         </section>
@@ -2553,8 +2978,8 @@
           </div>
           <div class="download-resource">
             <span class="download-prompt">Instructor Resource Available</span>
-            <a href="Handouts/Communicating with the Public 2026 Handouts.pdf#page=30" target="_blank" class="download-btn">Self-Advocacy Organizer</a>
-            <a href="Handouts/Communicating with the Public 2026 Handouts.pdf#page=32" target="_blank" class="download-btn">Self-Advocacy for Adults</a>
+            <a href="Handouts/Communicating with the Public 2026 Handouts.pdf#page=30" target="_blank" rel="noopener noreferrer" class="download-btn">Self-Advocacy Organizer</a>
+            <a href="Handouts/Communicating with the Public 2026 Handouts.pdf#page=32" target="_blank" rel="noopener noreferrer" class="download-btn">Self-Advocacy for Adults</a>
           </div>
         </section>
 
@@ -2580,7 +3005,9 @@
         <!-- ======================== -->
 
         <section class="slide slide-section" data-chapter="6" data-chapter-num="E">
-          <div class="section-circle" style="display:flex;align-items:center;justify-content:center;font-size:3rem;">&#128203;</div>
+          <div class="section-circle">
+            <img src="images/ppt-inspiration/image18.png" alt="Assessment clipboard graphic from the PowerPoint deck" loading="lazy" />
+          </div>
           <p class="chapter-label">Evaluation</p>
           <h2>Reflect &amp; Assess</h2>
           <div class="divider"></div>
@@ -2590,23 +3017,28 @@
         <section class="slide" data-chapter="6">
           <h2>Personal Listening Assessment (Post)</h2>
           <p style="font-size:1.3rem; color:var(--gray); margin-top:-1.5rem; margin-bottom:2rem;">Now complete the <strong>second column</strong> of your Personal Listening Assessment.</p>
-          <div class="takeaways">
-            <div class="takeaway-item">
-              <div class="takeaway-num">1</div>
-              <p>Complete the <strong>second column</strong> &mdash; rate yourself again after today's lesson</p>
+          <div class="ppt-media-layout">
+            <div class="takeaways">
+              <div class="takeaway-item">
+                <div class="takeaway-num">1</div>
+                <p>Complete the <strong>second column</strong> &mdash; rate yourself again after today's lesson</p>
+              </div>
+              <div class="takeaway-item">
+                <div class="takeaway-num alt">2</div>
+                <p><strong>Compare</strong> your pre and post ratings &mdash; did anything change?</p>
+              </div>
+              <div class="takeaway-item">
+                <div class="takeaway-num">3</div>
+                <p><strong>Discuss</strong> your results with the class &mdash; what did you learn about yourself?</p>
+              </div>
             </div>
-            <div class="takeaway-item">
-              <div class="takeaway-num alt">2</div>
-              <p><strong>Compare</strong> your pre and post ratings &mdash; did anything change?</p>
-            </div>
-            <div class="takeaway-item">
-              <div class="takeaway-num">3</div>
-              <p><strong>Discuss</strong> your results with the class &mdash; what did you learn about yourself?</p>
+            <div class="ppt-hero-card ppt-speech-visual">
+              <img src="images/ppt-inspiration/image18.png" alt="Clipboard assessment graphic" loading="lazy" />
             </div>
           </div>
           <div class="download-resource">
             <span class="download-prompt">Instructor Resource Available</span>
-            <a href="Handouts/Communicating with the Public 2026 Handouts.pdf#page=3" target="_blank" class="download-btn">Personal Listening Assessment</a>
+            <a href="Handouts/Communicating with the Public 2026 Handouts.pdf#page=3" target="_blank" rel="noopener noreferrer" class="download-btn">Personal Listening Assessment</a>
           </div>
         </section>
 
@@ -2615,7 +3047,9 @@
         <!-- ======================== -->
 
         <section class="slide slide-section" data-chapter="7" data-chapter-num="A">
-          <div class="section-circle" style="display:flex;align-items:center;justify-content:center;font-size:3rem;">&#128640;</div>
+          <div class="section-circle">
+            <img src="images/ppt-inspiration/image34.png" alt="Be your own advocate artwork from the PowerPoint deck" loading="lazy" />
+          </div>
           <p class="chapter-label">Application</p>
           <h2>Apply Your Skills</h2>
           <div class="divider"></div>
@@ -2625,28 +3059,32 @@
         <section class="slide" data-chapter="7">
           <h2>Self-Advocacy Binder Project</h2>
           <p style="font-size:1.2rem; color:var(--gray); margin-top:-1.5rem; margin-bottom:1.5rem;">Apply your communication skills to build a personal and professional resource.</p>
-          <div class="takeaways">
-            <div class="takeaway-item">
-              <div class="takeaway-num">1</div>
-              <p>Create a <strong>self-advocacy binder or folder</strong> for your personal and professional life</p>
+          <div class="ppt-media-layout">
+            <div class="takeaways">
+              <div class="takeaway-item">
+                <div class="takeaway-num">1</div>
+                <p>Create a <strong>self-advocacy binder or folder</strong> for your personal and professional life</p>
+              </div>
+              <div class="takeaway-item">
+                <div class="takeaway-num alt">2</div>
+                <p>Choose relevant <strong>handouts, graphic organizers, and forms</strong> from the lesson materials</p>
+              </div>
+              <div class="takeaway-item">
+                <div class="takeaway-num">3</div>
+                <p>Include resources for <strong>daily life, education, and the workplace</strong></p>
+              </div>
+              <div class="takeaway-item">
+                <div class="takeaway-num alt">4</div>
+                <p>Share one item from your binder with the class and explain <strong>why you chose it</strong></p>
+              </div>
             </div>
-            <div class="takeaway-item">
-              <div class="takeaway-num alt">2</div>
-              <p>Choose relevant <strong>handouts, graphic organizers, and forms</strong> from the lesson materials</p>
-            </div>
-            <div class="takeaway-item">
-              <div class="takeaway-num">3</div>
-              <p>Include resources for <strong>daily life, education, and the workplace</strong></p>
-            </div>
-            <div class="takeaway-item">
-              <div class="takeaway-num alt">4</div>
-              <p>Share one item from your binder with the class and explain <strong>why you chose it</strong></p>
+            <div class="ppt-hero-card ppt-advocacy-mark">
+              <img src="images/ppt-inspiration/image34.png" alt="Be your own advocate artwork" loading="lazy" />
             </div>
           </div>
           <div class="download-resource">
             <span class="download-prompt">Instructor Resource Available</span>
-            <a href="Handouts/Communicating with the Public 2026 Handouts.pdf" target="_blank" class="download-btn">All Handouts (PDF)</a>
-            <a href="Handouts/Communicating with the Public 2026 Handouts.pdf#page=12" target="_blank" class="download-btn">Back-to-Back Drawing</a>
+            <a href="Handouts/Communicating with the Public 2026 Handouts.pdf#page=12" target="_blank" rel="noopener noreferrer" class="download-btn">Back-to-Back Drawing</a>
           </div>
         </section>
 
@@ -2660,6 +3098,10 @@
             <p>"The single biggest problem in communication is the illusion that it has taken place." &mdash; George Bernard Shaw</p>
             <div class="divider"></div>
             <h2>Communicate with Confidence</h2>
+            <div class="download-resource">
+              <span class="download-prompt">Instructor Resource Available</span>
+              <a href="Handouts/Communicating_with_the_Public_Rubric.pdf" target="_blank" rel="noopener noreferrer" class="download-btn">Course Rubric</a>
+            </div>
           </div>
         </section>
 

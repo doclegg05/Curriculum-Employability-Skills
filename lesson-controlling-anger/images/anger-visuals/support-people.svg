@@ -1,0 +1,7 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 96 96" role="img" aria-labelledby="title">
+  <title id="title">Support network</title>
+  <circle cx="35" cy="34" r="13" fill="none" stroke="#edf3f7" stroke-width="7"/>
+  <circle cx="64" cy="38" r="11" fill="none" stroke="#edf3f7" stroke-width="7"/>
+  <path d="M14 76c5-18 17-27 31-27s26 9 31 27" fill="none" stroke="#edf3f7" stroke-width="7" stroke-linecap="round"/>
+  <path d="M57 55c11 2 19 9 23 21" fill="none" stroke="#d3b257" stroke-width="7" stroke-linecap="round"/>
+</svg>

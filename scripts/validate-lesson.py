@@ -8,6 +8,7 @@ from collections import namedtuple
 from html.parser import HTMLParser
 from pathlib import Path
 from typing import Any
+from urllib.parse import unquote, urlparse
 
 # ---------------------------------------------------------------------------
 # Constants
@@ -58,6 +59,7 @@ class Document:
 
     def __init__(self) -> None:
         self.raw_html: str = ""
+        self.source_path: Path | None = None
         self.style_blocks: list[tuple[str, int]] = []          # (css_text, start_line)
         self.theme_override_css: str = ""
         self.script_blocks: list[tuple[str, int]] = []         # (js_text, start_line)
@@ -823,6 +825,81 @@ def check_performance(doc: Document) -> list[Result]:
 
 
 # ---------------------------------------------------------------------------
+# Check: References (REF-01 .. REF-02)
+# ---------------------------------------------------------------------------
+def _is_skipped_reference(value: str) -> bool:
+    ref = value.strip()
+    if not ref:
+        return True
+    lower = ref.lower()
+    return (
+        ref.startswith("#") or
+        lower.startswith(("http://", "https://", "mailto:", "tel:", "data:", "javascript:"))
+    )
+
+
+def _local_reference_path(value: str) -> str:
+    """Return the local filesystem portion of a URL-like reference."""
+    parsed = urlparse(value.strip())
+    return unquote(parsed.path)
+
+
+def check_references(doc: Document) -> list[Result]:
+    """Verify local href/src/poster references resolve relative to the lesson file."""
+    results: list[Result] = []
+
+    unsafe_blank_targets = [
+        elem
+        for elem in doc.elements
+        if elem.tag == "a"
+        and (elem.attrs.get("target") or "").lower() == "_blank"
+        and not {"noopener", "noreferrer"}.issubset(set((elem.attrs.get("rel") or "").lower().split()))
+    ]
+    if unsafe_blank_targets:
+        first = unsafe_blank_targets[0]
+        results.append(Result(
+            "REF-02",
+            "FAIL",
+            'Links with target="_blank" must include rel="noopener noreferrer"',
+            first.line,
+        ))
+    else:
+        results.append(Result("REF-02", "PASS", 'All target="_blank" links include rel="noopener noreferrer"', 0))
+
+    if doc.source_path is None:
+        results.append(Result("REF-01", "PASS", "Local reference check skipped (source path unavailable)", 0))
+        return results
+
+    base_dir = doc.source_path.parent
+    missing: list[tuple[str, str, str, int]] = []
+    for elem in doc.elements:
+        for attr in ("href", "src", "poster"):
+            value = elem.attrs.get(attr)
+            if value is None or _is_skipped_reference(value):
+                continue
+
+            local_path = _local_reference_path(value)
+            if not local_path:
+                continue
+
+            target = base_dir / local_path
+            if not target.exists():
+                missing.append((elem.tag, attr, value, elem.line))
+
+    if missing:
+        examples = "; ".join(
+            f"{tag}[{attr}] line {line}: {value}"
+            for tag, attr, value, line in missing[:5]
+        )
+        more = f"; +{len(missing) - 5} more" if len(missing) > 5 else ""
+        results.append(Result("REF-01", "FAIL", f"Missing local references: {examples}{more}", missing[0][3]))
+        return results
+
+    results.append(Result("REF-01", "PASS", "All local href/src/poster references resolve", 0))
+    return results
+
+
+# ---------------------------------------------------------------------------
 # Check: Engagement (ENG-01 .. ENG-04)
 # ---------------------------------------------------------------------------
 def check_engagement(doc: Document) -> list[Result]:
@@ -958,11 +1035,12 @@ def main() -> None:
 
     html_content = filepath.read_text(encoding="utf-8")
     doc = parse_document(html_content)
+    doc.source_path = filepath
 
     results: list[Result] = []
     for check_fn in [check_colors, check_typography, check_accessibility,
                      check_components, check_navigation, check_theme,
-                     check_mobile, check_performance, check_engagement,
+                     check_mobile, check_performance, check_references, check_engagement,
                      check_reduced_motion]:
         results.extend(check_fn(doc))
 

@@ -1,0 +1,21 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 320 320" role="img" aria-labelledby="title desc">
+  <title id="title">Reflect and apply</title>
+  <desc id="desc">A notebook, pen, and forward path representing reflection and practical application.</desc>
+  <defs>
+    <linearGradient id="bg" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0" stop-color="#004071"/>
+      <stop offset="1" stop-color="#d3b257"/>
+    </linearGradient>
+  </defs>
+  <rect width="320" height="320" fill="url(#bg)"/>
+  <rect x="76" y="60" width="168" height="206" rx="18" fill="#edf3f7"/>
+  <path d="M112 60v206" fill="none" stroke="#d5e8f0" stroke-width="7"/>
+  <path d="M134 111h75M134 139h62M134 167h82" fill="none" stroke="#004071" stroke-width="8" stroke-linecap="round" opacity=".78"/>
+  <path d="M125 221c32-35 61-33 91-2" fill="none" stroke="#37b550" stroke-width="10" stroke-linecap="round"/>
+  <path d="M198 203l28 10-23 19z" fill="#37b550"/>
+  <path d="M238 75l27 27-88 88-36 9 9-36z" fill="#a7253f"/>
+  <path d="M225 88l27 27" fill="none" stroke="#edf3f7" stroke-width="7" stroke-linecap="round"/>
+  <circle cx="95" cy="92" r="8" fill="#d3b257"/>
+  <circle cx="95" cy="122" r="8" fill="#d3b257"/>
+  <circle cx="95" cy="152" r="8" fill="#d3b257"/>
+</svg>

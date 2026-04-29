@@ -1,0 +1,27 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1280 720" role="img" aria-labelledby="title desc">
+  <title id="title">Public anger response video poster</title>
+  <desc id="desc">An abstract public setting with a calm pause symbol and pressure gauge.</desc>
+  <defs>
+    <linearGradient id="bg" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0" stop-color="#00133f"/>
+      <stop offset="1" stop-color="#004071"/>
+    </linearGradient>
+    <linearGradient id="seat" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0" stop-color="#edf3f7"/>
+      <stop offset="1" stop-color="#9ed9ef"/>
+    </linearGradient>
+  </defs>
+  <rect width="1280" height="720" fill="url(#bg)"/>
+  <circle cx="1030" cy="150" r="150" fill="#a7253f" opacity=".25"/>
+  <circle cx="226" cy="590" r="210" fill="#37b550" opacity=".14"/>
+  <path d="M0 520c165-65 300-59 452 0s282 58 438 0 265-65 390 0v200H0z" fill="#007baf" opacity=".28"/>
+  <rect x="155" y="250" width="220" height="270" rx="28" fill="url(#seat)" opacity=".92"/>
+  <rect x="432" y="220" width="260" height="320" rx="34" fill="url(#seat)" opacity=".98"/>
+  <rect x="750" y="250" width="220" height="270" rx="28" fill="url(#seat)" opacity=".92"/>
+  <path d="M190 325h150M468 305h190M785 325h150" stroke="#004071" stroke-width="18" stroke-linecap="round" opacity=".35"/>
+  <circle cx="640" cy="360" r="110" fill="#edf3f7"/>
+  <rect x="604" y="295" width="28" height="130" rx="10" fill="#004071"/>
+  <rect x="648" y="295" width="28" height="130" rx="10" fill="#004071"/>
+  <path d="M505 530a150 150 0 0 1 270 0" fill="none" stroke="#d3b257" stroke-width="28" stroke-linecap="round"/>
+  <path d="M640 530l78-82" stroke="#37b550" stroke-width="24" stroke-linecap="round"/>
+</svg>

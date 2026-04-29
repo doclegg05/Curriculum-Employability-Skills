@@ -1,0 +1,8 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 96 96" role="img" aria-labelledby="title">
+  <title id="title">Pressure gauge</title>
+  <circle cx="48" cy="52" r="34" fill="none" stroke="#edf3f7" stroke-width="8"/>
+  <path d="M21 52a27 27 0 0 1 54 0" fill="none" stroke="#d3b257" stroke-width="8" stroke-linecap="round"/>
+  <path d="M48 52l20-16" fill="none" stroke="#37b550" stroke-width="8" stroke-linecap="round"/>
+  <circle cx="48" cy="52" r="6" fill="#edf3f7"/>
+  <path d="M28 74h40" fill="none" stroke="#edf3f7" stroke-width="8" stroke-linecap="round"/>
+</svg>

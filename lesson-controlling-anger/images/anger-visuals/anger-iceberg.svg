@@ -1,0 +1,26 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 320 320" role="img" aria-labelledby="title desc">
+  <title id="title">Anger iceberg</title>
+  <desc id="desc">An iceberg above and below the waterline showing visible anger and hidden emotions.</desc>
+  <defs>
+    <linearGradient id="sky" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0" stop-color="#007baf"/>
+      <stop offset=".55" stop-color="#d5e8f0"/>
+      <stop offset=".56" stop-color="#004071"/>
+      <stop offset="1" stop-color="#00133f"/>
+    </linearGradient>
+    <linearGradient id="ice" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0" stop-color="#ffffff"/>
+      <stop offset="1" stop-color="#9ed9ef"/>
+    </linearGradient>
+  </defs>
+  <rect width="320" height="320" fill="url(#sky)"/>
+  <path d="M0 165c45-12 74 12 117 1 38-10 60-31 103-16 37 13 58 4 100-7v177H0z" fill="#004071" opacity=".72"/>
+  <path d="M91 151l38-72 35 42 29-62 50 92z" fill="url(#ice)"/>
+  <path d="M69 166h192" fill="none" stroke="#edf3f7" stroke-width="7" stroke-linecap="round"/>
+  <path d="M93 174l42 111 43-28 29 35 44-118z" fill="#5fc1dc" opacity=".9"/>
+  <path d="M133 174l18 94M181 174l-6 83M211 174l-20 90" fill="none" stroke="#edf3f7" stroke-width="5" stroke-linecap="round" opacity=".45"/>
+  <circle cx="110" cy="214" r="9" fill="#d3b257"/>
+  <circle cx="161" cy="236" r="9" fill="#37b550"/>
+  <circle cx="213" cy="218" r="9" fill="#a7253f"/>
+  <path d="M88 104c13-7 27-7 40 0M199 94c13-8 28-8 42 0" fill="none" stroke="#edf3f7" stroke-width="6" stroke-linecap="round" opacity=".9"/>
+</svg>

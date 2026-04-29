@@ -1,0 +1,26 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 320 320" role="img" aria-labelledby="title desc">
+  <title id="title">Balanced response to anger</title>
+  <desc id="desc">A calm abstract balance scale with a boundary line and steady signal marks.</desc>
+  <defs>
+    <linearGradient id="bg" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0" stop-color="#004071"/>
+      <stop offset="1" stop-color="#a7253f"/>
+    </linearGradient>
+    <linearGradient id="panel" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0" stop-color="#edf3f7"/>
+      <stop offset="1" stop-color="#d5e8f0"/>
+    </linearGradient>
+  </defs>
+  <rect width="320" height="320" fill="url(#bg)"/>
+  <circle cx="250" cy="72" r="54" fill="#37b550" opacity=".25"/>
+  <circle cx="72" cy="258" r="82" fill="#d3b257" opacity=".18"/>
+  <path d="M92 226h136" fill="none" stroke="#edf3f7" stroke-width="12" stroke-linecap="round"/>
+  <path d="M160 82v144" fill="none" stroke="#edf3f7" stroke-width="12" stroke-linecap="round"/>
+  <path d="M104 118h112" fill="none" stroke="#d3b257" stroke-width="10" stroke-linecap="round"/>
+  <path d="M104 118l-34 76h68z" fill="url(#panel)" opacity=".96"/>
+  <path d="M216 118l-34 76h68z" fill="url(#panel)" opacity=".96"/>
+  <path d="M80 194h48M192 194h48" fill="none" stroke="#37b550" stroke-width="8" stroke-linecap="round"/>
+  <path d="M158 58c-20 17-22 44-5 61 11 11 28 13 42 6-8-8-10-20-5-34 5-16-7-30-32-33z" fill="#d3b257"/>
+  <path d="M131 84c-17 8-28 23-27 42 1 17 13 30 28 36 0-13 7-24 20-33 14-10 11-32-21-45z" fill="#37b550"/>
+  <path d="M116 252c34 18 74 18 108 0" fill="none" stroke="#edf3f7" stroke-width="8" stroke-linecap="round" opacity=".85"/>
+</svg>

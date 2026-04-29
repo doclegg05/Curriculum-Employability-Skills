@@ -558,6 +558,9 @@
     .slide-title.active .subtitle {
       animation: fadeUp 0.8s ease-out 1s both;
     }
+    .slide-title.active .title-resource-links {
+      animation: fadeUp 0.8s ease-out 1.15s both;
+    }
 
     @keyframes dropIn {
       from {
@@ -603,7 +606,7 @@
     .slide-title .subtitle {
       font-size: 2rem;
       color: var(--gold);
-      margin-bottom: 3rem;
+      margin-bottom: 1.5rem;
     }
 
     .slide-title .divider {
@@ -626,6 +629,21 @@
       font-size: 0.85rem;
       color: rgba(255, 255, 255, 0.5);
       margin-top: 1rem;
+    }
+
+    .slide-title .title-resource-links {
+      align-self: center;
+      justify-content: center;
+      align-items: center;
+      margin-top: 0;
+      margin-bottom: 1.75rem;
+      background: rgba(255, 255, 255, 0.08);
+      border-color: rgba(211, 178, 87, 0.45);
+    }
+
+    .slide-title .title-resource-links .download-btn:first-of-type {
+      background: var(--gold);
+      color: var(--dark);
     }
 
     .slide-title.active ~ .branding-logo,
@@ -673,6 +691,11 @@
 
     .slide .mauve {
       color: var(--mauve);
+      font-weight: 700;
+    }
+
+    .slide .quote-gold {
+      color: var(--gold);
       font-weight: 700;
     }
 
@@ -941,8 +964,18 @@
     }
 
     .danger-icon {
-      font-size: 2.5rem;
+      width: 62px;
+      height: 62px;
       margin-bottom: 0.75rem;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+
+    .danger-icon img {
+      width: 52px;
+      height: 52px;
+      object-fit: contain;
     }
 
     .danger-card-front h3 {
@@ -994,9 +1027,14 @@
       display: flex;
       align-items: center;
       justify-content: center;
-      font-size: 1.75rem;
       font-weight: 700;
       margin: 0 auto 1rem;
+    }
+
+    .area-icon img {
+      width: 38px;
+      height: 38px;
+      object-fit: contain;
     }
 
     .area-card.gold-card .area-icon {
@@ -1213,7 +1251,16 @@
       align-items: center;
       justify-content: center;
       color: var(--light);
-      font-size: 5rem;
+      padding: 2.4rem;
+      overflow: hidden;
+      border: 2px solid rgba(211, 178, 87, 0.28);
+      box-shadow: 0 18px 46px rgba(0, 0, 0, 0.28);
+    }
+
+    .visual-circle img {
+      width: 100%;
+      height: 100%;
+      object-fit: contain;
     }
 
     /* Content list */
@@ -1811,6 +1858,71 @@
     .slide-title h1 { border: 1.5px solid var(--gold); border-radius: 8px; padding: 2rem 3rem; display: inline-block; }
     .slide-title .divider { background: var(--gold); }
 
+    @media (max-width: 768px) {
+      .slide-title {
+        padding-top: 1rem;
+        padding-bottom: 0.75rem;
+      }
+      .slide-title .logo {
+        max-width: 180px;
+        padding: 0.75rem;
+        margin-bottom: 1.15rem;
+      }
+      .slide-title h1 {
+        padding: 1.25rem 1.5rem;
+        margin-bottom: 1rem;
+      }
+      .slide-title .divider {
+        margin-bottom: 1.25rem;
+      }
+      .slide-title .subtitle {
+        font-size: 1.45rem;
+        margin-bottom: 1rem;
+      }
+      .slide-title .title-resource-links {
+        width: min(100%, 320px);
+        padding: 0.75rem;
+        gap: 0.65rem;
+        margin-bottom: 0.85rem;
+      }
+      .slide-title .title-resource-links .download-btn {
+        width: 100%;
+        justify-content: center;
+        font-size: 0.92rem;
+        padding: 0.55rem 0.85rem;
+      }
+    }
+
+    @media (max-width: 480px) {
+      .slide-title .logo {
+        max-width: 155px;
+        padding: 0.65rem;
+        margin-bottom: 0.9rem;
+      }
+      .slide-title h1 {
+        font-size: 2.2rem;
+        padding: 1rem 1.1rem;
+        margin-bottom: 0.75rem;
+      }
+      .slide-title .divider {
+        margin-bottom: 1rem;
+      }
+      .slide-title .subtitle {
+        font-size: 1.2rem;
+        line-height: 1.25;
+        margin-bottom: 0.85rem;
+      }
+      .slide-title .title-resource-links {
+        width: min(100%, 270px);
+        padding: 0.65rem;
+        margin-bottom: 1rem;
+      }
+      .slide-title .copyright {
+        font-size: 0.75rem;
+        margin-top: 1rem;
+      }
+    }
+
     /* ================================================================
        LAYER 2 — CHAPTER STYLES
        ================================================================ */
@@ -2301,9 +2413,189 @@
       .wheel-wrapper, .wheel-canvas { width: 200px; height: 200px; }
     }
 
-    /* Cleanup legacy broken images and prevent overlapping on chapter slides */
+    /* Restored chapter visuals with original adult-learning artwork */
     .slide-section .section-circle {
-      display: none !important;
+      display: block !important;
+      width: clamp(150px, 11vw, 205px);
+      height: clamp(150px, 11vw, 205px);
+      left: clamp(1rem, 2.2vw, 2.25rem);
+      z-index: 1;
+      opacity: 1;
+      pointer-events: none;
+      box-shadow:
+        0 18px 52px rgba(0, 0, 0, 0.36),
+        0 0 0 1px rgba(211, 178, 87, 0.55),
+        0 0 34px rgba(211, 178, 87, 0.12);
+      border-color: rgba(211, 178, 87, 0.65);
+    }
+    .slide-section.active .section-circle {
+      animation: sectionMarkReveal 0.7s ease-out 0.3s both;
+    }
+    @keyframes sectionMarkReveal {
+      from {
+        opacity: 0;
+        transform: translateY(-50%) scale(0.82);
+      }
+      to {
+        opacity: 1;
+        transform: translateY(-50%) scale(1);
+      }
+    }
+    .slide-section .chapter-label,
+    .slide-section h2,
+    .slide-section .divider {
+      position: relative;
+      z-index: 3;
+    }
+    .slide-section h2 {
+      background: rgba(0, 19, 63, 0.72);
+      box-shadow: 0 18px 46px rgba(0, 0, 0, 0.18);
+    }
+
+    @media (min-width: 1280px) {
+      .slide-section.active {
+        display: grid;
+        grid-template-columns: clamp(104px, 9vw, 190px) minmax(0, min(70%, 1000px));
+        grid-template-rows: auto auto auto;
+        column-gap: clamp(2rem, 4.5vw, 5.5rem);
+        align-content: center;
+        justify-content: center;
+        justify-items: center;
+      }
+      .slide-section.active::before,
+      .slide-section.active::after {
+        display: none;
+      }
+      .slide-section .section-circle {
+        position: relative;
+        grid-column: 1;
+        grid-row: 1 / 4;
+        align-self: center;
+        justify-self: center;
+        top: auto;
+        left: auto;
+        transform: none;
+        width: clamp(104px, 9vw, 190px);
+        height: clamp(104px, 9vw, 190px);
+      }
+      .slide-section.active .section-circle {
+        animation: none !important;
+      }
+      .slide-section .chapter-label {
+        grid-column: 2;
+        grid-row: 1;
+        margin-bottom: 1.2rem;
+      }
+      .slide-section h2 {
+        grid-column: 2;
+        grid-row: 2;
+        width: 100%;
+        max-width: 100%;
+        font-size: clamp(3.05rem, 3.2vw, 4rem);
+      }
+      .slide-section .divider {
+        grid-column: 2;
+        grid-row: 3;
+      }
+    }
+
+    @media (max-width: 768px) {
+      .visual-circle {
+        width: 118px;
+        height: 118px;
+        padding: 1.15rem;
+      }
+      .slide-section .section-circle {
+        width: 132px;
+        height: 132px;
+        left: 50%;
+        top: 34%;
+        transform: translate(-50%, -50%);
+        opacity: 1;
+        animation: none !important;
+      }
+    }
+
+    @media (min-width: 1401px) and (max-width: 1700px) {
+      .slide-section .section-circle {
+        width: clamp(126px, 8.2vw, 150px);
+        height: clamp(126px, 8.2vw, 150px);
+        left: auto;
+      }
+      .slide-section h2 {
+        font-size: 3.45rem;
+        padding: 1.3rem 2rem;
+      }
+    }
+
+    @media (min-width: 1280px) and (max-width: 1400px) {
+      .slide-section .section-circle {
+        width: 104px;
+        height: 104px;
+        left: auto;
+      }
+      .slide-section h2 {
+        font-size: 3.05rem;
+        padding: 1.1rem 1.65rem;
+      }
+    }
+
+    @media (max-width: 1279px) {
+      .slide-section {
+        padding-top: 2rem;
+        padding-bottom: 2rem;
+      }
+      .slide-section .section-circle {
+        position: relative;
+        top: auto;
+        left: auto;
+        transform: none;
+        width: 112px;
+        height: 112px;
+        margin-bottom: 1.15rem;
+      }
+      .slide-section.active .section-circle {
+        animation: none !important;
+      }
+      .slide-section .chapter-label {
+        margin-bottom: 0.9rem;
+      }
+      .slide-section h2 {
+        max-width: 760px;
+        font-size: 3rem;
+        padding: 1rem 1.5rem;
+      }
+      .slide-section .divider {
+        margin-top: 1.4rem;
+      }
+    }
+
+    @media (max-width: 768px) {
+      .slide-section .section-circle {
+        width: 104px;
+        height: 104px;
+      }
+      .slide-section h2 {
+        font-size: 2.2rem;
+      }
+    }
+
+    @media (max-width: 480px) {
+      .slide-section .section-circle {
+        width: 92px;
+        height: 92px;
+        margin-bottom: 0.9rem;
+      }
+      .slide-section .chapter-label {
+        margin-bottom: 0.7rem;
+      }
+      .slide-section h2 {
+        font-size: 1.65rem;
+        padding: 0.8rem 1rem;
+      }
+      .slide-section .divider {
+        margin-top: 1rem;
+      }
     }
 
     /* Modern Progress Bar Gradient: Navy to Red */
@@ -2380,10 +2672,16 @@
 
       <div class="resources-section">
         <div class="resources-title">Resources</div>
-        <a href="Anger-Management-Toolbox.pdf" target="_blank" class="resource-link">Anger Management Toolbox</a>
-        <a href="Healthy_Anger_Worksheet.pdf" target="_blank" class="resource-link">Healthy Anger Worksheet</a>
-        <a href="Role_Play_Healthy_Anger_Printable.pdf" target="_blank" class="resource-link">Role Play: Healthy Anger</a>
-        <a href="Styles-of-Anger-Assessment-Handout.pdf" target="_blank" class="resource-link">Styles of Anger Assessment</a>
+        <a href="Teacher-Resources/Controlling_Anger_Teachers_Guide.pdf" target="_blank" rel="noopener noreferrer" class="resource-link">Teacher's Guide</a>
+        <a href="Handouts/SPOKES Controlling Anger Module Lesson Plan Template 2026.pdf" target="_blank" rel="noopener noreferrer" class="resource-link">Lesson Plan</a>
+        <a href="Handouts/Controlling Anger Rubric.pdf" target="_blank" rel="noopener noreferrer" class="resource-link">Course Rubric</a>
+        <a href="Handouts/Anger-Management-Toolbox.pdf" target="_blank" rel="noopener noreferrer" class="resource-link">Anger Management Toolbox</a>
+        <a href="Handouts/Iceberg.pdf" target="_blank" rel="noopener noreferrer" class="resource-link">Anger Iceberg Template</a>
+        <a href="Handouts/Iceberg directions.pdf" target="_blank" rel="noopener noreferrer" class="resource-link">Anger Iceberg Directions</a>
+        <a href="Handouts/Healthy_Anger_Worksheet.pdf" target="_blank" rel="noopener noreferrer" class="resource-link">Healthy Anger Worksheet</a>
+        <a href="Handouts/Role_Play_Healthy_Anger_Printable.pdf" target="_blank" rel="noopener noreferrer" class="resource-link">Role Play: Healthy Anger</a>
+        <a href="Handouts/Speak Listen Activity Directions.pdf" target="_blank" rel="noopener noreferrer" class="resource-link">Speak Listen Directions</a>
+        <a href="Handouts/Styles-of-Anger-Assessment-Handout.pdf" target="_blank" rel="noopener noreferrer" class="resource-link">Styles of Anger Assessment</a>
       </div>
 
       <div class="slide-counter">
@@ -2408,6 +2706,10 @@
         <h1>Controlling Anger</h1>
         <div class="divider"></div>
         <p class="subtitle">Understanding, Expressing &amp; Managing Anger in Life and Work</p>
+        <div class="download-resource title-resource-links" aria-label="Instructor resource PDFs">
+          <a href="Handouts/SPOKES Controlling Anger Module Lesson Plan Template 2026.pdf" target="_blank" rel="noopener noreferrer" class="download-btn">Lesson Plan PDF</a>
+          <a href="Teacher-Resources/Controlling_Anger_Teachers_Guide.pdf" target="_blank" rel="noopener noreferrer" class="download-btn">Teacher's Guide PDF</a>
+        </div>
         <p class="copyright">Copyright &copy; 2026 WV Adult Basic Education</p>
       </section>
 
@@ -2416,7 +2718,7 @@
         <h2>Watch: Anger Management &mdash; Rage on a Plane</h2>
         <div class="video-container" style="position:relative; width:100%; max-width:1200px; margin:0 auto;">
           <div class="video-wrapper">
-            <video controls preload="none" class="local-video" poster="videos/anger_management_rage_on_plane.jpg" aria-label="Anger Management - Rage on a Plane video" style="width:100%;">
+            <video controls preload="none" class="local-video" poster="images/anger-visuals/video-rage-plane-poster.svg" aria-label="Anger Management - Rage on a Plane video" style="width:100%;">
               <source src="videos/anger_management_rage_on_plane.mp4" type="video/mp4" />
               <track kind="captions" src="videos/anger_management_rage_on_plane.vtt" srclang="en" label="English">
               Your browser does not support the video tag.
@@ -2442,7 +2744,9 @@
             </div>
           </div>
           <div class="split-visual">
-            <div class="visual-circle" style="background: linear-gradient(135deg, var(--mauve), var(--dark)); font-size:3.5rem;">&#128548;</div>
+            <div class="visual-circle">
+              <img src="images/anger-visuals/trigger-pressure.svg" alt="" aria-hidden="true" />
+            </div>
           </div>
         </div>
       </section>
@@ -2454,7 +2758,7 @@
       <!-- Slide 4: Section Divider -->
       <section class="slide slide-section" data-chapter="2" data-chapter-num="I">
         <div class="section-circle">
-          <img src="images/ch2-healthy-unhealthy.jpg" alt="Healthy vs unhealthy anger" loading="lazy" />
+          <img src="images/anger-visuals/healthy-anger-balance.svg" alt="Balanced response to anger" loading="lazy" />
         </div>
         <p class="chapter-label">Introduction</p>
         <h2>Healthy vs. Unhealthy Anger</h2>
@@ -2498,13 +2802,15 @@
             </ul>
           </div>
           <div class="split-visual">
-            <div class="visual-circle" style="background: linear-gradient(135deg, var(--accent), var(--primary)); font-size:3.5rem;">&#9829;</div>
+            <div class="visual-circle">
+              <img src="images/anger-visuals/constructive-heart.svg" alt="" aria-hidden="true" />
+            </div>
           </div>
         </div>
         <div class="download-resource">
           <span class="download-prompt">Instructor Resource Available</span>
-          <a href="Role_Play_Healthy_Anger_Printable.pdf" target="_blank" class="download-btn">Role Play Activity</a>
-          <a href="Healthy_Anger_Worksheet.pdf" target="_blank" class="download-btn">Healthy Anger Worksheet</a>
+          <a href="Handouts/Role_Play_Healthy_Anger_Printable.pdf" target="_blank" rel="noopener noreferrer" class="download-btn">Role Play Activity</a>
+          <a href="Handouts/Healthy_Anger_Worksheet.pdf" target="_blank" rel="noopener noreferrer" class="download-btn">Healthy Anger Worksheet</a>
         </div>
       </section>
 
@@ -2520,7 +2826,7 @@
       <!-- Slide 8: Section Divider -->
       <section class="slide slide-section" data-chapter="3" data-chapter-num="P1">
         <div class="section-circle">
-          <img src="images/ch3-anger-iceberg.jpg" alt="The anger iceberg" loading="lazy" />
+          <img src="images/anger-visuals/anger-iceberg.svg" alt="Anger iceberg concept" loading="lazy" />
         </div>
         <p class="chapter-label">Presentation</p>
         <h2>The Anger Iceberg</h2>
@@ -2543,8 +2849,15 @@
             </ul>
           </div>
           <div class="split-visual">
-            <div class="visual-circle" style="background: linear-gradient(180deg, var(--mauve) 30%, var(--primary) 70%); font-size:3.5rem;">&#127754;</div>
+            <div class="visual-circle">
+              <img src="images/anger-visuals/beneath-surface.svg" alt="" aria-hidden="true" />
+            </div>
           </div>
+        </div>
+        <div class="download-resource">
+          <span class="download-prompt">Instructor Resource Available</span>
+          <a href="Handouts/Iceberg.pdf" target="_blank" rel="noopener noreferrer" class="download-btn">Anger Iceberg Template</a>
+          <a href="Handouts/Iceberg directions.pdf" target="_blank" rel="noopener noreferrer" class="download-btn">Iceberg Directions</a>
         </div>
       </section>
 
@@ -2553,7 +2866,7 @@
         <h2>Watch: The Iceberg Theory of Anger</h2>
         <div class="video-container" style="position:relative; width:100%; max-width:1200px; margin:0 auto;">
           <div class="video-wrapper">
-            <video controls preload="none" class="local-video" poster="videos/iceberg_theory_of_anger.jpg" aria-label="The Iceberg Theory of Anger video" style="width:100%;">
+            <video controls preload="none" class="local-video" poster="images/anger-visuals/video-anger-iceberg-poster.svg" aria-label="The Iceberg Theory of Anger video" style="width:100%;">
               <source src="videos/iceberg_theory_of_anger.mp4" type="video/mp4" />
               <track kind="captions" src="videos/iceberg_theory_of_anger.vtt" srclang="en" label="English">
               Your browser does not support the video tag.
@@ -2582,7 +2895,7 @@
         <div class="areas-grid">
           <div class="area-card">
             <div class="area-header">
-              <div class="area-icon">&#128101;</div>
+              <div class="area-icon"><img src="images/anger-visuals/support-people.svg" alt="" aria-hidden="true" /></div>
               <h3>People Who Listen</h3>
             </div>
             <ul>
@@ -2593,7 +2906,7 @@
           </div>
           <div class="area-card gold-card">
             <div class="area-header">
-              <div class="area-icon">&#128736;</div>
+              <div class="area-icon"><img src="images/anger-visuals/professional-tools.svg" alt="" aria-hidden="true" /></div>
               <h3>Professional Resources</h3>
             </div>
             <ul>
@@ -2604,7 +2917,7 @@
           </div>
           <div class="area-card">
             <div class="area-header">
-              <div class="area-icon">&#127793;</div>
+              <div class="area-icon"><img src="images/anger-visuals/self-care-growth.svg" alt="" aria-hidden="true" /></div>
               <h3>Self-Care Habits</h3>
             </div>
             <ul>
@@ -2623,7 +2936,7 @@
           <div class="danger-card" tabindex="0" aria-expanded="false">
             <div class="danger-card-inner">
               <div class="danger-card-front">
-                <div class="danger-icon">&#128188;</div>
+                <div class="danger-icon"><img src="images/anger-visuals/workplace-conflict.svg" alt="" aria-hidden="true" /></div>
                 <h3>Workplace Conflicts</h3>
               </div>
               <div class="danger-card-back">
@@ -2635,7 +2948,7 @@
           <div class="danger-card" tabindex="0" aria-expanded="false">
             <div class="danger-card-inner">
               <div class="danger-card-front">
-                <div class="danger-icon">&#128483;</div>
+                <div class="danger-icon"><img src="images/anger-visuals/interview-response.svg" alt="" aria-hidden="true" /></div>
                 <h3>Interview Questions</h3>
               </div>
               <div class="danger-card-back">
@@ -2647,7 +2960,7 @@
           <div class="danger-card" tabindex="0" aria-expanded="false">
             <div class="danger-card-inner">
               <div class="danger-card-front">
-                <div class="danger-icon">&#128100;</div>
+                <div class="danger-icon"><img src="images/anger-visuals/customer-interaction.svg" alt="" aria-hidden="true" /></div>
                 <h3>Customer Interactions</h3>
               </div>
               <div class="danger-card-back">
@@ -2659,7 +2972,7 @@
           <div class="danger-card" tabindex="0" aria-expanded="false">
             <div class="danger-card-inner">
               <div class="danger-card-front">
-                <div class="danger-icon">&#129309;</div>
+                <div class="danger-icon"><img src="images/anger-visuals/team-dynamics.svg" alt="" aria-hidden="true" /></div>
                 <h3>Team Dynamics</h3>
               </div>
               <div class="danger-card-back">
@@ -2682,7 +2995,7 @@
       <!-- Slide 14: Section Divider -->
       <section class="slide slide-section" data-chapter="4" data-chapter-num="P2">
         <div class="section-circle">
-          <img src="images/ch4-strategies.jpg" alt="Strategies for managing anger" loading="lazy" />
+          <img src="images/anger-visuals/anger-strategies.svg" alt="Strategies for managing anger" loading="lazy" />
         </div>
         <p class="chapter-label">Presentation</p>
         <h2>Strategies for Managing Anger</h2>
@@ -2764,7 +3077,7 @@
         <h2>Watch: Anger Thermometer &mdash; Warning Signs</h2>
         <div class="video-container" style="position:relative; width:100%; max-width:1200px; margin:0 auto;">
           <div class="video-wrapper">
-            <video controls preload="none" class="local-video" poster="videos/anger_thermometer_warning_signs.jpg" aria-label="Anger Thermometer - Warning Signs video" style="width:100%;">
+            <video controls preload="none" class="local-video" poster="images/anger-visuals/video-anger-thermometer-poster.svg" aria-label="Anger Thermometer - Warning Signs video" style="width:100%;">
               <source src="videos/anger_thermometer_warning_signs.mp4" type="video/mp4" />
               <track kind="captions" src="videos/anger_thermometer_warning_signs.vtt" srclang="en" label="English">
               Your browser does not support the video tag.
@@ -2831,7 +3144,7 @@
       <!-- Slide 19: Section Divider -->
       <section class="slide slide-section" data-chapter="5" data-chapter-num="P3">
         <div class="section-circle">
-          <img src="images/ch5-practice.jpg" alt="Practice activities" loading="lazy" />
+          <img src="images/anger-visuals/practice-conversation.svg" alt="Constructive conversation practice" loading="lazy" />
         </div>
         <p class="chapter-label">Presentation</p>
         <h2>Hands-On Activities</h2>
@@ -2859,6 +3172,10 @@
             <div class="takeaway-num alt">4</div>
             <p><strong>Switch roles</strong> after 3 minutes. Then discuss: What felt different about being heard?</p>
           </div>
+        </div>
+        <div class="download-resource">
+          <span class="download-prompt">Instructor Resource Available</span>
+          <a href="Handouts/Speak Listen Activity Directions.pdf" target="_blank" rel="noopener noreferrer" class="download-btn">Speak Listen Directions</a>
         </div>
       </section>
 
@@ -2936,14 +3253,14 @@
         </div>
         <div class="download-resource">
           <span class="download-prompt">Instructor Resource Available</span>
-          <a href="Anger-Management-Toolbox.pdf" target="_blank" class="download-btn">Anger Management Toolbox</a>
+          <a href="Handouts/Anger-Management-Toolbox.pdf" target="_blank" rel="noopener noreferrer" class="download-btn">Anger Management Toolbox</a>
         </div>
       </section>
 
       <!-- Slide 23: Big Statement + Poison Quote -->
       <section class="slide big-statement" data-chapter="5">
         <h2>Holding onto anger is like <span class="mauve">drinking poison</span> and expecting the other person to get sick.</h2>
-        <p style="font-size:1.5rem; margin-top:2rem;">Letting go is not weakness &mdash; it is <span class="accent">strength</span>.</p>
+        <p style="font-size:1.5rem; margin-top:2rem;">Letting go is not weakness &mdash; it is <span class="quote-gold">strength</span>.</p>
       </section>
 
       <!-- Slide 24: Drinking Poison Video -->
@@ -2951,7 +3268,7 @@
         <h2>Watch: Holding Onto Anger Is Like Drinking Poison</h2>
         <div class="video-container" style="position:relative; width:100%; max-width:1200px; margin:0 auto;">
           <div class="video-wrapper">
-            <video controls preload="none" class="local-video" poster="videos/holding_onto_anger_drinking_poison.jpg" aria-label="Holding Onto Anger Is Like Drinking Poison video" style="width:100%;">
+            <video controls preload="none" class="local-video" poster="images/anger-visuals/video-release-anger-poster.svg" aria-label="Holding Onto Anger Is Like Drinking Poison video" style="width:100%;">
               <source src="videos/holding_onto_anger_drinking_poison.mp4" type="video/mp4" />
               <track kind="captions" src="videos/holding_onto_anger_drinking_poison.vtt" srclang="en" label="English">
               Your browser does not support the video tag.
@@ -2970,7 +3287,7 @@
       <!-- Slide 25: Section Divider -->
       <section class="slide slide-section" data-chapter="6" data-chapter-num="E">
         <div class="section-circle">
-          <img src="images/ch6-evaluation.jpg" alt="Review and assessment" loading="lazy" />
+          <img src="images/anger-visuals/review-assessment.svg" alt="Review and assessment checklist" loading="lazy" />
         </div>
         <p class="chapter-label">Evaluation</p>
         <h2>Review &amp; Assess</h2>
@@ -2987,6 +3304,10 @@
           <div class="jeopardy-cat">Fair Fighting</div>
           <div class="jeopardy-cat">Coping Skills</div>
           <div class="jeopardy-cat">At Work</div>
+        </div>
+        <div class="download-resource">
+          <span class="download-prompt">Backup Resource Available</span>
+          <a href="https://jeopardylabs.com/play/anger-management1" target="_blank" rel="noopener noreferrer" class="download-btn">JeopardyLabs Version</a>
         </div>
       </section>
 
@@ -3008,7 +3329,7 @@
       <!-- Slide 27: Section Divider -->
       <section class="slide slide-section" data-chapter="7" data-chapter-num="A">
         <div class="section-circle">
-          <img src="images/ch7-application.jpg" alt="Reflect and apply" loading="lazy" />
+          <img src="images/anger-visuals/reflect-apply.svg" alt="Reflect and apply action plan" loading="lazy" />
         </div>
         <p class="chapter-label">Application</p>
         <h2>Reflect &amp; Apply</h2>
@@ -3043,7 +3364,7 @@
         </div>
         <div class="download-resource">
           <span class="download-prompt">Instructor Resource Available</span>
-          <a href="Styles-of-Anger-Assessment-Handout.pdf" target="_blank" class="download-btn">Styles of Anger Assessment</a>
+          <a href="Handouts/Styles-of-Anger-Assessment-Handout.pdf" target="_blank" rel="noopener noreferrer" class="download-btn">Styles of Anger Assessment</a>
         </div>
       </section>
 
@@ -3080,6 +3401,10 @@
           <p>&ldquo;For every minute you remain angry, you give up sixty seconds of peace of mind.&rdquo; &mdash; Ralph Waldo Emerson</p>
           <div class="divider"></div>
           <h3>Choose Peace. Choose Growth.</h3>
+          <div class="download-resource">
+            <span class="download-prompt">Instructor Resource Available</span>
+            <a href="Handouts/Controlling Anger Rubric.pdf" target="_blank" rel="noopener noreferrer" class="download-btn">Course Rubric</a>
+          </div>
         </div>
       </section>
 

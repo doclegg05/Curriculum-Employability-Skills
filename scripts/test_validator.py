@@ -108,6 +108,83 @@ class TestValidatorEdgeCases(unittest.TestCase):
         self.assertNotIn("FAIL", a11y07_lines[0], "A11Y-07 should NOT be FAIL with --caption-grace")
 
 
+class TestValidatorLocalReferences(unittest.TestCase):
+    """Local asset/link references should resolve relative to the lesson file."""
+
+    def _load_mod(self):
+        import importlib.util
+        spec = importlib.util.spec_from_file_location(
+            "validate_lesson", Path(__file__).parent / "validate-lesson.py"
+        )
+        mod = importlib.util.module_from_spec(spec)
+        spec.loader.exec_module(mod)
+        return mod
+
+    def test_ref01_fails_for_missing_local_href(self):
+        mod = self._load_mod()
+        doc = mod.parse_document("""<!DOCTYPE html>
+<html lang="en">
+<body>
+  <a href="Handouts/Missing.pdf">Missing handout</a>
+</body>
+</html>""")
+        doc.source_path = Path(__file__).parent / "tmp-lesson" / "index.html"
+
+        results = [r for r in mod.check_references(doc) if r.rule_id == "REF-01"]
+
+        self.assertEqual(len(results), 1)
+        self.assertEqual(results[0].status, "FAIL")
+        self.assertIn("Handouts/Missing.pdf", results[0].message)
+
+    def test_ref01_passes_for_existing_local_href_and_fragment(self):
+        mod = self._load_mod()
+        doc = mod.parse_document("""<!DOCTYPE html>
+<html lang="en">
+<body>
+  <a href="minimal-pass.html#mainContent">Existing fixture</a>
+  <img src="test.png" alt="Decorative test">
+  <a href="#mainContent">Skip</a>
+</body>
+</html>""")
+        doc.source_path = FIXTURES / "minimal-pass.html"
+
+        results = [r for r in mod.check_references(doc) if r.rule_id == "REF-01"]
+
+        self.assertEqual(len(results), 1)
+        self.assertEqual(results[0].status, "PASS")
+
+    def test_ref02_fails_for_blank_target_without_noopener(self):
+        mod = self._load_mod()
+        doc = mod.parse_document("""<!DOCTYPE html>
+<html lang="en">
+<body>
+  <a href="minimal-pass.html" target="_blank">Unsafe blank target</a>
+</body>
+</html>""")
+        doc.source_path = FIXTURES / "minimal-pass.html"
+
+        results = [r for r in mod.check_references(doc) if r.rule_id == "REF-02"]
+
+        self.assertEqual(len(results), 1)
+        self.assertEqual(results[0].status, "FAIL")
+        self.assertIn("target=\"_blank\"", results[0].message)
+
+    def test_ref02_passes_for_blank_target_with_noopener_and_noreferrer(self):
+        mod = self._load_mod()
+        doc = mod.parse_document("""<!DOCTYPE html>
+<html lang="en">
+<body>
+  <a href="minimal-pass.html" target="_blank" rel="noopener noreferrer">Safe blank target</a>
+</body>
+</html>""")
+        doc.source_path = FIXTURES / "minimal-pass.html"
+
+        results = [r for r in mod.check_references(doc) if r.rule_id == "REF-02"]
+
+        self.assertEqual(len(results), 1)
+        self.assertEqual(results[0].status, "PASS")
+
+
 class TestValidatorFalseNegativeFixes(unittest.TestCase):
     """Regression tests for the 3 false-negative gaps closed in VAL-CR1/CR2/CR3."""
 

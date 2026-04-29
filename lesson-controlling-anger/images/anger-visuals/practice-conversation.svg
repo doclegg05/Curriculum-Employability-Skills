@@ -1,0 +1,19 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 320 320" role="img" aria-labelledby="title desc">
+  <title id="title">Constructive conversation practice</title>
+  <desc id="desc">Two seated people with calm speech bubbles practicing respectful communication.</desc>
+  <defs>
+    <linearGradient id="bg" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0" stop-color="#004071"/>
+      <stop offset="1" stop-color="#37b550"/>
+    </linearGradient>
+  </defs>
+  <rect width="320" height="320" fill="url(#bg)"/>
+  <circle cx="96" cy="117" r="30" fill="#edf3f7"/>
+  <circle cx="224" cy="117" r="30" fill="#edf3f7"/>
+  <path d="M56 221c8-45 27-70 56-70s49 25 56 70" fill="#d3b257"/>
+  <path d="M152 221c8-45 27-70 56-70s49 25 56 70" fill="#a7253f"/>
+  <path d="M82 109h28M210 109h28M88 132c14 10 29 10 44 0M188 132c14 10 29 10 44 0" fill="none" stroke="#004071" stroke-width="6" stroke-linecap="round"/>
+  <path d="M53 66h111c14 0 25 11 25 25v21c0 14-11 25-25 25h-47l-26 24v-24H53c-14 0-25-11-25-25V91c0-14 11-25 25-25z" fill="#edf3f7" opacity=".95"/>
+  <path d="M156 190h111c14 0 25 11 25 25v21c0 14-11 25-25 25h-38v24l-26-24h-47c-14 0-25-11-25-25v-21c0-14 11-25 25-25z" fill="#edf3f7" opacity=".95"/>
+  <path d="M63 96h86M63 113h60M166 220h84M166 237h56" fill="none" stroke="#004071" stroke-width="7" stroke-linecap="round" opacity=".72"/>
+</svg>

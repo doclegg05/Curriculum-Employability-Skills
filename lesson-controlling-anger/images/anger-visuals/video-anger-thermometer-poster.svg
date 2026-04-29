@@ -1,0 +1,24 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1280 720" role="img" aria-labelledby="title desc">
+  <title id="title">Anger thermometer video poster</title>
+  <desc id="desc">A calm warning gauge, thermometer, and coping steps in an instructional style.</desc>
+  <defs>
+    <linearGradient id="bg" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0" stop-color="#00133f"/>
+      <stop offset="1" stop-color="#007baf"/>
+    </linearGradient>
+  </defs>
+  <rect width="1280" height="720" fill="url(#bg)"/>
+  <circle cx="1010" cy="168" r="178" fill="#37b550" opacity=".16"/>
+  <circle cx="298" cy="564" r="214" fill="#a7253f" opacity=".2"/>
+  <rect x="820" y="150" width="72" height="330" rx="36" fill="#edf3f7"/>
+  <circle cx="856" cy="520" r="72" fill="#edf3f7"/>
+  <path d="M856 438V230" stroke="#a7253f" stroke-width="28" stroke-linecap="round"/>
+  <circle cx="856" cy="520" r="40" fill="#a7253f"/>
+  <path d="M324 510a260 260 0 0 1 430 0" fill="none" stroke="#edf3f7" stroke-width="32" stroke-linecap="round" opacity=".35"/>
+  <path d="M324 510a260 260 0 0 1 310-98" fill="none" stroke="#d3b257" stroke-width="32" stroke-linecap="round"/>
+  <path d="M538 510l118-82" stroke="#37b550" stroke-width="26" stroke-linecap="round"/>
+  <circle cx="538" cy="510" r="22" fill="#edf3f7"/>
+  <rect x="178" y="162" width="350" height="58" rx="18" fill="#edf3f7" opacity=".18"/>
+  <rect x="178" y="252" width="290" height="58" rx="18" fill="#edf3f7" opacity=".18"/>
+  <rect x="178" y="342" width="230" height="58" rx="18" fill="#edf3f7" opacity=".18"/>
+</svg>

@@ -1,0 +1,19 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1280 720" role="img" aria-labelledby="title desc">
+  <title id="title">Releasing anger video poster</title>
+  <desc id="desc">Hands opening to release a heavy red stone into a calm path forward.</desc>
+  <defs>
+    <linearGradient id="bg" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0" stop-color="#004071"/>
+      <stop offset="1" stop-color="#00133f"/>
+    </linearGradient>
+  </defs>
+  <rect width="1280" height="720" fill="url(#bg)"/>
+  <circle cx="980" cy="155" r="160" fill="#d3b257" opacity=".14"/>
+  <circle cx="258" cy="548" r="210" fill="#37b550" opacity=".13"/>
+  <path d="M460 510c-92-44-182-54-262-8 95 86 226 107 348 58" fill="#edf3f7" opacity=".92"/>
+  <path d="M820 510c92-44 182-54 262-8-95 86-226 107-348 58" fill="#edf3f7" opacity=".92"/>
+  <path d="M455 512c64 30 126 39 185 27M825 512c-64 30-126 39-185 27" stroke="#004071" stroke-width="18" stroke-linecap="round" opacity=".35"/>
+  <path d="M640 178c68 56 94 112 78 168-11 38-40 68-78 88-38-20-67-50-78-88-16-56 10-112 78-168z" fill="#a7253f"/>
+  <path d="M577 470c48 41 78 41 126 0" fill="none" stroke="#37b550" stroke-width="22" stroke-linecap="round"/>
+  <path d="M528 602c78 38 146 38 224 0" fill="none" stroke="#d3b257" stroke-width="20" stroke-linecap="round"/>
+</svg>
