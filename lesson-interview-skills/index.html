@@ -1459,6 +1459,30 @@
       color: var(--royal);
     }
 
+    .pitch-object-icon img,
+    .pitch-step-icon img,
+    .interview-core-icon img,
+    .skill-action-icon img,
+    .prep-mark img,
+    .visual-circle img,
+    .tip-card-icon img,
+    .final-star img {
+      width: 100%;
+      height: 100%;
+      display: block;
+      object-fit: cover;
+      border-radius: inherit;
+    }
+
+    .activity-label-icon {
+      width: 1.8rem;
+      height: 1.8rem;
+      object-fit: cover;
+      border-radius: 6px;
+      margin-right: 0.4rem;
+      vertical-align: middle;
+    }
+
     /* --- Wippea Badge .p Contrast Fix: white-on-accent fails at 0.6rem --- */
     .wippea-badge.p {
       background: var(--dark);
@@ -3039,7 +3063,59 @@
       margin: 0;
     }
   </style>
-</head>
+    <style id="fit-to-slide-guard">
+      @media (min-width: 769px) and (max-height: 900px) {
+        .slide { overflow: hidden; }
+        .slide:not(.slide-title):not(.slide-section):not(.slide-closing):not(.big-statement) {
+          padding-top: clamp(1rem, 2vh, 2rem);
+          padding-bottom: 5.25rem;
+        }
+        .slide h2 {
+          font-size: clamp(2.2rem, 4.2vw, 3.5rem);
+          margin-bottom: clamp(0.75rem, 1.5vh, 1.5rem);
+        }
+        .slide-video {
+          padding-top: 1rem;
+          padding-bottom: 4.75rem;
+        }
+        .slide-video h2 {
+          font-size: clamp(1.4rem, 2vw, 2rem);
+          margin-bottom: 0.75rem;
+        }
+        .video-container,
+        .video-wrapper {
+          max-height: 62vh;
+        }
+        .video-wrapper video,
+        .local-video {
+          max-height: 58vh;
+          object-fit: contain;
+        }
+        .cards-grid,
+        .takeaways,
+        .smart-stack,
+        .matrix-grid,
+        .areas-grid,
+        .dangers-grid {
+          min-height: 0;
+        }
+        .card {
+          padding-top: clamp(1rem, 2vh, 1.6rem);
+          padding-bottom: clamp(1rem, 2vh, 1.6rem);
+        }
+        .card p,
+        .takeaway-item p,
+        .content-list li {
+          font-size: clamp(1rem, 1.6vw, 1.35rem);
+          line-height: 1.35;
+        }
+        .activity-box,
+        .download-resource {
+          margin-top: clamp(0.75rem, 1.8vh, 1.5rem);
+        }
+      }
+    </style>
+  </head>
 <body>
   <a href="#mainContent" class="skip-link">Skip to main content</a>
   <div id="slideAnnouncer" class="sr-only" role="status" aria-live="polite"></div>
@@ -3097,7 +3173,7 @@
         <div class="pitch-lab">
           <div class="pitch-spotlight">
             <div class="pitch-spotlight-label">60-second pitch challenge</div>
-            <div class="pitch-object-icon" aria-hidden="true">&#128188;</div>
+            <div class="pitch-object-icon" aria-hidden="true"><img src="images/generated-context/object-pitch.png" alt="" loading="lazy" /></div>
             <div>
               <h3>Turn a plain object into a must-have.</h3>
               <p>Your goal is not perfection. It is quick thinking, clear value, and confident delivery.</p>
@@ -3107,7 +3183,7 @@
             <div class="pitch-step">
               <div class="pitch-step-marker">
                 <span class="pitch-step-number">1</span>
-                <span class="pitch-step-icon" aria-hidden="true">&#128270;</span>
+                <span class="pitch-step-icon" aria-hidden="true"><img src="images/generated-context/research-object.png" alt="" loading="lazy" /></span>
               </div>
               <div class="pitch-step-body">
                 <h3>Choose</h3>
@@ -3121,7 +3197,7 @@
             <div class="pitch-step">
               <div class="pitch-step-marker">
                 <span class="pitch-step-number">2</span>
-                <span class="pitch-step-icon" aria-hidden="true">&#128161;</span>
+                <span class="pitch-step-icon" aria-hidden="true"><img src="images/generated-context/pitch-idea.png" alt="" loading="lazy" /></span>
               </div>
               <div class="pitch-step-body">
                 <h3>Pitch</h3>
@@ -3135,7 +3211,7 @@
             <div class="pitch-step">
               <div class="pitch-step-marker">
                 <span class="pitch-step-number">3</span>
-                <span class="pitch-step-icon" aria-hidden="true">&#127908;</span>
+                <span class="pitch-step-icon" aria-hidden="true"><img src="images/generated-context/practice-aloud.png" alt="" loading="lazy" /></span>
               </div>
               <div class="pitch-step-body">
                 <h3>Present</h3>
@@ -3175,7 +3251,7 @@
             <p>Employers evaluate whether candidates align with company culture and job requirements.</p>
           </div>
           <div class="interview-core">
-            <div class="interview-core-icon" aria-hidden="true">&#128483;</div>
+            <div class="interview-core-icon" aria-hidden="true"><img src="images/generated-context/structured-conversation.png" alt="" loading="lazy" /></div>
             <h3>Structured Conversation</h3>
             <p>A purposeful exchange used to assess mutual fit, skills, and readiness for a job role.</p>
           </div>
@@ -3204,7 +3280,7 @@
             <p>Confidence grows when preparation, practice, and feedback work together. Each round makes the next answer sharper.</p>
           </div>
           <div class="skill-action">
-            <div class="skill-action-icon" aria-hidden="true">&#128203;</div>
+            <div class="skill-action-icon" aria-hidden="true"><img src="images/generated-context/preparation-checklist.png" alt="" loading="lazy" /></div>
             <div class="skill-action-copy">
               <h3>Preparation</h3>
               <ul>
@@ -3215,7 +3291,7 @@
             </div>
           </div>
           <div class="skill-action">
-            <div class="skill-action-icon" aria-hidden="true">&#127919;</div>
+            <div class="skill-action-icon" aria-hidden="true"><img src="images/generated-context/practice-interview.png" alt="" loading="lazy" /></div>
             <div class="skill-action-copy">
               <h3>Practice</h3>
               <ul>
@@ -3226,7 +3302,7 @@
             </div>
           </div>
           <div class="skill-action">
-            <div class="skill-action-icon" aria-hidden="true">&#128170;</div>
+            <div class="skill-action-icon" aria-hidden="true"><img src="images/generated-context/constructive-feedback.png" alt="" loading="lazy" /></div>
             <div class="skill-action-copy">
               <h3>Feedback</h3>
               <ul>
@@ -3310,28 +3386,28 @@
           </div>
           <div class="prep-checklist">
             <div class="prep-item">
-              <div class="prep-mark" aria-hidden="true">&#128269;</div>
+              <div class="prep-mark" aria-hidden="true"><img src="images/generated-context/employer-research.png" alt="" loading="lazy" /></div>
               <div class="prep-copy">
                 <h3>Research the Employer</h3>
                 <p>Learn the company's mission, culture, and recent news to show genuine interest and ask informed questions.</p>
               </div>
             </div>
             <div class="prep-item">
-              <div class="prep-mark" aria-hidden="true">&#128203;</div>
+              <div class="prep-mark" aria-hidden="true"><img src="images/generated-context/job-description-review.png" alt="" loading="lazy" /></div>
               <div class="prep-copy">
                 <h3>Review the Job Description</h3>
                 <p>Study requirements carefully and align your specific skills and experiences to exactly what they need.</p>
               </div>
             </div>
             <div class="prep-item">
-              <div class="prep-mark" aria-hidden="true">&#127908;</div>
+              <div class="prep-mark" aria-hidden="true"><img src="images/generated-context/common-questions.png" alt="" loading="lazy" /></div>
               <div class="prep-copy">
                 <h3>Practice Common Questions</h3>
                 <p>Rehearsing out loud — not just in your head — dramatically improves confidence and response quality.</p>
               </div>
             </div>
             <div class="prep-item">
-              <div class="prep-mark" aria-hidden="true">&#128084;</div>
+              <div class="prep-mark" aria-hidden="true"><img src="images/generated-context/attire-arrival.png" alt="" loading="lazy" /></div>
               <div class="prep-copy">
                 <h3>Plan Attire &amp; Arrival</h3>
                 <p>Choose professional clothing the night before and plan to arrive 10-15 minutes early. No surprises.</p>
@@ -3355,7 +3431,7 @@
             </div>
           </div>
           <div class="split-visual">
-            <div class="visual-circle" style="background:linear-gradient(135deg,var(--mauve),var(--royal));font-size:3.5rem;">&#127970;</div>
+            <div class="visual-circle" style="background:linear-gradient(135deg,var(--mauve),var(--royal));font-size:3.5rem;"><img src="images/generated-context/company-research.png" alt="" aria-hidden="true" loading="lazy" /></div>
           </div>
         </div>
       </section>
@@ -3391,17 +3467,17 @@
             </ul>
           </div>
           <div class="split-visual">
-            <div class="visual-circle" style="background:linear-gradient(135deg,var(--muted-gold),var(--gold));font-size:3.5rem;">&#128084;</div>
+            <div class="visual-circle" style="background:linear-gradient(135deg,var(--muted-gold),var(--gold));font-size:3.5rem;"><img src="images/generated-context/professional-attire.png" alt="" aria-hidden="true" loading="lazy" /></div>
           </div>
         </div>
       </section>
 
       <!-- Slide 14 — Video: Dress for Success -->
       <section class="slide slide-video" data-chapter="4">
-        <h2>Watch: What Should I Wear to a Job Interview?</h2>
+        <h2>Watch: What to Wear to an Interview</h2>
         <div class="video-container" style="position:relative; width:100%; max-width:1170px; margin:0 auto;">
           <div class="video-wrapper">
-            <video controls preload="none" class="local-video" aria-label="What Should I Wear to a Job Interview?" style="width:100%;" poster="videos/what-to-wear.jpg">
+            <video controls preload="none" class="local-video" aria-label="What to Wear to an Interview: Dress Codes, Outfit Ideas, and What to Avoid" style="width:100%;" poster="videos/what-to-wear.jpg">
               <source src="videos/what-to-wear.mp4" type="video/mp4">
               <track kind="captions" src="videos/what-to-wear.vtt" srclang="en" label="English">
               Your browser does not support the video tag.
@@ -3465,27 +3541,27 @@
         <p class="remix-kicker">Simple, deliberate habits that communicate confidence from the moment you walk in.</p>
         <div class="tip-reel">
           <div class="tip-card">
-            <div class="tip-card-icon" aria-hidden="true">&#128064;</div>
+            <div class="tip-card-icon" aria-hidden="true"><img src="images/generated-context/eye-contact.png" alt="" loading="lazy" /></div>
             <h3>Eye Contact</h3>
             <p>Hold natural eye contact when speaking and listening. Avoid staring — aim for engaged, warm focus.</p>
           </div>
           <div class="tip-card">
-            <div class="tip-card-icon" aria-hidden="true">&#129309;</div>
+            <div class="tip-card-icon" aria-hidden="true"><img src="images/generated-context/handshake.png" alt="" loading="lazy" /></div>
             <h3>Handshake</h3>
             <p>Firm and brief — not crushing, not limp. Practice beforehand so it feels natural and confident.</p>
           </div>
           <div class="tip-card">
-            <div class="tip-card-icon" aria-hidden="true">&#128522;</div>
+            <div class="tip-card-icon" aria-hidden="true"><img src="images/generated-context/smile.png" alt="" loading="lazy" /></div>
             <h3>Smile</h3>
             <p>A genuine smile signals warmth and enthusiasm. Smile when greeting, and let it naturally appear as you speak.</p>
           </div>
           <div class="tip-card">
-            <div class="tip-card-icon" aria-hidden="true">&#129449;</div>
+            <div class="tip-card-icon" aria-hidden="true"><img src="images/generated-context/posture.png" alt="" loading="lazy" /></div>
             <h3>Posture</h3>
             <p>Sit upright, feet flat on the floor, lean slightly forward. This signals engagement and readiness.</p>
           </div>
           <div class="tip-card">
-            <div class="tip-card-icon" aria-hidden="true">&#9940;</div>
+            <div class="tip-card-icon" aria-hidden="true"><img src="images/generated-context/avoid-poor-body-language.png" alt="" loading="lazy" /></div>
             <h3>Avoid These</h3>
             <p>Crossed arms, fidgeting, slouching, phone glances, and excessive hand gestures all undermine your message.</p>
           </div>
@@ -3662,12 +3738,12 @@
               <li>Are there any reservations about my fit for this position I could address?</li>
             </ul>
             <div class="activity-box" style="margin-top:1.25rem;">
-              <div class="activity-label">&#9733; Must Ask</div>
+              <div class="activity-label"><img class="activity-label-icon" src="images/generated-context/followup-star-toolkit.png" alt="" aria-hidden="true" loading="lazy" />Must Ask</div>
               <p style="font-size:1.2rem;font-weight:600;color:var(--royal);">When will you be making a decision, and how will I be notified?</p>
             </div>
           </div>
           <div class="split-visual">
-            <div class="visual-circle" style="background:linear-gradient(135deg,var(--muted-gold),var(--royal));font-size:3rem;">&#10067;</div>
+            <div class="visual-circle" style="background:linear-gradient(135deg,var(--muted-gold),var(--royal));font-size:3rem;"><img src="images/generated-context/followup-star-toolkit.png" alt="" aria-hidden="true" loading="lazy" /></div>
           </div>
         </div>
       </section>
@@ -3935,7 +4011,7 @@
             </div>
           </div>
           <div class="final-center">
-            <div class="final-star" aria-hidden="true">&#9733;</div>
+            <div class="final-star" aria-hidden="true"><img src="images/generated-context/followup-star-toolkit.png" alt="" loading="lazy" /></div>
             <h3>Your STAR Toolkit</h3>
             <p>Prepare 5-6 STAR stories, tailor them to each job, and practice until they feel natural.</p>
           </div>
@@ -4389,6 +4465,7 @@
       }
     });
   </script>
+  <script src="../scripts/print-planner.js"></script>
 </body>
 </html>
 
