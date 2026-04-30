@@ -531,13 +531,14 @@
 
     /* Title Slide */
     .slide-title {
+      position: relative;
       justify-content: center;
       align-items: center;
       text-align: center;
       background: linear-gradient(135deg, var(--primary) 0%, var(--dark) 100%);
       overflow: hidden;
       padding-top: 2rem;
-      padding-bottom: 1rem;
+      padding-bottom: 4.5rem;
     }
     .slide-title.active::before {
       flex: 0.7;
@@ -626,9 +627,13 @@
     }
 
     .slide-title .copyright {
+      position: absolute;
+      left: clamp(1.5rem, 5vw, 5rem);
+      bottom: 1.75rem;
       font-size: 0.85rem;
       color: rgba(255, 255, 255, 0.5);
-      margin-top: 1rem;
+      margin: 0;
+      text-align: left;
     }
 
     .slide-title .title-resource-links {
@@ -1861,7 +1866,7 @@
     @media (max-width: 768px) {
       .slide-title {
         padding-top: 1rem;
-        padding-bottom: 0.75rem;
+        padding-bottom: 5.5rem;
       }
       .slide-title .logo {
         max-width: 180px;
@@ -1891,6 +1896,12 @@
         font-size: 0.92rem;
         padding: 0.55rem 0.85rem;
       }
+      .slide-title .copyright {
+        left: 1.5rem;
+        right: 1.5rem;
+        bottom: 4.75rem;
+        text-align: center;
+      }
     }
 
     @media (max-width: 480px) {
@@ -1919,7 +1930,7 @@
       }
       .slide-title .copyright {
         font-size: 0.75rem;
-        margin-top: 1rem;
+        bottom: 4.5rem;
       }
     }
 
@@ -2661,7 +2672,73 @@
     .sr-only { position: absolute; width: 1px; height: 1px; padding: 0; margin: -1px; overflow: hidden; clip: rect(0,0,0,0); white-space: nowrap; border: 0; }
 
   </style>
-</head>
+    <style id="fit-to-slide-guard">
+      @media (min-width: 769px) and (max-height: 900px) {
+        .slide { overflow: hidden; }
+        .slide:not(.slide-title):not(.slide-section):not(.slide-closing):not(.big-statement) {
+          padding-top: clamp(1rem, 2vh, 2rem);
+          padding-bottom: 5.25rem;
+        }
+        .slide h2 {
+          font-size: clamp(2.2rem, 4.2vw, 3.5rem);
+          margin-bottom: clamp(0.75rem, 1.5vh, 1.5rem);
+        }
+        .slide-video {
+          padding-top: 1rem;
+          padding-bottom: 4.75rem;
+        }
+        .slide-video h2 {
+          font-size: clamp(1.4rem, 2vw, 2rem);
+          margin-bottom: 0.75rem;
+        }
+        .video-container,
+        .video-wrapper {
+          max-height: 62vh;
+        }
+        .video-wrapper video,
+        .local-video {
+          max-height: 58vh;
+          object-fit: contain;
+        }
+        .cards-grid,
+        .takeaways,
+        .smart-stack,
+        .matrix-grid,
+        .areas-grid,
+        .dangers-grid {
+          min-height: 0;
+        }
+        .card {
+          padding-top: clamp(1rem, 2vh, 1.6rem);
+          padding-bottom: clamp(1rem, 2vh, 1.6rem);
+        }
+        .card p,
+        .takeaway-item p,
+        .content-list li {
+          font-size: clamp(1rem, 1.6vw, 1.35rem);
+          line-height: 1.35;
+        }
+        .activity-box,
+        .download-resource {
+          margin-top: clamp(0.75rem, 1.8vh, 1.5rem);
+        }
+        .compact-rules-grid {
+          gap: 0.65rem !important;
+        }
+        .compact-rules-grid .card {
+          padding: 0.65rem 1rem !important;
+        }
+        .compact-rules-grid .card h3 {
+          font-size: 1rem !important;
+          margin-bottom: 0.15rem !important;
+        }
+        .compact-rules-grid .card p {
+          font-size: 0.9rem !important;
+          line-height: 1.2;
+        }
+      }
+    </style>
+  </head>
 <body>
   <a href="#main-content" class="skip-link">Skip to main content</a>
   <div class="container">
@@ -2745,7 +2822,7 @@
           </div>
           <div class="split-visual">
             <div class="visual-circle">
-              <img src="images/anger-visuals/trigger-pressure.svg" alt="" aria-hidden="true" />
+              <img src="images/generated-context/trigger-pressure.png" alt="" aria-hidden="true" />
             </div>
           </div>
         </div>
@@ -2758,7 +2835,7 @@
       <!-- Slide 4: Section Divider -->
       <section class="slide slide-section" data-chapter="2" data-chapter-num="I">
         <div class="section-circle">
-          <img src="images/anger-visuals/healthy-anger-balance.svg" alt="Balanced response to anger" loading="lazy" />
+          <img src="images/generated-context/healthy-anger-balance.png" alt="Balanced response to anger" loading="lazy" />
         </div>
         <p class="chapter-label">Introduction</p>
         <h2>Healthy vs. Unhealthy Anger</h2>
@@ -2803,7 +2880,7 @@
           </div>
           <div class="split-visual">
             <div class="visual-circle">
-              <img src="images/anger-visuals/constructive-heart.svg" alt="" aria-hidden="true" />
+              <img src="images/generated-context/constructive-heart.png" alt="" aria-hidden="true" />
             </div>
           </div>
         </div>
@@ -2826,7 +2903,7 @@
       <!-- Slide 8: Section Divider -->
       <section class="slide slide-section" data-chapter="3" data-chapter-num="P1">
         <div class="section-circle">
-          <img src="images/anger-visuals/anger-iceberg.svg" alt="Anger iceberg concept" loading="lazy" />
+          <img src="images/generated-context/anger-iceberg.png" alt="Anger iceberg concept" loading="lazy" />
         </div>
         <p class="chapter-label">Presentation</p>
         <h2>The Anger Iceberg</h2>
@@ -2850,7 +2927,7 @@
           </div>
           <div class="split-visual">
             <div class="visual-circle">
-              <img src="images/anger-visuals/beneath-surface.svg" alt="" aria-hidden="true" />
+              <img src="images/generated-context/beneath-surface.png" alt="" aria-hidden="true" />
             </div>
           </div>
         </div>
@@ -2895,7 +2972,7 @@
         <div class="areas-grid">
           <div class="area-card">
             <div class="area-header">
-              <div class="area-icon"><img src="images/anger-visuals/support-people.svg" alt="" aria-hidden="true" /></div>
+              <div class="area-icon"><img src="images/generated-context/support-people.png" alt="" aria-hidden="true" /></div>
               <h3>People Who Listen</h3>
             </div>
             <ul>
@@ -2906,7 +2983,7 @@
           </div>
           <div class="area-card gold-card">
             <div class="area-header">
-              <div class="area-icon"><img src="images/anger-visuals/professional-tools.svg" alt="" aria-hidden="true" /></div>
+              <div class="area-icon"><img src="images/generated-context/professional-tools.png" alt="" aria-hidden="true" /></div>
               <h3>Professional Resources</h3>
             </div>
             <ul>
@@ -2917,7 +2994,7 @@
           </div>
           <div class="area-card">
             <div class="area-header">
-              <div class="area-icon"><img src="images/anger-visuals/self-care-growth.svg" alt="" aria-hidden="true" /></div>
+              <div class="area-icon"><img src="images/generated-context/self-care-growth.png" alt="" aria-hidden="true" /></div>
               <h3>Self-Care Habits</h3>
             </div>
             <ul>
@@ -2936,7 +3013,7 @@
           <div class="danger-card" tabindex="0" aria-expanded="false">
             <div class="danger-card-inner">
               <div class="danger-card-front">
-                <div class="danger-icon"><img src="images/anger-visuals/workplace-conflict.svg" alt="" aria-hidden="true" /></div>
+                <div class="danger-icon"><img src="images/generated-context/workplace-conflict.png" alt="" aria-hidden="true" /></div>
                 <h3>Workplace Conflicts</h3>
               </div>
               <div class="danger-card-back">
@@ -2948,7 +3025,7 @@
           <div class="danger-card" tabindex="0" aria-expanded="false">
             <div class="danger-card-inner">
               <div class="danger-card-front">
-                <div class="danger-icon"><img src="images/anger-visuals/interview-response.svg" alt="" aria-hidden="true" /></div>
+                <div class="danger-icon"><img src="images/generated-context/interview-response.png" alt="" aria-hidden="true" /></div>
                 <h3>Interview Questions</h3>
               </div>
               <div class="danger-card-back">
@@ -2960,7 +3037,7 @@
           <div class="danger-card" tabindex="0" aria-expanded="false">
             <div class="danger-card-inner">
               <div class="danger-card-front">
-                <div class="danger-icon"><img src="images/anger-visuals/customer-interaction.svg" alt="" aria-hidden="true" /></div>
+                <div class="danger-icon"><img src="images/generated-context/customer-interaction.png" alt="" aria-hidden="true" /></div>
                 <h3>Customer Interactions</h3>
               </div>
               <div class="danger-card-back">
@@ -2972,7 +3049,7 @@
           <div class="danger-card" tabindex="0" aria-expanded="false">
             <div class="danger-card-inner">
               <div class="danger-card-front">
-                <div class="danger-icon"><img src="images/anger-visuals/team-dynamics.svg" alt="" aria-hidden="true" /></div>
+                <div class="danger-icon"><img src="images/generated-context/team-dynamics.png" alt="" aria-hidden="true" /></div>
                 <h3>Team Dynamics</h3>
               </div>
               <div class="danger-card-back">
@@ -2995,7 +3072,7 @@
       <!-- Slide 14: Section Divider -->
       <section class="slide slide-section" data-chapter="4" data-chapter-num="P2">
         <div class="section-circle">
-          <img src="images/anger-visuals/anger-strategies.svg" alt="Strategies for managing anger" loading="lazy" />
+          <img src="images/generated-context/anger-strategies.png" alt="Strategies for managing anger" loading="lazy" />
         </div>
         <p class="chapter-label">Presentation</p>
         <h2>Strategies for Managing Anger</h2>
@@ -3093,7 +3170,7 @@
       <section class="slide" data-chapter="4">
         <h2>10 Rules of Fair Fighting</h2>
         <p style="font-size:1.2rem; color:rgba(255,255,255,0.7); margin-top:-1.5rem; margin-bottom:1rem;">Conflict is inevitable &mdash; but fighting dirty is a choice. Follow these rules.</p>
-        <div class="cards-grid" style="gap:1rem;">
+        <div class="cards-grid compact-rules-grid" style="gap:1rem;">
           <div class="card" style="padding:1rem 1.5rem;">
             <h3 style="font-size:1.25rem; margin-bottom:0.25rem;">1. No name-calling</h3>
             <p style="font-size:1.1rem;">Attack the problem, not the person.</p>
@@ -3144,7 +3221,7 @@
       <!-- Slide 19: Section Divider -->
       <section class="slide slide-section" data-chapter="5" data-chapter-num="P3">
         <div class="section-circle">
-          <img src="images/anger-visuals/practice-conversation.svg" alt="Constructive conversation practice" loading="lazy" />
+          <img src="images/generated-context/practice-conversation.png" alt="Constructive conversation practice" loading="lazy" />
         </div>
         <p class="chapter-label">Presentation</p>
         <h2>Hands-On Activities</h2>
@@ -3287,7 +3364,7 @@
       <!-- Slide 25: Section Divider -->
       <section class="slide slide-section" data-chapter="6" data-chapter-num="E">
         <div class="section-circle">
-          <img src="images/anger-visuals/review-assessment.svg" alt="Review and assessment checklist" loading="lazy" />
+          <img src="images/generated-context/review-assessment.png" alt="Review and assessment checklist" loading="lazy" />
         </div>
         <p class="chapter-label">Evaluation</p>
         <h2>Review &amp; Assess</h2>
@@ -3329,7 +3406,7 @@
       <!-- Slide 27: Section Divider -->
       <section class="slide slide-section" data-chapter="7" data-chapter-num="A">
         <div class="section-circle">
-          <img src="images/anger-visuals/reflect-apply.svg" alt="Reflect and apply action plan" loading="lazy" />
+          <img src="images/generated-context/reflect-apply.png" alt="Reflect and apply action plan" loading="lazy" />
         </div>
         <p class="chapter-label">Application</p>
         <h2>Reflect &amp; Apply</h2>
@@ -4068,5 +4145,6 @@
       }
     });
   </script>
+  <script src="../scripts/print-planner.js"></script>
 </body>
 </html>

@@ -249,6 +249,242 @@
       opacity: 0.6;
     }
 
+    .print-all-btn {
+      width: 100%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 0.5rem;
+      margin: 0.25rem 0 0.85rem;
+      padding: 0.65rem 0.75rem;
+      border: 1px solid rgba(211,178,87,0.72);
+      border-radius: 8px;
+      background: rgba(211,178,87,0.16);
+      color: var(--light);
+      font-family: var(--font-body);
+      font-size: 0.82rem;
+      font-weight: 700;
+      cursor: pointer;
+      transition: background 0.2s ease, transform 0.2s ease;
+    }
+
+    .print-all-btn:hover,
+    .print-all-btn:focus-visible {
+      background: rgba(211,178,87,0.28);
+      outline: none;
+      transform: translateY(-1px);
+    }
+
+    .print-all-btn::before {
+      content: "\2399";
+      color: var(--gold);
+      font-size: 1rem;
+      line-height: 1;
+    }
+
+    .print-modal {
+      position: fixed;
+      inset: 0;
+      z-index: 5000;
+      display: none;
+      align-items: center;
+      justify-content: center;
+      padding: 2rem;
+      background: rgba(0, 19, 63, 0.62);
+    }
+
+    .print-modal.open {
+      display: flex;
+    }
+
+    .print-dialog {
+      width: min(860px, 100%);
+      max-height: min(86vh, 760px);
+      overflow-y: auto;
+      background: var(--light);
+      color: var(--dark);
+      border-radius: 12px;
+      box-shadow: 0 24px 70px rgba(0,0,0,0.35);
+      border: 1px solid rgba(0,64,113,0.18);
+    }
+
+    .print-dialog-header {
+      display: flex;
+      align-items: flex-start;
+      justify-content: space-between;
+      gap: 1rem;
+      padding: 1.35rem 1.5rem 1rem;
+      border-bottom: 1px solid rgba(0,64,113,0.14);
+      background: var(--dark);
+      color: var(--light);
+    }
+
+    .print-dialog-header h2 {
+      font-family: var(--font-heading);
+      font-size: 1.55rem;
+      color: var(--light);
+      margin: 0;
+      line-height: 1.15;
+    }
+
+    .print-dialog-header p {
+      color: rgba(255,255,255,0.78);
+      margin: 0.35rem 0 0;
+      font-size: 0.92rem;
+      line-height: 1.35;
+    }
+
+    .print-close {
+      width: 42px;
+      height: 42px;
+      border: 1px solid rgba(255,255,255,0.28);
+      border-radius: 8px;
+      background: rgba(255,255,255,0.08);
+      color: var(--light);
+      font-size: 1.5rem;
+      cursor: pointer;
+      flex-shrink: 0;
+    }
+
+    .print-close:hover,
+    .print-close:focus-visible {
+      background: rgba(255,255,255,0.18);
+      outline: none;
+    }
+
+    .print-dialog-body {
+      padding: 1.4rem 1.5rem 1.5rem;
+    }
+
+    .print-student-control {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 1rem;
+      padding: 1rem;
+      background: var(--light);
+      border: 1px solid rgba(0,64,113,0.14);
+      border-radius: 10px;
+      margin-bottom: 1rem;
+    }
+
+    .print-student-control label {
+      display: grid;
+      gap: 0.2rem;
+      font-weight: 700;
+      color: var(--dark);
+    }
+
+    .print-student-control span {
+      font-size: 0.85rem;
+      font-weight: 400;
+      color: var(--gray);
+    }
+
+    .print-student-control input,
+    .print-copy-input {
+      width: 88px;
+      min-height: 44px;
+      border: 2px solid rgba(0,64,113,0.26);
+      border-radius: 8px;
+      padding: 0.4rem 0.55rem;
+      font-size: 1rem;
+      color: var(--dark);
+      background: var(--light);
+    }
+
+    .print-table {
+      width: 100%;
+      border-collapse: collapse;
+      background: var(--light);
+      border-radius: 10px;
+      overflow: hidden;
+      border: 1px solid rgba(0,64,113,0.14);
+    }
+
+    .print-table th,
+    .print-table td {
+      padding: 0.75rem;
+      text-align: left;
+      border-bottom: 1px solid rgba(0,64,113,0.1);
+      vertical-align: middle;
+    }
+
+    .print-table th {
+      background: var(--dark);
+      color: var(--light);
+      font-size: 0.78rem;
+      text-transform: uppercase;
+      letter-spacing: 1px;
+    }
+
+    .print-table tr:last-child td {
+      border-bottom: 0;
+    }
+
+    .print-resource-title {
+      font-weight: 700;
+      color: var(--dark);
+    }
+
+    .print-resource-note {
+      display: block;
+      margin-top: 0.2rem;
+      color: var(--gray);
+      font-size: 0.82rem;
+    }
+
+    .print-actions {
+      position: sticky;
+      bottom: -1.5rem;
+      display: flex;
+      align-items: center;
+      justify-content: flex-end;
+      gap: 0.75rem;
+      flex-wrap: wrap;
+      margin-top: 1.2rem;
+      margin-left: -1.5rem;
+      margin-right: -1.5rem;
+      margin-bottom: -1.5rem;
+      padding: 0.9rem 1.5rem 1rem;
+      background: linear-gradient(180deg, rgba(237,243,247,0.86), var(--light) 38%);
+      border-top: 1px solid rgba(0,64,113,0.12);
+    }
+
+    .print-action-btn {
+      min-height: 44px;
+      border: 2px solid var(--dark);
+      border-radius: 8px;
+      padding: 0.55rem 1rem;
+      font-family: var(--font-body);
+      font-size: 0.95rem;
+      font-weight: 700;
+      cursor: pointer;
+    }
+
+    .print-action-btn.primary {
+      background: var(--dark);
+      color: var(--light);
+    }
+
+    .print-action-btn.secondary {
+      background: transparent;
+      color: var(--dark);
+    }
+
+    .print-action-btn:hover,
+    .print-action-btn:focus-visible {
+      transform: translateY(-1px);
+      outline: none;
+    }
+
+    .print-note {
+      margin-top: 1rem;
+      color: var(--gray);
+      font-size: 0.85rem;
+      line-height: 1.45;
+    }
+
     /* Download Button */
     .download-btn {
       display: inline-flex;
@@ -1290,6 +1526,193 @@
 
     .round-robin-slide.active ~ .branding-logo {
       display: none !important;
+    }
+
+    .smart-goal-write-slide.active {
+      justify-content: flex-start;
+      padding-top: clamp(1.5rem, 3.5vh, 3rem);
+      padding-bottom: 5rem;
+      overflow-y: hidden;
+    }
+
+    .smart-goal-write-slide.active::before,
+    .smart-goal-write-slide.active::after {
+      display: none;
+    }
+
+    .smart-goal-write-slide h2 {
+      font-size: clamp(2.4rem, 4.2vw, 3.35rem);
+      margin-bottom: clamp(0.9rem, 2vh, 1.35rem);
+    }
+
+    .smart-goal-write-slide .activity-box {
+      margin-bottom: clamp(1rem, 2vh, 1.35rem) !important;
+      padding: clamp(1rem, 2vh, 1.45rem) clamp(1.25rem, 2.4vw, 1.9rem);
+    }
+
+    .smart-goal-write-slide .activity-box p {
+      font-size: clamp(1.05rem, 1.45vw, 1.35rem);
+      line-height: 1.35;
+    }
+
+    .smart-goal-write-slide .cards-grid {
+      flex: 0 1 auto;
+      gap: clamp(0.85rem, 1.8vh, 1.25rem);
+    }
+
+    .smart-goal-write-slide .card {
+      min-height: 0;
+      justify-content: flex-start;
+      padding: clamp(1rem, 2vh, 1.45rem) clamp(1.25rem, 2.2vw, 2rem);
+    }
+
+    .smart-goal-write-slide .card h3 {
+      font-size: clamp(1.45rem, 2.2vw, 1.9rem);
+      margin-bottom: 0.55rem;
+      line-height: 1.12;
+    }
+
+    .smart-goal-write-slide .card p {
+      font-size: clamp(1rem, 1.45vw, 1.25rem);
+      line-height: 1.35;
+    }
+
+    .warmup-story-slide.active {
+      justify-content: flex-start;
+      padding-top: clamp(1.5rem, 3.5vh, 3rem);
+      padding-bottom: 5rem;
+      overflow-y: hidden;
+    }
+
+    .warmup-story-slide.active::before,
+    .warmup-story-slide.active::after {
+      display: none;
+    }
+
+    .warmup-story-slide h2 {
+      font-size: clamp(2.35rem, 4.2vw, 3.35rem);
+      margin-bottom: clamp(0.9rem, 2vh, 1.35rem);
+    }
+
+    .warmup-story-slide .activity-box {
+      margin-bottom: clamp(1rem, 2vh, 1.35rem) !important;
+      padding: clamp(1rem, 2vh, 1.45rem) clamp(1.25rem, 2.4vw, 1.9rem);
+    }
+
+    .warmup-story-slide .activity-box p {
+      font-size: clamp(1.05rem, 1.45vw, 1.35rem);
+      line-height: 1.35;
+    }
+
+    .warmup-story-slide .cards-grid {
+      flex: 0 1 auto;
+      gap: clamp(0.85rem, 1.8vh, 1.25rem);
+    }
+
+    .warmup-story-slide .card {
+      min-height: 0;
+      justify-content: flex-start;
+      padding: clamp(1rem, 2vh, 1.45rem) clamp(1.25rem, 2.2vw, 2rem);
+    }
+
+    .warmup-story-slide .card h3 {
+      font-size: clamp(1.45rem, 2.2vw, 1.9rem);
+      margin-bottom: 0.55rem;
+      line-height: 1.12;
+    }
+
+    .warmup-story-slide .card p {
+      font-size: clamp(1rem, 1.45vw, 1.25rem);
+      line-height: 1.35;
+    }
+
+    .team-strength-slide.active {
+      justify-content: flex-start;
+      padding-top: clamp(2rem, 5vh, 4rem);
+      padding-bottom: 5rem;
+      overflow-y: hidden;
+    }
+
+    .team-strength-slide.active::before,
+    .team-strength-slide.active::after {
+      display: none;
+    }
+
+    .team-strength-slide h2 {
+      font-size: clamp(2.5rem, 4.1vw, 3.45rem);
+      margin-bottom: 0.8rem;
+    }
+
+    .team-strength-slide .slide-note {
+      font-size: clamp(1rem, 1.3vw, 1.15rem) !important;
+      margin-top: 0 !important;
+      margin-bottom: clamp(1rem, 2vh, 1.35rem) !important;
+    }
+
+    .team-strength-slide .dangers-grid {
+      flex: 0 1 auto;
+      display: grid;
+      grid-template-columns: repeat(5, minmax(0, 1fr));
+      gap: clamp(0.8rem, 1.2vw, 1.25rem);
+      align-items: stretch;
+      width: 100%;
+    }
+
+    .team-strength-slide .danger-card {
+      width: auto;
+      min-width: 0;
+      height: clamp(180px, 23vh, 230px);
+    }
+
+    .team-strength-slide .danger-card-front,
+    .team-strength-slide .danger-card-back {
+      padding: clamp(0.75rem, 1.1vw, 1rem);
+      justify-content: flex-start;
+      gap: 0.75rem;
+    }
+
+    .team-strength-slide .danger-icon {
+      width: 100%;
+      height: clamp(110px, 15vh, 145px);
+      margin-bottom: 0;
+      border-radius: 10px;
+      overflow: hidden;
+      background: rgba(255,255,255,0.08);
+      flex-shrink: 0;
+    }
+
+    .team-strength-slide .danger-icon img {
+      width: 100%;
+      height: 100%;
+      display: block;
+      object-fit: cover;
+      object-position: center;
+    }
+
+    .team-strength-slide .danger-card-front h3 {
+      color: var(--light);
+      font-size: clamp(0.95rem, 1.15vw, 1.15rem);
+      line-height: 1.15;
+      margin: 0;
+      min-height: 2.6em;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+
+    .team-strength-slide .danger-card-back {
+      justify-content: center;
+    }
+
+    .team-strength-slide .danger-card-back h3 {
+      font-size: clamp(0.95rem, 1.1vw, 1.1rem);
+      line-height: 1.15;
+      margin-bottom: 0.5rem;
+    }
+
+    .team-strength-slide .danger-card-back p {
+      font-size: clamp(0.82rem, 0.95vw, 0.98rem);
+      line-height: 1.35;
     }
 
     /* Big Statement */
@@ -2546,8 +2969,84 @@
       background-color: rgba(211,178,87,0.05) !important; /* Soft warm glow */
       box-shadow: -4px 8px 20px rgba(0,64,113,0.08) !important;
     }
+
+    .visual-circle img,
+    .area-icon img,
+    .danger-icon img,
+    .lane-icon img {
+      width: 100%;
+      height: 100%;
+      display: block;
+      object-fit: cover;
+      border-radius: inherit;
+    }
+
+    .label-icon {
+      width: 2.1rem;
+      height: 2.1rem;
+      object-fit: cover;
+      border-radius: 8px;
+      margin-right: 0.45rem;
+      vertical-align: middle;
+    }
   </style>
-</head>
+    <style id="fit-to-slide-guard">
+      @media (min-width: 769px) and (max-height: 900px) {
+        .slide { overflow: hidden; }
+        .smart-goal-write-slide.active,
+        .warmup-story-slide.active {
+          overflow-y: hidden;
+        }
+        .slide:not(.slide-title):not(.slide-section):not(.slide-closing):not(.big-statement) {
+          padding-top: clamp(1rem, 2vh, 2rem);
+          padding-bottom: 5.25rem;
+        }
+        .slide h2 {
+          font-size: clamp(2.2rem, 4.2vw, 3.5rem);
+          margin-bottom: clamp(0.75rem, 1.5vh, 1.5rem);
+        }
+        .slide-video {
+          padding-top: 1rem;
+          padding-bottom: 4.75rem;
+        }
+        .slide-video h2 {
+          font-size: clamp(1.4rem, 2vw, 2rem);
+          margin-bottom: 0.75rem;
+        }
+        .video-container,
+        .video-wrapper {
+          max-height: 62vh;
+        }
+        .video-wrapper video,
+        .local-video {
+          max-height: 58vh;
+          object-fit: contain;
+        }
+        .cards-grid,
+        .takeaways,
+        .smart-stack,
+        .matrix-grid,
+        .areas-grid,
+        .dangers-grid {
+          min-height: 0;
+        }
+        .card {
+          padding-top: clamp(1rem, 2vh, 1.6rem);
+          padding-bottom: clamp(1rem, 2vh, 1.6rem);
+        }
+        .card p,
+        .takeaway-item p,
+        .content-list li {
+          font-size: clamp(1rem, 1.6vw, 1.35rem);
+          line-height: 1.35;
+        }
+        .activity-box,
+        .download-resource {
+          margin-top: clamp(0.75rem, 1.8vh, 1.5rem);
+        }
+      }
+    </style>
+  </head>
 <body>
   <a href="#main-content" class="skip-link">Skip to main content</a>
   <div class="container">
@@ -2557,6 +3056,7 @@
 
       <div class="resources-section">
         <div class="resources-title">Resources</div>
+        <button class="print-all-btn" type="button" onclick="openPrintPlanner()">Print All</button>
         <a href="Handouts/Employee_Accountability_Module_Lesson_Plan_4.7.pdf" target="_blank" rel="noopener noreferrer" class="resource-link">Lesson Plan</a>
         <a href="resources/Employee_Accountability_Teachers_Guide.pdf" target="_blank" rel="noopener noreferrer" class="resource-link">Teacher's Guide</a>
         <a href="Handouts/Handout_1_Habits_of_Mind.pdf" target="_blank" rel="noopener noreferrer" class="resource-link">Habits of Mind (Handout 1)</a>
@@ -2600,7 +3100,7 @@
       </section>
 
       <!-- Warm-Up: activity-box led, then cards for 3 discussion questions -->
-      <section class="slide" data-chapter="1">
+      <section class="slide warmup-story-slide" data-chapter="1">
         <h2>Warm-Up: Share Your Story</h2>
         <div class="activity-box" style="margin-top: 0; margin-bottom: 2rem;">
           <div class="activity-label">Discussion</div>
@@ -2651,7 +3151,7 @@
             </ul>
           </div>
           <div class="split-visual">
-            <div class="visual-circle" style="background: linear-gradient(135deg, var(--primary), var(--royal)); font-size: 3.5rem;">&#127919;</div>
+            <div class="visual-circle" style="background: linear-gradient(135deg, var(--primary), var(--royal)); font-size: 3.5rem;"><img src="images/generated-context/objectives-target.png" alt="" aria-hidden="true" loading="lazy" /></div>
           </div>
         </div>
       </section>
@@ -2706,7 +3206,7 @@
         <div class="areas-grid">
           <div class="area-card">
             <div class="area-header">
-              <div class="area-icon">&#128081;</div>
+              <div class="area-icon"><img src="images/generated-context/workplace-trust.png" alt="" aria-hidden="true" loading="lazy" /></div>
               <h3>Builds Trust</h3>
             </div>
             <ul>
@@ -2717,7 +3217,7 @@
           </div>
           <div class="area-card gold-card">
             <div class="area-header">
-              <div class="area-icon">&#128200;</div>
+              <div class="area-icon"><img src="images/generated-context/career-growth.png" alt="" aria-hidden="true" loading="lazy" /></div>
               <h3>Leads to Growth</h3>
             </div>
             <ul>
@@ -2728,7 +3228,7 @@
           </div>
           <div class="area-card">
             <div class="area-header">
-              <div class="area-icon">&#128260;</div>
+              <div class="area-icon"><img src="images/generated-context/continuous-improvement.png" alt="" aria-hidden="true" loading="lazy" /></div>
               <h3>Drives Improvement</h3>
             </div>
             <ul>
@@ -2767,7 +3267,7 @@
             <p style="font-size: 1.3rem; color: var(--gray);">Developing these habits makes you more accountable, more effective, and more successful at work.</p>
           </div>
           <div class="split-visual">
-            <div class="visual-circle" style="background: linear-gradient(135deg, var(--primary), var(--royal)); font-size: 3.5rem;">&#129504;</div>
+            <div class="visual-circle" style="background: linear-gradient(135deg, var(--primary), var(--royal)); font-size: 3.5rem;"><img src="images/generated-context/habits-of-mind.png" alt="" aria-hidden="true" loading="lazy" /></div>
           </div>
         </div>
       </section>
@@ -2841,7 +3341,7 @@
             </div>
           </div>
           <div class="split-visual">
-            <div class="visual-circle" style="background: linear-gradient(135deg, var(--gold), var(--muted-gold)); font-size: 3.5rem;">&#128221;</div>
+            <div class="visual-circle" style="background: linear-gradient(135deg, var(--gold), var(--muted-gold)); font-size: 3.5rem;"><img src="images/generated-context/self-reflection.png" alt="" aria-hidden="true" loading="lazy" /></div>
           </div>
         </div>
         <div class="download-resource">
@@ -2862,14 +3362,14 @@
       </section>
 
       <!-- How Accountability Strengthens Teams: flip cards — moved here as first P2 content slide -->
-      <section class="slide" data-chapter="4">
+      <section class="slide team-strength-slide" data-chapter="4">
         <h2>How Accountability Strengthens Teams</h2>
-        <p style="font-size: 1.1rem; color: var(--gray); margin-top: -1.5rem; margin-bottom: 1.5rem;">When every team member is accountable, the whole team performs at a higher level. Hover each card to learn more:</p>
+        <p class="slide-note" style="font-size: 1.1rem; color: var(--gray); margin-top: -1.5rem; margin-bottom: 1.5rem;">When every team member is accountable, the whole team performs at a higher level. Hover each card to learn more:</p>
         <div class="dangers-grid">
           <div class="danger-card" tabindex="0" role="button" aria-label="Builds Trust — flip card" aria-expanded="false">
             <div class="danger-card-inner">
               <div class="danger-card-front">
-                <div class="danger-icon">&#129309;</div>
+                <div class="danger-icon"><img src="images/generated-context/team-trust.png" alt="" aria-hidden="true" loading="lazy" /></div>
                 <h3>Builds Trust</h3>
               </div>
               <div class="danger-card-back">
@@ -2881,7 +3381,7 @@
           <div class="danger-card" tabindex="0" role="button" aria-label="Increases Output — flip card" aria-expanded="false">
             <div class="danger-card-inner">
               <div class="danger-card-front">
-                <div class="danger-icon">&#128640;</div>
+                <div class="danger-icon"><img src="images/generated-context/increased-output.png" alt="" aria-hidden="true" loading="lazy" /></div>
                 <h3>Increases Output</h3>
               </div>
               <div class="danger-card-back">
@@ -2893,7 +3393,7 @@
           <div class="danger-card" tabindex="0" role="button" aria-label="Reduces Errors — flip card" aria-expanded="false">
             <div class="danger-card-inner">
               <div class="danger-card-front">
-                <div class="danger-icon">&#128218;</div>
+                <div class="danger-icon"><img src="images/generated-context/reduce-errors.png" alt="" aria-hidden="true" loading="lazy" /></div>
                 <h3>Reduces Errors</h3>
               </div>
               <div class="danger-card-back">
@@ -2905,7 +3405,7 @@
           <div class="danger-card" tabindex="0" role="button" aria-label="Improves Culture — flip card" aria-expanded="false">
             <div class="danger-card-inner">
               <div class="danger-card-front">
-                <div class="danger-icon">&#127775;</div>
+                <div class="danger-icon"><img src="images/generated-context/positive-culture.png" alt="" aria-hidden="true" loading="lazy" /></div>
                 <h3>Improves Culture</h3>
               </div>
               <div class="danger-card-back">
@@ -2917,7 +3417,7 @@
           <div class="danger-card" tabindex="0" role="button" aria-label="Grows Leaders — flip card" aria-expanded="false">
             <div class="danger-card-inner">
               <div class="danger-card-front">
-                <div class="danger-icon">&#128170;</div>
+                <div class="danger-icon"><img src="images/generated-context/growing-leaders.png" alt="" aria-hidden="true" loading="lazy" /></div>
                 <h3>Grows Leaders</h3>
               </div>
               <div class="danger-card-back">
@@ -3042,7 +3542,7 @@
             <p style="font-size: 1.3rem; color: var(--gray);">Every mistake becomes a <span class="highlight">lesson</span>. Every correction becomes a <span class="accent">step forward</span>.</p>
           </div>
           <div class="split-visual">
-            <div class="visual-circle" style="background: linear-gradient(135deg, var(--accent), var(--dark)); font-size: 3rem;">&#127807;</div>
+            <div class="visual-circle" style="background: linear-gradient(135deg, var(--accent), var(--dark)); font-size: 3rem;"><img src="images/generated-context/personal-growth.png" alt="" aria-hidden="true" loading="lazy" /></div>
           </div>
         </div>
       </section>
@@ -3102,7 +3602,7 @@
         <p style="font-size: 1.1rem; color: var(--gray); margin-top: -1.5rem; margin-bottom: 1.5rem;">Everyone visits the Victim Road sometimes. The real question is: <em>how fast can you choose to leave it?</em></p>
         <div class="comparison-row">
           <div class="comparison-panel comparison-panel--mauve">
-            <p class="comparison-label comparison-label--mauve">&#128683; The Victim Road</p>
+            <p class="comparison-label comparison-label--mauve"><img class="label-icon" src="images/generated-context/victim-road.png" alt="" aria-hidden="true" loading="lazy" />The Victim Road</p>
             <ul class="comparison-list comparison-list--mauve">
               <li>Ignore the problem</li>
               <li>Deny involvement</li>
@@ -3113,7 +3613,7 @@
             </ul>
           </div>
           <div class="comparison-panel comparison-panel--accent">
-            <p class="comparison-label comparison-label--accent">&#9989; The Accountable Road</p>
+            <p class="comparison-label comparison-label--accent"><img class="label-icon" src="images/generated-context/accountable-road.png" alt="" aria-hidden="true" loading="lazy" />The Accountable Road</p>
             <ul class="comparison-list comparison-list--accent">
               <li>Recognize the problem — take ownership</li>
               <li>Forgive yourself and others</li>
@@ -3142,7 +3642,7 @@
           </div>
           <div class="accountability-lane">
             <div class="lane-header">
-              <div class="lane-icon">&#128172;</div>
+              <div class="lane-icon"><img src="images/generated-context/actions-choices.png" alt="" aria-hidden="true" loading="lazy" /></div>
               <h3>Actions &amp; Choices</h3>
             </div>
             <ul>
@@ -3154,7 +3654,7 @@
           </div>
           <div class="accountability-lane gold-lane">
             <div class="lane-header">
-              <div class="lane-icon">&#128203;</div>
+              <div class="lane-icon"><img src="images/generated-context/responsibilities-goals.png" alt="" aria-hidden="true" loading="lazy" /></div>
               <h3>Responsibilities</h3>
             </div>
             <ul>
@@ -3166,7 +3666,7 @@
           </div>
           <div class="accountability-lane">
             <div class="lane-header">
-              <div class="lane-icon">&#127919;</div>
+              <div class="lane-icon"><img src="images/generated-context/objectives-target.png" alt="" aria-hidden="true" loading="lazy" /></div>
               <h3>Goals</h3>
             </div>
             <ul>
@@ -3261,7 +3761,7 @@
       </section>
 
       <!-- Write Your SMART Goal: activity-box led, different from smart-stack above -->
-      <section class="slide" data-chapter="6">
+      <section class="slide smart-goal-write-slide" data-chapter="6">
         <h2>Write Your SMART Goal</h2>
         <div class="activity-box" style="margin-top: 0; margin-bottom: 2rem;">
           <div class="activity-label">Individual Activity</div>
@@ -3436,6 +3936,41 @@
       <!-- Progress Bar -->
       <div class="progress-bar" id="progressBar" role="progressbar" aria-valuenow="0" aria-valuemin="0" aria-valuemax="100" aria-label="Lesson progress"></div>
     </main>
+  </div>
+
+  <div class="print-modal" id="printPlanner" role="dialog" aria-modal="true" aria-labelledby="printPlannerTitle" aria-describedby="printPlannerDescription">
+    <div class="print-dialog">
+      <div class="print-dialog-header">
+        <div>
+          <h2 id="printPlannerTitle">Print Lesson Packet</h2>
+          <p id="printPlannerDescription">Set the number of students, adjust any resource counts, then launch a guided print queue.</p>
+        </div>
+        <button class="print-close" type="button" onclick="closePrintPlanner()" aria-label="Close print planner">&times;</button>
+      </div>
+      <div class="print-dialog-body">
+        <div class="print-student-control">
+          <label for="studentCopyCount">
+            Students attending
+            <span>Student handouts and rubric copy counts update from this number.</span>
+          </label>
+          <input id="studentCopyCount" type="number" min="1" max="200" value="5" inputmode="numeric" onchange="syncStudentCopies()" oninput="syncStudentCopies()">
+        </div>
+        <table class="print-table" aria-label="Printable resources and copy counts">
+          <thead>
+            <tr>
+              <th scope="col">Resource</th>
+              <th scope="col">Copies</th>
+            </tr>
+          </thead>
+          <tbody id="printResourceRows"></tbody>
+        </table>
+        <p class="print-note">Browser security prevents this page from silently choosing printer copy counts. The print queue will show the required copies for each PDF; enter that number in the browser print dialog before printing each item.</p>
+        <div class="print-actions">
+          <button class="print-action-btn secondary" type="button" onclick="resetPrintQuantities()">Reset Counts</button>
+          <button class="print-action-btn primary" type="button" onclick="launchPrintQueue()">Launch Print Queue</button>
+        </div>
+      </div>
+    </div>
   </div>
 
   <script>
@@ -3860,6 +4395,215 @@
 
       setCarouselStep(0, false);
     }
+
+    const printResources = [
+      {
+        title: 'Lesson Plan',
+        href: 'Handouts/Employee_Accountability_Module_Lesson_Plan_4.7.pdf',
+        defaultType: 'fixed',
+        defaultCopies: 1,
+        note: 'Instructor copy'
+      },
+      {
+        title: "Teacher's Guide",
+        href: 'resources/Employee_Accountability_Teachers_Guide.pdf',
+        defaultType: 'fixed',
+        defaultCopies: 1,
+        note: 'Instructor copy'
+      },
+      {
+        title: 'Habits of Mind (Handout 1)',
+        href: 'Handouts/Handout_1_Habits_of_Mind.pdf',
+        defaultType: 'student',
+        note: 'One per student'
+      },
+      {
+        title: 'Self-Reflection (Handout 2)',
+        href: 'Handouts/Handout_2_Self_Reflection.pdf',
+        defaultType: 'student',
+        note: 'One per student'
+      },
+      {
+        title: 'Workplace Scenarios (Handout 3)',
+        href: 'Handouts/Handout_3_Workplace_Scenarios.v2.pdf',
+        defaultType: 'student',
+        note: 'One per student'
+      },
+      {
+        title: 'SMART Goal Worksheet (Handout 4)',
+        href: 'Handouts/Handout_4_SMART_Goal.pdf',
+        defaultType: 'student',
+        note: 'One per student'
+      },
+      {
+        title: 'Career Planning (Handout 5)',
+        href: 'Handouts/Handout_5_Career_Planning.pdf',
+        defaultType: 'student',
+        note: 'One per student'
+      },
+      {
+        title: 'Assessment Rubric',
+        href: 'Handouts/Employee_Accountability_Rubric.pdf',
+        defaultType: 'student',
+        note: 'Usually one per student'
+      }
+    ];
+
+    function clampCopies(value, fallback = 1) {
+      const parsed = parseInt(value, 10);
+      if (Number.isNaN(parsed)) return fallback;
+      return Math.max(1, Math.min(200, parsed));
+    }
+
+    function renderPrintPlannerRows() {
+      const tbody = document.getElementById('printResourceRows');
+      if (!tbody) return;
+      const studentCount = clampCopies(document.getElementById('studentCopyCount')?.value, 5);
+      tbody.innerHTML = printResources.map((resource, index) => {
+        const copies = resource.defaultType === 'student' ? studentCount : resource.defaultCopies;
+        const locked = resource.defaultType === 'fixed' ? 'data-fixed="true"' : 'data-student-copy="true"';
+        return `
+          <tr>
+            <td>
+              <span class="print-resource-title">${resource.title}</span>
+              <span class="print-resource-note">${resource.note}</span>
+            </td>
+            <td>
+              <input class="print-copy-input" type="number" min="1" max="200" value="${copies}" inputmode="numeric" aria-label="Copies for ${resource.title}" data-print-index="${index}" ${locked}>
+            </td>
+          </tr>
+        `;
+      }).join('');
+    }
+
+    function openPrintPlanner() {
+      renderPrintPlannerRows();
+      const modal = document.getElementById('printPlanner');
+      modal?.classList.add('open');
+      modal?.querySelector('#studentCopyCount')?.focus();
+    }
+
+    function closePrintPlanner() {
+      document.getElementById('printPlanner')?.classList.remove('open');
+      document.querySelector('.print-all-btn')?.focus();
+    }
+
+    function syncStudentCopies() {
+      const studentCount = clampCopies(document.getElementById('studentCopyCount')?.value, 5);
+      document.querySelectorAll('.print-copy-input[data-student-copy="true"]').forEach(input => {
+        input.value = studentCount;
+      });
+    }
+
+    function resetPrintQuantities() {
+      const studentInput = document.getElementById('studentCopyCount');
+      if (studentInput) studentInput.value = 5;
+      renderPrintPlannerRows();
+    }
+
+    function getPrintJobs() {
+      return printResources.map((resource, index) => {
+        const input = document.querySelector(`.print-copy-input[data-print-index="${index}"]`);
+        return {
+          ...resource,
+          copies: clampCopies(input?.value, resource.defaultCopies || 1),
+          url: new URL(resource.href, window.location.href).href
+        };
+      });
+    }
+
+    function launchPrintQueue() {
+      const jobs = getPrintJobs();
+      const queueWindow = window.open('', 'spokesPrintQueue', 'width=1100,height=820');
+      if (!queueWindow) {
+        alert('Your browser blocked the print queue window. Please allow pop-ups for this lesson and try again.');
+        return;
+      }
+
+      queueWindow.document.open();
+      queueWindow.document.write(`<!doctype html>
+        <html lang="en">
+          <head>
+            <meta charset="utf-8">
+            <title>Employee Accountability Print Queue</title>
+            <style>
+              body { margin: 0; font-family: Segoe UI, Arial, sans-serif; color: rgb(0,64,113); background: rgb(237,243,247); }
+              header { padding: 16px 20px; background: rgb(0,64,113); color: white; display: flex; justify-content: space-between; align-items: center; gap: 16px; }
+              h1 { margin: 0; font-size: 20px; }
+              main { display: grid; grid-template-columns: 300px 1fr; height: calc(100vh - 68px); }
+              aside { padding: 16px; overflow-y: auto; border-right: 1px solid rgb(201,215,223); background: white; }
+              iframe { width: 100%; height: 100%; border: 0; background: white; }
+              .job { width: 100%; text-align: left; border: 1px solid rgb(201,215,223); background: rgb(237,243,247); color: rgb(0,64,113); border-radius: 8px; padding: 10px; margin-bottom: 8px; cursor: pointer; }
+              .job.active { border-color: rgb(211,178,87); background: rgb(255,250,232); }
+              .copies { display: inline-flex; min-width: 36px; justify-content: center; border-radius: 999px; background: rgb(0,64,113); color: white; padding: 3px 8px; margin-right: 6px; font-weight: 700; }
+              .controls { display: flex; gap: 8px; flex-wrap: wrap; }
+              button { min-height: 40px; border: 2px solid rgb(0,64,113); border-radius: 8px; padding: 7px 12px; font-weight: 700; cursor: pointer; }
+              .primary { background: rgb(211,178,87); color: rgb(0,19,63); border-color: rgb(211,178,87); }
+              .secondary { background: white; color: rgb(0,64,113); }
+              .note { margin: 12px 0 16px; color: rgb(96,99,107); font-size: 13px; line-height: 1.4; }
+              #currentCopies { font-weight: 700; color: rgb(211,178,87); }
+            </style>
+          </head>
+          <body>
+            <header>
+              <div>
+                <h1>Employee Accountability Print Queue</h1>
+                <div>Current item: <span id="currentTitle"></span> | Copies needed: <span id="currentCopies"></span></div>
+              </div>
+              <div class="controls">
+                <button class="secondary" type="button" onclick="previousJob()">Previous</button>
+                <button class="primary" type="button" onclick="printCurrent()">Print Current</button>
+                <button class="secondary" type="button" onclick="nextJob()">Next</button>
+              </div>
+            </header>
+            <main>
+              <aside>
+                <p class="note">For each PDF, click <strong>Print Current</strong>, then enter the shown copy count in the browser print dialog.</p>
+                <div id="jobList"></div>
+              </aside>
+              <iframe id="pdfFrame" title="Selected PDF preview"></iframe>
+            </main>
+            <script>
+              const jobs = ${JSON.stringify(jobs)};
+              let current = 0;
+              const frame = document.getElementById('pdfFrame');
+              function renderJobs() {
+                document.getElementById('jobList').innerHTML = jobs.map((job, index) =>
+                  '<button class="job ' + (index === current ? 'active' : '') + '" type="button" onclick="goToJob(' + index + ')">' +
+                  '<span class="copies">' + job.copies + '</span>' + job.title + '</button>'
+                ).join('');
+                document.getElementById('currentTitle').textContent = jobs[current].title;
+                document.getElementById('currentCopies').textContent = jobs[current].copies;
+                frame.src = jobs[current].url;
+              }
+              function goToJob(index) { current = Math.max(0, Math.min(jobs.length - 1, index)); renderJobs(); }
+              function nextJob() { goToJob((current + 1) % jobs.length); }
+              function previousJob() { goToJob((current - 1 + jobs.length) % jobs.length); }
+              function printCurrent() {
+                try {
+                  frame.contentWindow.focus();
+                  frame.contentWindow.print();
+                } catch (error) {
+                  window.open(jobs[current].url, '_blank', 'noopener');
+                }
+              }
+              renderJobs();
+            <\/script>
+          </body>
+        </html>`);
+      queueWindow.document.close();
+      queueWindow.focus();
+    }
+
+    document.getElementById('printPlanner')?.addEventListener('click', (e) => {
+      if (e.target.id === 'printPlanner') closePrintPlanner();
+    });
+
+    document.addEventListener('keydown', (e) => {
+      if (e.key === 'Escape' && document.getElementById('printPlanner')?.classList.contains('open')) {
+        closePrintPlanner();
+      }
+    });
 
     // Tab arrow-key navigation (ARIA tablist pattern)
     document.querySelectorAll('[role="tablist"]').forEach(tablist => {
