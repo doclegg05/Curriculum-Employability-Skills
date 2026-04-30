@@ -552,32 +552,10 @@
         }
 
         .module-desc {
-            margin: 0.65rem 0 0.75rem;
+            margin: 0.65rem 0 0;
             color: rgba(255, 255, 255, 0.86);
             font-size: 0.9rem;
             line-height: 1.44;
-        }
-
-        .module-details {
-            display: flex;
-            flex-wrap: wrap;
-            gap: 0.45rem;
-            margin-top: auto;
-            padding-top: 0.75rem;
-        }
-
-        .detail-chip {
-            display: inline-flex;
-            align-items: center;
-            min-height: 26px;
-            border-radius: 999px;
-            padding: 0.28rem 0.52rem;
-            color: var(--light);
-            background: rgba(255, 255, 255, 0.12);
-            border: 1px solid rgba(255, 255, 255, 0.16);
-            font-size: 0.72rem;
-            font-weight: 800;
-            letter-spacing: 0.02em;
         }
 
         .card-footer {
@@ -1066,14 +1044,6 @@
             return 'status-badge--planned';
         }
 
-        function chipText(lesson) {
-            const pieces = [];
-            if (lesson.qualityGates?.wippea) pieces.push(`WIPPEA ${lesson.qualityGates.wippea}`);
-            if (lesson.interactions?.implemented) pieces.push(`${lesson.interactions.implemented} interactions`);
-            if (lesson.variant) pieces.push(lesson.variant.replace('variant-', ''));
-            return pieces.slice(0, 3);
-        }
-
         function buildCard(lesson, index) {
             const launchable = isLaunchable(lesson.status);
             const safePath = launchable ? sanitizeLessonPath(lesson.path) : '';
@@ -1088,7 +1058,6 @@
             const imageSrc = escapeHtml(encodeURI(lessonImage.src));
             const imageAlt = escapeHtml(lessonImage.alt);
             const imagePosition = escapeHtml(lessonImage.position || 'center');
-            const chips = chipText(lesson);
             const footerContent = isLaunchableLesson
                 ? `<span class="launch-cta">Launch Module <span class="arrow-icon" aria-hidden="true">&rarr;</span></span>`
                 : `<span class="planned-label">Coming Soon</span>`;
@@ -1103,9 +1072,6 @@
                 <div class="card-body">
                     <h3 class="module-name">${safeTitle}</h3>
                     <p class="module-desc">${safeDescription}</p>
-                    <div class="module-details">
-                        ${chips.map(chip => `<span class="detail-chip">${escapeHtml(chip)}</span>`).join('')}
-                    </div>
                 </div>
                 <div class="card-footer">${footerContent}</div>
             </${tag}>`;
