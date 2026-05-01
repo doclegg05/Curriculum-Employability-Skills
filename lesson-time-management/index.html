@@ -489,6 +489,190 @@
     }
     .matrix-cell .matrix-desc { font-size: 1.1rem; opacity: 0.9; }
 
+    /* Matching Game */
+    .slide-matching-game.active::before,
+    .slide-matching-game.active::after {
+      flex: 0 0 0;
+      min-height: 0.25rem;
+    }
+    .matching-game {
+      flex: 0 0 auto;
+      display: grid;
+      grid-template-columns: minmax(0, 1.12fr) minmax(280px, 0.78fr);
+      gap: 1rem;
+      width: 100%;
+    }
+    .match-panel {
+      background: rgba(255,255,255,0.72);
+      border: 2px solid var(--offwhite);
+      border-radius: 16px;
+      padding: 1rem;
+      display: flex;
+      flex-direction: column;
+      gap: 0.75rem;
+      box-shadow: 0 12px 28px rgba(0,0,0,0.08);
+    }
+    .match-panel h3 {
+      font-family: var(--font-heading);
+      color: var(--dark);
+      font-size: 1.55rem;
+      font-weight: 400;
+      margin-bottom: 0;
+    }
+    .scenario-grid,
+    .classification-stack {
+      display: grid;
+      gap: 0.65rem;
+      flex: 0 0 auto;
+    }
+    .classification-panel {
+      gap: 0.65rem;
+    }
+    .classification-stack {
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+      align-items: stretch;
+    }
+    .scenario-card,
+    .match-choice {
+      border: 2px solid var(--offwhite);
+      border-radius: 12px;
+      background: var(--light);
+      color: var(--dark);
+      cursor: pointer;
+      font-family: var(--font-body);
+      text-align: left;
+      transition: transform 0.2s ease, border-color 0.2s ease, box-shadow 0.2s ease, background 0.2s ease;
+    }
+    .scenario-card {
+      display: grid;
+      grid-template-columns: 44px minmax(0, 1fr);
+      gap: 0.75rem;
+      align-items: start;
+      padding: 0.75rem;
+      min-height: 88px;
+    }
+    .scenario-card:hover,
+    .match-choice:hover {
+      transform: translateY(-2px);
+      border-color: var(--primary);
+      box-shadow: 0 8px 18px rgba(0,0,0,0.1);
+    }
+    .scenario-card.selected {
+      border-color: var(--gold);
+      background: rgba(211,178,87,0.18);
+      box-shadow: 0 0 0 3px rgba(211,178,87,0.25);
+    }
+    .scenario-card.matched {
+      border-color: var(--accent);
+      background: rgba(55,181,80,0.12);
+      cursor: default;
+    }
+    .scenario-card.needs-review {
+      border-color: var(--mauve);
+      background: rgba(167,37,63,0.08);
+    }
+    .scenario-number {
+      width: 44px;
+      height: 44px;
+      border-radius: 10px;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      background: var(--primary);
+      color: var(--light);
+      font-weight: 800;
+      font-size: 1.15rem;
+      flex-shrink: 0;
+    }
+    .scenario-text {
+      display: block;
+      color: var(--dark);
+      font-size: clamp(0.92rem, 1.3vw, 1.12rem);
+      line-height: 1.3;
+      margin: 0;
+    }
+    .scenario-match {
+      display: inline-block;
+      margin-top: 0.45rem;
+      padding: 0.18rem 0.5rem;
+      border-radius: 999px;
+      background: var(--dark);
+      color: var(--light);
+      font-size: 0.72rem;
+      font-weight: 800;
+      letter-spacing: 0.04em;
+      text-transform: uppercase;
+    }
+    .match-choice {
+      padding: 0.68rem 0.72rem;
+      min-height: 92px;
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      gap: 0.18rem;
+    }
+    .match-choice strong {
+      font-family: var(--font-heading);
+      font-size: 1.25rem;
+      font-weight: 400;
+      color: var(--dark);
+      line-height: 1;
+    }
+    .match-choice span {
+      color: var(--gray);
+      font-size: 0.78rem;
+      line-height: 1.25;
+    }
+    .match-choice[data-match="do-first"] { border-left: 8px solid var(--primary); }
+    .match-choice[data-match="schedule"] { border-left: 8px solid var(--gold); }
+    .match-choice[data-match="delegate"] { border-left: 8px solid var(--accent); }
+    .match-choice[data-match="eliminate"] { border-left: 8px solid var(--mauve); }
+    .match-controls {
+      display: flex;
+      gap: 0.6rem;
+      flex-wrap: wrap;
+      margin-top: 0;
+    }
+    .match-control-btn {
+      border: none;
+      border-radius: 8px;
+      background: var(--primary);
+      color: var(--light);
+      cursor: pointer;
+      font-family: var(--font-body);
+      font-weight: 700;
+      padding: 0.62rem 0.9rem;
+      min-height: 44px;
+      transition: background 0.2s ease, transform 0.2s ease;
+    }
+    .match-control-btn:hover {
+      background: var(--dark);
+      transform: translateY(-1px);
+    }
+    .match-control-btn.secondary {
+      background: var(--muted);
+      color: var(--dark);
+      border: 2px solid var(--offwhite);
+    }
+    .match-feedback {
+      border-radius: 10px;
+      border: 2px solid var(--offwhite);
+      background: var(--muted);
+      color: var(--dark);
+      font-size: 1rem;
+      line-height: 1.35;
+      padding: 0.62rem 0.75rem;
+      min-height: 50px;
+    }
+    .match-feedback.correct {
+      border-color: var(--accent);
+      background: rgba(55,181,80,0.12);
+    }
+    .match-feedback.incorrect {
+      border-color: var(--mauve);
+      background: rgba(167,37,63,0.08);
+    }
+
     /* Danger Cards */
     .dangers-grid {
       display: grid;
@@ -1143,6 +1327,10 @@
       .matrix-grid { grid-template-columns: 1fr; gap: 1rem; }
       .dangers-grid { grid-template-columns: repeat(2, 1fr); gap: 1rem; }
       .danger-card { min-height: 150px; }
+      .matching-game { grid-template-columns: 1fr; }
+      .classification-stack { grid-template-columns: 1fr; }
+      .match-choice { min-height: auto; }
+      .scenario-card { min-height: auto; }
       .split-layout { flex-direction: column; gap: 1.5rem; }
       .split-visual { flex: 0 0 auto; }
       .visual-circle { width: 150px; height: 150px; font-size: 3rem; }
@@ -1162,6 +1350,9 @@
       .slide-title h1 { font-size: 2.2rem; }
       .dangers-grid { grid-template-columns: 1fr; }
       .danger-card { min-height: 140px; }
+      .match-panel { padding: 0.75rem; }
+      .scenario-card { grid-template-columns: 38px minmax(0, 1fr); }
+      .scenario-number { width: 38px; height: 38px; }
       .big-statement h2 { font-size: 2rem; }
       .slide-section .section-circle { width: 120px; height: 120px; left: 50%; transform: translate(-50%, -50%); opacity: 0.15; }
       .branding-logo { max-width: 40px; bottom: 0.5rem; right: 0.5rem; }
@@ -1458,6 +1649,9 @@
     .slide-item:focus-visible,
     .key-icon:focus-visible,
     .danger-card:focus-visible,
+    .scenario-card:focus-visible,
+    .match-choice:focus-visible,
+    .match-control-btn:focus-visible,
     .tab-btn:focus-visible,
     .accordion-btn:focus-visible,
     .accordion-header:focus-visible,
@@ -2673,33 +2867,70 @@
       </div>
     </section>
 
-    <!-- Slide 16: QA INTERACTIVE — Tabs: Task Classification -->
-    <section class="slide" data-chapter="4">
-      <h2>Classify This Task</h2>
-      <p class="slide-subtext">Which Eisenhower quadrant does each scenario belong in? Click to explore.</p>
-      <div class="tabs-container">
-        <div class="tabs-nav" role="tablist" aria-label="Task classification examples">
-          <button id="tab-btn-urgent" class="tab-btn active" role="tab" aria-selected="true" aria-controls="tab-urgent" onclick="switchTab(this,'tab-urgent')">Urgent Task</button>
-          <button id="tab-btn-important" class="tab-btn" role="tab" aria-selected="false" aria-controls="tab-important" onclick="switchTab(this,'tab-important')">Important Task</button>
-          <button id="tab-btn-timewaster" class="tab-btn" role="tab" aria-selected="false" aria-controls="tab-timewaster" onclick="switchTab(this,'tab-timewaster')">Time Waster</button>
+    <!-- Slide 16: QA INTERACTIVE — Matching Game: Task Classification -->
+    <section class="slide slide-matching-game" data-chapter="4">
+      <h2>Match the Task to the Action</h2>
+      <p class="slide-subtext">Read a scenario, choose its Eisenhower action, then defend the match as a class.</p>
+      <div class="matching-game" data-matching-game>
+        <div class="match-panel" aria-labelledby="scenario-list-heading">
+          <h3 id="scenario-list-heading">Scenarios</h3>
+          <div class="scenario-grid">
+            <button class="scenario-card" type="button" data-match="do-first" aria-pressed="false" onclick="selectMatchScenario(this)">
+              <span class="scenario-number" aria-hidden="true">1</span>
+              <span>
+                <span class="scenario-text">Your electric bill is due today and the disconnect notice says service stops tomorrow.</span>
+                <span class="scenario-match" hidden></span>
+              </span>
+            </button>
+            <button class="scenario-card" type="button" data-match="schedule" aria-pressed="false" onclick="selectMatchScenario(this)">
+              <span class="scenario-number" aria-hidden="true">2</span>
+              <span>
+                <span class="scenario-text">You need to update your resume and practice interview answers for a hiring event next week.</span>
+                <span class="scenario-match" hidden></span>
+              </span>
+            </button>
+            <button class="scenario-card" type="button" data-match="delegate" aria-pressed="false" onclick="selectMatchScenario(this)">
+              <span class="scenario-number" aria-hidden="true">3</span>
+              <span>
+                <span class="scenario-text">A routine errand must happen today, and another person in your household can handle it.</span>
+                <span class="scenario-match" hidden></span>
+              </span>
+            </button>
+            <button class="scenario-card" type="button" data-match="eliminate" aria-pressed="false" onclick="selectMatchScenario(this)">
+              <span class="scenario-number" aria-hidden="true">4</span>
+              <span>
+                <span class="scenario-text">You planned a 10-minute break, but you are 45 minutes into random videos with no purpose.</span>
+                <span class="scenario-match" hidden></span>
+              </span>
+            </button>
+          </div>
         </div>
-        <div id="tab-urgent" class="tab-panel active" role="tabpanel" aria-labelledby="tab-btn-urgent">
-          <span class="example-tag">DO FIRST</span>
-          <h3>Urgent + Important</h3>
-          <p>Your child has a fever and needs to go to the doctor. Your electricity will be shut off if you don't pay the bill today. Your boss needs a report in one hour.</p>
-          <p class="key-question"><strong>Key question:</strong> Does it have a deadline AND real consequences if I ignore it? Then it goes here.</p>
-        </div>
-        <div id="tab-important" class="tab-panel" role="tabpanel" aria-labelledby="tab-btn-important">
-          <span class="example-tag gold">SCHEDULE IT</span>
-          <h3>Not Urgent + Important</h3>
-          <p>Planning next week's meals. Going to the gym. Applying for a better job. Working toward your GED. These don't feel urgent today — but skipping them has a long-term cost.</p>
-          <p class="key-question"><strong>Key question:</strong> Is this aligned with my big rocks and long-term goals?</p>
-        </div>
-        <div id="tab-timewaster" class="tab-panel" role="tabpanel" aria-labelledby="tab-btn-timewaster">
-          <span class="example-tag mauve">ELIMINATE</span>
-          <h3>Not Urgent + Not Important</h3>
-          <p>Scrolling social media for 45 minutes. Watching a third TV episode when you planned to watch one. Reorganizing a drawer that doesn't need it.</p>
-          <p class="key-question"><strong>Key question:</strong> Does this move me toward any of my priorities? If not — eliminate or strictly limit it.</p>
+
+        <div class="match-panel classification-panel" aria-labelledby="classification-list-heading">
+          <h3 id="classification-list-heading">Classifications</h3>
+          <div class="classification-stack" aria-label="Choose a classification for the selected scenario">
+            <button class="match-choice" type="button" data-match="do-first" onclick="chooseMatchClassification(this)">
+              <strong>Do First</strong>
+              <span>Urgent and important: real deadline, real consequence.</span>
+            </button>
+            <button class="match-choice" type="button" data-match="schedule" onclick="chooseMatchClassification(this)">
+              <strong>Schedule</strong>
+              <span>Important, not urgent: reserve time before it becomes a crisis.</span>
+            </button>
+            <button class="match-choice" type="button" data-match="delegate" onclick="chooseMatchClassification(this)">
+              <strong>Delegate</strong>
+              <span>Urgent, but someone else can responsibly complete it.</span>
+            </button>
+            <button class="match-choice" type="button" data-match="eliminate" onclick="chooseMatchClassification(this)">
+              <strong>Eliminate</strong>
+              <span>Not urgent, not important: remove it or put a hard limit on it.</span>
+            </button>
+          </div>
+          <div class="match-feedback" aria-live="polite">Select a scenario, then choose the action it belongs with.</div>
+          <div class="match-controls">
+            <button class="match-control-btn" type="button" onclick="revealMatchingAnswers(this)">Reveal Matches</button>
+            <button class="match-control-btn secondary" type="button" onclick="resetMatchingGame(this)">Reset</button>
+          </div>
         </div>
       </div>
     </section>
@@ -3486,6 +3717,87 @@
     }
   }
 
+  // ── Interactive: Matching Game ───────────────────────────────────
+  const matchLabels = {
+    'do-first': 'Do First',
+    schedule: 'Schedule',
+    delegate: 'Delegate',
+    eliminate: 'Eliminate'
+  };
+
+  function getMatchingGame(control) {
+    return control.closest('[data-matching-game]');
+  }
+
+  function updateMatchFeedback(game, message, state) {
+    const feedback = game.querySelector('.match-feedback');
+    feedback.className = 'match-feedback' + (state ? ' ' + state : '');
+    feedback.textContent = message;
+  }
+
+  function completeScenarioMatch(card) {
+    const badge = card.querySelector('.scenario-match');
+    badge.textContent = matchLabels[card.dataset.match];
+    badge.hidden = false;
+    card.classList.remove('selected', 'needs-review');
+    card.classList.add('matched');
+    card.setAttribute('aria-pressed', 'false');
+    card.disabled = true;
+  }
+
+  function selectMatchScenario(btn) {
+    const game = getMatchingGame(btn);
+    game.querySelectorAll('.scenario-card').forEach(card => {
+      card.classList.remove('selected', 'needs-review');
+      card.setAttribute('aria-pressed', 'false');
+    });
+    btn.classList.add('selected');
+    btn.setAttribute('aria-pressed', 'true');
+    updateMatchFeedback(game, 'Scenario selected. Now choose Do First, Schedule, Delegate, or Eliminate.', '');
+  }
+
+  function chooseMatchClassification(btn) {
+    const game = getMatchingGame(btn);
+    const selected = game.querySelector('.scenario-card.selected');
+    if (!selected) {
+      updateMatchFeedback(game, 'Pick one scenario first, then choose its classification.', '');
+      return;
+    }
+
+    if (selected.dataset.match === btn.dataset.match) {
+      completeScenarioMatch(selected);
+      const remaining = game.querySelectorAll('.scenario-card:not(.matched)').length;
+      if (remaining === 0) {
+        updateMatchFeedback(game, 'All four matches are correct. Now ask which one is hardest to follow in real life.', 'correct');
+      } else {
+        updateMatchFeedback(game, 'Correct. Choose another scenario and keep matching.', 'correct');
+      }
+      return;
+    }
+
+    selected.classList.add('needs-review');
+    updateMatchFeedback(game, 'Not that one. Recheck the deadline, consequence, importance, and whether someone else can do it.', 'incorrect');
+  }
+
+  function revealMatchingAnswers(btn) {
+    const game = getMatchingGame(btn);
+    game.querySelectorAll('.scenario-card').forEach(card => completeScenarioMatch(card));
+    updateMatchFeedback(game, 'Matches revealed: 1 Do First, 2 Schedule, 3 Delegate, 4 Eliminate.', 'correct');
+  }
+
+  function resetMatchingGame(btn) {
+    const game = getMatchingGame(btn);
+    game.querySelectorAll('.scenario-card').forEach(card => {
+      card.disabled = false;
+      card.classList.remove('selected', 'matched', 'needs-review');
+      card.setAttribute('aria-pressed', 'false');
+      const badge = card.querySelector('.scenario-match');
+      badge.textContent = '';
+      badge.hidden = true;
+    });
+    updateMatchFeedback(game, 'Select a scenario, then choose the action it belongs with.', '');
+  }
+
   // ── Interactive: Checkpoint ───────────────────────────────────────
   function checkAnswer(btn, isCorrect) {
     const box = btn.closest('.checkpoint-box');
@@ -3571,6 +3883,10 @@
   window.nextSlide = nextSlide;
   window.switchTab = switchTab;
   window.toggleAccordion = toggleAccordion;
+  window.selectMatchScenario = selectMatchScenario;
+  window.chooseMatchClassification = chooseMatchClassification;
+  window.revealMatchingAnswers = revealMatchingAnswers;
+  window.resetMatchingGame = resetMatchingGame;
   window.checkAnswer = checkAnswer;
   window.resetCheckpoint = resetCheckpoint;
 })();

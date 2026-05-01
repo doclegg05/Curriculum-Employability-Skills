@@ -32,6 +32,10 @@ THEME_ACCOUNTABILITY = dict(
     badge_p=(0, 64, 113),        # dark
     badge_e=(167, 37, 63),       # mauve
     badge_a=(211, 178, 87),      # gold
+    cover_layout="minimal_title",
+    background="crosshatch",
+    chapter_gradient=True,
+    slide_marker=True,
 )
 
 THEME_TIME = dict(
@@ -133,6 +137,9 @@ THEME_ANGER = {
     "cover_grad_top": (167, 37, 63),
     "cover_grad_bot": (0, 19, 63),
     "accent_line": (55, 181, 80),
+    "primary": (167, 37, 63),
+    "dark": (0, 19, 63),
+    "cover_layout": "dark_framed",
 }
 
 THEME_PROBLEM_SOLVING = {
@@ -140,6 +147,8 @@ THEME_PROBLEM_SOLVING = {
     "cover_grad_top": (0, 64, 113),
     "cover_grad_bot": (55, 181, 80),
     "accent_line": (211, 178, 87),
+    "cover_layout": "decision_lab",
+    "cover_image": "lesson-problem-solving-and-decision-making/images/ppt-inspired/problem-arrows.jpg",
 }
 
 
@@ -258,6 +267,15 @@ class TeachersGuidePDF(FPDF):
             return
         if self.t.get("cover_layout") == "time_architect":
             self._time_architect_cover()
+            return
+        if self.t.get("cover_layout") == "minimal_title":
+            self._minimal_title_cover()
+            return
+        if self.t.get("cover_layout") == "dark_framed":
+            self._dark_framed_cover()
+            return
+        if self.t.get("cover_layout") == "decision_lab":
+            self._decision_lab_cover()
             return
         # Gradient-style cover block (simulated with two rects)
         self.set_fill_color(*self.t["cover_grad_top"])
@@ -510,6 +528,189 @@ class TeachersGuidePDF(FPDF):
         self.set_font("ui", "", 8.5)
         self.set_text_color(215, 225, 235)
         self.multi_cell(90, 5, "(c) 2026 WV Adult Basic Education\nStrategic Planning in Occupational Knowledge for Employment and Success")
+
+    def _minimal_title_cover(self):
+        # Match the Employee Accountability title slide: quiet field, centered logo/title, dark footer.
+        self.set_fill_color(237, 243, 247)
+        self.rect(0, 0, 210, 297, "F")
+        self.set_fill_color(255, 255, 255)
+        self.rect(32, 26, 146, 214, "F")
+        self.set_draw_color(223, 231, 238)
+        self.set_line_width(0.4)
+        self.rect(32, 26, 146, 214)
+
+        self.image(LOGO, 78, 56, 54)
+        self.set_xy(38, 104)
+        self.set_font(self._font("heading"), "B", 27)
+        self.set_text_color(*self.t["dark"])
+        self.multi_cell(134, 12, self._title, align="C")
+        y = self.get_y() + 4
+        self.set_fill_color(*self.t["gold"])
+        self.rect(94, y, 22, 1.5, "F")
+
+        self.set_xy(48, y + 13)
+        self.set_font("ui", "", 12)
+        self.set_text_color(*self.t["gray"])
+        self.multi_cell(114, 6, self._subtitle, align="C")
+
+        pill_y = self.get_y() + 12
+        self.set_fill_color(*self.t["dark"])
+        self.rect(65, pill_y, 38, 8, "F")
+        self.set_xy(65, pill_y + 1.7)
+        self.set_font("ui", "B", 7.5)
+        self.set_text_color(*self.t["white"])
+        self.cell(38, 4, "Teacher's Guide", align="C")
+        self.set_fill_color(*self.t["primary"])
+        self.rect(107, pill_y, 38, 8, "F")
+        self.set_xy(107, pill_y + 1.7)
+        self.cell(38, 4, "Speaking Notes", align="C")
+
+        panel_y = pill_y + 26
+        self.set_draw_color(*self.t["primary"])
+        self.set_fill_color(250, 252, 254)
+        self.rect(48, panel_y, 114, 36, "DF")
+        self.set_xy(55, panel_y + 7)
+        self.set_font("ui", "", 9.5)
+        self.set_text_color(*self.t["text"])
+        self.multi_cell(100, 5.2, "Instructor speaking notes, discussion prompts, linked resources, and class-prep checklist.", align="C")
+
+        self.set_fill_color(*self.t["dark"])
+        self.rect(32, 248, 146, 9, "F")
+        self.set_xy(32, 250)
+        self.set_font("ui", "", 7)
+        self.set_text_color(*self.t["white"])
+        self.cell(146, 4, "(c) 2026 WV Adult Basic Education", align="C")
+        self.set_xy(32, 261)
+        self.set_text_color(*self.t["gray"])
+        self.cell(146, 4, "Strategic Planning in Occupational Knowledge for Employment and Success", align="C")
+
+    def _dark_framed_cover(self):
+        # Match the Anger title slide: deep navy field with a centered framed title.
+        self.set_fill_color(*self.t["dark"])
+        self.rect(0, 0, 210, 297, "F")
+        self.set_fill_color(*self.t["mauve"])
+        self.rect(0, 0, 210, 30, "F")
+        self.set_fill_color(0, 64, 113)
+        self.rect(0, 30, 210, 4, "F")
+        self.set_fill_color(*self.t["accent_line"])
+        self.rect(0, 34, 210, 2, "F")
+
+        self.set_fill_color(*self.t["white"])
+        self.rect(70, 52, 70, 36, "F")
+        self.image(LOGO, 75, 58, 60)
+
+        self.set_draw_color(*self.t["primary"])
+        self.set_line_width(0.7)
+        self.rect(42, 112, 126, 34)
+        self.set_xy(45, 119)
+        self.set_font(self._font("heading"), "B", 28)
+        self.set_text_color(*self.t["white"])
+        self.multi_cell(120, 11, self._title, align="C")
+        self.set_fill_color(*self.t["gold"])
+        self.rect(96, 158, 18, 1.6, "F")
+
+        self.set_xy(45, 171)
+        self.set_font("ui", "", 12)
+        self.set_text_color(222, 230, 240)
+        self.multi_cell(120, 6, self._subtitle, align="C")
+
+        self.set_fill_color(255, 255, 255)
+        self.rect(28, 204, 154, 38, "F")
+        self.set_draw_color(*self.t["gold"])
+        self.set_line_width(0.8)
+        self.line(28, 242, 182, 242)
+        self.set_xy(36, 212)
+        self.set_font(self._font("heading"), "B", 19)
+        self.set_text_color(*self.t["dark"])
+        self.cell(138, 8, "Teacher's Guide", align="C")
+        self.set_xy(40, 226)
+        self.set_font("ui", "", 9.5)
+        self.set_text_color(*self.t["gray"])
+        self.multi_cell(130, 5, "Instructor speaking notes, discussion prompts, linked resources, and class-prep checklist.", align="C")
+
+        self.set_xy(34, 258)
+        self.set_font("ui", "", 8)
+        self.set_text_color(205, 216, 230)
+        self.multi_cell(142, 5, "(c) 2026 WV Adult Basic Education\nStrategic Planning in Occupational Knowledge for Employment and Success", align="C")
+
+    def _decision_lab_cover(self):
+        # Match the Problem-Solving title slide: dark decision-lab field with a visual card.
+        self.set_fill_color(25, 45, 70)
+        self.rect(0, 0, 210, 297, "F")
+        self.set_fill_color(31, 79, 106)
+        self.rect(0, 0, 210, 297, "F")
+        self.set_fill_color(15, 32, 51)
+        self.rect(0, 0, 86, 297, "F")
+        self.set_fill_color(30, 74, 98)
+        self.rect(86, 0, 124, 297, "F")
+        self.set_fill_color(*self.t["accent_line"])
+        self.rect(0, 0, 210, 3, "F")
+        self.set_fill_color(*self.t["accent"])
+        self.rect(0, 3, 42, 1.5, "F")
+        self.set_fill_color(*self.t["primary"])
+        self.rect(42, 3, 42, 1.5, "F")
+
+        self.set_draw_color(20, 58, 82)
+        self.set_line_width(0.35)
+        for x, y, size in [(158, 44, 20), (174, 70, 32), (140, 92, 13), (180, 126, 20)]:
+            self.ellipse(x, y, size, size)
+
+        self.set_fill_color(*self.t["white"])
+        self.rect(18, 22, 58, 33, "F")
+        self.image(LOGO, 21, 26, 52)
+
+        self.set_xy(18, 82)
+        self.set_font("ui", "B", 8.5)
+        self.set_text_color(171, 190, 204)
+        self.cell(0, 5, "DECISION LAB")
+        self.set_xy(18, 94)
+        self.set_font(self._font("heading"), "B", 19)
+        self.set_text_color(*self.t["white"])
+        display_title = self._title.replace(" & ", "\n& ")
+        self.multi_cell(78, 8.2, display_title)
+        self.set_x(18)
+        self.set_font("ui", "", 11)
+        self.set_text_color(230, 238, 240)
+        self.multi_cell(92, 6, self._subtitle)
+        y = self.get_y() + 8
+        self.set_fill_color(*self.t["gold"])
+        self.rect(18, y, 24, 2.7, "F")
+        self.set_fill_color(*self.t["accent"])
+        self.rect(42, y, 24, 2.7, "F")
+        self.set_fill_color(*self.t["primary"])
+        self.rect(66, y, 24, 2.7, "F")
+
+        cover_image = self.t.get("cover_image")
+        if cover_image and Path(cover_image).is_file():
+            self.set_fill_color(255, 255, 255)
+            self.rect(124, 84, 62, 78, "F")
+            self.image(cover_image, 128, 90, 54)
+            self.set_fill_color(*self.t["gold"])
+            self.rect(137, 150, 36, 8, "F")
+            self.set_xy(139, 151.8)
+            self.set_font("ui", "B", 7.5)
+            self.set_text_color(70, 55, 10)
+            self.cell(32, 4, "YOU DECIDE", align="C")
+
+        panel_y = 192
+        self.set_fill_color(255, 248, 234)
+        self.rect(18, panel_y, 174, 54, "F")
+        self.set_draw_color(*self.t["accent_line"])
+        self.set_line_width(0.9)
+        self.line(18, panel_y + 54, 192, panel_y + 54)
+        self.set_xy(25, panel_y + 10)
+        self.set_font(self._font("heading"), "B", 21)
+        self.set_text_color(*self.t["dark"])
+        self.cell(0, 8, "Teacher's Guide")
+        self.set_xy(25, panel_y + 25)
+        self.set_font("ui", "", 10)
+        self.set_text_color(*self.t["text"])
+        self.multi_cell(150, 5.5, "Instructor speaking notes, discussion prompts, linked resources, and class-prep checklist.")
+
+        self.set_xy(18, 262)
+        self.set_font("ui", "", 8)
+        self.set_text_color(215, 225, 225)
+        self.multi_cell(106, 5, "(c) 2026 WV Adult Basic Education\nStrategic Planning in Occupational Knowledge for Employment and Success")
 
     # ── Table of contents ──
     def toc(self, chapters):
@@ -1435,6 +1636,38 @@ def _pdf_text(text):
     return "".join(ch for ch in text if ord(ch) <= 0xFFFF)
 
 
+RESOURCE_TITLE_OVERRIDES = {
+    "SPOKES_Module_Template_2026_Time_Management": "Time Management Lesson Plan",
+    "SPOKES_Time_Management_Self_Assessment": "Time Management Self-Assessment",
+    "Big_Rocks_of_Time_Worksheet": "Big Rocks of Time Worksheet",
+    "GET_YOUR_PRIORITIES_STRAIGHT_FOR_THE_DAY_1": "Get Your Priorities Straight Flow Chart",
+    "Daily_Planner_2": "Daily Planner",
+    "Weekly_Planner_Template_linked_To_Daily_Planner_1": "Weekly Planner",
+    "SPOKES_Time_Management_Pre_and_Post_Test": "Time Management Pre/Post Test",
+    "SPOKES_Time_Management_Rubric": "Time Management Rubric",
+    "Time_Management_Teachers_Guide": "Time Management Teacher's Guide",
+    "Teachers Guide": "Teacher's Guide",
+}
+
+
+def _resource_title(label="", href=""):
+    """Return a classroom-friendly resource title, never a file path."""
+    label = _pdf_text(" ".join((label or "").split()))
+    filename = Path((href or "").split("#", 1)[0]).stem
+    if filename in RESOURCE_TITLE_OVERRIDES:
+        return RESOURCE_TITLE_OVERRIDES[filename]
+    if label and "/" not in label and "\\" not in label and not label.lower().endswith(".pdf"):
+        return label
+    if filename:
+        return _pdf_text(filename.replace("_", " "))
+    return label or "Linked resource"
+
+
+def _is_teacher_guide_resource(label="", href=""):
+    text = f"{label} {href}".lower()
+    return "teacher's guide" in text or "teachers_guide" in text or "teachers guide" in text
+
+
 def _normalize_speaker_note_text(text):
     """Clean PDF-extracted speaker notes while preserving the author's wording."""
     text = _pdf_text(" ".join(text.split()))
@@ -1500,6 +1733,146 @@ def _pdf_note_overrides(lesson_dir, source_pdf, page_to_slide):
             continue
         notes[slide_no] = f"{notes[slide_no]}\n\n{text}" if slide_no in notes else text
     return notes
+
+
+LESSON_CONTEXTS = {
+    "accountability": {
+        "topic": "accountability",
+        "promise": "students will practice taking ownership at work, in training, and in personal goals",
+        "workplace": "a job, training program, or team situation",
+        "closing": "one accountable action they can take this week",
+    },
+    "interview": {
+        "topic": "interview skills",
+        "promise": "students will practice preparing, presenting themselves, answering questions, and following up",
+        "workplace": "a real interview or hiring conversation",
+        "closing": "one interview habit they will practice before the next opportunity",
+    },
+    "communication": {
+        "topic": "public communication",
+        "promise": "students will practice listening, choosing a communication style, and speaking up for themselves",
+        "workplace": "a customer, coworker, supervisor, or public-facing conversation",
+        "closing": "one communication habit they can use in the next difficult conversation",
+    },
+    "anger": {
+        "topic": "controlling anger",
+        "promise": "students will learn to recognize anger early and choose a healthier response",
+        "workplace": "a stressful home, workplace, interview, or public situation",
+        "closing": "one anger-management strategy they are willing to try",
+    },
+    "problem_solving": {
+        "topic": "problem-solving and decision-making",
+        "promise": "students will practice slowing down, thinking critically, comparing options, and choosing a next step",
+        "workplace": "a workplace, school, family, or team decision",
+        "closing": "one decision process they can use outside class",
+    },
+}
+
+
+def _clean_title_for_notes(title):
+    title = re.sub(r"\s+", " ", title).strip()
+    title = title.replace("—", "-")
+    title = re.sub(r"([a-z])([A-Z])", r"\1 \2", title)
+    return title
+
+
+def _lesson_opening_notes(ctx):
+    return (
+        f"Say: Welcome students and frame the lesson in plain language. Today is about {ctx['topic']}. "
+        f"The goal is practical: {ctx['promise']}.\n\n"
+        "Do: Point out the lesson flow and remind students that participation matters more than perfect answers.\n\n"
+        f"Ask: Where could {ctx['topic']} make life easier for you right now?"
+    )
+
+
+def _section_notes(title, ctx):
+    return (
+        f"Say: We are moving into {title}. This section helps connect the lesson to {ctx['workplace']}.\n\n"
+        "Do: Keep the transition brief. Tell students what they should listen or practice for in the next few slides.\n\n"
+        "Ask: What do you expect to see in this section?"
+    )
+
+
+def _video_notes(title, ctx):
+    video_title = title.replace("Watch:", "").strip()
+    return (
+        f"Say: As you watch {video_title}, listen for one idea you could use in real life.\n\n"
+        "Do: Play the video. Pause afterward before moving on so students have time to react.\n\n"
+        f"Ask: What stood out? How could that idea show up in {ctx['workplace']}?"
+    )
+
+
+def _activity_notes(title, ctx):
+    return (
+        f"Say: This is practice time. The point of {title} is not to be perfect; it is to try the skill and learn from it.\n\n"
+        "Do: Give clear directions, set a time limit, circulate while students work, and debrief before moving on.\n\n"
+        "Ask: What felt easy? What felt awkward? What would you do differently next time?"
+    )
+
+
+def _reflection_notes(title, ctx):
+    return (
+        f"Say: Use {title} to be honest about where you are right now. This is information for growth, not a judgment.\n\n"
+        "Do: Give students quiet time first. Then invite volunteers to share only what they are comfortable sharing.\n\n"
+        "Ask: What is one strength you noticed? What is one area where you want more practice?"
+    )
+
+
+def _checkpoint_notes(title, ctx):
+    return (
+        "Say: This is a quick check for understanding. Answer first, then we will talk through the reasoning together.\n\n"
+        "Do: Let students commit to an answer before revealing or discussing it.\n\n"
+        "Ask: What clue helped you choose your answer?"
+    )
+
+
+def _closing_notes(ctx):
+    return (
+        "Say: Bring the lesson back to action. Students do not need to change everything today; they need one next step.\n\n"
+        f"Do: Ask each student to name {ctx['closing']}.\n\n"
+        "Ask: What is one thing you will do differently because of this lesson?"
+    )
+
+
+def _teacher_friendly_notes(lesson_key, index, title, summary, has_video=False, is_section=False):
+    ctx = LESSON_CONTEXTS[lesson_key]
+    title = _clean_title_for_notes(title)
+    lower = title.lower()
+    if index == 1:
+        return _lesson_opening_notes(ctx)
+    if is_section:
+        return _section_notes(title, ctx)
+    if has_video or lower.startswith("watch:"):
+        return _video_notes(title, ctx)
+    if any(word in lower for word in ("warm-up", "activity", "practice", "role-play", "round robin", "scenario", "mock interview", "choice wheel", "jeopardy", "survival")):
+        return _activity_notes(title, ctx)
+    if any(word in lower for word in ("reflection", "assessment", "exit ticket", "debrief", "where do you stand", "listening assessment")):
+        return _reflection_notes(title, ctx)
+    if any(word in lower for word in ("checkpoint", "check your knowledge", "quiz", "review")):
+        return _checkpoint_notes(title, ctx)
+    if any(word in lower for word in ("congratulations", "final thoughts", "own it", "go get that job", "communicate with confidence", "think. decide. act.")):
+        return _closing_notes(ctx)
+
+    return (
+        f"Say: Introduce {title} in everyday language. Connect it to {ctx['workplace']} so students know why it matters.\n\n"
+        "Do: Use the slide as a guide, but do not read it word for word. Add a short example students can recognize.\n\n"
+        "Ask: Where have you seen this happen before? What would a strong response look like?"
+    )
+
+
+def _html_lesson_note_overrides(lesson_key, lesson_dir):
+    slides = _lesson_slides(lesson_dir)
+    return {
+        index: _teacher_friendly_notes(
+            lesson_key,
+            index,
+            _slide_title(slide),
+            _slide_summary(slide),
+            slide["has_video"],
+            "slide-section" in slide["classes"].split(),
+        )
+        for index, slide in enumerate(slides, 1)
+    }
 
 
 def _speaker_note_overrides(lesson_dir):
@@ -1622,27 +1995,191 @@ def _interview_note_overrides(lesson_dir):
 
 
 def _time_management_note_overrides(lesson_dir):
-    return _pdf_note_overrides(lesson_dir, "Source Material/Presentation Notes.pdf", {
-        1: 1,
-        2: 2,
-        3: 3,
-        4: 8,
-        5: 9,
-        6: 11,
-        7: 13,
-        8: 14,
-        9: 15,
-        10: 17,
-        11: 18,
-        12: 20,
-        13: 21,
-        14: 23,
-        15: 25,
-        16: 27,
-        17: 28,
-        18: 34,
-        19: 36,
-    })
+    return {
+        1: (
+            "Say: Welcome to Time Management. Today is not about packing more work into an already full day. It is "
+            "about deciding what deserves your time and building habits that make work, school, and home easier to manage.\n\n"
+            "Do: Point out the lesson resources and tell students they will practice with real tools, not just talk about them."
+        ),
+        2: (
+            "Say: Before we talk about strategies, let's get honest about what is working and what is not. This self-reflection "
+            "is for you. It is not graded.\n\n"
+            "Do: Give students time to complete the self-assessment. If using the online version, remind them they do not need "
+            "to create an account.\n\n"
+            "Ask: What is one time management habit you already do well? What is one habit you want to improve?"
+        ),
+        3: (
+            "Say: This lesson has one practical goal: help you use your time with more purpose. We will look at priorities, "
+            "planning tools, common distractions, and ways to follow through.\n\n"
+            "Ask: When you hear 'time management,' what comes to mind first: calendars, stress, deadlines, family, work, or something else?"
+        ),
+        4: (
+            "Say: Everyone gets 24 hours, but not everyone has the same responsibilities. Some people are balancing work, kids, "
+            "transportation, health, school, and money pressure all at once.\n\n"
+            "Ask: What makes time management harder in real life than it looks on paper?"
+        ),
+        5: (
+            "Say: The point is not to stay busy. Busy can still mean scattered. Productive means your time is moving you toward "
+            "something that matters.\n\n"
+            "Ask: Think of a day when you were busy all day but did not feel like you accomplished much. What happened?"
+        ),
+        6: (
+            "Say: By the end of class, students should be able to explain why time management matters, name common barriers, "
+            "sort tasks by urgency and importance, and use planning tools.\n\n"
+            "Do: Keep this slide brief. It is a roadmap, not a lecture."
+        ),
+        7: (
+            "Say: We are starting with priorities because a planner does not help much if we do not know what matters most.\n\n"
+            "Ask: What usually gets your attention first: the most important thing, the loudest thing, or the easiest thing?"
+        ),
+        8: (
+            "Say: Priorities are the things that deserve attention first because they matter most. They help us decide what gets "
+            "done now, what waits, and what may not need our time at all.\n\n"
+            "Ask: What are your top three priorities right now? They can be work, family, health, school, finances, or personal goals."
+        ),
+        9: (
+            "Say: As you watch, pay attention to what goes into the jar first. The jar is your day. The big rocks are your most "
+            "important responsibilities and goals.\n\n"
+            "Do: Play the video. Pause afterward before moving on.\n\n"
+            "Ask: What are examples of 'sand' that fill up a day before the important things get attention?"
+        ),
+        10: (
+            "Say: If we let small tasks go first, the important things get squeezed out. Big rocks need space on purpose.\n\n"
+            "Do: Use the Big Rocks Worksheet. Have students name two or three big rocks and one thing that often crowds them out.\n\n"
+            "Ask: What is one big rock you need to protect this week?"
+        ),
+        11: (
+            "Say: Once priorities are clear, the next question is simple: how do we make time for them? The next section gives "
+            "you tools you can use right away.\n\n"
+            "Do: Transition quickly into the tools section."
+        ),
+        12: (
+            "Say: Tools do not manage time for us. They help us make better choices when life gets busy.\n\n"
+            "Ask: What tool do you already use to remember tasks: phone reminders, paper planner, sticky notes, calendar, or another system?"
+        ),
+        13: (
+            "Say: A vague goal is easy to ignore. A SMART goal tells you exactly what you are doing, how you will measure it, and "
+            "when it should happen.\n\n"
+            "Do: Give this quick example: 'I need a job' becomes 'I will submit three job applications by Friday at 3 p.m.'\n\n"
+            "Ask: Why is the second goal easier to act on?"
+        ),
+        14: (
+            "Say: A flow chart helps when you have too many tasks competing for attention. It slows the decision down just enough "
+            "to ask, 'What should I do first?'\n\n"
+            "Do: Point students to the Priorities Flow Chart. Use one real example from the class and walk it through the chart."
+        ),
+        15: (
+            "Say: The Eisenhower Matrix sorts tasks using two questions: Is it urgent? Is it important? Urgent means time-sensitive. "
+            "Important means it connects to responsibilities, goals, or consequences.\n\n"
+            "Ask: Which quadrant do people often avoid even though it matters most? Guide students toward Schedule."
+        ),
+        16: (
+            "Say: Now we will practice. The scenarios are separate from the answers on purpose. Pick one scenario, decide which "
+            "classification fits, and explain your reasoning.\n\n"
+            "Do: Let the class vote before clicking. After each match, ask students to name the clue that helped them decide.\n\n"
+            "Ask: Was the clue urgency, importance, ability to delegate, or lack of value?"
+        ),
+        17: (
+            "Say: Planners work because they make time visible. If a priority is only in your head, it is easy for the day to push it aside.\n\n"
+            "Do: Have students fill in tomorrow's planner or choose one day this week to plan.\n\n"
+            "Ask: Where will your most important task fit?"
+        ),
+        18: (
+            "Say: Delegation is not dumping work on someone else. In a family or team, it means sharing responsibility so one person "
+            "does not carry everything.\n\n"
+            "Ask: What is one task at home that someone else could learn to do with clear directions?"
+        ),
+        19: (
+            "Say: Even with good priorities and tools, challenges will show up. This section names the common ones so students can "
+            "recognize them early.\n\n"
+            "Ask: Which challenge do you expect to see on the next few slides?"
+        ),
+        20: (
+            "Say: These are common time management traps. As we open each one, think about whether it shows up at work, school, "
+            "home, or all three.\n\n"
+            "Do: Click through the cards. After each card, ask for one real-life example."
+        ),
+        21: (
+            "Say: Technology is useful, but it is also designed to interrupt us. Notifications, videos, and apps can take time "
+            "before we notice it is gone.\n\n"
+            "Ask: What phone setting or app causes the most interruptions for you?"
+        ),
+        22: (
+            "Say: Watch for one idea you could actually use this week. It does not need to be dramatic. A small change counts.\n\n"
+            "Do: Play the video, then pause for reactions.\n\n"
+            "Ask: What is one phone habit you could change during work, school, or family time?"
+        ),
+        23: (
+            "Say: Procrastination is not always laziness. Sometimes it is fear, confusion, boredom, or not knowing where to start.\n\n"
+            "Ask: What is one task people often put off because it feels too big or uncomfortable?"
+        ),
+        24: (
+            "Say: As you watch, listen for one way to make a delayed task smaller and easier to start.\n\n"
+            "Do: Play the video.\n\n"
+            "Ask: What is the first tiny step someone could take on a task they have been avoiding?"
+        ),
+        25: (
+            "Say: Multitasking feels productive, but switching between tasks costs focus. Many mistakes happen during the switch, "
+            "not because people do not care.\n\n"
+            "Ask: Where could multitasking cause problems on the job?"
+        ),
+        26: (
+            "Say: Watch for what happens to the brain when it keeps switching tasks.\n\n"
+            "Do: Play the video.\n\n"
+            "Ask: What is one task that deserves your full attention instead of being mixed with other things?"
+        ),
+        27: (
+            "Say: Over-commitment happens when we say yes too quickly. A boundary is not rude. It is a way to protect time for "
+            "what already matters.\n\n"
+            "Do: Practice this sentence together: 'I cannot commit to that right now, but thank you for asking.'"
+        ),
+        28: (
+            "Say: Structure reduces decision fatigue. A routine does not have to be perfect. It just gives your day a starting point.\n\n"
+            "Ask: What part of your day would benefit most from a routine: morning, meals, work time, homework, bedtime, or Sunday planning?"
+        ),
+        29: (
+            "Say: As you watch, listen for one habit that is realistic for your life right now.\n\n"
+            "Do: Play the video.\n\n"
+            "Ask: Which habit would make the biggest difference if you practiced it for two weeks?"
+        ),
+        30: (
+            "Say: Unexpected free time is easy to lose because it feels like extra time. This activity asks you to decide before "
+            "the time disappears.\n\n"
+            "Do: Open each scenario and ask students what they would do first.\n\n"
+            "Ask: How can found time support your big rocks?"
+        ),
+        31: (
+            "Say: We are moving into review. This is a chance to check understanding, not to embarrass anyone.\n\n"
+            "Do: Encourage students to answer before discussing as a group."
+        ),
+        32: (
+            "Say: Preparing for next week's interview is important, but it is not an emergency yet. That makes it a Schedule task.\n\n"
+            "Ask: What happens if the student waits until the night before? What changes about the quadrant?"
+        ),
+        33: (
+            "Say: A score is only useful if it helps you choose a next step. Focus on one change, not ten.\n\n"
+            "Ask: What did your score reveal? What is one time habit you want to adjust this week?"
+        ),
+        34: (
+            "Say: The exit ticket helps students turn the lesson into a next action. Keep answers short and honest.\n\n"
+            "Do: Give students a few quiet minutes to write.\n\n"
+            "Ask: Who is willing to share one tool or habit they plan to try?"
+        ),
+        35: (
+            "Say: Application is where the lesson becomes useful. Students should leave with one action they can use outside this room.\n\n"
+            "Do: Set up the final sharing activity."
+        ),
+        36: (
+            "Say: In this activity, everyone contributes. Keep responses short, clear, and practical.\n\n"
+            "Do: Use the round-robin process. If the class is large, split into smaller groups.\n\n"
+            "Ask: What is one idea from someone else that you may use?"
+        ),
+        37: (
+            "Say: You will not control every demand on your time, but you can make more intentional choices. Start with one priority, "
+            "one tool, and one habit.\n\n"
+            "Ask: In one word, how do you want to feel about your time after this week?"
+        ),
+    }
 
 
 def _accountability_note_overrides(lesson_dir):
@@ -1661,6 +2198,28 @@ def _accountability_note_overrides(lesson_dir):
         12: 32,
         13: 34,
     })
+
+
+# Speaking-note overrides for the current HTML-driven guides. These replace the
+# older source-PDF inventory notes while preserving the guide layout.
+def _speaker_note_overrides(lesson_dir):
+    return _html_lesson_note_overrides("anger", lesson_dir)
+
+
+def _communicating_note_overrides(lesson_dir):
+    return _html_lesson_note_overrides("communication", lesson_dir)
+
+
+def _problem_solving_note_overrides(lesson_dir):
+    return _html_lesson_note_overrides("problem_solving", lesson_dir)
+
+
+def _interview_note_overrides(lesson_dir):
+    return _html_lesson_note_overrides("interview", lesson_dir)
+
+
+def _accountability_note_overrides(lesson_dir):
+    return _html_lesson_note_overrides("accountability", lesson_dir)
 
 
 def _slide_title(slide):
@@ -1697,12 +2256,12 @@ def _generic_notes(title, summary, has_video=False, is_section=False):
 def _generic_discussion(title):
     lower = title.lower()
     if "video" in lower or "watch" in lower:
-        return "What stood out from the video? Where did you see an example of effective or ineffective workplace behavior?"
+        return "Ask: What stood out from the video? What is one idea you could use outside this classroom?"
     if "reflection" in lower or "assess" in lower:
-        return "What is one answer you feel confident about, and what is one area where you want more practice?"
+        return "Ask: What is one answer you feel confident about? What is one area where you want more practice?"
     if "activity" in lower or "practice" in lower:
-        return "What made this activity easy or difficult? How would this skill show up at work?"
-    return f"How does {title.lower()} connect to a situation you might face at work, school, or in daily life?"
+        return "Ask: What made this activity easy or difficult? How would this skill show up at work?"
+    return "Ask: Where could this skill show up at work, school, home, or in a public situation?"
 
 
 def _chapter_toc(chapters, slides):
@@ -1727,11 +2286,13 @@ def _checklist_items(lesson_dir):
             if not path.is_file() or path.suffix.lower() != ".pdf":
                 continue
             stem = path.stem.lower()
+            if _is_teacher_guide_resource(path.stem, path.name):
+                continue
             if folder != "Handouts" and not any(keyword in stem for keyword in ("guide", "lesson_plan", "lesson plan")):
                 continue
             if any(keyword in stem for keyword in ("speaker", "speaking", "presenter", "instructor_notes", "outline", "talking points")):
                 continue
-            items.append((_pdf_text(path.stem.replace("_", " ")), folder))
+            items.append((_resource_title(href=path.name), folder))
     return items or [("Lesson presentation", "index.html"), ("Class discussion prompts", "Teacher's Guide")]
 
 
@@ -1760,9 +2321,13 @@ def build_html_lesson_guide(lesson_dir, title, subtitle, chapters, theme, output
         pdf.speaking_notes(notes)
         if slide["has_video"]:
             pdf.video(title_text.replace("Watch: ", ""))
-        handouts = [f"{label} ({href})" for label, href in slide["links"] if "Handouts/" in href or "Teacher-Resources/" in href]
+        handouts = [
+            _resource_title(label, href)
+            for label, href in slide["links"]
+            if ("Handouts/" in href or "Teacher-Resources/" in href) and not _is_teacher_guide_resource(label, href)
+        ]
         if handouts:
-            pdf.materials("Linked resource(s): " + "; ".join(handouts[:4]))
+            pdf.materials("; ".join(handouts[:4]))
         if index == 1 or index % 3 == 0 or slide["has_video"] or "activity" in title_text.lower():
             pdf.discussion(_generic_discussion(title_text))
 
