@@ -1189,13 +1189,17 @@
             updateMetrics(allLessons, data);
             renderStatusFilters();
             updateSearchPlaceholder();
-            document.getElementById('buildPill').textContent = data.version ? `Registry ${data.version}` : 'Curriculum Hub';
+            const registryLabel = data.version ? `Registry ${data.version}` : 'Curriculum Hub';
+            document.getElementById('buildPill').textContent = data.lastUpdated
+                ? `${registryLabel} · ${data.lastUpdated}`
+                : registryLabel;
             renderDashboard();
         }
 
         document.addEventListener('DOMContentLoaded', function () {
             initControls();
-            fetch('lesson-registry.json')
+            const registryUrl = `lesson-registry.json?v=${Date.now()}`;
+            fetch(registryUrl, { cache: 'no-store' })
                 .then(function (res) {
                     if (!res.ok) throw new Error('HTTP ' + res.status);
                     return res.json();
@@ -1204,7 +1208,12 @@
                     initDashboard(data);
                 })
                 .catch(function () {
-                    initDashboard({ lessons: FALLBACK_LESSONS, lessonsPlanned: 18 });
+                    initDashboard({
+                        version: '1.1.0',
+                        lastUpdated: '2026-05-01',
+                        lessons: FALLBACK_LESSONS,
+                        lessonsPlanned: 18
+                    });
                 });
         });
     </script>
