@@ -364,14 +364,17 @@
     }
 
     .game-thumbnail-link {
-      display: block;
-      width: min(100%, 880px);
-      margin-top: 1.25rem;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      width: min(100%, 720px);
+      margin-top: 0.25rem;
       border-radius: 16px;
-      overflow: hidden;
+      overflow: visible;
       border: 2px solid rgba(211, 178, 87, 0.55);
       box-shadow: 0 16px 38px rgba(0, 19, 63, 0.35);
       transition: transform 0.2s ease, box-shadow 0.2s ease;
+      background: rgba(0, 19, 63, 0.28);
     }
 
     .game-thumbnail-link:hover {
@@ -387,8 +390,38 @@
     .game-thumbnail-link img {
       display: block;
       width: 100%;
-      aspect-ratio: 16 / 9;
-      object-fit: cover;
+      max-width: 100%;
+      height: auto;
+      object-fit: contain;
+      border-radius: 14px;
+    }
+
+    .jeopardy-link-slide.active {
+      justify-content: flex-start;
+      align-items: center;
+      gap: 1rem;
+      padding-top: clamp(2rem, 4vh, 3.25rem);
+    }
+
+    .jeopardy-link-slide h2 {
+      align-self: flex-start;
+      margin-bottom: 0.5rem;
+    }
+
+    .jeopardy-link-slide .activity-box,
+    .jeopardy-link-slide .download-resource {
+      width: min(100%, 720px);
+      align-self: center;
+      margin-top: 0;
+    }
+
+    .jeopardy-link-slide .activity-box {
+      padding: 1rem 1.35rem;
+    }
+
+    .jeopardy-link-slide .activity-box p {
+      font-size: 1.25rem;
+      line-height: 1.35;
     }
 
     /* Main Content */
@@ -3355,7 +3388,7 @@
       </section>
 
       <!-- Slide 26: Jeopardy Review Game -->
-      <section class="slide" data-chapter="6">
+      <section class="slide jeopardy-link-slide" data-chapter="6">
         <h2>Jeopardy Review Game</h2>
         <a class="game-thumbnail-link" href="https://jeopardylabs.com/play/anger-management1" target="_blank" rel="noopener noreferrer" aria-label="Open the SPOKES Jeopardy review game in a new tab">
           <img src="images/jeopardy-spokes-thumbnail.png" alt="SPOKES Jeopardy Review Game thumbnail for the Controlling Anger lesson" loading="lazy" />
