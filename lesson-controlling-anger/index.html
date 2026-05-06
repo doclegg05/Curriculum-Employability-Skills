@@ -936,7 +936,6 @@
       transform-style: preserve-3d;
     }
 
-    .danger-card:hover .danger-card-inner,
     .danger-card.flipped .danger-card-inner {
       transform: rotateY(180deg);
     }
@@ -3010,7 +3009,7 @@
       <section class="slide" data-chapter="3">
         <h2>Anger at Work &amp; in Interviews</h2>
         <div class="dangers-grid">
-          <div class="danger-card" tabindex="0" aria-expanded="false">
+          <div class="danger-card" role="button" tabindex="0" aria-expanded="false">
             <div class="danger-card-inner">
               <div class="danger-card-front">
                 <div class="danger-icon"><img src="images/generated-context/workplace-conflict.png" alt="" aria-hidden="true" /></div>
@@ -3022,7 +3021,7 @@
               </div>
             </div>
           </div>
-          <div class="danger-card" tabindex="0" aria-expanded="false">
+          <div class="danger-card" role="button" tabindex="0" aria-expanded="false">
             <div class="danger-card-inner">
               <div class="danger-card-front">
                 <div class="danger-icon"><img src="images/generated-context/interview-response.png" alt="" aria-hidden="true" /></div>
@@ -3034,7 +3033,7 @@
               </div>
             </div>
           </div>
-          <div class="danger-card" tabindex="0" aria-expanded="false">
+          <div class="danger-card" role="button" tabindex="0" aria-expanded="false">
             <div class="danger-card-inner">
               <div class="danger-card-front">
                 <div class="danger-icon"><img src="images/generated-context/customer-interaction.png" alt="" aria-hidden="true" /></div>
@@ -3046,7 +3045,7 @@
               </div>
             </div>
           </div>
-          <div class="danger-card" tabindex="0" aria-expanded="false">
+          <div class="danger-card" role="button" tabindex="0" aria-expanded="false">
             <div class="danger-card-inner">
               <div class="danger-card-front">
                 <div class="danger-icon"><img src="images/generated-context/team-dynamics.png" alt="" aria-hidden="true" /></div>
@@ -3701,10 +3700,14 @@
     function showSlide(index) {
       if (index < 0) index = 0;
       if (index >= slides.length) index = slides.length - 1;
+      var departingSlide = slides[currentIndex];
 
       var doTransition = function() {
         // NAV-02: Pause all playing videos before transitioning
         document.querySelectorAll('.slide.active video').forEach(function(v) { v.pause(); });
+        if (departingSlide && departingSlide !== slides[index]) {
+          resetFlipCards(departingSlide);
+        }
         // Reset captions when leaving a slide
         document.querySelectorAll('.cc-toggle.cc-active').forEach(function(btn) {
           btn.classList.remove('cc-active');
@@ -3725,6 +3728,7 @@
               slide._contentObserver.disconnect();
               delete slide._contentObserver;
             }
+            resetFlipCards(slide);
             slide.querySelectorAll(".reveal-item.visible").forEach(function(el) { el.classList.remove("visible"); });
           }
           slide.classList.toggle("active", i === index);
@@ -4106,16 +4110,39 @@
     });
 
     // === Danger/Flip Card Accessibility ===
+    function setFlipCard(card, isFlipped) {
+      card.classList.toggle('flipped', isFlipped);
+      card.setAttribute('aria-expanded', String(isFlipped));
+    }
+
+    function revealFlipCard(card) {
+      if (card.dataset.manualToggle === 'true') return;
+      setFlipCard(card, true);
+    }
+
+    function toggleFlipCard(card) {
+      card.dataset.manualToggle = 'true';
+      setFlipCard(card, !card.classList.contains('flipped'));
+    }
+
+    function resetFlipCards(scope) {
+      (scope || document).querySelectorAll('.danger-card').forEach(function(card) {
+        delete card.dataset.manualToggle;
+        setFlipCard(card, false);
+      });
+    }
+
     document.querySelectorAll('.danger-card').forEach(function(card) {
+      card.addEventListener('mouseenter', function() {
+        revealFlipCard(card);
+      });
       card.addEventListener('click', function() {
-        var isFlipped = card.classList.toggle('flipped');
-        card.setAttribute('aria-expanded', isFlipped ? 'true' : 'false');
+        toggleFlipCard(card);
       });
       card.addEventListener('keydown', function(e) {
         if (e.key === 'Enter' || e.key === ' ') {
           e.preventDefault();
-          var isFlipped = card.classList.toggle('flipped');
-          card.setAttribute('aria-expanded', isFlipped ? 'true' : 'false');
+          toggleFlipCard(card);
         }
       });
     });
