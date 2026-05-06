@@ -3674,15 +3674,18 @@
   }
 
   function flipDangerCard(card) {
+    if (card.dataset.manualToggle === 'true') return;
     setDangerCardFlipped(card, true);
   }
 
   function toggleDangerCard(card) {
+    card.dataset.manualToggle = 'true';
     setDangerCardFlipped(card, !card.classList.contains('flipped'));
   }
 
   function resetDangerCards(scope = document) {
     scope.querySelectorAll('.danger-card').forEach(card => {
+      delete card.dataset.manualToggle;
       setDangerCardFlipped(card, false);
     });
   }

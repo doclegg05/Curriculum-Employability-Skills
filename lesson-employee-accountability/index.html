@@ -4368,15 +4368,18 @@
     }
 
     function flipCard(card) {
+      if (card.dataset.manualToggle === 'true') return;
       setFlipCard(card, true);
     }
 
     function toggleFlipCard(card) {
+      card.dataset.manualToggle = 'true';
       setFlipCard(card, !card.classList.contains('is-flipped'));
     }
 
     function resetFlipCards(scope = document) {
       scope.querySelectorAll('.danger-card[role="button"]').forEach(card => {
+        delete card.dataset.manualToggle;
         setFlipCard(card, false);
       });
     }
