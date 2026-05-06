@@ -363,6 +363,34 @@
       padding: 0.6rem 1.2rem;
     }
 
+    .game-thumbnail-link {
+      display: block;
+      width: min(100%, 880px);
+      margin-top: 1.25rem;
+      border-radius: 16px;
+      overflow: hidden;
+      border: 2px solid rgba(211, 178, 87, 0.55);
+      box-shadow: 0 16px 38px rgba(0, 19, 63, 0.35);
+      transition: transform 0.2s ease, box-shadow 0.2s ease;
+    }
+
+    .game-thumbnail-link:hover {
+      transform: translateY(-3px);
+      box-shadow: 0 20px 46px rgba(0, 19, 63, 0.45);
+    }
+
+    .game-thumbnail-link:focus-visible {
+      outline: 3px solid var(--gold);
+      outline-offset: 4px;
+    }
+
+    .game-thumbnail-link img {
+      display: block;
+      width: 100%;
+      aspect-ratio: 16 / 9;
+      object-fit: cover;
+    }
+
     /* Main Content */
     .main {
       flex: 1;
@@ -2367,59 +2395,15 @@
     .spin-btn:disabled { opacity: 0.6; cursor: not-allowed; transform: none; box-shadow: none; }
     .spin-result { font-size: 1.3rem; color: var(--dark); text-align: center; min-height: 2rem; max-width: 500px; font-weight: 500; }
 
-    /* === Jeopardy Game === */
-    .jeopardy-board { display: grid; grid-template-columns: repeat(5, 1fr); gap: 0.5rem; width: 100%; flex: 1; }
-    .jeopardy-cat {
-      background: var(--dark); color: var(--gold);
-      padding: 0.6rem 0.3rem; border-radius: 8px; text-align: center;
-      font-family: var(--font-heading); font-size: 0.95rem; font-weight: 600;
-    }
-    .jeopardy-cell {
-      background: var(--primary); color: var(--gold);
-      padding: 0.75rem; border-radius: 8px; text-align: center;
-      font-family: var(--font-heading); font-size: 1.5rem; font-weight: 700;
-      cursor: pointer; transition: all 0.2s ease;
-      display: flex; align-items: center; justify-content: center;
-    }
-    .jeopardy-cell:hover:not(.answered) { background: var(--accent); transform: scale(1.05); }
-    .jeopardy-cell.answered { background: var(--muted); color: var(--offwhite); cursor: default; }
-
-    /* Jeopardy Modal */
-    .jeopardy-modal {
-      display: none; position: fixed;
-      top: 0; left: 0; right: 0; bottom: 0;
-      background: rgba(0, 19, 63, 0.85);
-      z-index: 1000; align-items: center; justify-content: center;
-    }
-    .jeopardy-modal.open { display: flex; }
-    .jeopardy-modal-content {
-      background: var(--light); border-radius: 16px;
-      padding: 2.5rem 3rem; max-width: 600px; width: 90%;
-      text-align: center; box-shadow: 0 16px 48px rgba(0,0,0,0.3);
-    }
-    .jeopardy-modal-content .jq-category { font-size: 0.85rem; text-transform: uppercase; letter-spacing: 2px; color: var(--mauve); margin-bottom: 0.5rem; }
-    .jeopardy-modal-content .jq-question { font-family: var(--font-heading); font-size: 1.6rem; color: var(--dark); margin-bottom: 1.5rem; line-height: 1.4; }
-    .jeopardy-modal-content .jq-answer { display: none; font-size: 1.3rem; color: var(--accent); font-weight: 600; margin-bottom: 1.5rem; padding: 1rem; background: rgba(55, 181, 80, 0.08); border-radius: 8px; }
-    .jq-show-answer-btn { padding: 0.6rem 1.5rem; background: var(--gold); color: var(--dark); border: none; border-radius: 8px; font-family: var(--font-body); font-size: 1rem; font-weight: 600; cursor: pointer; margin-right: 0.5rem; transition: all 0.2s ease; }
-    .jq-show-answer-btn:hover { filter: brightness(0.9); }
-    .jq-close-btn { padding: 0.6rem 1.5rem; background: var(--muted); color: var(--gray); border: none; border-radius: 8px; font-family: var(--font-body); font-size: 1rem; font-weight: 600; cursor: pointer; transition: all 0.2s ease; }
-    .jq-close-btn:hover { background: var(--offwhite); }
-
     /* === Mobile overrides for custom components === */
     @media (max-width: 768px) {
       .tabs-nav { flex-wrap: wrap; }
       .tab-btn { font-size: 0.9rem; padding: 0.5rem 1rem; }
-      .jeopardy-board { gap: 0.25rem; }
-      .jeopardy-cat { font-size: 0.7rem; padding: 0.4rem 0.2rem; }
-      .jeopardy-cell { font-size: 1rem; padding: 0.5rem; }
       .wheel-wrapper, .wheel-canvas { width: 260px; height: 260px; }
       .spinner-container { gap: 1rem; }
     }
 
     @media (max-width: 480px) {
-      .jeopardy-board { grid-template-columns: repeat(5, 1fr); gap: 0.15rem; }
-      .jeopardy-cat { font-size: 0.55rem; }
-      .jeopardy-cell { font-size: 0.85rem; padding: 0.3rem; }
       .wheel-wrapper, .wheel-canvas { width: 200px; height: 200px; }
     }
 
@@ -3373,30 +3357,18 @@
       <!-- Slide 26: Jeopardy Review Game -->
       <section class="slide" data-chapter="6">
         <h2>Jeopardy Review Game</h2>
-        <p style="font-size:1.1rem; color:rgba(255,255,255,0.7); margin-top:-1.5rem; margin-bottom:1rem;">Click a point value to reveal the question. Click &ldquo;Show Answer&rdquo; when ready.</p>
-        <div class="jeopardy-board" id="jeopardyBoard">
-          <div class="jeopardy-cat">Anger Basics</div>
-          <div class="jeopardy-cat">The Iceberg</div>
-          <div class="jeopardy-cat">Fair Fighting</div>
-          <div class="jeopardy-cat">Coping Skills</div>
-          <div class="jeopardy-cat">At Work</div>
+        <a class="game-thumbnail-link" href="https://jeopardylabs.com/play/anger-management1" target="_blank" rel="noopener noreferrer" aria-label="Open the SPOKES Jeopardy review game in a new tab">
+          <img src="images/jeopardy-spokes-thumbnail.png" alt="SPOKES Jeopardy Review Game thumbnail for the Controlling Anger lesson" loading="lazy" />
+        </a>
+        <div class="activity-box">
+          <span class="activity-label">REVIEW GAME</span>
+          <p>Open the Jeopardy review game in a new tab and use it to review the key ideas from the Controlling Anger lesson.</p>
         </div>
         <div class="download-resource">
-          <span class="download-prompt">Backup Resource Available</span>
-          <a href="https://jeopardylabs.com/play/anger-management1" target="_blank" rel="noopener noreferrer" class="download-btn">JeopardyLabs Version</a>
+          <span class="download-prompt">External Game Link</span>
+          <a href="https://jeopardylabs.com/play/anger-management1" target="_blank" rel="noopener noreferrer" class="download-btn">Open Jeopardy Game</a>
         </div>
       </section>
-
-      <!-- Jeopardy Modal (outside slide flow but inside main) -->
-      <div class="jeopardy-modal" id="jeopardyModal" style="position:fixed; top:0; left:0; right:0; bottom:0; z-index:1000;">
-        <div class="jeopardy-modal-content">
-          <div class="jq-category" id="jqCategory"></div>
-          <div class="jq-question" id="jqQuestion"></div>
-          <div class="jq-answer" id="jqAnswer"></div>
-          <button class="jq-show-answer-btn" id="jqShowBtn" onclick="showJeopardyAnswer()">Show Answer</button>
-          <button class="jq-close-btn" onclick="closeJeopardy()">Close</button>
-        </div>
-      </div>
 
       <!-- ======================== -->
       <!-- CH 7 — APPLICATION      -->
@@ -4030,85 +4002,6 @@
 
     setTimeout(drawWheel, 100);
 
-    // === Jeopardy Game ===
-    var jeopardyData = {
-      categories: ["Anger Basics", "The Iceberg", "Fair Fighting", "Coping Skills", "At Work"],
-      questions: [
-        [
-          { q: "What is anger?", a: "A normal, natural emotion ranging from mild irritation to intense rage", pts: 100 },
-          { q: "Name one way healthy anger differs from unhealthy anger.", a: "Healthy anger is expressed calmly and constructively; unhealthy anger is explosive or suppressed", pts: 200 },
-          { q: "What are common triggers for anger?", a: "Unfairness, disrespect, feeling overlooked, unmet expectations, physical discomfort", pts: 300 },
-          { q: "True or False: Anger is always a negative emotion.", a: "False. Anger can motivate positive change, protect boundaries, and signal something needs attention.", pts: 400 }
-        ],
-        [
-          { q: "What does the anger iceberg model teach us?", a: "Anger is often just the visible tip; deeper emotions like fear, hurt, and shame hide beneath", pts: 100 },
-          { q: "Name three emotions that might hide beneath anger.", a: "Fear, hurt, frustration, shame, grief, embarrassment, loneliness (any three)", pts: 200 },
-          { q: "Why is it important to identify the emotions beneath anger?", a: "It helps you address the real issue instead of just reacting to the surface emotion", pts: 300 },
-          { q: "Someone snaps at a coworker after being passed over for a promotion. What might be beneath the anger?", a: "Hurt from feeling undervalued, fear of career stagnation, shame about not being chosen", pts: 400 }
-        ],
-        [
-          { q: "What is the first rule of fair fighting?", a: "No name-calling \u2014 attack the problem, not the person", pts: 100 },
-          { q: "What kind of statements should you use during a conflict?", a: "'I' statements, such as 'I felt frustrated when...'", pts: 200 },
-          { q: "What should you do if you feel too angry to have a productive conversation?", a: "Take a timeout \u2014 walk away, cool down, then come back to discuss", pts: 300 },
-          { q: "How should a fair fight end?", a: "With an agreed-upon plan or next steps \u2014 not with a winner and loser", pts: 400 }
-        ],
-        [
-          { q: "Name one physical technique for managing anger.", a: "Deep breathing, progressive muscle relaxation, or physical exercise", pts: 100 },
-          { q: "What is cognitive reframing?", a: "Challenging angry thoughts by considering alternative explanations for the situation", pts: 200 },
-          { q: "Describe the 5-4-3-2-1 grounding technique.", a: "Name 5 things you see, 4 you can touch, 3 you hear, 2 you smell, 1 you taste", pts: 300 },
-          { q: "Name the four categories of anger management techniques covered in this lesson.", a: "Physical, Mental, Social, and Mindfulness", pts: 400 }
-        ],
-        [
-          { q: "Why is anger management especially important in the workplace?", a: "Uncontrolled anger can lead to write-ups, lost promotions, damaged relationships, or termination", pts: 100 },
-          { q: "What method can you use to answer interview questions about handling conflict?", a: "The STAR method (Situation, Task, Action, Result)", pts: 200 },
-          { q: "How should you handle an angry customer?", a: "Stay professional, listen actively, show empathy, and focus on de-escalation", pts: 300 },
-          { q: "A coworker takes credit for your idea in a meeting. What is a healthy response?", a: "Address it privately and calmly: 'I felt my contribution wasn't acknowledged. Can we discuss this?'", pts: 400 }
-        ]
-      ]
-    };
-
-    function buildJeopardyBoard() {
-      var board = document.getElementById('jeopardyBoard');
-      if (!board) return;
-      jeopardyData.categories.forEach(function(cat, catIdx) {
-        jeopardyData.questions[catIdx].forEach(function(q, qIdx) {
-          var cell = document.createElement('div');
-          cell.className = 'jeopardy-cell';
-          cell.textContent = '$' + q.pts;
-          cell.dataset.cat = catIdx;
-          cell.dataset.q = qIdx;
-          cell.addEventListener('click', function() { openJeopardy(catIdx, qIdx, cell); });
-          board.appendChild(cell);
-        });
-      });
-    }
-
-    function openJeopardy(catIdx, qIdx, cell) {
-      if (cell.classList.contains('answered')) return;
-      cell.classList.add('answered');
-      var q = jeopardyData.questions[catIdx][qIdx];
-      document.getElementById('jqCategory').textContent = jeopardyData.categories[catIdx] + ' \u2014 $' + q.pts;
-      document.getElementById('jqQuestion').textContent = q.q;
-      var ansEl = document.getElementById('jqAnswer');
-      ansEl.textContent = q.a;
-      ansEl.style.display = 'none';
-      document.getElementById('jqShowBtn').style.display = 'inline-block';
-      document.getElementById('jeopardyModal').classList.add('open');
-    }
-
-    function showJeopardyAnswer() {
-      document.getElementById('jqAnswer').style.display = 'block';
-      document.getElementById('jqShowBtn').style.display = 'none';
-    }
-
-    function closeJeopardy() {
-      document.getElementById('jeopardyModal').classList.remove('open');
-    }
-
-    document.addEventListener('keydown', function(e) {
-      if (e.key === 'Escape') closeJeopardy();
-    });
-
     // === Danger/Flip Card Accessibility ===
     function setFlipCard(card, isFlipped) {
       card.classList.toggle('flipped', isFlipped);
@@ -4146,9 +4039,6 @@
         }
       });
     });
-
-    buildJeopardyBoard();
-
     /* CC Toggle Button */
     function toggleCaptions(btn) {
       const video = btn.closest('.video-wrapper').querySelector('video');
