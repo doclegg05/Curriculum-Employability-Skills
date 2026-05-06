@@ -687,7 +687,8 @@
       position: relative; width: 100%; height: 100%;
       transition: transform 0.6s; transform-style: preserve-3d;
     }
-    .danger-card:hover .danger-card-inner { transform: rotateY(180deg); }
+    .danger-card:hover .danger-card-inner,
+    .danger-card.flipped .danger-card-inner { transform: rotateY(180deg); }
     .danger-card-front, .danger-card-back {
       position: absolute; width: 100%; height: 100%;
       backface-visibility: hidden; border-radius: 16px;
@@ -3005,7 +3006,7 @@
     <!-- Slide 20: Dangers Overview -->
     <section class="slide" data-chapter="5">
       <h2>Time Management Dangers</h2>
-      <p class="slide-subtext" style="margin-bottom:0.75rem;">Despite our best efforts, these challenges sabotage our time. Hover each card to reveal the tip.</p>
+      <p class="slide-subtext" style="margin-bottom:0.75rem;">Despite our best efforts, these challenges sabotage our time. Select each card to reveal the tip.</p>
       <div class="dangers-grid">
         <div class="danger-card" tabindex="0" role="button" aria-pressed="false" aria-label="Distractions — press Enter to reveal strategy">
           <div class="danger-card-inner">
@@ -3531,6 +3532,10 @@
 
     // Pause any playing videos on the slide we're leaving
     document.querySelectorAll('.slide.active video').forEach(v => { v.pause(); });
+    const departingSlide = slides[currentIndex];
+    if (departingSlide && departingSlide !== slides[index]) {
+      resetDangerCards(departingSlide);
+    }
     // Reset captions when leaving a slide
     document.querySelectorAll('.cc-toggle.cc-active').forEach(btn => {
       btn.classList.remove('cc-active');
@@ -3664,15 +3669,26 @@
     });
   });
 
-  // Danger card keyboard access
+  function flipDangerCard(card) {
+    card.classList.add('flipped');
+    card.setAttribute('aria-pressed', 'true');
+  }
+
+  function resetDangerCards(scope = document) {
+    scope.querySelectorAll('.danger-card').forEach(card => {
+      card.classList.remove('flipped');
+      card.setAttribute('aria-pressed', 'false');
+    });
+  }
+
+  // Danger cards stay revealed on the current slide, then reset when the slide changes.
   document.querySelectorAll('.danger-card').forEach(card => {
+    card.addEventListener('mouseenter', () => flipDangerCard(card));
+    card.addEventListener('click', () => flipDangerCard(card));
     card.addEventListener('keydown', e => {
       if (e.key === 'Enter' || e.key === ' ') {
         e.preventDefault();
-        const inner = card.querySelector('.danger-card-inner');
-        const isFlipped = inner.style.transform === 'rotateY(180deg)';
-        inner.style.transform = isFlipped ? '' : 'rotateY(180deg)';
-        card.setAttribute('aria-pressed', isFlipped ? 'false' : 'true');
+        flipDangerCard(card);
       }
     });
   });

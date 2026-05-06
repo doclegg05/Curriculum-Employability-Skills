@@ -2242,6 +2242,25 @@
       line-height: 1.35;
     }
 
+    .star-stress-slide.active {
+      justify-content: center;
+    }
+
+    .star-stress-slide .star-case {
+      flex: 0 1 auto;
+      grid-template-rows: auto auto;
+      width: 100%;
+    }
+
+    .star-stress-slide .star-path {
+      align-items: start;
+    }
+
+    .star-stress-slide .star-node {
+      align-self: start;
+      min-height: 0;
+    }
+
     .customer-path {
       display: grid;
       grid-template-columns: 0.9fr 1.1fr 0.9fr;
@@ -2288,6 +2307,22 @@
       font-size: 2.2rem;
       font-weight: 700;
       margin-bottom: 0.35rem;
+    }
+
+    .customer-example-slide.active {
+      justify-content: center;
+    }
+
+    .customer-example-slide .customer-path {
+      align-items: start;
+      flex: 0 1 auto;
+      width: 100%;
+    }
+
+    .customer-example-slide .customer-panel {
+      align-self: start;
+      justify-content: flex-start;
+      min-height: 0;
     }
 
     .star-prompt-board {
@@ -2407,6 +2442,22 @@
       font-size: 2rem;
       font-weight: 700;
       justify-content: center;
+    }
+
+    .interview-close-slide.active {
+      justify-content: center;
+    }
+
+    .interview-close-slide .interview-arc {
+      align-items: start;
+      flex: 0 1 auto;
+      width: 100%;
+    }
+
+    .interview-close-slide .arc-panel {
+      align-self: start;
+      justify-content: flex-start;
+      min-height: 0;
     }
 
     .final-compass {
@@ -3648,7 +3699,7 @@
       </section>
 
       <!-- Slide 21 — STAR Example: Handling Stress -->
-      <section class="slide remix-slide" data-chapter="5">
+      <section class="slide remix-slide star-stress-slide" data-chapter="5">
         <h2>STAR in Action: Handling Stress</h2>
         <div class="star-case">
           <p class="star-question">Interviewer: "Tell me about a time you faced a stressful situation that demonstrated your coping ability."</p>
@@ -3678,7 +3729,7 @@
       </section>
 
       <!-- Slide 22 — STAR Example: Upset Customer -->
-      <section class="slide remix-slide" data-chapter="5">
+      <section class="slide remix-slide customer-example-slide" data-chapter="5">
         <h2>STAR in Action: Upset Customer</h2>
         <p class="star-question">Interviewer: "Tell me about a situation in which you had to deal with a very upset customer or co-worker."</p>
         <div class="customer-path">
@@ -3749,7 +3800,7 @@
       </section>
 
       <!-- Slide 25 — During and Ending the Interview -->
-      <section class="slide remix-slide" data-chapter="5">
+      <section class="slide remix-slide interview-close-slide" data-chapter="5">
         <h2>During &amp; Closing the Interview</h2>
         <div class="interview-arc">
           <div class="arc-panel">

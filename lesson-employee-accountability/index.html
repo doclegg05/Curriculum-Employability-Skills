@@ -1006,7 +1006,8 @@
       transform-style: preserve-3d;
     }
 
-    .danger-card:hover .danger-card-inner {
+    .danger-card:hover .danger-card-inner,
+    .danger-card.is-flipped .danger-card-inner {
       transform: rotateY(180deg);
     }
 
@@ -1627,9 +1628,9 @@
     }
 
     .team-strength-slide.active {
-      justify-content: flex-start;
-      padding-top: clamp(2rem, 5vh, 4rem);
-      padding-bottom: 5rem;
+      justify-content: center;
+      align-items: center;
+      padding: clamp(2rem, 5vh, 4rem) clamp(1.25rem, 3vw, 3rem) 5.5rem;
       overflow-y: hidden;
     }
 
@@ -1639,41 +1640,48 @@
     }
 
     .team-strength-slide h2 {
-      font-size: clamp(2.5rem, 4.1vw, 3.45rem);
+      width: 100%;
+      max-width: 1500px;
+      text-align: center;
+      font-size: clamp(3rem, 4.6vw, 4.35rem);
       margin-bottom: 0.8rem;
     }
 
     .team-strength-slide .slide-note {
-      font-size: clamp(1rem, 1.3vw, 1.15rem) !important;
+      width: 100%;
+      max-width: 1320px;
+      text-align: center;
+      font-size: clamp(1.15rem, 1.55vw, 1.35rem) !important;
       margin-top: 0 !important;
-      margin-bottom: clamp(1rem, 2vh, 1.35rem) !important;
+      margin-bottom: clamp(1.5rem, 3vh, 2.4rem) !important;
     }
 
     .team-strength-slide .dangers-grid {
       flex: 0 1 auto;
       display: grid;
       grid-template-columns: repeat(5, minmax(0, 1fr));
-      gap: clamp(0.8rem, 1.2vw, 1.25rem);
+      gap: clamp(0.75rem, 1.1vw, 1.25rem);
       align-items: stretch;
       width: 100%;
+      max-width: 1600px;
     }
 
     .team-strength-slide .danger-card {
       width: auto;
       min-width: 0;
-      height: clamp(180px, 23vh, 230px);
+      height: clamp(260px, 34vh, 340px);
     }
 
     .team-strength-slide .danger-card-front,
     .team-strength-slide .danger-card-back {
-      padding: clamp(0.75rem, 1.1vw, 1rem);
+      padding: clamp(1rem, 1.35vw, 1.4rem);
       justify-content: flex-start;
-      gap: 0.75rem;
+      gap: clamp(0.85rem, 1.3vh, 1.1rem);
     }
 
     .team-strength-slide .danger-icon {
       width: 100%;
-      height: clamp(110px, 15vh, 145px);
+      height: clamp(150px, 21vh, 210px);
       margin-bottom: 0;
       border-radius: 10px;
       overflow: hidden;
@@ -1691,10 +1699,10 @@
 
     .team-strength-slide .danger-card-front h3 {
       color: var(--light);
-      font-size: clamp(0.95rem, 1.15vw, 1.15rem);
+      font-size: clamp(1.25rem, 1.55vw, 1.65rem);
       line-height: 1.15;
       margin: 0;
-      min-height: 2.6em;
+      min-height: 2.4em;
       display: flex;
       align-items: center;
       justify-content: center;
@@ -1705,14 +1713,14 @@
     }
 
     .team-strength-slide .danger-card-back h3 {
-      font-size: clamp(0.95rem, 1.1vw, 1.1rem);
+      font-size: clamp(1.3rem, 1.55vw, 1.7rem);
       line-height: 1.15;
-      margin-bottom: 0.5rem;
+      margin-bottom: clamp(0.65rem, 1.2vh, 1rem);
     }
 
     .team-strength-slide .danger-card-back p {
-      font-size: clamp(0.82rem, 0.95vw, 0.98rem);
-      line-height: 1.35;
+      font-size: clamp(1rem, 1.12vw, 1.22rem);
+      line-height: 1.4;
     }
 
     /* Big Statement */
@@ -2033,6 +2041,26 @@
       .matrix-grid { grid-template-columns: 1fr; gap: 1rem; }
       .dangers-grid { flex-wrap: wrap; gap: 1rem; }
       .danger-card { min-width: 120px; height: 180px; }
+      .team-strength-slide.active {
+        justify-content: flex-start;
+        align-items: stretch;
+        padding: 2rem 1.5rem 5rem;
+        overflow-y: auto;
+      }
+      .team-strength-slide h2 {
+        font-size: clamp(2rem, 7vw, 3rem);
+      }
+      .team-strength-slide .slide-note {
+        font-size: clamp(1rem, 3.6vw, 1.2rem) !important;
+      }
+      .team-strength-slide .dangers-grid {
+        grid-template-columns: repeat(auto-fit, minmax(min(240px, 100%), 1fr));
+        max-width: 720px;
+        margin: 0 auto;
+      }
+      .team-strength-slide .danger-card {
+        height: clamp(250px, 42vh, 320px);
+      }
       .split-layout { flex-direction: column; gap: 1.5rem; }
       .split-visual { flex: 0 0 auto; }
       .visual-circle { width: 150px; height: 150px; font-size: 3rem; }
@@ -2144,6 +2172,15 @@
       .slide-title h1 { font-size: 2.2rem; }
       .dangers-grid { flex-direction: column; }
       .danger-card { height: 160px; }
+      .team-strength-slide.active {
+        padding: 1.5rem 1rem 4.75rem;
+      }
+      .team-strength-slide .dangers-grid {
+        grid-template-columns: 1fr;
+      }
+      .team-strength-slide .danger-card {
+        height: 280px;
+      }
       .big-statement h2 { font-size: 2rem; }
       .slide-section .section-circle { width: 140px; height: 140px; left: 50%; transform: translate(-50%, -50%); opacity: 0.6; }
       .branding-logo { max-width: 40px; bottom: 0.5rem; right: 0.5rem; }
@@ -3364,7 +3401,7 @@
       <!-- How Accountability Strengthens Teams: flip cards — moved here as first P2 content slide -->
       <section class="slide team-strength-slide" data-chapter="4">
         <h2>How Accountability Strengthens Teams</h2>
-        <p class="slide-note" style="font-size: 1.1rem; color: var(--gray); margin-top: -1.5rem; margin-bottom: 1.5rem;">When every team member is accountable, the whole team performs at a higher level. Hover each card to learn more:</p>
+        <p class="slide-note" style="font-size: 1.1rem; color: var(--gray); margin-top: -1.5rem; margin-bottom: 1.5rem;">When every team member is accountable, the whole team performs at a higher level. Select each card to learn more:</p>
         <div class="dangers-grid">
           <div class="danger-card" tabindex="0" role="button" aria-label="Builds Trust — flip card" aria-expanded="false">
             <div class="danger-card-inner">
@@ -4131,6 +4168,10 @@
       if (index < 0) index = 0;
       if (index >= slides.length) index = slides.length - 1;
       document.querySelectorAll('.slide.active video').forEach(v => { v.pause(); });
+      const departingSlide = slides[currentIndex];
+      if (departingSlide && departingSlide !== slides[index]) {
+        resetFlipCards(departingSlide);
+      }
       try { sessionStorage.setItem('spokes_slide_' + document.title, index); } catch(e) {}
       currentIndex = index;
 
@@ -4322,21 +4363,26 @@
       }
     }
 
-    // Keyboard handler for flip cards (Enter/Space to toggle)
+    function flipCard(card) {
+      card.classList.add('is-flipped');
+      card.setAttribute('aria-expanded', 'true');
+    }
+
+    function resetFlipCards(scope = document) {
+      scope.querySelectorAll('.danger-card[role="button"]').forEach(card => {
+        card.classList.remove('is-flipped');
+        card.setAttribute('aria-expanded', 'false');
+      });
+    }
+
+    // Flip cards stay revealed on the current slide, then reset when the slide changes.
     document.querySelectorAll('.danger-card[role="button"]').forEach(card => {
-      function toggleFlipCard() {
-        const inner = card.querySelector('.danger-card-inner');
-        if (inner) {
-          const isFlipped = inner.style.transform === 'rotateY(180deg)';
-          inner.style.transform = isFlipped ? '' : 'rotateY(180deg)';
-          card.setAttribute('aria-expanded', String(!isFlipped));
-        }
-      }
-      card.addEventListener('click', toggleFlipCard);
+      card.addEventListener('mouseenter', () => flipCard(card));
+      card.addEventListener('click', () => flipCard(card));
       card.addEventListener('keydown', (e) => {
         if (e.key === 'Enter' || e.key === ' ') {
           e.preventDefault();
-          toggleFlipCard();
+          flipCard(card);
         }
       });
     });
