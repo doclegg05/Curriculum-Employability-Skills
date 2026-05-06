@@ -687,7 +687,6 @@
       position: relative; width: 100%; height: 100%;
       transition: transform 0.6s; transform-style: preserve-3d;
     }
-    .danger-card:hover .danger-card-inner,
     .danger-card.flipped .danger-card-inner { transform: rotateY(180deg); }
     .danger-card-front, .danger-card-back {
       position: absolute; width: 100%; height: 100%;
@@ -3669,26 +3668,33 @@
     });
   });
 
+  function setDangerCardFlipped(card, isFlipped) {
+    card.classList.toggle('flipped', isFlipped);
+    card.setAttribute('aria-pressed', String(isFlipped));
+  }
+
   function flipDangerCard(card) {
-    card.classList.add('flipped');
-    card.setAttribute('aria-pressed', 'true');
+    setDangerCardFlipped(card, true);
+  }
+
+  function toggleDangerCard(card) {
+    setDangerCardFlipped(card, !card.classList.contains('flipped'));
   }
 
   function resetDangerCards(scope = document) {
     scope.querySelectorAll('.danger-card').forEach(card => {
-      card.classList.remove('flipped');
-      card.setAttribute('aria-pressed', 'false');
+      setDangerCardFlipped(card, false);
     });
   }
 
   // Danger cards stay revealed on the current slide, then reset when the slide changes.
   document.querySelectorAll('.danger-card').forEach(card => {
     card.addEventListener('mouseenter', () => flipDangerCard(card));
-    card.addEventListener('click', () => flipDangerCard(card));
+    card.addEventListener('click', () => toggleDangerCard(card));
     card.addEventListener('keydown', e => {
       if (e.key === 'Enter' || e.key === ' ') {
         e.preventDefault();
-        flipDangerCard(card);
+        toggleDangerCard(card);
       }
     });
   });
