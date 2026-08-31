@@ -1,0 +1,10 @@
+name: quality
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+
+jobs:
+  quality:
+    uses: doclegg05/education-toolkit/.github/workflows/quality.yml@main

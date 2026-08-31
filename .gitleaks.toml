@@ -1,0 +1,15 @@
+# Secret scanning. Extends the stock gitleaks ruleset.
+# Copied from education-toolkit; keep in sync with the toolkit copy.
+
+[extend]
+useDefault = true
+
+[[rules]]
+id = "us-ssn"
+description = "US Social Security number pattern"
+regex = '''\b\d{3}-\d{2}-\d{4}\b'''
+
+[[rules]]
+id = "elevenlabs-api-key"
+description = "ElevenLabs API key"
+regex = '''sk_[a-f0-9]{40,}'''

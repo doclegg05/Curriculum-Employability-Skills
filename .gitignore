@@ -17,3 +17,6 @@ __pycache__/
 
 # Impeccable session state (local server pids/ports, not project history)
 .impeccable/questions/
+
+# Node a11y test harness (devDependencies only; decks need no node_modules)
+node_modules/
