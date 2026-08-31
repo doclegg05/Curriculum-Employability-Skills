@@ -1,0 +1,29 @@
+{
+  "$comment": "Shrink-only allowlist for scripts/a11y-check.mjs (axe-core WCAG A/AA, first slide view over file://). Keyed by deck then axe rule id -> allowed node count at baseline time. Entries may be removed or lowered as violations are fixed; never raised or added to admit a new violation. Regenerate with: node scripts/a11y-check.mjs --update",
+  "axeCoreTags": [
+    "wcag2a",
+    "wcag2aa",
+    "wcag21a",
+    "wcag21aa"
+  ],
+  "decks": {
+    "lesson-communicating-with-the-public": {
+      "color-contrast": 2,
+      "list": 7
+    },
+    "lesson-controlling-anger": {
+      "list": 7
+    },
+    "lesson-employee-accountability": {
+      "list": 7
+    },
+    "lesson-interview-skills": {
+      "aria-progressbar-name": 1,
+      "list": 7
+    },
+    "lesson-problem-solving-and-decision-making": {
+      "list": 7
+    },
+    "lesson-time-management": {}
+  }
+}
