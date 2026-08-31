@@ -33,7 +33,7 @@ jobs:
           curl -sSfL https://github.com/gitleaks/gitleaks/releases/download/v8.18.4/gitleaks_8.18.4_linux_x64.tar.gz | tar -xz gitleaks
           CONFIG_ARG=""
           if [ -f .gitleaks.toml ]; then CONFIG_ARG="--config .gitleaks.toml"; fi
-          ./gitleaks detect --source . $CONFIG_ARG --no-banner --redact
+          ./gitleaks detect --source . $CONFIG_ARG --no-banner --redact --verbose
 
       - name: repo quality gate
         run: |
