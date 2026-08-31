@@ -1,3 +1,14 @@
+# Education-toolkit quality contract, inlined (self-contained fallback).
+#
+# The cross-repo reusable-workflow call (doclegg05/education-toolkit/.github/
+# workflows/quality.yml@main) fails at resolution for this private personal
+# repo even with the toolkit's Actions access set to user-owned repos, so the
+# contract runs inline instead (Britt, 2026-08-31). Keep these steps in sync
+# with the canonical copy in education-toolkit — when changing the contract,
+# change it there first, then mirror here.
+#
+# Contract: gitleaks secret scan, then scripts/quality.sh as THE gate.
+
 name: quality
 
 on:
@@ -7,4 +18,28 @@ on:
 
 jobs:
   quality:
-    uses: doclegg05/education-toolkit/.github/workflows/quality.yml@main
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 20
+
+      - name: gitleaks (secret scan)
+        run: |
+          curl -sSfL https://github.com/gitleaks/gitleaks/releases/download/v8.18.4/gitleaks_8.18.4_linux_x64.tar.gz | tar -xz gitleaks
+          CONFIG_ARG=""
+          if [ -f .gitleaks.toml ]; then CONFIG_ARG="--config .gitleaks.toml"; fi
+          ./gitleaks detect --source . $CONFIG_ARG --no-banner --redact
+
+      - name: repo quality gate
+        run: |
+          if [ -x scripts/quality.sh ]; then
+            scripts/quality.sh
+          else
+            echo "::error::scripts/quality.sh is missing or not executable. Every invested repo defines its quality gate there (education-toolkit contract)."
+            exit 1
+          fi
