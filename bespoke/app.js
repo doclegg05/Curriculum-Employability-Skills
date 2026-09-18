@@ -229,12 +229,15 @@
     });
     const bind = (id, key) => {
       const input = byId(id);
+      if (!input) return;
       input.value = state[key] || "";
-      input.addEventListener("input", () => {
+      const sync = () => {
         state[key] = input.value;
         saveDraft();
         updatePreview();
-      });
+      };
+      input.addEventListener("input", sync);
+      input.addEventListener("change", sync);
     };
     bind("teamName", "teamName");
     bind("spokespersonName", "spokespersonName");
@@ -442,12 +445,15 @@
     `;
     const bind = (id, key) => {
       const input = byId(id);
+      if (!input) return;
       input.value = state[key] || "";
-      input.addEventListener("input", () => {
+      const sync = () => {
         state[key] = input.value;
         saveDraft();
         updatePreview();
-      });
+      };
+      input.addEventListener("input", sync);
+      input.addEventListener("change", sync);
     };
     bind("lessonTitle", "lessonTitle");
     bind("lessonSubtitle", "lessonSubtitle");
@@ -552,9 +558,23 @@
     byId("btnSubmit")?.addEventListener("click", onSubmit);
   }
 
+  function syncTeamFieldsFromDom() {
+    const map = [
+      ["teamName", "teamName"],
+      ["spokespersonName", "spokespersonName"],
+      ["spokespersonEmail", "spokespersonEmail"],
+      ["lessonSelect", "lessonId"]
+    ];
+    map.forEach(([domId, key]) => {
+      const el = byId(domId);
+      if (el) state[key] = el.value;
+    });
+  }
+
   function validateCurrentStep() {
     const id = STEPS[state.step].id;
     if (id === "team") {
+      syncTeamFieldsFromDom();
       if (!state.spokespersonName.trim()) {
         alert("Spoke Too Soon — add the spokesperson’s name before continuing.");
         return false;
@@ -563,6 +583,12 @@
         alert("Spoke Too Soon — pick a lesson.");
         return false;
       }
+    }
+    if (id === "content") {
+      ["lessonTitle", "lessonSubtitle", "sampleBullets", "sampleMyth"].forEach((fieldId) => {
+        const el = byId(fieldId);
+        if (el) state[fieldId] = el.value;
+      });
     }
     return true;
   }
@@ -893,6 +919,11 @@ _Full P2–A content delivered via the team OneDrive folder. This prototype inta
   }
 
   function onSubmit() {
+    syncTeamFieldsFromDom();
+    ["lessonTitle", "lessonSubtitle", "sampleBullets", "sampleMyth", "unspoken"].forEach((fieldId) => {
+      const el = byId(fieldId);
+      if (el) state[fieldId] = el.value;
+    });
     if (!state.spokespersonName.trim() || !state.lessonId) {
       const box = byId("submitStatus");
       box.className = "status-box error";
@@ -945,10 +976,33 @@ _Full P2–A content delivered via the team OneDrive folder. This prototype inta
   }
 
   function render() {
+    const active = document.activeElement;
+    const keepFocusId =
+      active && active.id && byId("stepPanel")?.contains(active) ? active.id : null;
+    const keepSelection =
+      keepFocusId && (active instanceof HTMLInputElement || active instanceof HTMLTextAreaElement)
+        ? { start: active.selectionStart, end: active.selectionEnd }
+        : null;
+
     buildStepper();
     renderPanel();
     updatePreview();
     saveDraft();
+
+    if (keepFocusId) {
+      const el = byId(keepFocusId);
+      if (el) {
+        el.focus({ preventScroll: true });
+        if (keepSelection && typeof el.setSelectionRange === "function") {
+          try {
+            el.setSelectionRange(keepSelection.start, keepSelection.end);
+          } catch {
+            /* ignore non-text inputs */
+          }
+        }
+        return;
+      }
+    }
     byId("stepPanel").focus({ preventScroll: true });
   }
 
