@@ -25,3 +25,13 @@ Violations of CRITICAL rules will be caught by automated hooks and block your wo
 
 For building new lessons, see `SPOKES Builder/CLAUDE.md` for the step-by-step build workflow.
 The design rules referenced there are defined in `SPOKES-STANDARD.md`.
+
+## Conference design briefs (capture only)
+
+Read these before changing Round 2 modules or the Builder intake. Do not ship product from them without Britt go.
+
+- `docs/phase-2/money-management-tanf-snap-topics-2026-09-17.md` — Money Management — Budget topic map (Britt's team)
+- `docs/briefs/instructor-to-html-intake-2026-09-17.md` — KEEP VERBATIM intake rules on top of `SPOKES Builder/content-intake-template.md`
+- `docs/briefs/instructor-lesson-studio-concept-2026-09-17.md` — Bespoke (formerly Lesson Studio) wizard concept and plan (not greenlit; do not build)
+
+This package is not VisionQuest. Do not merge SPOKES HTML hosting into the VisionQuest deploy path.
