@@ -1,0 +1,63 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Bespoke — SPOKES instructor design wizard</title>
+  <link rel="icon" href="../SPOKES-Logo.png">
+  <link rel="stylesheet" href="./styles.css">
+</head>
+<body>
+  <a class="skip-link" href="#stepPanel">Skip to wizard</a>
+  <div id="liveRegion" class="sr-only" aria-live="polite"></div>
+
+  <header class="app-header">
+    <a class="brand" href="./index.html">
+      <img src="../SPOKES-Logo.png" alt="" width="48" height="48">
+      <div class="brand-text">
+        <strong>Bespoke</strong>
+        <span>Instructor design wizard · Spokes Model preview</span>
+      </div>
+    </a>
+    <div class="header-actions">
+      <a class="btn btn-ghost" href="../Dashboard.html">Curriculum hub</a>
+      <button type="button" class="btn btn-secondary" id="btnClear">Clear draft</button>
+    </div>
+  </header>
+
+  <div class="layout">
+    <nav class="stepper" aria-label="Wizard steps">
+      <h2>Steps</h2>
+      <ol class="step-list" id="stepList"></ol>
+    </nav>
+
+    <main>
+      <section class="panel" id="stepPanel" tabindex="-1" aria-label="Current wizard step"></section>
+    </main>
+
+    <aside class="preview-pane" aria-label="Spokes Model">
+      <h2>Spokes Model</h2>
+      <p class="preview-note">Demo-first preview with sample content. Not a full lesson build.</p>
+      <div class="preview-tabs" role="tablist" aria-label="Preview surface" id="previewTabs">
+        <button type="button" role="tab" id="tab-title" data-view="title" aria-selected="true" aria-controls="modelStage">Title</button>
+        <button type="button" role="tab" id="tab-divider" data-view="divider" aria-selected="false" aria-controls="modelStage">Divider</button>
+        <button type="button" role="tab" id="tab-cards" data-view="cards" aria-selected="false" aria-controls="modelStage">Cards</button>
+      </div>
+      <div class="spokes-model">
+        <div class="model-chrome">
+          <div class="model-sidebar" id="modelSidebar" aria-hidden="true"></div>
+          <div class="model-main" id="modelMain">
+            <div id="modelStage" role="tabpanel" aria-label="Preview stage"></div>
+          </div>
+        </div>
+      </div>
+    </aside>
+  </div>
+
+  <footer class="footer-bar">
+    <p>SPOKES · WV Adult Basic Education · Prototype · Choices stay on-brand by construction</p>
+  </footer>
+
+  <script src="./app.js"></script>
+</body>
+</html>

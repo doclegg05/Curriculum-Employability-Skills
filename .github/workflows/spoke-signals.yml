@@ -1,0 +1,123 @@
+name: Spoke Signals
+
+# Opens a lesson-tagged PR from a Bespoke submission.
+# Browser never holds a GitHub token — instructors open a labeled issue
+# (or Britt runs workflow_dispatch with pasted JSON). GITHUB_TOKEN is
+# Action-side only.
+
+on:
+  issues:
+    types: [opened, edited]
+  workflow_dispatch:
+    inputs:
+      payload_json:
+        description: "Full Bespoke selection JSON (bespoke-selection/v1)"
+        required: true
+        type: string
+
+permissions:
+  contents: write
+  pull-requests: write
+  issues: write
+
+jobs:
+  open-pr:
+    if: >
+      github.event_name == 'workflow_dispatch' ||
+      (github.event_name == 'issues' &&
+       (contains(github.event.issue.title, '[Spoke Signal]') ||
+        contains(join(github.event.issue.labels.*.name, ','), 'spoke-signal')))
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Extract payload
+        id: payload
+        uses: actions/github-script@v7
+        env:
+          DISPATCH_PAYLOAD: ${{ github.event_name == 'workflow_dispatch' && inputs.payload_json || '' }}
+        with:
+          script: |
+            const fs = require('fs');
+            let raw = '';
+            if (context.eventName === 'workflow_dispatch') {
+              raw = process.env.DISPATCH_PAYLOAD || '';
+            } else {
+              const body = context.payload.issue.body || '';
+              const fence = body.match(/<!-- bespoke-payload:begin -->[\s\S]*?```json\s*([\s\S]*?)```[\s\S]*?<!-- bespoke-payload:end -->/);
+              if (fence) {
+                raw = fence[1];
+              } else {
+                const alt = body.match(/```json\s*(\{[\s\S]*?"schema"\s*:\s*"bespoke-selection\/v1"[\s\S]*?\})\s*```/);
+                if (!alt) {
+                  core.setFailed('No bespoke-selection JSON payload found in issue body.');
+                  return;
+                }
+                raw = alt[1];
+              }
+            }
+            let data;
+            try {
+              data = JSON.parse(raw.trim());
+            } catch (e) {
+              core.setFailed('Invalid JSON payload: ' + e.message);
+              return;
+            }
+            if (data.schema !== 'bespoke-selection/v1') {
+              core.setFailed('Unexpected schema: ' + data.schema);
+              return;
+            }
+            if (!data.lesson || !data.lesson.id) {
+              core.setFailed('Payload missing lesson.id');
+              return;
+            }
+            const lessonId = String(data.lesson.id).replace(/[^a-z0-9-]/gi, '').toLowerCase();
+            const date = String(data.date || new Date().toISOString().slice(0, 10)).replace(/[^0-9-]/g, '');
+            data.lesson.id = lessonId;
+            data.date = date;
+            const out = 'bespoke-payload.json';
+            fs.writeFileSync(out, JSON.stringify(data, null, 2));
+            core.setOutput('lesson_id', lessonId);
+            core.setOutput('date', date);
+            core.setOutput('file', out);
+
+      - name: Build submission files
+        env:
+          PAYLOAD_FILE: ${{ steps.payload.outputs.file }}
+        run: |
+          chmod +x scripts/bespoke-write-submission.py
+          python3 scripts/bespoke-write-submission.py "$PAYLOAD_FILE"
+
+      - name: Create pull request
+        uses: peter-evans/create-pull-request@v6
+        with:
+          token: ${{ secrets.GITHUB_TOKEN }}
+          commit-message: "chore(bespoke): Spoke Signal for ${{ steps.payload.outputs.lesson_id }}"
+          branch: bespoke-signal/${{ steps.payload.outputs.lesson_id }}/${{ steps.payload.outputs.date }}
+          title: "[Bespoke] ${{ steps.payload.outputs.lesson_id }} design choices (${{ steps.payload.outputs.date }})"
+          body: |
+            Spoke Signal from Bespoke.
+
+            - Lesson: `${{ steps.payload.outputs.lesson_id }}`
+            - Date: `${{ steps.payload.outputs.date }}`
+            - Files: `docs/phase-2/submissions/${{ steps.payload.outputs.lesson_id }}/${{ steps.payload.outputs.date }}/`
+
+            **Merge = greenlight to build** (D10). Britt is the sole gate.
+
+            ${{ github.event_name == 'issues' && format('Source issue: #{0}', github.event.issue.number) || 'Source: workflow_dispatch' }}
+          labels: |
+            bespoke
+            spoke-signal
+          draft: true
+
+      - name: Comment on issue
+        if: github.event_name == 'issues'
+        uses: actions/github-script@v7
+        with:
+          script: |
+            await github.rest.issues.createComment({
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              issue_number: context.issue.number,
+              body: 'Spoke Signals received. A draft PR with `selection.json` and filled `content-intake.md` is being opened (or updated) for Britt’s review.'
+            });

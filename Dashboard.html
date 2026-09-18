@@ -161,11 +161,19 @@
 
         /* the right half of the band was empty; it now carries the one fact an
            instructor wants on arrival, in their language rather than the
-           pipeline's */
-        .hero-count {
+           pipeline's — plus a hub link into Bespoke */
+        .hero-tools {
             margin: 0 0 0 auto;
             padding-left: var(--s6);
             border-left: 1px solid rgba(255, 255, 255, 0.28);
+            display: flex;
+            flex-direction: column;
+            align-items: flex-end;
+            gap: var(--s3);
+        }
+
+        .hero-count {
+            margin: 0;
             color: var(--light);
             font-size: 0.78rem;
             font-weight: 700;
@@ -174,6 +182,26 @@
             white-space: nowrap;
         }
         .hero-count:empty { display: none; }
+
+        .bespoke-link {
+            display: inline-flex;
+            align-items: center;
+            padding: 0.45rem 0.9rem;
+            border-radius: 8px;
+            background: var(--gold);
+            color: var(--royal);
+            font-size: 0.85rem;
+            font-weight: 700;
+            text-decoration: none;
+            white-space: nowrap;
+        }
+        .bespoke-link:hover {
+            filter: brightness(1.05);
+        }
+        .bespoke-link:focus-visible {
+            outline: 3px solid var(--light);
+            outline-offset: 3px;
+        }
 
         .brand-lockup {
             display: inline-flex;
@@ -570,11 +598,16 @@
                 flex-wrap: wrap;
             }
 
-            .hero-count {
+            .hero-tools {
                 width: 100%;
                 margin: var(--s3) 0 0;
                 padding-left: 0;
                 border-left: 0;
+                align-items: flex-start;
+            }
+
+            .hero-count {
+                width: auto;
             }
         }
 
@@ -626,7 +659,10 @@
                         <p class="hero-note">Interactive lessons for the classroom &mdash; choose one to launch.</p>
                     </div>
                 </div>
-                <p class="hero-count" id="heroCount"></p>
+                <div class="hero-tools">
+                    <p class="hero-count" id="heroCount"></p>
+                    <a class="bespoke-link" href="bespoke/index.html">Open Bespoke</a>
+                </div>
             </div>
         </header>
 
@@ -635,6 +671,7 @@
                 <div class="noscript-list">
                     <p>Lessons (JavaScript is off, so here are direct links):</p>
                     <ul>
+                        <li><a href="bespoke/index.html">Bespoke (instructor design wizard)</a></li>
                         <li><a href="lesson-time-management/index.html">Time Management</a></li>
                         <li><a href="lesson-interview-skills/index.html">Interview Skills</a></li>
                         <li><a href="lesson-employee-accountability/index.html">Employee Accountability</a></li>
