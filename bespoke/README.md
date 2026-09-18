@@ -11,12 +11,22 @@ Instructor design-choice wizard for Round 2 SPOKES lessons. Hosted from this rep
 
 ## What ships in this prototype
 
-- Catalog of **existing** color leads, textures, title slides, dividers, cards, and font pairings (no D6 color-model rewrite)
+- Loads **`SPOKES Builder/bespoke-library-catalog.json`** for selectable options (cards, dividers, title slides, textures, color leads, sidebars)
+- UI keys = `{family}.{slug}` (e.g. `cards.top-accent`); intake / selection payload persists **slug only**
 - Six presets: Professional, Modern, Serious, Light-hearted, Fun, Outspoken (starters; all editable after)
 - Demo-first Spokes Model (sample content, not a full lesson build)
-- Opt-in vary card style by WIPPEA chapter (D12)
+- Opt-in vary card style by WIPPEA chapter (D12) with THM-04 adjacent uniqueness
 - Emits filled `content-intake-template.md` shape + `selection.json` (D11)
 - Spoke Signals: browser opens a labeled GitHub issue (no token in the browser); Action opens a lesson-tagged PR
+- Docs: `SPOKES Builder/bespoke-library-ids.md` · visual ref: `SPOKES Builder/library-preview.html`
+
+## Catalog sources
+
+| File | Role |
+|------|------|
+| `SPOKES Builder/bespoke-library-catalog.json` | Authoritative option list (from card-library workstream) |
+| `bespoke/catalog.json` | Lessons, presets, font pairings, color-lead preview cues |
+| `SPOKES Builder/theme-library.css` | CSS snippets agents copy into `theme-override` |
 
 ## Spoke Signals
 

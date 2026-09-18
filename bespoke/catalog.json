@@ -1,213 +1,39 @@
 {
-  "version": "1.0.0",
-  "description": "Bespoke option catalog drawn from existing SPOKES theme-registry / theme-library options. No new color model (D6).",
-  "source": {
-    "themeRegistry": "SPOKES Builder/theme-registry.json",
-    "themeLibrary": "SPOKES Builder/theme-library.css",
-    "intakeTemplate": "SPOKES Builder/content-intake-template.md"
-  },
+  "version": "1.1.0",
+  "description": "Bespoke wizard meta (lessons, presets, fonts, color-lead preview cues). Selectable library options load from SPOKES Builder/bespoke-library-catalog.json.",
+  "libraryCatalog": "../SPOKES Builder/bespoke-library-catalog.json",
+  "libraryDocs": "../SPOKES Builder/bespoke-library-ids.md",
+  "libraryPreview": "../SPOKES Builder/library-preview.html",
   "lessons": [
-    {
-      "id": "goal-setting",
-      "title": "Goal Setting",
-      "round": 2
-    },
-    {
-      "id": "money-management",
-      "title": "Money Management",
-      "round": 2,
-      "note": "Dogfood team"
-    },
-    {
-      "id": "professionalism-and-diversity",
-      "title": "Professionalism and Diversity",
-      "round": 2
-    },
-    {
-      "id": "knowing-your-rights",
-      "title": "Knowing Your Rights in the Workplace",
-      "round": 2
-    },
-    {
-      "id": "communicating-assertively",
-      "title": "Communicating Assertively",
-      "round": 2
-    },
-    {
-      "id": "workplace-ethics",
-      "title": "Workplace Ethics",
-      "round": 2
-    }
+    { "id": "goal-setting", "title": "Goal Setting", "round": 2 },
+    { "id": "money-management", "title": "Money Management", "round": 2, "note": "Dogfood team" },
+    { "id": "professionalism-and-diversity", "title": "Professionalism and Diversity", "round": 2 },
+    { "id": "knowing-your-rights", "title": "Knowing Your Rights in the Workplace", "round": 2 },
+    { "id": "communicating-assertively", "title": "Communicating Assertively", "round": 2 },
+    { "id": "workplace-ethics", "title": "Workplace Ethics", "round": 2 }
   ],
-  "colorLeads": [
-    {
-      "id": "blue",
-      "label": "Blue",
-      "heading": "var(--primary)",
-      "button": "var(--primary)",
-      "gradientFrom": "var(--primary)",
-      "gradientTo": "var(--dark)",
-      "usedBy": ["Time Management"]
-    },
-    {
-      "id": "royal",
-      "label": "Royal",
-      "heading": "var(--royal)",
-      "button": "var(--royal)",
-      "gradientFrom": "var(--royal)",
-      "gradientTo": "var(--dark)",
-      "usedBy": ["Interview Skills"]
-    },
-    {
-      "id": "green",
-      "label": "Green",
-      "heading": "var(--primary)",
-      "button": "var(--primary)",
-      "gradientFrom": "var(--accent)",
-      "gradientTo": "var(--primary)",
-      "usedBy": ["Employee Accountability"]
-    },
-    {
-      "id": "mauve",
-      "label": "Mauve",
-      "heading": "var(--mauve)",
-      "button": "var(--mauve)",
-      "gradientFrom": "var(--mauve)",
-      "gradientTo": "var(--royal)",
-      "usedBy": ["Controlling Anger"]
-    },
-    {
-      "id": "gold",
-      "label": "Gold",
-      "heading": "var(--muted-gold)",
-      "button": "var(--dark)",
-      "gradientFrom": "var(--muted-gold)",
-      "gradientTo": "var(--primary)",
-      "usedBy": []
-    },
-    {
-      "id": "dual-blue-green",
-      "label": "Dual Blue–Green",
-      "heading": "var(--primary)",
-      "button": "var(--primary)",
-      "gradientFrom": "var(--primary)",
-      "gradientTo": "var(--accent)",
-      "usedBy": ["Communicating with the Public"]
-    },
-    {
-      "id": "dual-gold-green",
-      "label": "Dual Gold–Green",
-      "heading": "var(--muted-gold)",
-      "button": "var(--dark)",
-      "gradientFrom": "var(--muted-gold)",
-      "gradientTo": "var(--accent)",
-      "usedBy": ["Problem Solving & Decision Making"]
-    },
-    {
-      "id": "dual-mauve-blue",
-      "label": "Dual Mauve–Blue",
-      "heading": "var(--mauve)",
-      "button": "var(--mauve)",
-      "gradientFrom": "var(--mauve)",
-      "gradientTo": "var(--primary)",
-      "usedBy": []
-    },
-    {
-      "id": "dual-mauve-gold",
-      "label": "Dual Mauve–Gold",
-      "heading": "var(--mauve)",
-      "button": "var(--mauve)",
-      "gradientFrom": "var(--mauve)",
-      "gradientTo": "var(--muted-gold)",
-      "usedBy": []
-    }
-  ],
-  "sidebarColors": [
-    { "id": "dark", "label": "Dark navy", "css": "var(--dark)" },
-    { "id": "royal", "label": "Royal", "css": "var(--royal)" }
-  ],
-  "backgroundTextures": [
-    { "id": "plain", "label": "Plain" },
-    { "id": "dot-grid", "label": "Dot grid" },
-    { "id": "diagonal", "label": "Diagonal" },
-    { "id": "crosshatch", "label": "Crosshatch" },
-    { "id": "soft-gradient", "label": "Soft gradient" },
-    { "id": "dark-royal", "label": "Dark royal" }
-  ],
-  "titleSlides": [
-    { "id": "centered-gradient", "label": "Centered gradient" },
-    { "id": "split-hero", "label": "Split hero" },
-    { "id": "full-bleed", "label": "Full bleed" },
-    { "id": "bottom-anchored", "label": "Bottom anchored" },
-    { "id": "offset-left", "label": "Offset left" },
-    { "id": "diagonal-split", "label": "Diagonal split" },
-    { "id": "framed-center", "label": "Framed center" },
-    { "id": "top-banner", "label": "Top banner" },
-    { "id": "radial-glow", "label": "Radial glow" },
-    { "id": "vertical-strip", "label": "Vertical strip" },
-    { "id": "corner-accent", "label": "Corner accent" },
-    { "id": "horizon-line", "label": "Horizon line" }
-  ],
-  "dividerStyles": [
-    { "id": "gradient-sweep", "label": "Gradient sweep" },
-    { "id": "framed-gold", "label": "Framed gold" },
-    { "id": "bold-full-bleed", "label": "Bold full-bleed" },
-    { "id": "split-panel", "label": "Split panel" },
-    { "id": "centered-badge", "label": "Centered badge" }
-  ],
-  "cardStyles": [
-    { "id": "left-border", "label": "Left border" },
-    { "id": "shadow-float", "label": "Shadow float" },
-    { "id": "sharp-border", "label": "Sharp border" },
-    { "id": "glass", "label": "Glass" },
-    { "id": "outlined", "label": "Outlined" },
-    { "id": "gradient-fill", "label": "Gradient fill" },
-    { "id": "pill", "label": "Pill" },
-    { "id": "layered", "label": "Layered" }
-  ],
+  "colorLeadPreview": {
+    "blue": { "heading": "var(--primary)", "button": "var(--primary)", "gradientFrom": "var(--primary)", "gradientTo": "var(--dark)", "usedBy": ["Time Management"] },
+    "royal": { "heading": "var(--royal)", "button": "var(--royal)", "gradientFrom": "var(--royal)", "gradientTo": "var(--dark)", "usedBy": ["Interview Skills"] },
+    "green": { "heading": "var(--primary)", "button": "var(--primary)", "gradientFrom": "var(--accent)", "gradientTo": "var(--primary)", "usedBy": ["Employee Accountability"] },
+    "mauve": { "heading": "var(--mauve)", "button": "var(--mauve)", "gradientFrom": "var(--mauve)", "gradientTo": "var(--royal)", "usedBy": ["Controlling Anger"] },
+    "gold": { "heading": "var(--muted-gold)", "button": "var(--dark)", "gradientFrom": "var(--muted-gold)", "gradientTo": "var(--primary)", "usedBy": [] },
+    "dual-blue-green": { "heading": "var(--primary)", "button": "var(--primary)", "gradientFrom": "var(--primary)", "gradientTo": "var(--accent)", "usedBy": ["Communicating with the Public"] },
+    "dual-gold-green": { "heading": "var(--muted-gold)", "button": "var(--dark)", "gradientFrom": "var(--muted-gold)", "gradientTo": "var(--accent)", "usedBy": ["Problem Solving & Decision Making"] },
+    "dual-mauve-blue": { "heading": "var(--mauve)", "button": "var(--mauve)", "gradientFrom": "var(--mauve)", "gradientTo": "var(--primary)", "usedBy": [] },
+    "dual-mauve-gold": { "heading": "var(--mauve)", "button": "var(--mauve)", "gradientFrom": "var(--mauve)", "gradientTo": "var(--muted-gold)", "usedBy": [] }
+  },
+  "sidebarPreview": {
+    "dark": "var(--dark)",
+    "royal": "var(--royal)"
+  },
   "fontPairings": [
-    {
-      "id": "dm-serif-display-outfit",
-      "label": "DM Serif Display + Outfit",
-      "heading": "DM Serif Display",
-      "body": "Outfit",
-      "mood": "Clean, modern, professional"
-    },
-    {
-      "id": "playfair-display-inter",
-      "label": "Playfair Display + Inter",
-      "heading": "Playfair Display",
-      "body": "Inter",
-      "mood": "Elegant, boardroom"
-    },
-    {
-      "id": "merriweather-source-sans-3",
-      "label": "Merriweather + Source Sans 3",
-      "heading": "Merriweather",
-      "body": "Source Sans 3",
-      "mood": "Trustworthy, warm"
-    },
-    {
-      "id": "vollkorn-fira-sans",
-      "label": "Vollkorn + Fira Sans",
-      "heading": "Vollkorn",
-      "body": "Fira Sans",
-      "mood": "Serious, grounded"
-    },
-    {
-      "id": "crimson-pro-work-sans",
-      "label": "Crimson Pro + Work Sans",
-      "heading": "Crimson Pro",
-      "body": "Work Sans",
-      "mood": "Approachable, lively"
-    },
-    {
-      "id": "bitter-raleway",
-      "label": "Bitter + Raleway",
-      "heading": "Bitter",
-      "body": "Raleway",
-      "mood": "Bold, outspoken"
-    }
+    { "id": "dm-serif-display-outfit", "label": "DM Serif Display + Outfit", "heading": "DM Serif Display", "body": "Outfit", "mood": "Clean, modern, professional" },
+    { "id": "playfair-display-inter", "label": "Playfair Display + Inter", "heading": "Playfair Display", "body": "Inter", "mood": "Elegant, boardroom" },
+    { "id": "merriweather-source-sans-3", "label": "Merriweather + Source Sans 3", "heading": "Merriweather", "body": "Source Sans 3", "mood": "Trustworthy, warm" },
+    { "id": "vollkorn-fira-sans", "label": "Vollkorn + Fira Sans", "heading": "Vollkorn", "body": "Fira Sans", "mood": "Serious, grounded" },
+    { "id": "crimson-pro-work-sans", "label": "Crimson Pro + Work Sans", "heading": "Crimson Pro", "body": "Work Sans", "mood": "Approachable, lively" },
+    { "id": "bitter-raleway", "label": "Bitter + Raleway", "heading": "Bitter", "body": "Raleway", "mood": "Bold, outspoken" }
   ],
   "chapterKeys": ["W", "I", "P1", "P2", "P3", "E", "A"],
   "presets": [

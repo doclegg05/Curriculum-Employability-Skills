@@ -3,6 +3,8 @@
 
   const STORAGE_KEY = "bespoke-draft-v1";
   const REPO = "doclegg05/Curriculum-Employability-Skills";
+  const LIBRARY_URL = "../SPOKES%20Builder/bespoke-library-catalog.json";
+  const META_URL = "./catalog.json";
 
   const STEPS = [
     { id: "team", label: "Lesson & team" },
@@ -18,7 +20,8 @@
 
   const state = {
     step: 0,
-    catalog: null,
+    meta: null,
+    library: null,
     lessonId: "money-management",
     teamName: "",
     spokespersonName: "",
@@ -41,14 +44,24 @@
     previewView: "title"
   };
 
-  const els = {};
-
-  function $(sel, root = document) {
-    return root.querySelector(sel);
-  }
-
   function byId(id) {
     return document.getElementById(id);
+  }
+
+  function familyOptions(family) {
+    return state.library?.families?.[family]?.options || [];
+  }
+
+  function findOption(family, slug) {
+    return familyOptions(family).find((o) => o.slug === slug);
+  }
+
+  function findMeta(list, id) {
+    return (list || []).find((item) => item.id === id);
+  }
+
+  function uiKey(family, slug) {
+    return `${family}.${slug}`;
   }
 
   function loadDraft() {
@@ -56,29 +69,58 @@
       const raw = localStorage.getItem(STORAGE_KEY);
       if (!raw) return;
       const saved = JSON.parse(raw);
-      Object.assign(state, saved, { catalog: state.catalog });
+      Object.assign(state, saved, { meta: state.meta, library: state.library });
     } catch {
-      /* ignore corrupt draft */
+      /* ignore */
     }
   }
 
   function saveDraft() {
-    const { catalog, ...rest } = state;
+    const { meta, library, ...rest } = state;
     localStorage.setItem(STORAGE_KEY, JSON.stringify(rest));
   }
 
-  function findById(list, id) {
-    return list.find((item) => item.id === id);
-  }
-
   function applyPreset(presetId) {
-    const preset = findById(state.catalog.presets, presetId);
+    const preset = findMeta(state.meta.presets, presetId);
     if (!preset) return;
     state.presetId = presetId;
     Object.assign(state, preset.defaults);
-    if (!state.varyCardsByChapter) {
-      state.chapterCards = {};
+    if (!state.varyCardsByChapter) state.chapterCards = {};
+  }
+
+  /** THM-04: adjacent WIPPEA chapters must not share the same card slug. */
+  function enforceAdjacentCardUniqueness(changedKey) {
+    const keys = state.meta.chapterKeys;
+    const idx = keys.indexOf(changedKey);
+    if (idx < 0) return;
+    const current = state.chapterCards[changedKey];
+    const neighbors = [keys[idx - 1], keys[idx + 1]].filter(Boolean);
+    const conflict = neighbors.find((n) => state.chapterCards[n] === current);
+    if (!conflict) return;
+    const alt = familyOptions("cards").find(
+      (o) => o.slug !== current && o.slug !== state.chapterCards[neighbors[0]] && o.slug !== state.chapterCards[neighbors[1]]
+    );
+    if (alt) {
+      state.chapterCards[changedKey] = alt.slug;
+      return alt.slug;
     }
+    return null;
+  }
+
+  function seedChapterCards() {
+    const cards = familyOptions("cards");
+    const keys = state.meta.chapterKeys;
+    keys.forEach((key, i) => {
+      if (state.chapterCards[key]) return;
+      // Rotate so adjacent chapters differ (THM-04)
+      const slug = cards[i % cards.length]?.slug || state.cardStyle;
+      const prev = keys[i - 1];
+      if (prev && state.chapterCards[prev] === slug && cards.length > 1) {
+        state.chapterCards[key] = cards[(i + 1) % cards.length].slug;
+      } else {
+        state.chapterCards[key] = slug;
+      }
+    });
   }
 
   function buildStepper() {
@@ -100,7 +142,7 @@
     });
   }
 
-  function optionButton({ id, label, detail, usedBy, swatch, pressed, onSelect }) {
+  function optionButton({ id, label, detail, usedBy, swatch, pressed, badge, onSelect }) {
     const btn = document.createElement("button");
     btn.type = "button";
     btn.className = "option";
@@ -120,6 +162,12 @@
       small.textContent = detail;
       btn.appendChild(small);
     }
+    if (badge) {
+      const tag = document.createElement("span");
+      tag.className = "used-tag";
+      tag.textContent = badge;
+      btn.appendChild(tag);
+    }
     if (usedBy && usedBy.length) {
       const tag = document.createElement("span");
       tag.className = "used-tag";
@@ -128,6 +176,23 @@
     }
     btn.addEventListener("click", onSelect);
     return btn;
+  }
+
+  function renderLibraryOptions(grid, family, selectedSlug, onPick, { swatchFor, showNew } = {}) {
+    familyOptions(family).forEach((opt) => {
+      const preview = swatchFor ? swatchFor(opt) : null;
+      grid.appendChild(
+        optionButton({
+          id: opt.id,
+          label: opt.label,
+          detail: opt.description || null,
+          swatch: preview,
+          pressed: selectedSlug === opt.slug,
+          badge: showNew && opt.legacy === false ? "New" : null,
+          onSelect: () => onPick(opt)
+        })
+      );
+    });
   }
 
   function renderTeam(panel) {
@@ -150,7 +215,7 @@
       </div>
     `;
     const select = byId("lessonSelect");
-    state.catalog.lessons.forEach((lesson) => {
+    state.meta.lessons.forEach((lesson) => {
       const opt = document.createElement("option");
       opt.value = lesson.id;
       opt.textContent = lesson.note ? `${lesson.title} (${lesson.note})` : lesson.title;
@@ -183,7 +248,7 @@
       <div class="preset-grid" id="presetGrid" role="group" aria-label="Personality presets"></div>
     `;
     const grid = byId("presetGrid");
-    state.catalog.presets.forEach((preset) => {
+    state.meta.presets.forEach((preset) => {
       const btn = document.createElement("button");
       btn.type = "button";
       btn.className = "preset";
@@ -201,20 +266,22 @@
   function renderColor(panel) {
     panel.innerHTML = `
       <h1>Color lead</h1>
-      <p class="panel-lead">Existing SPOKES color leads only (D6). Mix and match with other catalog pieces. Options already used by Phase 1 lessons are tagged.</p>
+      <p class="panel-lead">Existing SPOKES color leads only (D6 — display &amp; choice, no model rewrite). Options already used by Phase 1 lessons are tagged. Catalog id <code>colorLeads.{slug}</code>; intake stores the slug.</p>
       <div class="option-grid" id="colorGrid" role="group" aria-label="Color leads"></div>
     `;
     const grid = byId("colorGrid");
-    state.catalog.colorLeads.forEach((lead) => {
+    const cues = state.meta.colorLeadPreview || {};
+    familyOptions("colorLeads").forEach((opt) => {
+      const cue = cues[opt.slug] || {};
       grid.appendChild(
         optionButton({
-          id: lead.id,
-          label: lead.label,
-          usedBy: lead.usedBy,
-          swatch: `linear-gradient(135deg, ${lead.gradientFrom}, ${lead.gradientTo})`,
-          pressed: state.colorLead === lead.id,
+          id: opt.id,
+          label: opt.label,
+          usedBy: cue.usedBy,
+          swatch: `linear-gradient(135deg, ${cue.gradientFrom || "var(--primary)"}, ${cue.gradientTo || "var(--dark)"})`,
+          pressed: state.colorLead === opt.slug,
           onSelect: () => {
-            state.colorLead = lead.id;
+            state.colorLead = opt.slug;
             saveDraft();
             render();
           }
@@ -226,145 +293,100 @@
   function renderSurface(panel) {
     panel.innerHTML = `
       <h1>Sidebar &amp; texture</h1>
-      <p class="panel-lead">Layer 1 surfaces from the existing theme library.</p>
-      <h2 class="sr-only">Sidebar color</h2>
+      <p class="panel-lead">From <code>bespoke-library-catalog.json</code>. UI keys <code>sidebarColors.*</code> / <code>backgroundTextures.*</code>; persist slugs.</p>
       <p><strong>Sidebar</strong></p>
       <div class="option-grid" id="sidebarGrid"></div>
       <p style="margin-top:1.25rem"><strong>Background texture</strong></p>
       <div class="option-grid" id="textureGrid"></div>
     `;
-    const sidebarGrid = byId("sidebarGrid");
-    state.catalog.sidebarColors.forEach((item) => {
-      sidebarGrid.appendChild(
-        optionButton({
-          id: item.id,
-          label: item.label,
-          swatch: item.css,
-          pressed: state.sidebarColor === item.id,
-          onSelect: () => {
-            state.sidebarColor = item.id;
-            saveDraft();
-            render();
-          }
-        })
-      );
-    });
-    const textureGrid = byId("textureGrid");
-    state.catalog.backgroundTextures.forEach((item) => {
-      textureGrid.appendChild(
-        optionButton({
-          id: item.id,
-          label: item.label,
-          pressed: state.backgroundTexture === item.id,
-          onSelect: () => {
-            state.backgroundTexture = item.id;
-            saveDraft();
-            render();
-          }
-        })
-      );
+    const sidePreview = state.meta.sidebarPreview || {};
+    renderLibraryOptions(byId("sidebarGrid"), "sidebarColors", state.sidebarColor, (opt) => {
+      state.sidebarColor = opt.slug;
+      saveDraft();
+      render();
+    }, { swatchFor: (opt) => sidePreview[opt.slug] || "var(--dark)" });
+    renderLibraryOptions(byId("textureGrid"), "backgroundTextures", state.backgroundTexture, (opt) => {
+      state.backgroundTexture = opt.slug;
+      saveDraft();
+      render();
     });
   }
 
   function renderLayouts(panel) {
     panel.innerHTML = `
       <h1>Title slide &amp; divider</h1>
-      <p class="panel-lead">Twelve title layouts and five section dividers from the library.</p>
-      <p><strong>Title slide</strong></p>
+      <p class="panel-lead">Library family options including new variants. Keys <code>titleSlides.*</code> / <code>dividers.*</code>; intake gets slugs only.</p>
+      <p><strong>Title slide</strong> · <a href="../SPOKES%20Builder/library-preview.html" target="_blank" rel="noopener">Library preview</a></p>
       <div class="option-grid" id="titleGrid"></div>
       <p style="margin-top:1.25rem"><strong>Section divider</strong></p>
       <div class="option-grid" id="dividerGrid"></div>
     `;
-    const titleGrid = byId("titleGrid");
-    state.catalog.titleSlides.forEach((item) => {
-      titleGrid.appendChild(
-        optionButton({
-          id: item.id,
-          label: item.label,
-          pressed: state.titleSlide === item.id,
-          onSelect: () => {
-            state.titleSlide = item.id;
-            state.previewView = "title";
-            saveDraft();
-            render();
-          }
-        })
-      );
-    });
-    const dividerGrid = byId("dividerGrid");
-    state.catalog.dividerStyles.forEach((item) => {
-      dividerGrid.appendChild(
-        optionButton({
-          id: item.id,
-          label: item.label,
-          pressed: state.dividerStyle === item.id,
-          onSelect: () => {
-            state.dividerStyle = item.id;
-            state.previewView = "divider";
-            saveDraft();
-            render();
-          }
-        })
-      );
-    });
+    renderLibraryOptions(byId("titleGrid"), "titleSlides", state.titleSlide, (opt) => {
+      state.titleSlide = opt.slug;
+      state.previewView = "title";
+      saveDraft();
+      render();
+    }, { showNew: true });
+    renderLibraryOptions(byId("dividerGrid"), "dividers", state.dividerStyle, (opt) => {
+      state.dividerStyle = opt.slug;
+      state.previewView = "divider";
+      saveDraft();
+      render();
+    }, { showNew: true });
   }
 
   function renderCards(panel) {
     panel.innerHTML = `
       <h1>Card style</h1>
-      <p class="panel-lead">Lesson-wide by default. Opt in to vary by WIPPEA chapter (D12).</p>
+      <p class="panel-lead">Catalog keys <code>cards.{slug}</code> (16 styles). Persist <strong>slug only</strong>. Opt in to vary by WIPPEA chapter (D12). Adjacent chapters cannot share a card style (THM-04).</p>
       <div class="option-grid" id="cardGrid"></div>
       <div class="toggle-row">
         <input type="checkbox" id="varyCards" ${state.varyCardsByChapter ? "checked" : ""}>
         <label for="varyCards">
           <strong>Vary card style by chapter / topic</strong><br>
-          <span style="font-weight:400;color:var(--gray)">Uses different library card pieces for different WIPPEA stages.</span>
+          <span style="font-weight:400;color:var(--gray)">Different library pieces for different WIPPEA stages.</span>
         </label>
       </div>
+      <p id="thmNote" class="panel-lead" style="margin-top:0"></p>
       <div class="chapter-vary ${state.varyCardsByChapter ? "is-open" : ""}" id="chapterVary"></div>
     `;
-    const cardGrid = byId("cardGrid");
-    state.catalog.cardStyles.forEach((item) => {
-      cardGrid.appendChild(
-        optionButton({
-          id: item.id,
-          label: item.label,
-          pressed: state.cardStyle === item.id,
-          onSelect: () => {
-            state.cardStyle = item.id;
-            state.previewView = "cards";
-            saveDraft();
-            render();
-          }
-        })
-      );
-    });
+    renderLibraryOptions(byId("cardGrid"), "cards", state.cardStyle, (opt) => {
+      state.cardStyle = opt.slug;
+      state.previewView = "cards";
+      saveDraft();
+      render();
+    }, { showNew: true });
+
     byId("varyCards").addEventListener("change", (e) => {
       state.varyCardsByChapter = e.target.checked;
-      if (state.varyCardsByChapter) {
-        state.catalog.chapterKeys.forEach((key) => {
-          if (!state.chapterCards[key]) state.chapterCards[key] = state.cardStyle;
-        });
-      }
+      if (state.varyCardsByChapter) seedChapterCards();
       saveDraft();
       render();
     });
+
     const chapterVary = byId("chapterVary");
+    const thmNote = byId("thmNote");
     if (state.varyCardsByChapter) {
-      state.catalog.chapterKeys.forEach((key) => {
+      thmNote.textContent = "THM-04 enforced: changing a chapter to match a neighbor auto-picks another library card.";
+      state.meta.chapterKeys.forEach((key) => {
         const label = document.createElement("label");
         label.textContent = key;
         const select = document.createElement("select");
         select.setAttribute("aria-label", `Card style for chapter ${key}`);
-        state.catalog.cardStyles.forEach((style) => {
+        familyOptions("cards").forEach((style) => {
           const opt = document.createElement("option");
-          opt.value = style.id;
-          opt.textContent = style.label;
-          if ((state.chapterCards[key] || state.cardStyle) === style.id) opt.selected = true;
+          opt.value = style.slug;
+          opt.textContent = style.legacy === false ? `${style.label} (new)` : style.label;
+          if ((state.chapterCards[key] || state.cardStyle) === style.slug) opt.selected = true;
           select.appendChild(opt);
         });
         select.addEventListener("change", () => {
           state.chapterCards[key] = select.value;
+          const adjusted = enforceAdjacentCardUniqueness(key);
+          if (adjusted && adjusted !== select.value) {
+            select.value = adjusted;
+            thmNote.textContent = `THM-04: ${key} adjusted to ${findOption("cards", adjusted)?.label || adjusted} so it differs from neighbors.`;
+          }
           saveDraft();
           updatePreview();
         });
@@ -377,11 +399,11 @@
   function renderFonts(panel) {
     panel.innerHTML = `
       <h1>Font pairing</h1>
-      <p class="panel-lead">Self-hosted pairings from the SPOKES font library.</p>
+      <p class="panel-lead">Self-hosted pairings from the SPOKES font library (wizard meta; not part of the card/layout library catalog).</p>
       <div class="option-grid" id="fontGrid"></div>
     `;
     const grid = byId("fontGrid");
-    state.catalog.fontPairings.forEach((item) => {
+    state.meta.fontPairings.forEach((item) => {
       grid.appendChild(
         optionButton({
           id: item.id,
@@ -399,7 +421,7 @@
   }
 
   function renderContent(panel) {
-    const lesson = findById(state.catalog.lessons, state.lessonId);
+    const lesson = findMeta(state.meta.lessons, state.lessonId);
     panel.innerHTML = `
       <h1>Try your content</h1>
       <p class="panel-lead">Paste a little sample text. The Spokes Model preview updates with demo slides — not a full lesson build.</p>
@@ -437,7 +459,7 @@
     const labels = selectionLabels();
     panel.innerHTML = `
       <h1>Review &amp; submit</h1>
-      <p class="panel-lead">Spoke Signals sends your choices as a lesson-tagged PR. Merge is Britt’s greenlight to build. No GitHub token is used in this browser.</p>
+      <p class="panel-lead">Spoke Signals opens a lesson-tagged PR. Merge is Britt’s greenlight. No GitHub token in this browser. Theme fields store <strong>slugs</strong> (e.g. <code>top-accent</code>), not full UI ids.</p>
       <ul class="summary-list" id="summaryList"></ul>
       <label class="field" style="margin-top:1.25rem">Unspoken — something we wish existed in the library
         <textarea id="unspoken" placeholder="Optional wish-list for future library pieces"></textarea>
@@ -459,25 +481,25 @@
   }
 
   function selectionLabels() {
-    const c = state.catalog;
-    const lesson = findById(c.lessons, state.lessonId);
-    const preset = findById(c.presets, state.presetId);
+    const lesson = findMeta(state.meta.lessons, state.lessonId);
+    const preset = findMeta(state.meta.presets, state.presetId);
+    const cardLabel = (slug) => findOption("cards", slug)?.label || slug;
     return {
       Lesson: lesson ? lesson.title : state.lessonId,
       Team: state.teamName || "—",
       Spokesperson: state.spokespersonName || "—",
       Preset: preset ? preset.label : state.presetId,
-      "Color lead": findById(c.colorLeads, state.colorLead)?.label || state.colorLead,
-      Sidebar: findById(c.sidebarColors, state.sidebarColor)?.label || state.sidebarColor,
-      Texture: findById(c.backgroundTextures, state.backgroundTexture)?.label || state.backgroundTexture,
-      "Title slide": findById(c.titleSlides, state.titleSlide)?.label || state.titleSlide,
-      Divider: findById(c.dividerStyles, state.dividerStyle)?.label || state.dividerStyle,
+      "Color lead": `${findOption("colorLeads", state.colorLead)?.label || state.colorLead} (${uiKey("colorLeads", state.colorLead)})`,
+      Sidebar: findOption("sidebarColors", state.sidebarColor)?.label || state.sidebarColor,
+      Texture: findOption("backgroundTextures", state.backgroundTexture)?.label || state.backgroundTexture,
+      "Title slide": findOption("titleSlides", state.titleSlide)?.label || state.titleSlide,
+      Divider: findOption("dividers", state.dividerStyle)?.label || state.dividerStyle,
       Cards: state.varyCardsByChapter
         ? `Vary by chapter (${Object.entries(state.chapterCards)
             .map(([k, v]) => `${k}:${v}`)
             .join(", ")})`
-        : findById(c.cardStyles, state.cardStyle)?.label || state.cardStyle,
-      Fonts: findById(c.fontPairings, state.fontPairing)?.label || state.fontPairing
+        : `${cardLabel(state.cardStyle)} → slug \`${state.cardStyle}\``,
+      Fonts: findMeta(state.meta.fontPairings, state.fontPairing)?.label || state.fontPairing
     };
   }
 
@@ -546,17 +568,15 @@
   }
 
   function applyLeadVars() {
-    const lead = findById(state.catalog.colorLeads, state.colorLead);
+    const cue = (state.meta.colorLeadPreview || {})[state.colorLead] || {};
     const root = document.documentElement;
-    if (lead) {
-      root.style.setProperty("--lead-heading", lead.heading);
-      root.style.setProperty("--lead-button", lead.button);
-      root.style.setProperty("--lead-from", lead.gradientFrom);
-      root.style.setProperty("--lead-to", lead.gradientTo);
-    }
-    const sidebar = findById(state.catalog.sidebarColors, state.sidebarColor);
-    root.style.setProperty("--sidebar-tone", sidebar ? sidebar.css : "var(--dark)");
-    const fonts = findById(state.catalog.fontPairings, state.fontPairing);
+    root.style.setProperty("--lead-heading", cue.heading || "var(--primary)");
+    root.style.setProperty("--lead-button", cue.button || "var(--primary)");
+    root.style.setProperty("--lead-from", cue.gradientFrom || "var(--primary)");
+    root.style.setProperty("--lead-to", cue.gradientTo || "var(--dark)");
+    const side = (state.meta.sidebarPreview || {})[state.sidebarColor] || "var(--dark)";
+    root.style.setProperty("--sidebar-tone", side);
+    const fonts = findMeta(state.meta.fontPairings, state.fontPairing);
     if (fonts) {
       root.style.setProperty("--model-heading", `"${fonts.heading}", Georgia, serif`);
       root.style.setProperty("--model-body", `"${fonts.body}", system-ui, sans-serif`);
@@ -565,7 +585,7 @@
 
   function lessonDisplayTitle() {
     if (state.lessonTitle.trim()) return state.lessonTitle.trim();
-    const lesson = findById(state.catalog.lessons, state.lessonId);
+    const lesson = findMeta(state.meta.lessons, state.lessonId);
     return lesson ? lesson.title : "Lesson title";
   }
 
@@ -609,7 +629,10 @@
           }
         </div>`;
     } else {
-      const cardClass = `cards-${state.cardStyle}`;
+      const previewCard = state.varyCardsByChapter
+        ? state.chapterCards.P1 || state.cardStyle
+        : state.cardStyle;
+      const cardClass = `cards-${previewCard}`;
       const cards = (bullets.length ? bullets : ["Sample point one", "Sample point two", "Sample point three"])
         .map((b, i) => {
           const myth = mythLines[i] || "";
@@ -619,7 +642,7 @@
       stage.innerHTML = `
         <div class="model-slide">
           <h3>Key points</h3>
-          <p>Demo-first Spokes Model — sample content, not a full build.</p>
+          <p>Demo-first Spokes Model — sample content, not a full build. Showing <code>${escapeHtml(uiKey("cards", previewCard))}</code>.</p>
         </div>
         <div class="model-cards ${cardClass}">${cards}</div>`;
     }
@@ -634,7 +657,7 @@
 
   function renderTitleSlide(title, subtitle) {
     const cls = `model-title title-${state.titleSlide}`;
-    if (["split-hero", "diagonal-split", "vertical-strip"].includes(state.titleSlide)) {
+    if (["split-hero", "diagonal-split", "vertical-strip", "side-rail"].includes(state.titleSlide)) {
       return `<div class="${cls}">
         <div class="title-hero-panel" aria-hidden="true"></div>
         <div class="title-copy model-slide"><h3>${escapeHtml(title)}</h3><p>${escapeHtml(subtitle)}</p></div>
@@ -647,12 +670,13 @@
   }
 
   function buildSelectionPayload() {
-    const lesson = findById(state.catalog.lessons, state.lessonId);
+    const lesson = findMeta(state.meta.lessons, state.lessonId);
     const today = new Date().toISOString().slice(0, 10);
     return {
       schema: "bespoke-selection/v1",
       submittedAt: new Date().toISOString(),
       date: today,
+      libraryCatalogVersion: state.library?.version || null,
       lesson: {
         id: state.lessonId,
         title: lesson ? lesson.title : state.lessonId,
@@ -668,6 +692,7 @@
       },
       presetId: state.presetId,
       theme: {
+        // Slugs only — matches theme-registry.json field values
         colorLead: state.colorLead,
         sidebarColor: state.sidebarColor,
         backgroundTexture: state.backgroundTexture,
@@ -678,6 +703,18 @@
           lessonWide: state.cardStyle,
           varyByChapter: state.varyCardsByChapter,
           chapterStyles: state.varyCardsByChapter ? { ...state.chapterCards } : null
+        },
+        catalogIds: {
+          colorLead: uiKey("colorLeads", state.colorLead),
+          sidebarColor: uiKey("sidebarColors", state.sidebarColor),
+          backgroundTexture: uiKey("backgroundTextures", state.backgroundTexture),
+          titleSlide: uiKey("titleSlides", state.titleSlide),
+          dividerStyle: uiKey("dividers", state.dividerStyle),
+          cards: state.varyCardsByChapter
+            ? Object.fromEntries(
+                Object.entries(state.chapterCards).map(([k, slug]) => [k, uiKey("cards", slug)])
+              )
+            : uiKey("cards", state.cardStyle)
         }
       },
       sampleContent: {
@@ -695,9 +732,11 @@
       .map((b, i) => `${i + 1}. ${b}`)
       .join("\n");
     const myth = payload.sampleContent.mythReality || "";
+    const theme = payload.theme;
     return `# SPOKES Lesson Content Intake Template
 
 **Filled by Bespoke** (prototype). Template remains canonical (D11).
+Library catalog: \`SPOKES Builder/bespoke-library-catalog.json\` — UI keys \`{family}.{slug}\`; fields below store **slugs only**.
 
 ---
 
@@ -715,21 +754,25 @@
 
 ### Design choices (from Bespoke)
 
-| Dimension | Selection |
-|-----------|-----------|
-| Preset | ${payload.presetId} |
-| Color lead | ${payload.theme.colorLead} |
-| Sidebar | ${payload.theme.sidebarColor} |
-| Texture | ${payload.theme.backgroundTexture} |
-| Title slide | ${payload.theme.titleSlide} |
-| Divider | ${payload.theme.dividerStyle} |
-| Font pairing | ${payload.theme.fontPairing} |
+| Dimension | Slug (registry) | Catalog id |
+|-----------|-----------------|------------|
+| Preset | ${payload.presetId} | — |
+| Color lead | ${theme.colorLead} | ${theme.catalogIds.colorLead} |
+| Sidebar | ${theme.sidebarColor} | ${theme.catalogIds.sidebarColor} |
+| Texture | ${theme.backgroundTexture} | ${theme.catalogIds.backgroundTexture} |
+| Title slide | ${theme.titleSlide} | ${theme.catalogIds.titleSlide} |
+| Divider | ${theme.dividerStyle} | ${theme.catalogIds.dividerStyle} |
+| Font pairing | ${theme.fontPairing} | — |
 | Cards | ${
-      payload.theme.cards.varyByChapter
-        ? `vary by chapter: ${JSON.stringify(payload.theme.cards.chapterStyles)}`
-        : payload.theme.cards.lessonWide
+      theme.cards.varyByChapter
+        ? `vary by chapter: ${JSON.stringify(theme.cards.chapterStyles)}`
+        : theme.cards.lessonWide
+    } | ${
+      typeof theme.catalogIds.cards === "string"
+        ? theme.catalogIds.cards
+        : JSON.stringify(theme.catalogIds.cards)
     } |
-| Unspoken | ${payload.unspoken || "_none_"} |
+| Unspoken | ${payload.unspoken || "_none_"} | — |
 
 ---
 
@@ -910,9 +953,11 @@ _Full P2–A content delivered via the team OneDrive folder. This prototype inta
   }
 
   async function init() {
-    els.live = byId("liveRegion");
-    const res = await fetch("./catalog.json");
-    state.catalog = await res.json();
+    const [metaRes, libRes] = await Promise.all([fetch(META_URL), fetch(LIBRARY_URL)]);
+    if (!metaRes.ok) throw new Error(`Failed to load ${META_URL}`);
+    if (!libRes.ok) throw new Error(`Failed to load library catalog (${libRes.status}). Is SPOKES Builder/bespoke-library-catalog.json present?`);
+    state.meta = await metaRes.json();
+    state.library = await libRes.json();
     loadDraft();
     if (!state.chapterCards || typeof state.chapterCards !== "object") state.chapterCards = {};
 
@@ -939,5 +984,11 @@ _Full P2–A content delivered via the team OneDrive folder. This prototype inta
     render();
   }
 
-  document.addEventListener("DOMContentLoaded", init);
+  document.addEventListener("DOMContentLoaded", () => {
+    init().catch((err) => {
+      const panel = byId("stepPanel");
+      panel.innerHTML = `<h1>Catalog load failed</h1><p class="panel-lead">${escapeHtml(err.message)}</p>`;
+      console.error(err);
+    });
+  });
 })();

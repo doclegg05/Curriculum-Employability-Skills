@@ -24,6 +24,10 @@ Source of truth at greenlight: project store `docs/bespoke-open-questions.md`. T
 1. Core: catalog + wizard UI + demo preview + dashboard link + Spoke Signals Action — this PR
 2. Library: expanded selectable card/layout variations feeding the catalog — parallel workstream
 
+## Library registration
+
+Wizard loads `SPOKES Builder/bespoke-library-catalog.json` (see companion card-library PR). UI keys are `{family}.{slug}`; registry/intake fields store **slug only**. Color leads remain display/choice only (D6). Docs: `SPOKES Builder/bespoke-library-ids.md`.
+
 ## Concept brief
 
 `docs/briefs/instructor-lesson-studio-concept-2026-09-17.md` (when merged from the briefs PR). Follow where it does not conflict with this lock file — **decisions win**.
