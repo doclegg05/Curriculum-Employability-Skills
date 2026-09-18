@@ -237,7 +237,7 @@
           "label": "Stacked Bands",
           "legacy": false,
           "cssMarker": "--- 7. stacked-bands",
-          "description": "Primary + gold horizontal bands anchoring centered type."
+          "description": "Primary top + gold bottom bands via background layers (preserves chapter watermark ::after)."
         },
         {
           "id": "dividers.dark-masthead",

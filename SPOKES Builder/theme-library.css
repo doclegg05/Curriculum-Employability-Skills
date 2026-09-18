@@ -1228,14 +1228,22 @@
 
 
 /* --- 7. stacked-bands --- */
+/* Uses layered backgrounds only — must NOT override ::after (chapter watermark). */
 /*
-   DIVIDER_SCOPE { background: var(--light); flex-direction: column; align-items: stretch; justify-content: flex-end; padding: 0; }
-   DIVIDER_SCOPE::before { content: ''; display: block; height: 28%; background: var(--primary); }
-   DIVIDER_SCOPE::after { content: ''; display: block; height: 12%; background: var(--gold); }
-   DIVIDER_SCOPE h2 { color: var(--dark); position: absolute; left: 50%; top: 48%; transform: translate(-50%, -50%); z-index: 1; text-align: center; width: 80%; }
-   DIVIDER_SCOPE .chapter-label { color: var(--primary); position: absolute; left: 50%; top: 38%; transform: translateX(-50%); z-index: 1; }
-   DIVIDER_SCOPE .divider { position: absolute; left: 50%; top: 56%; transform: translateX(-50%); z-index: 1; background: var(--muted-gold); }
-   DIVIDER_SCOPE .section-circle { position: absolute; right: 8%; top: 42%; transform: none; z-index: 1; border-color: var(--primary); }
+   DIVIDER_SCOPE {
+     background:
+       linear-gradient(var(--primary), var(--primary)) top / 100% 28% no-repeat,
+       linear-gradient(var(--gold), var(--gold)) bottom / 100% 12% no-repeat,
+       var(--light);
+     flex-direction: column;
+     align-items: center;
+     justify-content: center;
+     padding: 0;
+   }
+   DIVIDER_SCOPE h2 { color: var(--dark); text-align: center; position: relative; z-index: 1; }
+   DIVIDER_SCOPE .chapter-label { color: var(--primary); position: relative; z-index: 1; }
+   DIVIDER_SCOPE .divider { background: var(--muted-gold); position: relative; z-index: 1; }
+   DIVIDER_SCOPE .section-circle { position: relative; z-index: 1; border-color: var(--primary); margin-bottom: 1rem; }
 */
 
 
