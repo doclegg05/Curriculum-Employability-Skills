@@ -1,0 +1,324 @@
+{
+  "version": "1.0.0",
+  "product": "bespoke",
+  "description": "Selectable SPOKES theme-library options for the Bespoke wizard catalog. IDs are stable; CSS lives in theme-library.css. Color leads are listed for catalog display only — do not rewrite the colorLead/registry color model.",
+  "sourceCss": "SPOKES Builder/theme-library.css",
+  "sourceRegistry": "SPOKES Builder/theme-registry.json",
+  "idScheme": {
+    "pattern": "{family}.{slug}",
+    "slugRules": "kebab-case; matches the --- N. {slug} --- marker comment in theme-library.css",
+    "registryFieldMap": {
+      "cards": "chapterStyles.*.cards",
+      "dividers": "chapterStyles.*.divider (and lesson-level dividerStyle)",
+      "titleSlides": "titleSlide",
+      "backgroundTextures": "backgroundTexture",
+      "colorLeads": "colorLead",
+      "sidebarColors": "sidebarColor",
+      "fontPairings": "fontPairing"
+    },
+    "applyTokens": {
+      "cards": "Replace SCOPE with [data-chapter=\"N\"]",
+      "dividers": "Replace DIVIDER_SCOPE with .slide-section[data-chapter=\"N\"]",
+      "titleSlides": "Uncomment block into style#theme-override (no SCOPE token)",
+      "backgroundTextures": "Uncomment .main block into style#theme-override"
+    }
+  },
+  "presets": [
+    "Professional",
+    "Modern",
+    "Serious",
+    "Light-hearted",
+    "Fun",
+    "Outspoken"
+  ],
+  "families": {
+    "cards": {
+      "label": "Card styles",
+      "count": 16,
+      "options": [
+        {
+          "id": "cards.left-border",
+          "slug": "left-border",
+          "label": "Left Border",
+          "default": true,
+          "legacy": true,
+          "cssMarker": "--- 1. left-border",
+          "description": "Template default — muted fill with a thick accent left rail.",
+          "presetAffinity": ["Professional", "Serious"]
+        },
+        {
+          "id": "cards.shadow-float",
+          "slug": "shadow-float",
+          "label": "Shadow Float",
+          "legacy": true,
+          "cssMarker": "--- 2. shadow-float",
+          "description": "Soft elevation with a thin top accent edge.",
+          "presetAffinity": ["Modern", "Professional"]
+        },
+        {
+          "id": "cards.sharp-border",
+          "slug": "sharp-border",
+          "label": "Sharp Border",
+          "legacy": true,
+          "cssMarker": "--- 3. sharp-border",
+          "description": "Zero-radius framed cards; crisp and formal.",
+          "presetAffinity": ["Serious", "Outspoken"]
+        },
+        {
+          "id": "cards.glass",
+          "slug": "glass",
+          "label": "Glass",
+          "legacy": true,
+          "cssMarker": "--- 4. glass",
+          "description": "Frosted translucent panels; best with dark-royal lessons.",
+          "presetAffinity": ["Modern", "Fun"]
+        },
+        {
+          "id": "cards.outlined",
+          "slug": "outlined",
+          "label": "Outlined",
+          "legacy": true,
+          "cssMarker": "--- 5. outlined",
+          "description": "Light outline with a heavy bottom accent rule.",
+          "presetAffinity": ["Professional", "Modern"]
+        },
+        {
+          "id": "cards.gradient-fill",
+          "slug": "gradient-fill",
+          "label": "Gradient Fill",
+          "legacy": true,
+          "cssMarker": "--- 6. gradient-fill",
+          "description": "Filled primary→dark gradients with light text (high contrast).",
+          "presetAffinity": ["Outspoken", "Fun"]
+        },
+        {
+          "id": "cards.pill",
+          "slug": "pill",
+          "label": "Pill",
+          "legacy": true,
+          "cssMarker": "--- 7. pill",
+          "description": "Large corner radii; friendly rounded containers.",
+          "presetAffinity": ["Light-hearted", "Fun"]
+        },
+        {
+          "id": "cards.layered",
+          "slug": "layered",
+          "label": "Layered",
+          "legacy": true,
+          "cssMarker": "--- 8. layered",
+          "description": "Offset hard-shadow stack for depth without blur.",
+          "presetAffinity": ["Modern", "Outspoken"]
+        },
+        {
+          "id": "cards.top-accent",
+          "slug": "top-accent",
+          "label": "Top Accent",
+          "legacy": false,
+          "cssMarker": "--- 9. top-accent",
+          "description": "Heavy top accent bar; square-top / soft-bottom silhouette.",
+          "presetAffinity": ["Professional", "Modern"]
+        },
+        {
+          "id": "cards.inset-panel",
+          "slug": "inset-panel",
+          "label": "Inset Panel",
+          "legacy": false,
+          "cssMarker": "--- 10. inset-panel",
+          "description": "Muted recessed panels with inset highlight — calm classroom tone.",
+          "presetAffinity": ["Serious", "Professional"]
+        },
+        {
+          "id": "cards.dual-rail",
+          "slug": "dual-rail",
+          "label": "Dual Rail",
+          "legacy": false,
+          "cssMarker": "--- 11. dual-rail",
+          "description": "Primary left + gold right rails for dual-tone emphasis.",
+          "presetAffinity": ["Outspoken", "Professional"]
+        },
+        {
+          "id": "cards.soft-lift",
+          "slug": "soft-lift",
+          "label": "Soft Lift",
+          "legacy": false,
+          "cssMarker": "--- 12. soft-lift",
+          "description": "Borderless elevated cards with deep soft shadow.",
+          "presetAffinity": ["Modern", "Light-hearted"]
+        },
+        {
+          "id": "cards.rule-stack",
+          "slug": "rule-stack",
+          "label": "Rule Stack",
+          "legacy": false,
+          "cssMarker": "--- 13. rule-stack",
+          "description": "Editorial hairline top + heavy bottom rule; minimal chrome.",
+          "presetAffinity": ["Serious", "Professional"]
+        },
+        {
+          "id": "cards.stamp-frame",
+          "slug": "stamp-frame",
+          "label": "Stamp Frame",
+          "legacy": false,
+          "cssMarker": "--- 14. stamp-frame",
+          "description": "Thick framed stamp with outer outline offset.",
+          "presetAffinity": ["Outspoken", "Serious"]
+        },
+        {
+          "id": "cards.banded-header",
+          "slug": "banded-header",
+          "label": "Banded Header",
+          "legacy": false,
+          "cssMarker": "--- 15. banded-header",
+          "description": "Color band painted across the top edge of each card.",
+          "presetAffinity": ["Modern", "Fun"]
+        },
+        {
+          "id": "cards.quiet-outline",
+          "slug": "quiet-outline",
+          "label": "Quiet Outline",
+          "legacy": false,
+          "cssMarker": "--- 16. quiet-outline",
+          "description": "Low-contrast single outline; restrained and accessible.",
+          "presetAffinity": ["Professional", "Light-hearted"]
+        }
+      ]
+    },
+    "dividers": {
+      "label": "Section dividers",
+      "count": 8,
+      "options": [
+        {
+          "id": "dividers.gradient-sweep",
+          "slug": "gradient-sweep",
+          "label": "Gradient Sweep",
+          "default": true,
+          "legacy": true,
+          "cssMarker": "--- 1. gradient-sweep"
+        },
+        {
+          "id": "dividers.framed-gold",
+          "slug": "framed-gold",
+          "label": "Framed Gold",
+          "legacy": true,
+          "cssMarker": "--- 2. framed-gold"
+        },
+        {
+          "id": "dividers.bold-full-bleed",
+          "slug": "bold-full-bleed",
+          "label": "Bold Full Bleed",
+          "legacy": true,
+          "cssMarker": "--- 3. bold-full-bleed"
+        },
+        {
+          "id": "dividers.split-panel",
+          "slug": "split-panel",
+          "label": "Split Panel",
+          "legacy": true,
+          "cssMarker": "--- 4. split-panel"
+        },
+        {
+          "id": "dividers.centered-badge",
+          "slug": "centered-badge",
+          "label": "Centered Badge",
+          "legacy": true,
+          "cssMarker": "--- 5. centered-badge"
+        },
+        {
+          "id": "dividers.gold-rail",
+          "slug": "gold-rail",
+          "label": "Gold Rail",
+          "legacy": false,
+          "cssMarker": "--- 6. gold-rail",
+          "description": "Dark field with a vertical gold rail along the left edge."
+        },
+        {
+          "id": "dividers.stacked-bands",
+          "slug": "stacked-bands",
+          "label": "Stacked Bands",
+          "legacy": false,
+          "cssMarker": "--- 7. stacked-bands",
+          "description": "Primary + gold horizontal bands anchoring centered type."
+        },
+        {
+          "id": "dividers.dark-masthead",
+          "slug": "dark-masthead",
+          "label": "Dark Masthead",
+          "legacy": false,
+          "cssMarker": "--- 8. dark-masthead",
+          "description": "Royal→dark masthead with gold hairline and ringed circle."
+        }
+      ]
+    },
+    "titleSlides": {
+      "label": "Title slides",
+      "count": 15,
+      "options": [
+        { "id": "titleSlides.centered-gradient", "slug": "centered-gradient", "label": "Centered Gradient", "default": true, "legacy": true, "cssMarker": "--- 1. centered-gradient" },
+        { "id": "titleSlides.split-hero", "slug": "split-hero", "label": "Split Hero", "legacy": true, "cssMarker": "--- 2. split-hero" },
+        { "id": "titleSlides.full-bleed", "slug": "full-bleed", "label": "Full Bleed", "legacy": true, "cssMarker": "--- 3. full-bleed" },
+        { "id": "titleSlides.bottom-anchored", "slug": "bottom-anchored", "label": "Bottom Anchored", "legacy": true, "cssMarker": "--- 4. bottom-anchored" },
+        { "id": "titleSlides.offset-left", "slug": "offset-left", "label": "Offset Left", "legacy": true, "cssMarker": "--- 5. offset-left" },
+        { "id": "titleSlides.diagonal-split", "slug": "diagonal-split", "label": "Diagonal Split", "legacy": true, "cssMarker": "--- 6. diagonal-split" },
+        { "id": "titleSlides.framed-center", "slug": "framed-center", "label": "Framed Center", "legacy": true, "cssMarker": "--- 7. framed-center" },
+        { "id": "titleSlides.top-banner", "slug": "top-banner", "label": "Top Banner", "legacy": true, "cssMarker": "--- 8. top-banner" },
+        { "id": "titleSlides.radial-glow", "slug": "radial-glow", "label": "Radial Glow", "legacy": true, "cssMarker": "--- 9. radial-glow" },
+        { "id": "titleSlides.vertical-strip", "slug": "vertical-strip", "label": "Vertical Strip", "legacy": true, "cssMarker": "--- 10. vertical-strip" },
+        { "id": "titleSlides.corner-accent", "slug": "corner-accent", "label": "Corner Accent", "legacy": true, "cssMarker": "--- 11. corner-accent" },
+        { "id": "titleSlides.horizon-line", "slug": "horizon-line", "label": "Horizon Line", "legacy": true, "cssMarker": "--- 12. horizon-line" },
+        { "id": "titleSlides.quiet-center", "slug": "quiet-center", "label": "Quiet Center", "legacy": false, "cssMarker": "--- 13. quiet-center", "description": "Muted field, centered type, short gold rule." },
+        { "id": "titleSlides.dual-band", "slug": "dual-band", "label": "Dual Band", "legacy": false, "cssMarker": "--- 14. dual-band", "description": "Top dual-tone band + gold footer rule on light field." },
+        { "id": "titleSlides.side-rail", "slug": "side-rail", "label": "Side Rail", "legacy": false, "cssMarker": "--- 15. side-rail", "description": "Dark gradient with a multi-color vertical brand rail." }
+      ]
+    },
+    "backgroundTextures": {
+      "label": "Background textures",
+      "count": 6,
+      "note": "Existing options; catalogued for wizard display. No model change.",
+      "options": [
+        { "id": "backgroundTextures.plain", "slug": "plain", "label": "Plain", "default": true, "legacy": true },
+        { "id": "backgroundTextures.dot-grid", "slug": "dot-grid", "label": "Dot Grid", "legacy": true },
+        { "id": "backgroundTextures.diagonal", "slug": "diagonal", "label": "Diagonal", "legacy": true },
+        { "id": "backgroundTextures.crosshatch", "slug": "crosshatch", "label": "Crosshatch", "legacy": true },
+        { "id": "backgroundTextures.soft-gradient", "slug": "soft-gradient", "label": "Soft Gradient", "legacy": true },
+        { "id": "backgroundTextures.dark-royal", "slug": "dark-royal", "label": "Dark Royal", "legacy": true, "requiresThemeDarkClass": true }
+      ]
+    },
+    "colorLeads": {
+      "label": "Color leads",
+      "count": 9,
+      "note": "LOCKED (D6): present for choice / legal mix-match. Do not invent new lead colors or rewrite registry color model.",
+      "options": [
+        { "id": "colorLeads.blue", "slug": "blue", "label": "Blue", "legacy": true },
+        { "id": "colorLeads.mauve", "slug": "mauve", "label": "Mauve", "legacy": true },
+        { "id": "colorLeads.gold", "slug": "gold", "label": "Gold", "legacy": true },
+        { "id": "colorLeads.green", "slug": "green", "label": "Green", "legacy": true },
+        { "id": "colorLeads.royal", "slug": "royal", "label": "Royal", "legacy": true },
+        { "id": "colorLeads.dual-mauve-blue", "slug": "dual-mauve-blue", "label": "Dual Mauve–Blue", "legacy": true },
+        { "id": "colorLeads.dual-gold-green", "slug": "dual-gold-green", "label": "Dual Gold–Green", "legacy": true },
+        { "id": "colorLeads.dual-mauve-gold", "slug": "dual-mauve-gold", "label": "Dual Mauve–Gold", "legacy": true },
+        { "id": "colorLeads.dual-blue-green", "slug": "dual-blue-green", "label": "Dual Blue–Green", "legacy": true }
+      ]
+    },
+    "sidebarColors": {
+      "label": "Sidebar colors",
+      "count": 2,
+      "note": "Existing options; catalogued for wizard display.",
+      "options": [
+        { "id": "sidebarColors.dark", "slug": "dark", "label": "Dark", "default": true, "legacy": true },
+        { "id": "sidebarColors.royal", "slug": "royal", "label": "Royal", "legacy": true }
+      ]
+    }
+  },
+  "wizardIntegration": {
+    "load": "Fetch or import SPOKES Builder/bespoke-library-catalog.json",
+    "display": "Render families.cards / dividers / titleSlides (and optionally textures, colorLeads) as selectable tiles",
+    "persist": "Write chosen slug (not full id) into theme-registry.json fields and content-intake theme section",
+    "emitCss": "Copy matching commented block from theme-library.css into style#theme-override; apply SCOPE / DIVIDER_SCOPE replacements",
+    "chapterVary": "D12 opt-in: assign different cards.* slugs per chapterStyles entry; enforce THM-04 (no adjacent chapter same card style)",
+    "doNot": [
+      "Rewrite colorLead CSS or invent palette hex values",
+      "Change canonical :root 11-color variables",
+      "Invent CSS outside theme-library.css for lesson builds"
+    ]
+  }
+}

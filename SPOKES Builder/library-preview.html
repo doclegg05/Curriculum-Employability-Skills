@@ -1,0 +1,139 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Bespoke card library preview</title>
+  <style>
+    :root {
+      --primary: #007baf;
+      --accent: #37b550;
+      --dark: #004071;
+      --light: #ffffff;
+      --muted: #edf3f7;
+      --gray: #60636b;
+      --gold: #d3b257;
+      --royal: #00133f;
+      --mauve: #a7253f;
+      --offwhite: #d1d3d4;
+      --muted-gold: #ad8806;
+      --font-heading: "DM Serif Display", "Times New Roman", serif;
+      --font-body: "Outfit", "Segoe UI", sans-serif;
+    }
+    * { box-sizing: border-box; }
+    body {
+      margin: 0;
+      font-family: var(--font-body);
+      color: var(--dark);
+      background: linear-gradient(180deg, var(--light), var(--muted));
+      padding: 2rem clamp(1rem, 4vw, 3rem) 4rem;
+    }
+    h1 {
+      font-family: var(--font-heading);
+      font-weight: 400;
+      font-size: clamp(1.75rem, 3vw, 2.5rem);
+      margin: 0 0 0.35rem;
+    }
+    .lede { color: var(--gray); max-width: 52ch; margin-bottom: 2rem; }
+    .grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(260px, 1fr));
+      gap: 1.25rem;
+    }
+    .sample {
+      background: var(--light);
+      border: 1px solid rgba(0,64,113,0.1);
+      border-radius: 12px;
+      padding: 1rem;
+    }
+    .sample h2 {
+      font-family: var(--font-heading);
+      font-size: 1.05rem;
+      font-weight: 400;
+      margin: 0 0 0.35rem;
+    }
+    .id {
+      font-size: 0.75rem;
+      color: var(--gray);
+      margin-bottom: 0.85rem;
+      word-break: break-all;
+    }
+    .card {
+      background: var(--muted);
+      padding: 1.25rem 1.35rem;
+      border-radius: 12px;
+      border-left: 6px solid var(--accent);
+    }
+    .card h4 {
+      font-family: var(--font-heading);
+      font-size: 1.15rem;
+      color: var(--primary);
+      margin: 0 0 0.4rem;
+      font-weight: 400;
+    }
+    .card p { margin: 0; color: var(--gray); font-size: 0.95rem; }
+
+    /* Applied variants (unscoped — preview only) */
+    [data-variant="left-border"] .card { /* default */ }
+    [data-variant="top-accent"] .card {
+      background: var(--light); border-left: none; border-top: 5px solid var(--primary);
+      border-radius: 0 0 10px 10px; box-shadow: 0 2px 10px rgba(0,64,113,0.06);
+    }
+    [data-variant="inset-panel"] .card {
+      background: var(--muted); border-left: none; border: 1px solid rgba(0,64,113,0.08);
+      border-radius: 14px; box-shadow: inset 0 1px 0 rgba(255,255,255,0.8);
+    }
+    [data-variant="dual-rail"] .card {
+      background: var(--light); border-left: 3px solid var(--primary); border-right: 3px solid var(--gold); border-radius: 4px;
+    }
+    [data-variant="soft-lift"] .card {
+      background: var(--light); border-left: none; border: none; border-radius: 16px;
+      box-shadow: 0 10px 28px rgba(0,64,113,0.1), 0 2px 6px rgba(0,64,113,0.04);
+    }
+    [data-variant="rule-stack"] .card {
+      background: transparent; border-left: none; border-top: 1px solid var(--offwhite);
+      border-bottom: 2px solid var(--dark); border-radius: 0; padding: 1rem 0.15rem;
+    }
+    [data-variant="stamp-frame"] .card {
+      background: var(--light); border: 3px solid var(--dark); border-radius: 2px;
+      outline: 1px solid var(--dark); outline-offset: 4px;
+    }
+    [data-variant="banded-header"] .card {
+      background: var(--light); border-left: none; border-radius: 10px; overflow: hidden;
+      box-shadow: 0 2px 8px rgba(0,64,113,0.06);
+      background-image: linear-gradient(var(--primary), var(--primary));
+      background-size: 100% 10px; background-repeat: no-repeat; padding-top: 1.4rem;
+    }
+    [data-variant="quiet-outline"] .card {
+      background: var(--light); border: 1px solid rgba(0,64,113,0.18);
+      border-left: 1px solid rgba(0,64,113,0.18); border-radius: 8px; box-shadow: none;
+    }
+  </style>
+</head>
+<body>
+  <h1>Bespoke card library</h1>
+  <p class="lede">Preview of new selectable card variants for the wizard catalog. Full SCOPE CSS (all component selectors) lives in <code>theme-library.css</code>. IDs: <code>cards.{slug}</code>.</p>
+  <div class="grid" id="grid"></div>
+  <script>
+    const variants = [
+      ["left-border", "Left Border (default)"],
+      ["top-accent", "Top Accent"],
+      ["inset-panel", "Inset Panel"],
+      ["dual-rail", "Dual Rail"],
+      ["soft-lift", "Soft Lift"],
+      ["rule-stack", "Rule Stack"],
+      ["stamp-frame", "Stamp Frame"],
+      ["banded-header", "Banded Header"],
+      ["quiet-outline", "Quiet Outline"]
+    ];
+    const grid = document.getElementById("grid");
+    for (const [slug, label] of variants) {
+      const el = document.createElement("article");
+      el.className = "sample";
+      el.dataset.variant = slug;
+      el.innerHTML = `<h2>${label}</h2><div class="id">cards.${slug}</div><div class="card"><h4>Sample heading</h4><p>Classroom-ready content block using the SPOKES palette.</p></div>`;
+      grid.appendChild(el);
+    }
+  </script>
+</body>
+</html>
