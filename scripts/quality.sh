@@ -36,6 +36,10 @@ python3 scripts/validate-bespoke-selection.py --expect-fail \
 # REPORT-ONLY: prints per-deck Flesch-Kincaid grades (grade-8 ceiling) and
 # always exits 0. Turning this into a blocking check is a later, deliberate
 # calibration decision — do not drop --baseline without one.
+echo "==> bespoke theme library (generate --check + library sync)"
+python3 scripts/generate-theme-library.py --check
+python3 scripts/check-library-sync.py
+
 echo "==> readability baseline (report-only)"
 node scripts/readability-gate.mjs --baseline --format html \
   --allowlist config/readability-allowlist.json \

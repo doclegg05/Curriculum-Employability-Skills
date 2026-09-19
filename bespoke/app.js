@@ -4,6 +4,7 @@
   const STORAGE_KEY = "bespoke-draft-v1";
   const REPO = "doclegg05/Curriculum-Employability-Skills";
   const LIBRARY_URL = "../SPOKES%20Builder/bespoke-library-catalog.json";
+  const THEME_OPTIONS_URL = "../SPOKES%20Builder/theme-options.json";
   const META_URL = "./catalog.json";
 
   /** `view` = the preview the step lands on; a manual tab pick sticks until the step changes. */
@@ -195,12 +196,17 @@
     return frag;
   }
 
-  function optionButton({ id, label, detail, usedBy, swatch, swatchClass, pressed, badge, onSelect }) {
+  function optionButton({ id, label, detail, usedBy, swatch, swatchClass, pressed, badge, onSelect, blocked, reason }) {
     const btn = document.createElement("button");
     btn.type = "button";
-    btn.className = "option";
+    btn.className = "option" + (blocked ? " is-blocked" : "");
     btn.setAttribute("aria-pressed", pressed ? "true" : "false");
     btn.dataset.id = id;
+    if (blocked) {
+      btn.disabled = true;
+      btn.setAttribute("aria-disabled", "true");
+      if (reason) btn.title = reason;
+    }
     btn.appendChild(selectionMark(pressed));
     if (swatch || swatchClass) {
       const sw = document.createElement("div");
@@ -228,7 +234,13 @@
       tag.textContent = `Used by ${usedBy.join(", ")}`;
       btn.appendChild(tag);
     }
-    btn.addEventListener("click", onSelect);
+    if (blocked && reason) {
+      const tag = document.createElement("span");
+      tag.className = "blocked-tag";
+      tag.textContent = reason;
+      btn.appendChild(tag);
+    }
+    if (!blocked) btn.addEventListener("click", onSelect);
     return btn;
   }
 
@@ -243,6 +255,8 @@
           swatchClass: swatchClassFor ? swatchClassFor(opt) : null,
           pressed: selectedSlug === opt.slug,
           badge: showNew && opt.legacy === false ? "New" : null,
+          blocked: Boolean(opt.blocked),
+          reason: opt.reason || "",
           onSelect: () => onPick(opt)
         })
       );
@@ -362,6 +376,8 @@
           usedBy: cue.usedBy,
           swatch: `linear-gradient(135deg, ${cue.gradientFrom || "var(--primary)"}, ${cue.gradientTo || "var(--dark)"})`,
           pressed: state.colorLead === opt.slug,
+          blocked: Boolean(opt.blocked),
+          reason: opt.reason || "",
           onSelect: () => {
             state.colorLead = opt.slug;
             noteChange("Color lead", opt.label);
@@ -757,8 +773,6 @@
     divider: { chapter: "P1", slide: 9 },
     cards: { chapter: "P1", slide: 10 }
   };
-  const DARK_DIVIDERS = ["gradient-sweep", "bold-full-bleed", "framed-gold", "gold-rail", "dark-masthead"];
-
   function renderModelSidebar(title) {
     const chrome = VIEW_CHROME[state.previewView] || VIEW_CHROME.title;
     const rows = CHAPTERS.map(
@@ -773,15 +787,113 @@
     return team || "Round 2 · SPOKES lesson";
   }
 
+  const PREVIEW_CHAPTER = "3";
+  const PREVIEW_CHAPTER_NUM = "P1";
+
+  function themeOption(family, slug) {
+    const sections = state.themeOptions?.sections || [];
+    for (const section of sections) {
+      if ((section.family || section.id) !== family) continue;
+      const hit = (section.options || []).find((o) => o.slug === slug);
+      if (hit) return hit;
+    }
+    return null;
+  }
+
+  function scopeCss(css, scopePrefix) {
+    return String(css || "")
+      .replace(/\bSCOPE\b/g, scopePrefix)
+      .replace(/\bDIVIDER_SCOPE\b/g, scopePrefix);
+  }
+
+  function prefixSelectors(css, prefix) {
+    const trimmed = String(css || "").trim();
+    if (!trimmed) return "";
+    return trimmed.replace(/(^|})\s*([^@}/][^{]*)\{/g, (match, brace, selectors) => {
+      const scoped = selectors
+        .split(",")
+        .map((sel) => {
+          const s = sel.trim();
+          if (!s) return s;
+          if (s.startsWith(prefix.trim())) return s;
+          return `${prefix}${s}`;
+        })
+        .join(", ");
+      return `${brace}\n${scoped} {`;
+    });
+  }
+
+  function ensureInjectStyle() {
+    let el = document.getElementById("bespoke-theme-inject");
+    if (!el) {
+      el = document.createElement("style");
+      el.id = "bespoke-theme-inject";
+      document.head.appendChild(el);
+    }
+    return el;
+  }
+
+  function buildInjectedThemeCss() {
+    const main = ".spokes-model .model-main";
+    const chapterScope = `${main} [data-chapter="${PREVIEW_CHAPTER}"]`;
+    const dividerScope = `${main} .slide-section[data-chapter="${PREVIEW_CHAPTER}"]`;
+    const chunks = [];
+
+    const texture = themeOption("backgroundTextures", state.backgroundTexture);
+    if (texture && texture.css) {
+      chunks.push(String(texture.css).replace(/\.main\b/g, main));
+    }
+
+    const lead = themeOption("colorLeads", state.colorLead);
+    if (lead && lead.css) {
+      chunks.push(prefixSelectors(lead.css, main + " "));
+    }
+
+    const titleOpt = themeOption("titleSlides", state.titleSlide);
+    if (titleOpt && titleOpt.css) {
+      chunks.push(prefixSelectors(titleOpt.css, main + " "));
+    }
+
+    const divider = themeOption("dividers", state.dividerStyle);
+    if (divider && divider.css) {
+      chunks.push(scopeCss(divider.css, dividerScope));
+    }
+
+    const cardSlug = state.varyCardsByChapter
+      ? state.chapterCards.P1 || state.cardStyle
+      : state.cardStyle;
+    const card = themeOption("cards", cardSlug);
+    if (card && card.css) {
+      chunks.push(scopeCss(card.css, chapterScope));
+    }
+
+    if (state.backgroundTexture === "dark-royal") {
+      const darkSection = (state.themeOptions && state.themeOptions.sections || []).find((s) => s.id === "darkTheme");
+      for (const opt of (darkSection && darkSection.options) || []) {
+        if (!opt.css) continue;
+        chunks.push(String(opt.css).replace(/\.theme-dark\b/g, main + ".theme-dark"));
+      }
+    }
+
+    return chunks.filter(Boolean).join("\n\n");
+  }
+
+  function injectPreviewTheme() {
+    ensureInjectStyle().textContent = buildInjectedThemeCss();
+  }
+
   function updatePreview() {
     applyLeadVars();
+    injectPreviewTheme();
     const main = byId("modelMain");
     const sidebar = byId("modelSidebar");
     const stage = byId("modelStage");
 
     main.className = "model-main";
-    if (state.backgroundTexture === "dark-royal") main.classList.add("is-dark");
-    main.classList.add(`is-texture-${state.backgroundTexture}`);
+    if (state.backgroundTexture === "dark-royal") {
+      main.classList.add("is-dark");
+      main.classList.add("theme-dark");
+    }
 
     const title = lessonDisplayTitle();
     const subtitle = state.lessonSubtitle.trim() || "Skills for Life — sample preview";
@@ -848,39 +960,24 @@
   }
 
   function renderTitleSlide(title, subtitle) {
-    const cls = `model-title title-${state.titleSlide}`;
     const chip = `<span class="slide-chip">${escapeHtml(lessonChipText())}</span>`;
-    const copy = `${chip}<h3>${escapeHtml(title)}</h3><p>${escapeHtml(subtitle)}</p>`;
-    const foot = `<span class="slide-foot" aria-hidden="true">SPOKES · Skills for Life</span>`;
-    if (["split-hero", "diagonal-split", "vertical-strip", "side-rail"].includes(state.titleSlide)) {
-      return `<div class="${cls}">
-        <div class="title-hero-panel" aria-hidden="true"></div>
-        <div class="title-copy">${copy}</div>
-        ${foot}
+    return `
+      <div class="slide-title" data-preview="title">
+        ${chip}
+        <h1>${escapeHtml(title)}</h1>
+        <div class="divider" aria-hidden="true"></div>
+        <p class="subtitle">${escapeHtml(subtitle)}</p>
+        <span class="copyright" aria-hidden="true">SPOKES · Skills for Life</span>
       </div>`;
-    }
-    if (state.titleSlide === "framed-center") {
-      return `<div class="${cls}"><div class="title-frame">${copy}</div>${foot}</div>`;
-    }
-    return `<div class="${cls}">${copy}${foot}</div>`;
   }
 
   function renderDividerSlide(title) {
-    const onDark = DARK_DIVIDERS.includes(state.dividerStyle);
-    const heading =
-      state.dividerStyle === "centered-badge"
-        ? `<span class="badge">${escapeHtml(title)}</span>`
-        : `<h3>${escapeHtml(title)}</h3>`;
     return `
-      <div class="model-divider divider-${state.dividerStyle}${onDark ? " is-on-dark" : ""}">
-        <span class="watermark" aria-hidden="true">P1</span>
-        <div class="divider-body">
-          <span class="section-circle" aria-hidden="true"></span>
-          <div class="divider-copy">
-            <span class="divider-kicker">Presentation 1</span>
-            ${heading}
-          </div>
-        </div>
+      <div class="slide-section" data-chapter="${PREVIEW_CHAPTER}" data-chapter-num="${PREVIEW_CHAPTER_NUM}">
+        <span class="section-circle" aria-hidden="true"></span>
+        <span class="chapter-label">Presentation 1</span>
+        <h2>${escapeHtml(title)}</h2>
+        <div class="divider" aria-hidden="true"></div>
       </div>`;
   }
 
@@ -890,7 +987,7 @@
       .slice(0, 3)
       .map((b, i) => {
         const myth = mythLines[i] || "";
-        return `<div class="demo-card"><strong>${escapeHtml(b)}</strong>${myth ? escapeHtml(myth) : "Sample card from your content."}</div>`;
+        return `<div class="card"><h4>${escapeHtml(b)}</h4><p>${escapeHtml(myth || "Sample card from your content.")}</p></div>`;
       })
       .join("");
     const chip = state.varyCardsByChapter
@@ -898,10 +995,10 @@
       : "";
     const reality = mythLines.find((l) => /^reality/i.test(l)) || subtitle;
     return `
-      <div class="model-content">
+      <div class="model-content" data-chapter="${PREVIEW_CHAPTER}">
         <div class="slide-head"><h3>Key points</h3>${chip}</div>
-        <div class="model-cards cards-${previewCard}">${cards}</div>
-        <p class="takeaway"><strong>Takeaway:</strong> ${escapeHtml(reality.replace(/^reality:\s*/i, ""))}</p>
+        <div class="cards-grid">${cards}</div>
+        <p class="takeaway"><strong>Takeaway:</strong> ${escapeHtml(String(reality).replace(/^reality:\s*/i, ""))}</p>
       </div>`;
   }
 
@@ -1223,11 +1320,17 @@ _Full P2–A content delivered via the team OneDrive folder. This prototype inta
   }
 
   async function init() {
-    const [metaRes, libRes] = await Promise.all([fetch(META_URL), fetch(LIBRARY_URL)]);
+    const [metaRes, libRes, themeRes] = await Promise.all([
+      fetch(META_URL),
+      fetch(LIBRARY_URL),
+      fetch(THEME_OPTIONS_URL)
+    ]);
     if (!metaRes.ok) throw new Error(`Failed to load ${META_URL}`);
     if (!libRes.ok) throw new Error(`Failed to load library catalog (${libRes.status}). Is SPOKES Builder/bespoke-library-catalog.json present?`);
+    if (!themeRes.ok) throw new Error(`Failed to load theme-options.json (${themeRes.status}).`);
     state.meta = await metaRes.json();
     state.library = await libRes.json();
+    state.themeOptions = await themeRes.json();
     loadDraft();
     if (!state.chapterCards || typeof state.chapterCards !== "object") state.chapterCards = {};
 

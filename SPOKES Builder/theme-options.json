@@ -1,0 +1,727 @@
+{
+  "version": "1.0.0",
+  "description": "Uncommented CSS snippets for the SPOKES theme library. generate-theme-library.py emits theme-library.css; the Bespoke wizard injects the same snippets into template markup for preview (FID-3).",
+  "sourceCatalog": "SPOKES Builder/bespoke-library-catalog.json",
+  "outputCss": "SPOKES Builder/theme-library.css",
+  "fileHeader": "/* ==========================================================================\n   SPOKES Two-Layer Theme System — CSS Library\n   ==========================================================================\n\n   This file is GENERATED from theme-options.json by\n   scripts/generate-theme-library.py. Edit the JSON, then regenerate.\n   Agents still copy relevant sections into <style id=\"theme-override\">.\n\n   SCOPE prefix mechanism:\n     When building a theme-override block, agents replace the literal text\n     SCOPE with [data-chapter=\"N\"] to target chapter-level styles.\n     Example:  SCOPE .card  -->  [data-chapter=\"3\"] .card\n\n   DIVIDER_SCOPE prefix mechanism:\n     Agents replace the literal text DIVIDER_SCOPE with\n     .slide-section[data-chapter=\"N\"] to target section dividers.\n     Example:  DIVIDER_SCOPE .divider-title  -->  .slide-section[data-chapter=\"2\"] .divider-title\n\n   Brand palette variables (defined in template.html :root):\n     --primary   #007baf\n     --accent    #37b550\n     --dark      #004071\n     --light     #FFFFFF\n     --muted     #EDF3F7\n     --gray      #60636b\n     --gold      #d3b257\n     --royal     #00133f\n     --mauve     #a7253f\n     --offwhite  #d1d3d4\n     --muted-gold #ad8806\n\n   No other colors are permitted.\n   ========================================================================== */",
+  "sections": [
+    {
+      "id": "backgroundTextures",
+      "title": "BACKGROUND TEXTURES",
+      "family": "backgroundTextures",
+      "intro": "Six texture options. Each is wrapped in comments. Agents uncomment the\none they need and place it inside a <style id=\"theme-override\"> block.\nThe \"plain\" texture uses var(--light) which is already the default, so\nno override is needed — it is listed here only for completeness.",
+      "options": [
+        {
+          "id": "backgroundTextures.plain",
+          "slug": "plain",
+          "marker": "plain",
+          "label": "Plain",
+          "notes": [],
+          "css": "Default background. No override needed.\n  .main {\n    background: var(--light);\n  }",
+          "empty": false,
+          "blocked": false,
+          "reason": ""
+        },
+        {
+          "id": "backgroundTextures.dot-grid",
+          "slug": "dot-grid",
+          "marker": "dot-grid",
+          "label": "Dot Grid",
+          "notes": [],
+          "css": ".main {\n    background-color: var(--light);\n    background-image: radial-gradient(rgba(0,123,175,0.08) 1px, transparent 1px);\n    background-size: 16px 16px;\n  }",
+          "empty": false,
+          "blocked": false,
+          "reason": ""
+        },
+        {
+          "id": "backgroundTextures.diagonal",
+          "slug": "diagonal",
+          "marker": "diagonal",
+          "label": "Diagonal",
+          "notes": [],
+          "css": ".main {\n    background-color: var(--light);\n    background-image: repeating-linear-gradient(45deg, rgba(211,178,87,0.05), rgba(211,178,87,0.05) 1px, transparent 1px, transparent 14px);\n  }",
+          "empty": false,
+          "blocked": false,
+          "reason": ""
+        },
+        {
+          "id": "backgroundTextures.crosshatch",
+          "slug": "crosshatch",
+          "marker": "crosshatch",
+          "label": "Crosshatch",
+          "notes": [],
+          "css": ".main {\n    background-color: var(--muted);\n    background-image: linear-gradient(rgba(0,64,113,0.04) 1px, transparent 1px), linear-gradient(90deg, rgba(0,64,113,0.04) 1px, transparent 1px);\n    background-size: 24px 24px;\n  }",
+          "empty": false,
+          "blocked": false,
+          "reason": ""
+        },
+        {
+          "id": "backgroundTextures.soft-gradient",
+          "slug": "soft-gradient",
+          "marker": "soft-gradient",
+          "label": "Soft Gradient",
+          "notes": [],
+          "css": ".main {\n    background: linear-gradient(180deg, var(--light) 0%, var(--muted) 100%);\n  }",
+          "empty": false,
+          "blocked": false,
+          "reason": ""
+        },
+        {
+          "id": "backgroundTextures.dark-royal",
+          "slug": "dark-royal",
+          "marker": "dark-royal",
+          "label": "Dark Royal",
+          "notes": [],
+          "css": ".main {\n    background-color: var(--royal);\n    background-image: repeating-linear-gradient(45deg, rgba(211,178,87,0.03), rgba(211,178,87,0.03) 1px, transparent 1px, transparent 20px);\n  }",
+          "empty": false,
+          "blocked": false,
+          "reason": ""
+        }
+      ]
+    },
+    {
+      "id": "darkTheme",
+      "title": "DARK THEME INVERSION",
+      "family": null,
+      "intro": "Applied when backgroundTexture is dark-royal. Agents uncomment the\nblocks below into style#theme-override and add class=\"theme-dark\" to .main.",
+      "options": [
+        {
+          "slug": "text-color-overrides",
+          "marker": "Text color overrides",
+          "notes": [],
+          "css": ".theme-dark .slide h2,\n.theme-dark .slide h3,\n.theme-dark .slide p,\n.theme-dark .card h4,\n.theme-dark .card p,\n.theme-dark .smart-content h4,\n.theme-dark .smart-content p,\n.theme-dark .area-card ul li,\n.theme-dark .takeaway-item p,\n.theme-dark .activity-box p,\n.theme-dark .matrix-label,\n.theme-dark .matrix-desc,\n.theme-dark ul.content-list li {\n  color: var(--light);\n}",
+          "empty": false,
+          "ancillary": true,
+          "live": true
+        },
+        {
+          "slug": "card-component-backgrounds",
+          "marker": "Card / component backgrounds",
+          "notes": [],
+          "css": ".theme-dark .card,\n.theme-dark .smart-content,\n.theme-dark .matrix-cell {\n  background: rgba(237,243,247,0.08);\n  border-color: rgba(255,255,255,0.1);\n}",
+          "empty": false,
+          "ancillary": true,
+          "live": true
+        },
+        {
+          "slug": "activity-box",
+          "marker": "Activity box",
+          "notes": [],
+          "css": ".theme-dark .activity-box {\n  background: rgba(211,178,87,0.08);\n  border-color: rgba(211,178,87,0.3);\n}",
+          "empty": false,
+          "ancillary": true,
+          "live": true
+        },
+        {
+          "slug": "download-prompt",
+          "marker": "Download prompt",
+          "notes": [],
+          "css": ".theme-dark .download-resource .download-prompt {\n  color: rgba(255,255,255,0.7);\n}",
+          "empty": false,
+          "ancillary": true,
+          "live": true
+        }
+      ]
+    },
+    {
+      "id": "colorLeads",
+      "title": "COLOR LEADS",
+      "family": "colorLeads",
+      "intro": "Nine color-lead options. Agents uncomment the assigned lead into\nstyle#theme-override. Do not invent new lead hexes (D6).",
+      "options": [
+        {
+          "id": "colorLeads.blue",
+          "slug": "blue",
+          "marker": "blue (default — minimal overrides needed)",
+          "label": "Blue",
+          "notes": [],
+          "css": ".slide h2 { color: var(--primary); }\n  .download-btn { background: var(--primary); }\n  .chapter-item.active > .chapter-header { background: rgba(0,123,175,0.25); }\n  .divider { background: linear-gradient(90deg, var(--primary), var(--gold)); }\n  .slide-section { background: linear-gradient(135deg, var(--primary), var(--dark)); }\n  .slide-section h2 { color: var(--light); }\n  .slide-section .chapter-label { color: rgba(255,255,255,0.7); }",
+          "empty": false,
+          "blocked": false,
+          "reason": ""
+        },
+        {
+          "id": "colorLeads.mauve",
+          "slug": "mauve",
+          "marker": "mauve",
+          "label": "Mauve",
+          "notes": [],
+          "css": ".slide h2 { color: var(--mauve); }\n  .download-btn { background: var(--mauve); }\n  .download-btn:hover { background: #8b1e33; }\n  .chapter-item.active > .chapter-header { background: rgba(167,37,63,0.25); }\n  .divider { background: linear-gradient(90deg, var(--mauve), var(--gold)); }\n  .slide-section { background: linear-gradient(135deg, var(--mauve), var(--royal)); }",
+          "empty": false,
+          "blocked": false,
+          "reason": ""
+        },
+        {
+          "id": "colorLeads.gold",
+          "slug": "gold",
+          "marker": "gold",
+          "label": "Gold",
+          "notes": [],
+          "css": ".slide h2 { color: var(--muted-gold); }\n  .download-btn { background: var(--muted-gold); }\n  .download-btn:hover { background: #8a6d04; }\n  .chapter-item.active > .chapter-header { background: rgba(211,178,87,0.2); }\n  .divider { background: linear-gradient(90deg, var(--gold), var(--primary)); }\n  .slide-section { background: linear-gradient(135deg, var(--muted-gold), var(--dark)); }",
+          "empty": false,
+          "blocked": false,
+          "reason": ""
+        },
+        {
+          "id": "colorLeads.green",
+          "slug": "green",
+          "marker": "green",
+          "label": "Green",
+          "notes": [],
+          "css": ".slide h2 { color: var(--primary); }\n  .download-btn { background: var(--accent); }\n  .chapter-item.active > .chapter-header { background: rgba(55,181,80,0.2); }\n  .sidebar .sidebar-title { color: var(--accent); }\n  .divider { background: linear-gradient(90deg, var(--accent), var(--gold)); }\n  .slide-section { background: linear-gradient(135deg, var(--accent), var(--dark)); }",
+          "empty": false,
+          "blocked": false,
+          "reason": ""
+        },
+        {
+          "id": "colorLeads.royal",
+          "slug": "royal",
+          "marker": "royal",
+          "label": "Royal",
+          "notes": [],
+          "css": ".main { background-color: var(--muted); }\n  .slide h2 { color: var(--royal); }\n  .download-btn { background: var(--royal); color: var(--gold); }\n  .chapter-item.active > .chapter-header { background: rgba(0,19,63,0.3); }\n  .divider { background: linear-gradient(90deg, var(--royal), var(--gold)); }\n  .slide-section { background: linear-gradient(135deg, var(--royal), var(--dark)); }",
+          "empty": false,
+          "blocked": false,
+          "reason": ""
+        },
+        {
+          "id": "colorLeads.dual-mauve-blue",
+          "slug": "dual-mauve-blue",
+          "marker": "dual-mauve-blue",
+          "label": "Dual Mauve–Blue",
+          "notes": [],
+          "css": ".slide h2 { color: var(--mauve); }\n  .slide h3 { color: var(--primary); }\n  .download-btn { background: var(--primary); }\n  .divider { background: linear-gradient(90deg, var(--mauve), var(--primary)); }\n  .slide-section { background: linear-gradient(135deg, var(--mauve), var(--primary)); }",
+          "empty": false,
+          "blocked": false,
+          "reason": ""
+        },
+        {
+          "id": "colorLeads.dual-gold-green",
+          "slug": "dual-gold-green",
+          "marker": "dual-gold-green",
+          "label": "Dual Gold–Green",
+          "notes": [],
+          "css": ".slide h2 { color: var(--muted-gold); }\n  .slide h3 { color: var(--primary); }\n  .download-btn { background: var(--accent); }\n  .divider { background: linear-gradient(90deg, var(--gold), var(--accent)); }\n  .slide-section { background: linear-gradient(135deg, var(--gold), var(--accent)); }",
+          "empty": false,
+          "blocked": false,
+          "reason": ""
+        },
+        {
+          "id": "colorLeads.dual-mauve-gold",
+          "slug": "dual-mauve-gold",
+          "marker": "dual-mauve-gold",
+          "label": "Dual Mauve–Gold",
+          "notes": [],
+          "css": ".slide h2 { color: var(--mauve); }\n  .slide h3 { color: var(--muted-gold); }\n  .download-btn { background: var(--mauve); }\n  .divider { background: linear-gradient(90deg, var(--mauve), var(--gold)); }\n  .slide-section { background: linear-gradient(135deg, var(--mauve), var(--gold)); }",
+          "empty": false,
+          "blocked": false,
+          "reason": ""
+        },
+        {
+          "id": "colorLeads.dual-blue-green",
+          "slug": "dual-blue-green",
+          "marker": "dual-blue-green",
+          "label": "Dual Blue–Green",
+          "notes": [],
+          "css": ".slide h2 { color: var(--primary); }\n  .slide h3 { color: var(--primary); }\n  .download-btn { background: var(--accent); }\n  .divider { background: linear-gradient(90deg, var(--primary), var(--accent)); }\n  .slide-section { background: linear-gradient(135deg, var(--primary), var(--accent)); }",
+          "empty": false,
+          "blocked": false,
+          "reason": ""
+        }
+      ]
+    },
+    {
+      "id": "sidebarColors",
+      "title": "SIDEBAR COLORS",
+      "family": "sidebarColors",
+      "intro": "Two sidebar background options. Agents uncomment the desired option.\nThe \"dark\" sidebar is the default, so no override is needed — it is\nlisted here for completeness.",
+      "options": [
+        {
+          "id": "sidebarColors.dark",
+          "slug": "dark",
+          "marker": "dark (default)",
+          "label": "Dark",
+          "notes": [],
+          "css": ".sidebar { background: var(--dark); }",
+          "empty": false,
+          "blocked": false,
+          "reason": ""
+        },
+        {
+          "id": "sidebarColors.royal",
+          "slug": "royal",
+          "marker": "royal",
+          "label": "Royal",
+          "notes": [],
+          "css": ".main { background-color: var(--muted); }\n  .slide h2 { color: var(--royal); }\n  .download-btn { background: var(--royal); color: var(--gold); }\n  .chapter-item.active > .chapter-header { background: rgba(0,19,63,0.3); }\n  .divider { background: linear-gradient(90deg, var(--royal), var(--gold)); }\n  .slide-section { background: linear-gradient(135deg, var(--royal), var(--dark)); }",
+          "empty": false,
+          "blocked": false,
+          "reason": ""
+        }
+      ]
+    },
+    {
+      "id": "cards",
+      "title": "CARD STYLES",
+      "family": "cards",
+      "intro": "Card-style options. Each COMMENTED block uses the SCOPE prefix. When an\nagent builds a theme-override, replace SCOPE with [data-chapter=\"N\"].\nStable IDs: cards.{slug} — see bespoke-library-catalog.json.",
+      "options": [
+        {
+          "id": "cards.left-border",
+          "slug": "left-border",
+          "marker": "1. left-border (default — template matches this already)",
+          "label": "Left Border",
+          "notes": [
+            "No overrides needed — this is the template default."
+          ],
+          "css": "",
+          "empty": true,
+          "blocked": false,
+          "reason": ""
+        },
+        {
+          "id": "cards.shadow-float",
+          "slug": "shadow-float",
+          "marker": "2. shadow-float",
+          "label": "Shadow Float",
+          "notes": [],
+          "css": "SCOPE .card {\n  background: var(--light);\n  border-left: none;\n  border-top: 3px solid var(--primary);\n  border-radius: 10px;\n  box-shadow: 0 4px 15px rgba(0,64,113,0.08);\n}\nSCOPE .card.gold-border {\n  border-top-color: var(--gold);\n  border-left: none;\n}\nSCOPE .takeaway-num {\n  background: var(--light);\n  color: var(--primary);\n  border-radius: 6px;\n  box-shadow: 0 2px 6px rgba(0,0,0,0.08);\n}\nSCOPE .takeaway-num.alt {\n  color: var(--gold);\n}\nSCOPE .smart-letter {\n  border-radius: 6px;\n  box-shadow: 0 2px 6px rgba(0,0,0,0.08);\n}\nSCOPE .smart-content {\n  background: var(--light);\n  border-radius: 10px;\n  box-shadow: 0 2px 8px rgba(0,0,0,0.06);\n}\nSCOPE .matrix-cell {\n  border-radius: 10px;\n  box-shadow: 0 4px 12px rgba(0,0,0,0.08);\n}\nSCOPE .danger-card-front,\nSCOPE .danger-card-back {\n  border-radius: 12px;\n  box-shadow: 0 4px 15px rgba(0,0,0,0.1);\n}\nSCOPE .area-card {\n  border-radius: 12px;\n  box-shadow: 0 4px 15px rgba(0,0,0,0.08);\n}\nSCOPE .activity-box {\n  border-radius: 10px;\n  box-shadow: 0 2px 8px rgba(0,0,0,0.06);\n}\nSCOPE .download-btn {\n  border-radius: 8px;\n  box-shadow: 0 2px 6px rgba(0,0,0,0.1);\n}",
+          "empty": false,
+          "blocked": false,
+          "reason": ""
+        },
+        {
+          "id": "cards.sharp-border",
+          "slug": "sharp-border",
+          "marker": "3. sharp-border",
+          "label": "Sharp Border",
+          "notes": [],
+          "css": "SCOPE .card {\n  background: var(--light);\n  border: 2px solid var(--dark);\n  border-radius: 0;\n}\nSCOPE .card.gold-border {\n  border-color: var(--gold);\n}\nSCOPE .takeaway-num {\n  border-radius: 0;\n}\nSCOPE .takeaway-num.alt {\n  border-radius: 0;\n}\nSCOPE .smart-letter {\n  border-radius: 0;\n}\nSCOPE .smart-letter.alt {\n  border-radius: 0;\n}\nSCOPE .smart-content {\n  border-radius: 0;\n  border: 1px solid var(--offwhite);\n}\nSCOPE .matrix-cell {\n  border-radius: 0;\n  border: 2px solid var(--dark);\n}\nSCOPE .danger-card-front,\nSCOPE .danger-card-back {\n  border-radius: 0;\n}\nSCOPE .area-card {\n  border-radius: 0;\n}\nSCOPE .activity-box {\n  border-radius: 0;\n  border: 2px solid var(--gold);\n}\nSCOPE .download-btn {\n  border-radius: 0;\n}",
+          "empty": false,
+          "blocked": false,
+          "reason": ""
+        },
+        {
+          "id": "cards.glass",
+          "slug": "glass",
+          "marker": "4. glass",
+          "label": "Glass",
+          "notes": [],
+          "css": "SCOPE .card {\n  background: rgba(237,243,247,0.6);\n  backdrop-filter: blur(16px) saturate(1.8);\n  -webkit-backdrop-filter: blur(16px) saturate(1.8);\n  border: 1px solid rgba(255,255,255,0.3);\n  border-left: 1px solid rgba(255,255,255,0.3);\n  border-radius: 16px;\n  box-shadow: 0 8px 32px rgba(0,64,113,0.08);\n}\nSCOPE .card.gold-border {\n  border: 1px solid rgba(255,255,255,0.3);\n  border-left: 1px solid rgba(255,255,255,0.3);\n}\nSCOPE .takeaway-num {\n  background: rgba(255,255,255,0.15);\n  border: 1px solid rgba(255,255,255,0.3);\n}\nSCOPE .takeaway-num.alt {\n  background: rgba(211,178,87,0.2);\n  border-color: rgba(211,178,87,0.4);\n}\nSCOPE .smart-letter {\n  background: rgba(255,255,255,0.15);\n  border: 1px solid rgba(255,255,255,0.2);\n}\nSCOPE .smart-content {\n  background: rgba(237,243,247,0.4);\n  backdrop-filter: blur(8px);\n  border: 1px solid rgba(255,255,255,0.2);\n  border-radius: 12px;\n}\nSCOPE .matrix-cell {\n  backdrop-filter: blur(8px);\n  border: 1px solid rgba(255,255,255,0.2);\n  border-radius: 12px;\n}\nSCOPE .danger-card-front,\nSCOPE .danger-card-back {\n  backdrop-filter: blur(8px);\n  border: 1px solid rgba(255,255,255,0.2);\n  border-radius: 16px;\n}\nSCOPE .area-card {\n  backdrop-filter: blur(8px);\n  border: 1px solid rgba(255,255,255,0.2);\n  border-radius: 16px;\n}\nSCOPE .activity-box {\n  background: rgba(211,178,87,0.08);\n  border: 1px solid rgba(211,178,87,0.3);\n  border-radius: 12px;\n}\nSCOPE .download-btn {\n  border-radius: 12px;\n  backdrop-filter: blur(4px);\n}",
+          "empty": false,
+          "blocked": false,
+          "reason": ""
+        },
+        {
+          "id": "cards.outlined",
+          "slug": "outlined",
+          "marker": "5. outlined",
+          "label": "Outlined",
+          "notes": [],
+          "css": "SCOPE .card {\n  background: var(--light);\n  border: 1px solid var(--offwhite);\n  border-bottom: 3px solid var(--primary);\n  border-left: 1px solid var(--offwhite);\n  border-radius: 8px;\n}\nSCOPE .card.gold-border {\n  border-bottom-color: var(--gold);\n}\nSCOPE .takeaway-num {\n  background: var(--light);\n  border: 2px solid var(--primary);\n  color: var(--primary);\n}\nSCOPE .takeaway-num.alt {\n  border-color: var(--gold);\n  color: var(--gold);\n}\nSCOPE .smart-letter {\n  background: var(--light);\n  border: 2px solid var(--primary);\n  color: var(--primary);\n}\nSCOPE .smart-letter.alt {\n  border-color: var(--gold);\n  color: var(--gold);\n}\nSCOPE .smart-content {\n  background: var(--light);\n  border: 1px solid var(--offwhite);\n  border-radius: 8px;\n}\nSCOPE .matrix-cell {\n  border: 1px solid var(--offwhite);\n  border-bottom: 3px solid;\n  border-radius: 8px;\n}\nSCOPE .danger-card-front,\nSCOPE .danger-card-back {\n  border: 1px solid var(--offwhite);\n  border-radius: 8px;\n}\nSCOPE .area-card {\n  border: 1px solid var(--offwhite);\n  border-bottom: 3px solid var(--primary);\n  border-radius: 8px;\n}\nSCOPE .activity-box {\n  border: 1px solid var(--offwhite);\n  border-bottom: 3px solid var(--gold);\n  border-radius: 8px;\n}\nSCOPE .download-btn {\n  border-radius: 8px;\n}",
+          "empty": false,
+          "blocked": false,
+          "reason": ""
+        },
+        {
+          "id": "cards.gradient-fill",
+          "slug": "gradient-fill",
+          "marker": "6. gradient-fill",
+          "label": "Gradient Fill",
+          "notes": [],
+          "css": "SCOPE .card {\n  background: linear-gradient(135deg, var(--primary), var(--dark));\n  color: var(--light);\n  border: none;\n  border-left: none;\n  border-radius: 8px;\n}\nSCOPE .card h4,\nSCOPE .card p {\n  color: var(--light);\n}\nSCOPE .card.gold-border {\n  background: linear-gradient(135deg, var(--gold), var(--muted-gold));\n}\nSCOPE .card.gold-border h4,\nSCOPE .card.gold-border p {\n  color: var(--light);\n}\nSCOPE .takeaway-num {\n  background: linear-gradient(135deg, var(--primary), var(--dark));\n}\nSCOPE .takeaway-num.alt {\n  background: linear-gradient(135deg, var(--gold), var(--muted-gold));\n}\nSCOPE .smart-letter {\n  background: linear-gradient(135deg, var(--primary), var(--dark));\n}\nSCOPE .smart-letter.alt {\n  background: linear-gradient(135deg, var(--gold), var(--muted-gold));\n}\nSCOPE .area-card {\n  background: linear-gradient(135deg, var(--primary), var(--dark));\n}\nSCOPE .area-card.gold-card {\n  background: linear-gradient(135deg, var(--gold), var(--muted-gold));\n}\nSCOPE .matrix-cell.do-first {\n  background: linear-gradient(135deg, var(--primary), var(--dark));\n}\nSCOPE .matrix-cell.schedule {\n  background: linear-gradient(135deg, var(--accent), var(--dark));\n}\nSCOPE .matrix-cell.delegate {\n  background: linear-gradient(135deg, var(--gold), var(--muted-gold));\n}\nSCOPE .activity-box {\n  background: linear-gradient(135deg, rgba(211,178,87,0.1), rgba(211,178,87,0.05));\n}\nSCOPE .download-btn {\n  border-radius: 8px;\n}",
+          "empty": false,
+          "blocked": false,
+          "reason": ""
+        },
+        {
+          "id": "cards.pill",
+          "slug": "pill",
+          "marker": "7. pill",
+          "label": "Pill",
+          "notes": [],
+          "css": "SCOPE .card {\n  background: var(--light);\n  border: 1px solid var(--offwhite);\n  border-left: 1px solid var(--offwhite);\n  border-radius: 24px;\n  padding: 1.25rem 1.5rem;\n}\nSCOPE .card.gold-border {\n  border-color: var(--offwhite);\n}\nSCOPE .takeaway-num {\n  border-radius: 50%;\n}\nSCOPE .takeaway-num.alt {\n  border-radius: 50%;\n}\nSCOPE .smart-letter {\n  border-radius: 50%;\n}\nSCOPE .smart-content {\n  border-radius: 16px;\n  border: 1px solid var(--offwhite);\n}\nSCOPE .matrix-cell {\n  border-radius: 16px;\n}\nSCOPE .danger-card-front,\nSCOPE .danger-card-back {\n  border-radius: 20px;\n}\nSCOPE .area-card {\n  border-radius: 20px;\n}\nSCOPE .activity-box {\n  border-radius: 16px;\n}\nSCOPE .download-btn {\n  border-radius: 20px;\n}",
+          "empty": false,
+          "blocked": false,
+          "reason": ""
+        },
+        {
+          "id": "cards.layered",
+          "slug": "layered",
+          "marker": "8. layered",
+          "label": "Layered",
+          "notes": [],
+          "css": "SCOPE .card {\n  background: var(--light);\n  border: 1px solid var(--offwhite);\n  border-left: 1px solid var(--offwhite);\n  border-radius: 6px;\n  box-shadow: 4px 4px 0 rgba(0,123,175,0.15);\n}\nSCOPE .card.gold-border {\n  box-shadow: 4px 4px 0 rgba(211,178,87,0.2);\n}\nSCOPE .takeaway-num {\n  box-shadow: 2px 2px 0 rgba(0,123,175,0.2);\n}\nSCOPE .takeaway-num.alt {\n  box-shadow: 2px 2px 0 rgba(211,178,87,0.2);\n}\nSCOPE .smart-letter {\n  box-shadow: 3px 3px 0 rgba(0,123,175,0.15);\n}\nSCOPE .smart-content {\n  box-shadow: 3px 3px 0 rgba(0,0,0,0.06);\n  border-radius: 6px;\n}\nSCOPE .matrix-cell {\n  box-shadow: 4px 4px 0 rgba(0,0,0,0.08);\n  border-radius: 6px;\n}\nSCOPE .danger-card-front,\nSCOPE .danger-card-back {\n  box-shadow: 4px 4px 0 rgba(0,0,0,0.1);\n  border-radius: 8px;\n}\nSCOPE .area-card {\n  box-shadow: 4px 4px 0 rgba(0,123,175,0.12);\n  border-radius: 8px;\n}\nSCOPE .activity-box {\n  box-shadow: 3px 3px 0 rgba(211,178,87,0.15);\n  border-radius: 6px;\n}\nSCOPE .download-btn {\n  box-shadow: 2px 2px 0 rgba(55,181,80,0.2);\n  border-radius: 6px;\n}",
+          "empty": false,
+          "blocked": false,
+          "reason": ""
+        },
+        {
+          "id": "cards.top-accent",
+          "slug": "top-accent",
+          "marker": "9. top-accent",
+          "label": "Top Accent",
+          "notes": [],
+          "css": "SCOPE .card {\n  background: var(--light);\n  border-left: none;\n  border-top: 5px solid var(--primary);\n  border-radius: 0 0 10px 10px;\n  box-shadow: 0 2px 10px rgba(0,64,113,0.06);\n}\nSCOPE .card.gold-border {\n  border-top-color: var(--gold);\n  border-left: none;\n}\nSCOPE .takeaway-num {\n  background: var(--primary);\n  color: var(--light);\n  border-radius: 4px 4px 0 0;\n}\nSCOPE .takeaway-num.alt {\n  background: var(--muted-gold);\n  color: var(--light);\n}\nSCOPE .smart-letter {\n  border-radius: 4px 4px 0 0;\n}\nSCOPE .smart-content {\n  background: var(--light);\n  border-top: 3px solid var(--primary);\n  border-radius: 0 0 10px 10px;\n}\nSCOPE .matrix-cell {\n  border-top: 4px solid var(--primary);\n  border-radius: 0 0 10px 10px;\n}\nSCOPE .danger-card-front,\nSCOPE .danger-card-back {\n  border-top: 4px solid var(--primary);\n  border-radius: 0 0 12px 12px;\n}\nSCOPE .area-card {\n  border-left: none;\n  border-top: 5px solid var(--primary);\n  border-radius: 0 0 12px 12px;\n}\nSCOPE .area-card.gold-card {\n  border-top-color: var(--gold);\n}\nSCOPE .activity-box {\n  border-left: none;\n  border-top: 4px solid var(--gold);\n  border-radius: 0 0 10px 10px;\n}\nSCOPE .download-btn {\n  border-radius: 0 0 8px 8px;\n  border-top: 3px solid var(--accent);\n}",
+          "empty": false,
+          "blocked": false,
+          "reason": ""
+        },
+        {
+          "id": "cards.inset-panel",
+          "slug": "inset-panel",
+          "marker": "10. inset-panel",
+          "label": "Inset Panel",
+          "notes": [],
+          "css": "SCOPE .card {\n  background: var(--muted);\n  border-left: none;\n  border: 1px solid rgba(0,64,113,0.08);\n  border-radius: 14px;\n  box-shadow: inset 0 1px 0 rgba(255,255,255,0.8);\n  padding: 1.75rem 2rem;\n}\nSCOPE .card.gold-border {\n  border-color: rgba(211,178,87,0.45);\n  background: rgba(211,178,87,0.08);\n}\nSCOPE .takeaway-num {\n  background: var(--light);\n  color: var(--dark);\n  border: 1px solid rgba(0,64,113,0.12);\n  border-radius: 10px;\n}\nSCOPE .takeaway-num.alt {\n  color: var(--muted-gold);\n  border-color: rgba(173,136,6,0.35);\n}\nSCOPE .smart-letter {\n  background: var(--light);\n  color: var(--dark);\n  border-radius: 10px;\n  border: 1px solid rgba(0,64,113,0.12);\n}\nSCOPE .smart-content {\n  background: var(--light);\n  border-radius: 12px;\n  border: 1px solid rgba(0,64,113,0.08);\n}\nSCOPE .matrix-cell {\n  background: var(--muted);\n  border-radius: 12px;\n  border: 1px solid rgba(0,64,113,0.1);\n}\nSCOPE .danger-card-front,\nSCOPE .danger-card-back {\n  background: var(--muted);\n  border-radius: 14px;\n  border: 1px solid rgba(0,64,113,0.1);\n}\nSCOPE .area-card {\n  background: var(--muted);\n  border-radius: 14px;\n  border: 1px solid rgba(0,64,113,0.08);\n}\nSCOPE .activity-box {\n  background: rgba(237,243,247,0.9);\n  border: 1px solid rgba(211,178,87,0.35);\n  border-radius: 12px;\n}\nSCOPE .download-btn {\n  border-radius: 10px;\n  background: var(--light);\n  color: var(--dark);\n  border: 1px solid rgba(0,64,113,0.15);\n}",
+          "empty": false,
+          "blocked": false,
+          "reason": ""
+        },
+        {
+          "id": "cards.dual-rail",
+          "slug": "dual-rail",
+          "marker": "11. dual-rail",
+          "label": "Dual Rail",
+          "notes": [],
+          "css": "SCOPE .card {\n  background: var(--light);\n  border-left: 3px solid var(--primary);\n  border-right: 3px solid var(--gold);\n  border-radius: 4px;\n  box-shadow: none;\n}\nSCOPE .card.gold-border {\n  border-left-color: var(--gold);\n  border-right-color: var(--primary);\n}\nSCOPE .takeaway-num {\n  border-left: 3px solid var(--primary);\n  border-right: 3px solid var(--gold);\n  border-radius: 2px;\n}\nSCOPE .takeaway-num.alt {\n  border-left-color: var(--gold);\n  border-right-color: var(--primary);\n}\nSCOPE .smart-letter {\n  border-left: 3px solid var(--primary);\n  border-right: 3px solid var(--gold);\n  border-radius: 2px;\n}\nSCOPE .smart-letter.alt {\n  border-left-color: var(--gold);\n  border-right-color: var(--primary);\n}\nSCOPE .smart-content {\n  border-left: 2px solid var(--primary);\n  border-right: 2px solid var(--gold);\n  border-radius: 4px;\n  background: var(--light);\n}\nSCOPE .matrix-cell {\n  border-left: 3px solid var(--primary);\n  border-right: 3px solid var(--gold);\n  border-radius: 4px;\n}\nSCOPE .danger-card-front,\nSCOPE .danger-card-back {\n  border-left: 3px solid var(--primary);\n  border-right: 3px solid var(--gold);\n  border-radius: 6px;\n}\nSCOPE .area-card {\n  border-left: 3px solid var(--primary);\n  border-right: 3px solid var(--gold);\n  border-radius: 6px;\n}\nSCOPE .activity-box {\n  border-left: 3px solid var(--gold);\n  border-right: 3px solid var(--accent);\n  border-radius: 4px;\n}\nSCOPE .download-btn {\n  border-left: 3px solid var(--accent);\n  border-right: 3px solid var(--primary);\n  border-radius: 4px;\n}",
+          "empty": false,
+          "blocked": false,
+          "reason": ""
+        },
+        {
+          "id": "cards.soft-lift",
+          "slug": "soft-lift",
+          "marker": "12. soft-lift",
+          "label": "Soft Lift",
+          "notes": [],
+          "css": "SCOPE .card {\n  background: var(--light);\n  border-left: none;\n  border: none;\n  border-radius: 16px;\n  box-shadow: 0 10px 28px rgba(0,64,113,0.1), 0 2px 6px rgba(0,64,113,0.04);\n}\nSCOPE .card.gold-border {\n  box-shadow: 0 10px 28px rgba(173,136,6,0.14), 0 2px 6px rgba(0,64,113,0.04);\n}\nSCOPE .takeaway-num {\n  border-radius: 12px;\n  box-shadow: 0 6px 16px rgba(0,64,113,0.12);\n}\nSCOPE .takeaway-num.alt {\n  box-shadow: 0 6px 16px rgba(173,136,6,0.16);\n}\nSCOPE .smart-letter {\n  border-radius: 12px;\n  box-shadow: 0 6px 16px rgba(0,64,113,0.12);\n}\nSCOPE .smart-content {\n  background: var(--light);\n  border-radius: 14px;\n  box-shadow: 0 8px 20px rgba(0,64,113,0.08);\n}\nSCOPE .matrix-cell {\n  border-radius: 14px;\n  box-shadow: 0 8px 22px rgba(0,64,113,0.1);\n}\nSCOPE .danger-card-front,\nSCOPE .danger-card-back {\n  border-radius: 16px;\n  box-shadow: 0 10px 26px rgba(0,64,113,0.12);\n}\nSCOPE .area-card {\n  border-radius: 16px;\n  box-shadow: 0 10px 26px rgba(0,64,113,0.1);\n}\nSCOPE .activity-box {\n  border-radius: 14px;\n  box-shadow: 0 8px 20px rgba(173,136,6,0.12);\n}\nSCOPE .download-btn {\n  border-radius: 12px;\n  box-shadow: 0 6px 14px rgba(0,64,113,0.12);\n}",
+          "empty": false,
+          "blocked": false,
+          "reason": ""
+        },
+        {
+          "id": "cards.rule-stack",
+          "slug": "rule-stack",
+          "marker": "13. rule-stack",
+          "label": "Rule Stack",
+          "notes": [],
+          "css": "SCOPE .card {\n  background: transparent;\n  border-left: none;\n  border-top: 1px solid var(--offwhite);\n  border-bottom: 2px solid var(--dark);\n  border-radius: 0;\n  padding: 1.5rem 0.25rem;\n}\nSCOPE .card.gold-border {\n  border-bottom-color: var(--muted-gold);\n}\nSCOPE .takeaway-num {\n  background: transparent;\n  color: var(--dark);\n  border-bottom: 2px solid var(--primary);\n  border-radius: 0;\n}\nSCOPE .takeaway-num.alt {\n  color: var(--muted-gold);\n  border-bottom-color: var(--muted-gold);\n}\nSCOPE .smart-letter {\n  background: transparent;\n  color: var(--dark);\n  border-bottom: 2px solid var(--primary);\n  border-radius: 0;\n}\nSCOPE .smart-letter.alt {\n  color: var(--muted-gold);\n  border-bottom-color: var(--muted-gold);\n}\nSCOPE .smart-content {\n  background: transparent;\n  border-top: 1px solid var(--offwhite);\n  border-bottom: 2px solid var(--dark);\n  border-radius: 0;\n}\nSCOPE .matrix-cell {\n  background: transparent;\n  border-top: 1px solid var(--offwhite);\n  border-bottom: 2px solid var(--dark);\n  border-radius: 0;\n}\nSCOPE .danger-card-front,\nSCOPE .danger-card-back {\n  background: var(--light);\n  border-top: 1px solid var(--offwhite);\n  border-bottom: 2px solid var(--dark);\n  border-radius: 0;\n}\nSCOPE .area-card {\n  background: transparent;\n  border-top: 1px solid var(--offwhite);\n  border-bottom: 2px solid var(--dark);\n  border-radius: 0;\n}\nSCOPE .activity-box {\n  background: transparent;\n  border-top: 1px solid var(--offwhite);\n  border-bottom: 2px solid var(--muted-gold);\n  border-radius: 0;\n}\nSCOPE .download-btn {\n  border-radius: 0;\n  border-bottom: 2px solid var(--accent);\n}",
+          "empty": false,
+          "blocked": false,
+          "reason": ""
+        },
+        {
+          "id": "cards.stamp-frame",
+          "slug": "stamp-frame",
+          "marker": "14. stamp-frame",
+          "label": "Stamp Frame",
+          "notes": [],
+          "css": "SCOPE .card {\n  background: var(--light);\n  border: 3px solid var(--dark);\n  border-left: 3px solid var(--dark);\n  border-radius: 2px;\n  outline: 1px solid var(--dark);\n  outline-offset: 4px;\n}\nSCOPE .card.gold-border {\n  border-color: var(--muted-gold);\n  outline-color: var(--muted-gold);\n}\nSCOPE .takeaway-num {\n  border: 2px solid var(--dark);\n  border-radius: 2px;\n  outline: 1px solid var(--dark);\n  outline-offset: 2px;\n}\nSCOPE .takeaway-num.alt {\n  border-color: var(--muted-gold);\n  outline-color: var(--muted-gold);\n}\nSCOPE .smart-letter {\n  border: 2px solid var(--dark);\n  border-radius: 2px;\n}\nSCOPE .smart-content {\n  border: 2px solid var(--dark);\n  border-radius: 2px;\n  outline: 1px solid var(--dark);\n  outline-offset: 3px;\n}\nSCOPE .matrix-cell {\n  border: 2px solid var(--dark);\n  border-radius: 2px;\n}\nSCOPE .danger-card-front,\nSCOPE .danger-card-back {\n  border: 3px solid var(--dark);\n  border-radius: 2px;\n  outline: 1px solid var(--dark);\n  outline-offset: 3px;\n}\nSCOPE .area-card {\n  border: 3px solid var(--dark);\n  border-radius: 2px;\n  outline: 1px solid var(--dark);\n  outline-offset: 3px;\n}\nSCOPE .activity-box {\n  border: 2px solid var(--muted-gold);\n  border-radius: 2px;\n  outline: 1px solid var(--muted-gold);\n  outline-offset: 3px;\n}\nSCOPE .download-btn {\n  border: 2px solid var(--dark);\n  border-radius: 2px;\n}",
+          "empty": false,
+          "blocked": false,
+          "reason": ""
+        },
+        {
+          "id": "cards.banded-header",
+          "slug": "banded-header",
+          "marker": "15. banded-header",
+          "label": "Banded Header",
+          "notes": [],
+          "css": "SCOPE .card {\n  background: var(--light);\n  border-left: none;\n  border-radius: 10px;\n  overflow: hidden;\n  box-shadow: 0 2px 8px rgba(0,64,113,0.06);\n  background-image: linear-gradient(var(--primary), var(--primary));\n  background-size: 100% 10px;\n  background-repeat: no-repeat;\n  background-position: top left;\n  padding-top: 1.75rem;\n}\nSCOPE .card.gold-border {\n  background-image: linear-gradient(var(--gold), var(--gold));\n}\nSCOPE .takeaway-num {\n  border-radius: 8px;\n  background: linear-gradient(180deg, var(--primary) 0 8px, var(--dark) 8px);\n}\nSCOPE .takeaway-num.alt {\n  background: linear-gradient(180deg, var(--gold) 0 8px, var(--muted-gold) 8px);\n}\nSCOPE .smart-letter {\n  border-radius: 8px;\n  background: linear-gradient(180deg, var(--primary) 0 8px, var(--dark) 8px);\n}\nSCOPE .smart-letter.alt {\n  background: linear-gradient(180deg, var(--gold) 0 8px, var(--muted-gold) 8px);\n}\nSCOPE .smart-content {\n  background: var(--light);\n  border-radius: 10px;\n  background-image: linear-gradient(var(--primary), var(--primary));\n  background-size: 100% 8px;\n  background-repeat: no-repeat;\n  padding-top: 1.25rem;\n}\nSCOPE .matrix-cell {\n  border-radius: 10px;\n  background-image: linear-gradient(var(--primary), var(--primary));\n  background-size: 100% 8px;\n  background-repeat: no-repeat;\n}\nSCOPE .danger-card-front,\nSCOPE .danger-card-back {\n  border-radius: 12px;\n  background-image: linear-gradient(var(--primary), var(--primary));\n  background-size: 100% 10px;\n  background-repeat: no-repeat;\n}\nSCOPE .area-card {\n  border-radius: 12px;\n  background-image: linear-gradient(var(--primary), var(--primary));\n  background-size: 100% 10px;\n  background-repeat: no-repeat;\n  padding-top: 1.5rem;\n}\nSCOPE .area-card.gold-card {\n  background-image: linear-gradient(var(--gold), var(--gold));\n}\nSCOPE .activity-box {\n  border-radius: 10px;\n  background-image: linear-gradient(var(--gold), var(--gold));\n  background-size: 100% 8px;\n  background-repeat: no-repeat;\n  padding-top: 1.25rem;\n}\nSCOPE .download-btn {\n  border-radius: 8px;\n  background-image: linear-gradient(var(--accent), var(--accent));\n  background-size: 100% 4px;\n  background-repeat: no-repeat;\n}",
+          "empty": false,
+          "blocked": false,
+          "reason": ""
+        },
+        {
+          "id": "cards.quiet-outline",
+          "slug": "quiet-outline",
+          "marker": "16. quiet-outline",
+          "label": "Quiet Outline",
+          "notes": [],
+          "css": "SCOPE .card {\n  background: var(--light);\n  border: 1px solid rgba(0,64,113,0.18);\n  border-left: 1px solid rgba(0,64,113,0.18);\n  border-radius: 8px;\n  box-shadow: none;\n}\nSCOPE .card.gold-border {\n  border-color: rgba(173,136,6,0.45);\n}\nSCOPE .takeaway-num {\n  background: var(--light);\n  color: var(--dark);\n  border: 1px solid rgba(0,64,113,0.22);\n  border-radius: 6px;\n}\nSCOPE .takeaway-num.alt {\n  color: var(--muted-gold);\n  border-color: rgba(173,136,6,0.4);\n}\nSCOPE .smart-letter {\n  background: var(--light);\n  color: var(--dark);\n  border: 1px solid rgba(0,64,113,0.22);\n  border-radius: 6px;\n}\nSCOPE .smart-letter.alt {\n  color: var(--muted-gold);\n  border-color: rgba(173,136,6,0.4);\n}\nSCOPE .smart-content {\n  background: var(--light);\n  border: 1px solid rgba(0,64,113,0.14);\n  border-radius: 8px;\n}\nSCOPE .matrix-cell {\n  border: 1px solid rgba(0,64,113,0.18);\n  border-radius: 8px;\n  background: var(--light);\n}\nSCOPE .danger-card-front,\nSCOPE .danger-card-back {\n  border: 1px solid rgba(0,64,113,0.18);\n  border-radius: 10px;\n  background: var(--light);\n}\nSCOPE .area-card {\n  border: 1px solid rgba(0,64,113,0.18);\n  border-radius: 10px;\n  background: var(--light);\n}\nSCOPE .activity-box {\n  border: 1px solid rgba(173,136,6,0.35);\n  border-radius: 8px;\n  background: var(--light);\n}\nSCOPE .download-btn {\n  border: 1px solid rgba(0,64,113,0.22);\n  border-radius: 8px;\n  background: var(--light);\n  color: var(--dark);\n}",
+          "empty": false,
+          "blocked": false,
+          "reason": ""
+        }
+      ]
+    },
+    {
+      "id": "dividers",
+      "title": "SECTION DIVIDER STYLES",
+      "family": "dividers",
+      "intro": "Divider options. Replace DIVIDER_SCOPE with\n.slide-section[data-chapter=\"N\"]. Stable IDs: dividers.{slug}.",
+      "options": [
+        {
+          "id": "dividers.gradient-sweep",
+          "slug": "gradient-sweep",
+          "marker": "1. gradient-sweep (default — matches base template)",
+          "label": "Gradient Sweep",
+          "notes": [
+            "No overrides needed — this is the template default."
+          ],
+          "css": "",
+          "empty": true,
+          "blocked": false,
+          "reason": ""
+        },
+        {
+          "id": "dividers.framed-gold",
+          "slug": "framed-gold",
+          "marker": "2. framed-gold",
+          "label": "Framed Gold",
+          "notes": [],
+          "css": "DIVIDER_SCOPE { background: var(--royal); align-items: center; justify-content: center; }\nDIVIDER_SCOPE h2 { border: 2px solid var(--gold); border-radius: 8px; padding: 1.5rem 2.5rem; color: var(--light); }\nDIVIDER_SCOPE .chapter-label { color: var(--gold); }\nDIVIDER_SCOPE .divider { background: var(--gold); }",
+          "empty": false,
+          "blocked": false,
+          "reason": ""
+        },
+        {
+          "id": "dividers.bold-full-bleed",
+          "slug": "bold-full-bleed",
+          "marker": "3. bold-full-bleed",
+          "label": "Bold Full Bleed",
+          "notes": [
+            "For mauve-led lessons, agent replaces var(--primary) with var(--mauve).\n   For other leads, replace accordingly."
+          ],
+          "css": "DIVIDER_SCOPE { background: var(--primary); }\nDIVIDER_SCOPE h2 { color: var(--light); }\nDIVIDER_SCOPE .chapter-label { color: rgba(255,255,255,0.7); }\nDIVIDER_SCOPE .divider { background: var(--gold); }\nDIVIDER_SCOPE .section-circle { border-color: rgba(255,255,255,0.3); background: rgba(0,0,0,0.15); }",
+          "empty": false,
+          "blocked": false,
+          "reason": ""
+        },
+        {
+          "id": "dividers.split-panel",
+          "slug": "split-panel",
+          "marker": "4. split-panel",
+          "label": "Split Panel",
+          "notes": [],
+          "css": "DIVIDER_SCOPE { flex-direction: row; }\nDIVIDER_SCOPE::before { content: ''; display: block; width: 40%; background: var(--dark); }\nDIVIDER_SCOPE::after { content: ''; display: block; flex: 1; background: var(--muted); }\nDIVIDER_SCOPE h2 { color: var(--dark); position: relative; z-index: 1; }\nDIVIDER_SCOPE .chapter-label { color: var(--gold); position: absolute; left: 2rem; }\nDIVIDER_SCOPE .section-circle { position: absolute; left: 5%; top: 50%; transform: translateY(-50%); z-index: 1; }",
+          "empty": false,
+          "blocked": false,
+          "reason": ""
+        },
+        {
+          "id": "dividers.centered-badge",
+          "slug": "centered-badge",
+          "marker": "5. centered-badge",
+          "label": "Centered Badge",
+          "notes": [],
+          "css": "DIVIDER_SCOPE { background: linear-gradient(180deg, var(--muted) 0%, var(--light) 100%); flex-direction: column; align-items: center; justify-content: center; }\nDIVIDER_SCOPE h2 { color: var(--dark); }\nDIVIDER_SCOPE .chapter-label { color: var(--primary); }\nDIVIDER_SCOPE .divider { background: linear-gradient(90deg, transparent, var(--gold), transparent); }\nDIVIDER_SCOPE .section-circle { position: relative; left: auto; margin-bottom: 1rem; width: 80px; height: 80px; background: linear-gradient(135deg, var(--primary), var(--dark)); box-shadow: 0 4px 15px rgba(0,64,113,0.25); }",
+          "empty": false,
+          "blocked": false,
+          "reason": ""
+        },
+        {
+          "id": "dividers.gold-rail",
+          "slug": "gold-rail",
+          "marker": "6. gold-rail",
+          "label": "Gold Rail",
+          "notes": [],
+          "css": "DIVIDER_SCOPE { background: var(--dark); align-items: flex-start; justify-content: center; padding-left: 4rem; }\nDIVIDER_SCOPE::before { content: ''; position: absolute; left: 0; top: 0; bottom: 0; width: 12px; background: linear-gradient(180deg, var(--gold), var(--muted-gold)); }\nDIVIDER_SCOPE h2 { color: var(--light); text-align: left; }\nDIVIDER_SCOPE .chapter-label { color: var(--gold); }\nDIVIDER_SCOPE .divider { background: var(--gold); margin: 0.75rem 0; }\nDIVIDER_SCOPE .section-circle { border-color: var(--gold); }",
+          "empty": false,
+          "blocked": false,
+          "reason": ""
+        },
+        {
+          "id": "dividers.stacked-bands",
+          "slug": "stacked-bands",
+          "marker": "7. stacked-bands",
+          "label": "Stacked Bands",
+          "notes": [
+            "Uses layered backgrounds only — must NOT override ::after (chapter watermark)."
+          ],
+          "css": "DIVIDER_SCOPE {\n  background:\n    linear-gradient(var(--primary), var(--primary)) top / 100% 28% no-repeat,\n    linear-gradient(var(--gold), var(--gold)) bottom / 100% 12% no-repeat,\n    var(--light);\n  flex-direction: column;\n  align-items: center;\n  justify-content: center;\n  padding: 0;\n}\nDIVIDER_SCOPE h2 { color: var(--dark); text-align: center; position: relative; z-index: 1; }\nDIVIDER_SCOPE .chapter-label { color: var(--primary); position: relative; z-index: 1; }\nDIVIDER_SCOPE .divider { background: var(--muted-gold); position: relative; z-index: 1; }\nDIVIDER_SCOPE .section-circle { position: relative; z-index: 1; border-color: var(--primary); margin-bottom: 1rem; }",
+          "empty": false,
+          "blocked": false,
+          "reason": ""
+        },
+        {
+          "id": "dividers.dark-masthead",
+          "slug": "dark-masthead",
+          "marker": "8. dark-masthead",
+          "label": "Dark Masthead",
+          "notes": [],
+          "css": "DIVIDER_SCOPE { background: linear-gradient(180deg, var(--royal) 0%, var(--dark) 100%); align-items: center; justify-content: center; }\nDIVIDER_SCOPE h2 { color: var(--light); letter-spacing: 0.04em; }\nDIVIDER_SCOPE .chapter-label { color: rgba(211,178,87,0.9); text-transform: uppercase; letter-spacing: 0.12em; }\nDIVIDER_SCOPE .divider { width: 120px; height: 2px; background: var(--gold); }\nDIVIDER_SCOPE .section-circle { border-color: rgba(211,178,87,0.5); box-shadow: 0 0 0 6px rgba(211,178,87,0.12); }",
+          "empty": false,
+          "blocked": false,
+          "reason": ""
+        }
+      ]
+    },
+    {
+      "id": "titleSlides",
+      "title": "TITLE SLIDE DESIGNS",
+      "family": "titleSlides",
+      "intro": "Title-slide design options. Each COMMENTED block targets .slide-title.\nStable IDs: titleSlides.{slug}.",
+      "options": [
+        {
+          "id": "titleSlides.centered-gradient",
+          "slug": "centered-gradient",
+          "marker": "1. centered-gradient (default — matches base template)",
+          "label": "Centered Gradient",
+          "notes": [
+            "No overrides needed — this is the template default."
+          ],
+          "css": "",
+          "empty": true,
+          "blocked": false,
+          "reason": ""
+        },
+        {
+          "id": "titleSlides.split-hero",
+          "slug": "split-hero",
+          "marker": "2. split-hero",
+          "label": "Split Hero",
+          "notes": [],
+          "css": ".slide-title { flex-direction: row; align-items: stretch; text-align: left; background: none; }\n.slide-title::before { content: ''; width: 45%; background: var(--royal); display: block; }\n.slide-title::after { content: ''; flex: 1; background: linear-gradient(135deg, var(--primary), var(--dark)); display: block; }\n.slide-title h1, .slide-title .subtitle, .slide-title .logo, .slide-title .copyright { position: absolute; left: 3rem; z-index: 1; }\n.slide-title .logo { top: 2rem; }\n.slide-title h1 { top: 50%; transform: translateY(-50%); font-size: 3.5rem; }\n.slide-title .subtitle { top: calc(50% + 3rem); }\n.slide-title .copyright { bottom: 2rem; }\n.slide-title .divider { position: absolute; left: 3rem; top: calc(50% + 1.5rem); z-index: 1; }",
+          "empty": false,
+          "blocked": false,
+          "reason": ""
+        },
+        {
+          "id": "titleSlides.full-bleed",
+          "slug": "full-bleed",
+          "marker": "3. full-bleed",
+          "label": "Full Bleed",
+          "notes": [],
+          "css": ".slide-title { background: var(--primary); position: relative; overflow: hidden; }\n.slide-title::before { content: ''; position: absolute; top: -15%; right: -10%; width: 300px; height: 300px; border-radius: 50%; background: rgba(211,178,87,0.08); }\n.slide-title::after { content: ''; position: absolute; bottom: -20%; left: -10%; width: 200px; height: 200px; border-radius: 50%; background: rgba(0,19,63,0.15); }\n.slide-title h1, .slide-title .subtitle { color: var(--light); }",
+          "empty": false,
+          "blocked": false,
+          "reason": ""
+        },
+        {
+          "id": "titleSlides.bottom-anchored",
+          "slug": "bottom-anchored",
+          "marker": "4. bottom-anchored",
+          "label": "Bottom Anchored",
+          "notes": [],
+          "css": ".slide-title { background: linear-gradient(180deg, var(--muted) 0%, var(--light) 60%, var(--light) 60%); flex-direction: column; }\n.slide-title h1 { color: var(--dark); }\n.slide-title .subtitle { color: var(--gray); }\n.slide-title .copyright { background: var(--dark); color: rgba(255,255,255,0.6); padding: 0.75rem; margin-top: auto; width: 100%; text-align: center; }",
+          "empty": false,
+          "blocked": false,
+          "reason": ""
+        },
+        {
+          "id": "titleSlides.offset-left",
+          "slug": "offset-left",
+          "marker": "5. offset-left",
+          "label": "Offset Left",
+          "notes": [],
+          "css": ".slide-title { background: linear-gradient(135deg, var(--dark), var(--royal)); text-align: left; padding-left: 5rem; position: relative; overflow: hidden; }\n.slide-title::after { content: ''; position: absolute; right: 5rem; top: 50%; transform: translateY(-50%); width: 200px; height: 200px; border-radius: 50%; border: 2px solid rgba(211,178,87,0.15); }\n.slide-title h1 { text-align: left; }\n.slide-title .divider { margin: 0.5rem 0; }",
+          "empty": false,
+          "blocked": false,
+          "reason": ""
+        },
+        {
+          "id": "titleSlides.diagonal-split",
+          "slug": "diagonal-split",
+          "marker": "6. diagonal-split",
+          "label": "Diagonal Split",
+          "notes": [],
+          "css": ".slide-title { position: relative; overflow: hidden; background: var(--dark); }\n.slide-title::after { content: ''; position: absolute; top: 0; right: 0; width: 60%; height: 100%; background: var(--primary); clip-path: polygon(20% 0, 100% 0, 100% 100%, 0% 100%); }\n.slide-title h1, .slide-title .subtitle, .slide-title .logo { position: relative; z-index: 1; }",
+          "empty": false,
+          "blocked": false,
+          "reason": ""
+        },
+        {
+          "id": "titleSlides.framed-center",
+          "slug": "framed-center",
+          "marker": "7. framed-center",
+          "label": "Framed Center",
+          "notes": [],
+          "css": ".slide-title { background: var(--royal); }\n.slide-title h1 { border: 1.5px solid var(--gold); border-radius: 8px; padding: 2rem 3rem; display: inline-block; }\n.slide-title .divider { background: var(--gold); }",
+          "empty": false,
+          "blocked": false,
+          "reason": ""
+        },
+        {
+          "id": "titleSlides.top-banner",
+          "slug": "top-banner",
+          "marker": "8. top-banner",
+          "label": "Top Banner",
+          "notes": [],
+          "css": ".slide-title { background: var(--light); flex-direction: column; }\n.slide-title::before { content: 'SPOKES \\2014  SKILLS FOR LIFE'; background: linear-gradient(90deg, var(--dark), var(--primary), var(--dark)); color: var(--gold); font-size: 0.75rem; letter-spacing: 3px; text-align: center; padding: 0.75rem; width: 100%; }\n.slide-title::after { content: ''; height: 4px; background: linear-gradient(90deg, var(--primary), var(--gold), var(--accent)); width: 100%; margin-top: auto; }\n.slide-title h1 { color: var(--dark); }\n.slide-title .subtitle { color: var(--gray); }",
+          "empty": false,
+          "blocked": false,
+          "reason": ""
+        },
+        {
+          "id": "titleSlides.radial-glow",
+          "slug": "radial-glow",
+          "marker": "9. radial-glow",
+          "label": "Radial Glow",
+          "notes": [],
+          "css": ".slide-title { background: var(--royal); position: relative; overflow: hidden; }\n.slide-title::before { content: ''; position: absolute; width: 400px; height: 400px; border-radius: 50%; background: radial-gradient(circle, rgba(0,123,175,0.25) 0%, transparent 70%); top: 50%; left: 50%; transform: translate(-50%, -50%); }",
+          "empty": false,
+          "blocked": false,
+          "reason": ""
+        },
+        {
+          "id": "titleSlides.vertical-strip",
+          "slug": "vertical-strip",
+          "marker": "10. vertical-strip",
+          "label": "Vertical Strip",
+          "notes": [],
+          "css": ".slide-title { background: var(--light); text-align: left; padding-left: 4rem; position: relative; }\n.slide-title::before { content: ''; position: absolute; left: 0; top: 0; bottom: 0; width: 8px; background: linear-gradient(180deg, var(--primary), var(--gold), var(--accent)); }\n.slide-title h1 { color: var(--dark); text-align: left; }\n.slide-title .subtitle { color: var(--gray); text-align: left; }\n.slide-title .divider { margin: 0.5rem 0; }",
+          "empty": false,
+          "blocked": false,
+          "reason": ""
+        },
+        {
+          "id": "titleSlides.corner-accent",
+          "slug": "corner-accent",
+          "marker": "11. corner-accent",
+          "label": "Corner Accent",
+          "notes": [],
+          "css": ".slide-title { background: var(--dark); position: relative; overflow: hidden; }\n.slide-title::before { content: ''; position: absolute; top: 0; left: 0; border-left: 120px solid rgba(211,178,87,0.3); border-bottom: 120px solid transparent; }\n.slide-title::after { content: ''; position: absolute; bottom: 0; right: 0; border-right: 90px solid rgba(0,123,175,0.4); border-top: 90px solid transparent; }",
+          "empty": false,
+          "blocked": false,
+          "reason": ""
+        },
+        {
+          "id": "titleSlides.horizon-line",
+          "slug": "horizon-line",
+          "marker": "12. horizon-line",
+          "label": "Horizon Line",
+          "notes": [],
+          "css": ".slide-title { background: linear-gradient(180deg, var(--royal) 0%, var(--dark) 50%, var(--dark) 50%, var(--primary) 100%); flex-direction: column; align-items: center; justify-content: center; }\n.slide-title .divider { width: 200px; height: 3px; background: linear-gradient(90deg, transparent, var(--gold), transparent); margin: 1rem auto; }",
+          "empty": false,
+          "blocked": false,
+          "reason": ""
+        },
+        {
+          "id": "titleSlides.quiet-center",
+          "slug": "quiet-center",
+          "marker": "13. quiet-center",
+          "label": "Quiet Center",
+          "notes": [],
+          "css": ".slide-title { background: var(--muted); flex-direction: column; align-items: center; justify-content: center; text-align: center; }\n.slide-title h1 { color: var(--dark); max-width: 16ch; }\n.slide-title .subtitle { color: var(--gray); max-width: 36ch; }\n.slide-title .divider { width: 64px; height: 2px; background: var(--muted-gold); margin: 1rem auto; }\n.slide-title .copyright { color: var(--gray); }",
+          "empty": false,
+          "blocked": false,
+          "reason": ""
+        },
+        {
+          "id": "titleSlides.dual-band",
+          "slug": "dual-band",
+          "marker": "14. dual-band",
+          "label": "Dual Band",
+          "notes": [],
+          "css": ".slide-title { background: var(--light); flex-direction: column; align-items: stretch; justify-content: center; text-align: left; padding: 0; position: relative; }\n.slide-title::before { content: ''; display: block; height: 18%; background: linear-gradient(90deg, var(--dark), var(--primary)); }\n.slide-title::after { content: ''; display: block; height: 10px; background: var(--gold); margin-top: auto; }\n.slide-title h1, .slide-title .subtitle, .slide-title .logo, .slide-title .copyright, .slide-title .divider { position: relative; z-index: 1; margin-left: 3rem; margin-right: 3rem; text-align: left; }\n.slide-title h1 { color: var(--dark); }\n.slide-title .subtitle { color: var(--gray); }",
+          "empty": false,
+          "blocked": false,
+          "reason": ""
+        },
+        {
+          "id": "titleSlides.side-rail",
+          "slug": "side-rail",
+          "marker": "15. side-rail",
+          "label": "Side Rail",
+          "notes": [],
+          "css": ".slide-title { background: linear-gradient(135deg, var(--royal), var(--dark)); text-align: left; padding-left: 5.5rem; position: relative; overflow: hidden; }\n.slide-title::before { content: ''; position: absolute; left: 0; top: 0; bottom: 0; width: 18px; background: linear-gradient(180deg, var(--primary), var(--gold), var(--accent)); }\n.slide-title h1 { text-align: left; color: var(--light); }\n.slide-title .subtitle { text-align: left; color: rgba(255,255,255,0.75); }\n.slide-title .divider { margin: 0.75rem 0; background: var(--gold); }\n.slide-title .copyright { text-align: left; color: rgba(255,255,255,0.55); }",
+          "empty": false,
+          "blocked": false,
+          "reason": ""
+        }
+      ]
+    }
+  ]
+}

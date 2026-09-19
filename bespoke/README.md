@@ -14,6 +14,7 @@ Steps: Lesson & team · Theme preset · Color lead · Sidebar & background · Ti
 ## What ships in this prototype
 
 - Loads **`SPOKES Builder/bespoke-library-catalog.json`** for selectable options (cards, dividers, title slides, textures, color leads, sidebars)
+- Preview styles come from **`SPOKES Builder/theme-options.json`** (same CSS the generator writes to `theme-library.css`) injected into template markup
 - UI keys = `{family}.{slug}` (e.g. `cards.top-accent`); intake / selection payload persists **slug only**
 - Six theme presets: Professional, Modern, Serious, Light-hearted, Fun, Outspoken (starters; all editable after)
 - Demo-first Spokes Model (sample content, not a full lesson build)
@@ -26,9 +27,11 @@ Steps: Lesson & team · Theme preset · Color lead · Sidebar & background · Ti
 
 | File | Role |
 |------|------|
-| `SPOKES Builder/bespoke-library-catalog.json` | Authoritative option list (from card-library workstream) |
+| `SPOKES Builder/bespoke-library-catalog.json` | Authoritative option list (optional `blocked` + `reason`) |
+| `SPOKES Builder/theme-options.json` | Uncommented CSS snippets (FID-3 single source) |
 | `bespoke/catalog.json` | Lessons, presets, font pairings, color-lead preview cues |
-| `SPOKES Builder/theme-library.css` | CSS snippets agents copy into `theme-override` |
+| `SPOKES Builder/theme-library.css` | Generated agent-facing library (`generate-theme-library.py`) |
+| `bespoke/selection.schema.json` | Generated selection payload schema (`generate-selection-schema.py`) |
 
 ## Spoke Signals
 
