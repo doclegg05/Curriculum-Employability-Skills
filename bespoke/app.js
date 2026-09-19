@@ -580,7 +580,7 @@
       <details class="builder-note">
         <summary>For builders</summary>
         <dl id="builderDetails"></dl>
-        <p>Options load from <code>SPOKES Builder/bespoke-library-catalog.json</code> (UI key <code>{family}.{slug}</code>); the selection payload and intake markdown store <strong>slugs only</strong>, matching <code>theme-registry.json</code>. Card styles may vary by WIPPEA chapter (D12); adjacent chapters never share a style (THM-04). Submit opens a labelled GitHub issue — no token in this browser — and the Spoke Signals Action opens the lesson-tagged PR; merge is the greenlight (D10). Visual reference: <a href="../SPOKES%20Builder/library-preview.html" target="_blank" rel="noopener">library preview</a>.</p>
+        <p>Options load from <code>SPOKES Builder/bespoke-library-catalog.json</code> (UI key <code>{family}.{slug}</code>); the selection payload stores <strong>slugs only</strong>. <code>bespoke-apply-selection.py</code> (not yet wired to the Action) upserts <code>theme-registry.json</code> with derived Layer 2 fields below. Card styles may vary by WIPPEA chapter (D12); adjacent chapters never share a style (THM-04). Submit opens a labelled GitHub issue — no token in this browser — and the Spoke Signals Action opens the lesson-tagged PR; merge is the greenlight (D10). Visual reference: <a href="../SPOKES%20Builder/library-preview.html" target="_blank" rel="noopener">library preview</a>.</p>
       </details>
     `;
     const list = byId("summaryList");
@@ -629,7 +629,23 @@
   }
 
   /** Catalog ids for the collapsed "For builders" footnote on Review. */
+  const DERIVED_LAYER2 = {
+    W: { leadComponent: "takeaways", secondaryAccent: "gold" },
+    I: { leadComponent: "cards-grid", secondaryAccent: "primary" },
+    P1: { leadComponent: "smart-stack", secondaryAccent: "gold" },
+    P2: { leadComponent: "areas-grid", secondaryAccent: "primary" },
+    P3: { leadComponent: "dangers-grid", secondaryAccent: "gold" },
+    E: { leadComponent: "takeaways", secondaryAccent: "primary" },
+    A: { leadComponent: "content-list", secondaryAccent: "gold" }
+  };
+
   function builderIds() {
+    const derived = (state.meta.chapterKeys || Object.keys(DERIVED_LAYER2))
+      .map((k) => {
+        const d = DERIVED_LAYER2[k] || {};
+        return `${k}: ${d.leadComponent}/${d.secondaryAccent}`;
+      })
+      .join("; ");
     return {
       Preset: state.presetId,
       "Color lead": uiKey("colorLeads", state.colorLead),
@@ -640,7 +656,9 @@
       Cards: state.varyCardsByChapter
         ? state.meta.chapterKeys.map((k) => `${k}=${uiKey("cards", state.chapterCards[k] || state.cardStyle)}`).join(" ")
         : uiKey("cards", state.cardStyle),
-      Fonts: state.fontPairing
+      Fonts: state.fontPairing,
+      "Derived Layer 2 (FID-5)": derived,
+      "Registry key": state.lessonId ? `lesson-${state.lessonId}` : "—"
     };
   }
 

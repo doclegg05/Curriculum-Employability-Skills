@@ -21,25 +21,42 @@ Each lesson's visual identity is defined in `theme-registry.json`. The agent rea
 | Property | Source | Description |
 |----------|--------|-------------|
 | cards | theme-registry.json per chapter | Card/component styling (16 options — see bespoke-library-catalog.json) |
-| divider | theme-registry.json per chapter | Section divider layout (8 options) |
+| divider | theme-registry.json per chapter | Section divider layout (8 options; uniform per lesson from Bespoke) |
 | leadComponent | theme-registry.json per chapter | First component type after section divider |
 | secondaryAccent | theme-registry.json per chapter | Alternating accent color for borders/highlights |
 
+#### FID-5 — Derived `leadComponent` / `secondaryAccent` (Bespoke)
+
+Instructors do **not** choose these. When `scripts/bespoke-apply-selection.py` upserts a registry entry from `selection.json`, it fills Layer 2 using this fixed WIPPEA-role table:
+
+| Chapter | leadComponent | secondaryAccent |
+|---------|---------------|-----------------|
+| W | takeaways | gold |
+| I | cards-grid | primary |
+| P1 | smart-stack | gold |
+| P2 | areas-grid | primary |
+| P3 | dangers-grid | gold |
+| E | takeaways | primary |
+| A | content-list | gold |
+
+`secondaryAccent` alternates `gold` / `primary` (lead-appropriate default). Card styles come from the wizard (`lessonWide` or per-chapter when `varyByChapter` is true). Divider is copied from the lesson-level `dividerStyle` into every chapter.
+
 ### How to Build the Theme-Override Block
 
-1. Read the theme package from `theme-registry.json`
-2. Open `theme-library.css` and find the relevant CSS snippets
+1. Read the theme package from `theme-registry.json` (entry may originate from a merged Bespoke PR via `bespoke-apply-selection.py`)
+2. Open `theme-library.css` (generated from `theme-options.json`) and find the relevant CSS snippets
 3. For Layer 1 properties: uncomment the matching snippet and add to the override block
 4. For Layer 2 card styles: find the card style snippet, replace `SCOPE` with `[data-chapter="N"]`
 5. For Layer 2 dividers: find the divider snippet, replace `DIVIDER_SCOPE` with `.slide-section[data-chapter="N"]`
 6. For dark-royal texture: include the `.theme-dark` CSS and add `class="theme-dark"` to `.main`
 7. Place the complete `<style id="theme-override">` block AFTER the main SPOKES `<style>` block
+8. Honor `varyByChapter`: when true, each chapter's `cards` slug in the registry may differ — apply the matching SCOPE block per chapter
 
 ### Rules
 
 - **Never invent a theme.** Only use what's in theme-registry.json (or Bespoke wizard selections that resolve to catalog slugs).
-- **Never write custom CSS in a lesson build.** Only use snippets from theme-library.css.
-- **Do not ad-hoc edit theme-library.css during lesson builds.** Library expansion is a separate Bespoke workstream: add snippets + register IDs in `bespoke-library-catalog.json` / `bespoke-library-ids.md`, then open a dedicated PR.
+- **Never write custom CSS in a lesson build.** Only use snippets from theme-library.css / theme-options.json.
+- **Do not ad-hoc edit theme-library.css during lesson builds.** Edit `theme-options.json`, run `python3 scripts/generate-theme-library.py`, and register IDs in `bespoke-library-catalog.json` / `bespoke-library-ids.md`, then open a dedicated PR.
 - **All 11 brand colors remain available** — the colorLead just determines which dominates. Do not rewrite the colorLead/registry color model (D6).
 - **WCAG AA contrast** must be maintained in all text/background combinations.
-- **Wizard catalog:** selectable option IDs are `{family}.{slug}` — see `bespoke-library-ids.md`.
+- **Wizard catalog:** selectable option IDs are `{family}.{slug}` — see `bespoke-library-ids.md`. Optional `blocked` + `reason` grey an option in the wizard without removing it.
