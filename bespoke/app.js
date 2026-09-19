@@ -1076,129 +1076,6 @@
     };
   }
 
-  function buildIntakeMarkdown(payload) {
-    const d = payload.date;
-    const title = payload.lesson.displayTitle || payload.lesson.title;
-    const bullets = parseBullets(payload.sampleContent.bullets)
-      .map((b, i) => `${i + 1}. ${b}`)
-      .join("\n");
-    const myth = payload.sampleContent.mythReality || "";
-    const theme = payload.theme;
-    return `# SPOKES Lesson Content Intake Template
-
-**Filled by Bespoke** (prototype). Template remains canonical (D11).
-Library catalog: \`SPOKES Builder/bespoke-library-catalog.json\` — UI keys \`{family}.{slug}\`; fields below store **slugs only**.
-
----
-
-## Section 1: Lesson Overview
-
-| Field | Your Entry |
-|-------|------------|
-| **Lesson Title** | ${title} |
-| **Lesson Subtitle** | ${payload.lesson.subtitle || "_TBD_"} |
-| **Module Number** | _TBD_ |
-| **Content Team / Author** | ${payload.team.name || payload.team.spokesperson.name} |
-| **Spokesperson** | ${payload.team.spokesperson.name} &lt;${payload.team.spokesperson.email || "n/a"}&gt; |
-| **Date Submitted** | ${d} |
-| **Lesson Description** | Prototype submission via Bespoke Spoke Signals. Full WIPPEA content follows in OneDrive; this file captures look choices and sample content. |
-
-### Design choices (from Bespoke)
-
-| Dimension | Slug (registry) | Catalog id |
-|-----------|-----------------|------------|
-| Preset | ${payload.presetId} | — |
-| Color lead | ${theme.colorLead} | ${theme.catalogIds.colorLead} |
-| Sidebar | ${theme.sidebarColor} | ${theme.catalogIds.sidebarColor} |
-| Texture | ${theme.backgroundTexture} | ${theme.catalogIds.backgroundTexture} |
-| Title slide | ${theme.titleSlide} | ${theme.catalogIds.titleSlide} |
-| Divider | ${theme.dividerStyle} | ${theme.catalogIds.dividerStyle} |
-| Font pairing | ${theme.fontPairing} | — |
-| Cards | ${
-      theme.cards.varyByChapter
-        ? `vary by chapter: ${JSON.stringify(theme.cards.chapterStyles)}`
-        : theme.cards.lessonWide
-    } | ${
-      typeof theme.catalogIds.cards === "string"
-        ? theme.catalogIds.cards
-        : JSON.stringify(theme.catalogIds.cards)
-    } |
-| Unspoken | ${payload.unspoken || "_none_"} | — |
-
----
-
-## Section 2: Content by WIPPEA Stage
-
-### Stage W -- Warm-Up (Chapter 1)
-
-**Opening Activity or Reflection Prompt:**
-
-\`\`\`
-${bullets || "[Write here]"}
-\`\`\`
-
-**Key Question(s) to Pose:**
-
-\`\`\`
-What is one goal this lesson should help learners reach?
-\`\`\`
-
----
-
-### Stage I -- Introduction (Chapter 2)
-
-**Module Objective / Learning Goal:**
-
-\`\`\`
-Learners will apply the skills in this lesson to a workplace or daily-life scenario.
-\`\`\`
-
-**Framing Statement:**
-
-\`\`\`
-${myth || "[Write here]"}
-\`\`\`
-
----
-
-### Stage P1 -- Presentation 1 (Chapter 3)
-
-**Topic / Section Title:**
-\`\`\`
-${title} — Core ideas
-\`\`\`
-
-**Main Content Points:**
-
-\`\`\`
-${bullets || "1.\\n2.\\n3."}
-\`\`\`
-
----
-
-### Remaining stages
-
-_Full P2–A content delivered via the team OneDrive folder. This prototype intake seeds look + sample content only._
-
----
-
-## Section 3: Media &amp; Resources
-
-| Item | Notes |
-|------|-------|
-| OneDrive folder | Linked from Bespoke confirmation (per-lesson) |
-| PowerPoint / PDFs | Delivered outside the wizard (D1) |
-
----
-
-## Section 4: Submission metadata
-
-- Pipeline: Spoke Signals
-- Schema: bespoke-selection/v1
-- Gate: Britt reviews PR; merge = greenlight to build (D10)
-`;
-  }
-
   function downloadText(filename, text, type) {
     const blob = new Blob([text], { type });
     const url = URL.createObjectURL(blob);
@@ -1211,7 +1088,7 @@ _Full P2–A content delivered via the team OneDrive folder. This prototype inta
     URL.revokeObjectURL(url);
   }
 
-  function buildIssueBody(payload, intakeMd) {
+  function buildIssueBody(payload) {
     const json = JSON.stringify(payload, null, 2);
     return [
       `## Spoke Signal — ${payload.lesson.title}`,
@@ -1224,22 +1101,13 @@ _Full P2–A content delivered via the team OneDrive folder. This prototype inta
       `| Preset | ${payload.presetId} |`,
       `| Date | ${payload.date} |`,
       "",
-      "An Action will open a lesson-tagged PR with `selection.json` and a filled content-intake markdown.",
+      "An Action will open a lesson-tagged PR with `selection.json`. The Action writer (`bespoke-write-submission.py`) is the single source of `content-intake.md`.",
       "",
       "<!-- bespoke-payload:begin -->",
       "```json",
       json,
       "```",
-      "<!-- bespoke-payload:end -->",
-      "",
-      "<details><summary>Preview of content-intake.md</summary>",
-      "",
-      "```markdown",
-      intakeMd.slice(0, 3500),
-      intakeMd.length > 3500 ? "\n…(truncated in issue body; full file in PR)" : "",
-      "```",
-      "",
-      "</details>"
+      "<!-- bespoke-payload:end -->"
     ].join("\n");
   }
 
@@ -1257,14 +1125,12 @@ _Full P2–A content delivered via the team OneDrive folder. This prototype inta
     }
 
     const payload = buildSelectionPayload();
-    const intakeMd = buildIntakeMarkdown(payload);
     const stamp = payload.date;
     const base = `${payload.lesson.id}-${stamp}`;
 
     downloadText(`${base}-selection.json`, JSON.stringify(payload, null, 2), "application/json");
-    downloadText(`${base}-content-intake.md`, intakeMd, "text/markdown");
 
-    const issueBody = buildIssueBody(payload, intakeMd);
+    const issueBody = buildIssueBody(payload);
     const title = `[Spoke Signal] ${payload.lesson.id} — ${stamp}`;
     const issueUrl =
       `https://github.com/${REPO}/issues/new` +
@@ -1277,7 +1143,7 @@ _Full P2–A content delivered via the team OneDrive folder. This prototype inta
     const urlTooLong = issueUrl.length > 7000;
     box.innerHTML = `
       <h3>Spoke Signal ready</h3>
-      <p>Downloads started for <code>selection.json</code> and the filled <code>content-intake</code> markdown.
+      <p>Download started for <code>selection.json</code> (the Action writer builds <code>content-intake.md</code> in the PR).
       ${
         urlTooLong
           ? "The payload is large — open a blank Spoke Signal issue and paste the JSON from your download between the payload markers (or ask Britt to run the workflow_dispatch Action)."
