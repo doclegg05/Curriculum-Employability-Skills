@@ -7,13 +7,13 @@
   <link rel="icon" href="../SPOKES-Logo.png">
   <link rel="stylesheet" href="./styles.css">
 </head>
-<body>
+<body class="app-shell">
   <a class="skip-link" href="#stepPanel">Skip to wizard</a>
   <div id="liveRegion" class="sr-only" aria-live="polite"></div>
 
   <header class="app-header">
     <a class="brand" href="./index.html">
-      <img src="../SPOKES-Logo.png" alt="" width="48" height="48">
+      <img src="../SPOKES-Logo.png" alt="" width="40" height="40">
       <div class="brand-text">
         <strong>Bespoke</strong>
         <span>Instructor design wizard · Spokes Model preview</span>
@@ -25,23 +25,34 @@
     </div>
   </header>
 
-  <div class="layout">
-    <nav class="stepper" aria-label="Wizard steps">
-      <h2>Steps</h2>
-      <ol class="step-list" id="stepList"></ol>
-    </nav>
+  <div class="surface-switcher" role="tablist" aria-label="Workspace surface" id="surfaceSwitcher">
+    <button type="button" role="tab" id="surface-design" data-surface="design" aria-selected="true" aria-controls="chromeRail">Design</button>
+    <button type="button" role="tab" id="surface-preview" data-surface="preview" aria-selected="false" aria-controls="previewPane">Preview</button>
+  </div>
 
-    <main>
-      <section class="panel" id="stepPanel" tabindex="-1" aria-label="Current wizard step"></section>
-    </main>
+  <div class="workspace" id="workspace" data-active-surface="design">
+    <div class="chrome-rail" id="chromeRail" data-surface-panel="design">
+      <nav class="stepper" aria-label="Wizard steps">
+        <h2>Steps</h2>
+        <ol class="step-list" id="stepList"></ol>
+      </nav>
 
-    <aside class="preview-pane" aria-label="Spokes Model">
-      <h2>Spokes Model</h2>
-      <p class="preview-note">Demo-first preview with sample content. Not a full lesson build.</p>
-      <div class="preview-tabs" role="tablist" aria-label="Preview surface" id="previewTabs">
-        <button type="button" role="tab" id="tab-title" data-view="title" aria-selected="true" aria-controls="modelStage">Title</button>
-        <button type="button" role="tab" id="tab-divider" data-view="divider" aria-selected="false" aria-controls="modelStage">Divider</button>
-        <button type="button" role="tab" id="tab-cards" data-view="cards" aria-selected="false" aria-controls="modelStage">Cards</button>
+      <main class="chrome-main">
+        <section class="panel" id="stepPanel" tabindex="-1" aria-label="Current wizard step"></section>
+      </main>
+    </div>
+
+    <aside class="preview-pane" id="previewPane" aria-label="Spokes Model" data-surface-panel="preview">
+      <div class="preview-header">
+        <div>
+          <h2>Spokes Model</h2>
+          <p class="preview-note">Demo-first preview with sample content. Not a full lesson build.</p>
+        </div>
+        <div class="preview-tabs" role="tablist" aria-label="Preview surface" id="previewTabs">
+          <button type="button" role="tab" id="tab-title" data-view="title" aria-selected="true" aria-controls="modelStage">Title</button>
+          <button type="button" role="tab" id="tab-divider" data-view="divider" aria-selected="false" aria-controls="modelStage">Divider</button>
+          <button type="button" role="tab" id="tab-cards" data-view="cards" aria-selected="false" aria-controls="modelStage">Cards</button>
+        </div>
       </div>
       <div class="spokes-model">
         <div class="model-chrome">

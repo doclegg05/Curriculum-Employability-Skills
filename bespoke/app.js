@@ -1035,6 +1035,25 @@ _Full P2–A content delivered via the team OneDrive folder. This prototype inta
       });
     });
 
+    const workspace = byId("workspace");
+    document.querySelectorAll('#surfaceSwitcher [role="tab"]').forEach((tab) => {
+      tab.addEventListener("click", () => {
+        const surface = tab.dataset.surface;
+        workspace.dataset.activeSurface = surface;
+        document.querySelectorAll('#surfaceSwitcher [role="tab"]').forEach((t) => {
+          t.setAttribute("aria-selected", t === tab ? "true" : "false");
+        });
+        const live = byId("liveRegion");
+        if (live) live.textContent = surface === "preview" ? "Showing Spokes Model preview" : "Showing design options";
+      });
+      tab.addEventListener("keydown", (e) => {
+        if (e.key === "Enter" || e.key === " ") {
+          e.preventDefault();
+          tab.click();
+        }
+      });
+    });
+
     render();
   }
 
