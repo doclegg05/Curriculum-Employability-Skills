@@ -22,6 +22,7 @@ These files are in this directory (`SPOKES Builder/`):
 | `build-process.md`            | Step-by-step workflow, WIPPEA mapping, and verification checklist.                              |
 | `AGENT_THEMING_GUIDELINES.md` | Brand color enforcement, font pairing rules, video placeholders, and template variant guidance. |
 | `content-intake-template.md`  | Structured form for human content teams to deliver lesson content ready for building.           |
+| `../docs/briefs/instructor-to-html-intake-2026-09-17.md` | KEEP VERBATIM rules. Instructors own meaning, AI owns format. Capture only. |
 
 ## Design Philosophy
 
