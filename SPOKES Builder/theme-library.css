@@ -237,10 +237,14 @@
 /* ==========================================================================
    CARD STYLES
    --------------------------------------------------------------------------
-   Eight card-style options. Each is a COMMENTED CSS block using the SCOPE
-   prefix. When an agent builds a theme-override, it replaces the literal
-   text SCOPE with [data-chapter="N"] for the assigned chapter.
+   Sixteen card-style options (8 legacy + 8 Bespoke expansions). Each is a
+   COMMENTED CSS block using the SCOPE prefix. When an agent builds a
+   theme-override, it replaces the literal text SCOPE with [data-chapter="N"]
+   for the assigned chapter.
    Example:  SCOPE .card  -->  [data-chapter="3"] .card
+
+   Stable IDs for the Bespoke wizard catalog: cards.{slug}
+   See bespoke-library-ids.md and bespoke-library-catalog.json.
 
    Every card style overrides ALL of the following component selectors:
      cards-grid    .card, .card.gold-border
@@ -524,7 +528,7 @@
      background: linear-gradient(135deg, var(--primary), var(--dark));
    }
    SCOPE .matrix-cell.schedule {
-     background: linear-gradient(135deg, var(--accent), #2e9a44);
+     background: linear-gradient(135deg, var(--accent), var(--dark));
    }
    SCOPE .matrix-cell.delegate {
      background: linear-gradient(135deg, var(--gold), var(--muted-gold));
@@ -631,14 +635,538 @@
 */
 
 
+/* --- 9. top-accent --- */
+/*
+   SCOPE .card {
+     background: var(--light);
+     border-left: none;
+     border-top: 5px solid var(--primary);
+     border-radius: 0 0 10px 10px;
+     box-shadow: 0 2px 10px rgba(0,64,113,0.06);
+   }
+   SCOPE .card.gold-border {
+     border-top-color: var(--gold);
+     border-left: none;
+   }
+   SCOPE .takeaway-num {
+     background: var(--primary);
+     color: var(--light);
+     border-radius: 4px 4px 0 0;
+   }
+   SCOPE .takeaway-num.alt {
+     background: var(--muted-gold);
+     color: var(--light);
+   }
+   SCOPE .smart-letter {
+     border-radius: 4px 4px 0 0;
+   }
+   SCOPE .smart-content {
+     background: var(--light);
+     border-top: 3px solid var(--primary);
+     border-radius: 0 0 10px 10px;
+   }
+   SCOPE .matrix-cell {
+     border-top: 4px solid var(--primary);
+     border-radius: 0 0 10px 10px;
+   }
+   SCOPE .danger-card-front,
+   SCOPE .danger-card-back {
+     border-top: 4px solid var(--primary);
+     border-radius: 0 0 12px 12px;
+   }
+   SCOPE .area-card {
+     border-left: none;
+     border-top: 5px solid var(--primary);
+     border-radius: 0 0 12px 12px;
+   }
+   SCOPE .area-card.gold-card {
+     border-top-color: var(--gold);
+   }
+   SCOPE .activity-box {
+     border-left: none;
+     border-top: 4px solid var(--gold);
+     border-radius: 0 0 10px 10px;
+   }
+   SCOPE .download-btn {
+     border-radius: 0 0 8px 8px;
+     border-top: 3px solid var(--accent);
+   }
+*/
+
+
+/* --- 10. inset-panel --- */
+/*
+   SCOPE .card {
+     background: var(--muted);
+     border-left: none;
+     border: 1px solid rgba(0,64,113,0.08);
+     border-radius: 14px;
+     box-shadow: inset 0 1px 0 rgba(255,255,255,0.8);
+     padding: 1.75rem 2rem;
+   }
+   SCOPE .card.gold-border {
+     border-color: rgba(211,178,87,0.45);
+     background: rgba(211,178,87,0.08);
+   }
+   SCOPE .takeaway-num {
+     background: var(--light);
+     color: var(--dark);
+     border: 1px solid rgba(0,64,113,0.12);
+     border-radius: 10px;
+   }
+   SCOPE .takeaway-num.alt {
+     color: var(--muted-gold);
+     border-color: rgba(173,136,6,0.35);
+   }
+   SCOPE .smart-letter {
+     background: var(--light);
+     color: var(--dark);
+     border-radius: 10px;
+     border: 1px solid rgba(0,64,113,0.12);
+   }
+   SCOPE .smart-content {
+     background: var(--light);
+     border-radius: 12px;
+     border: 1px solid rgba(0,64,113,0.08);
+   }
+   SCOPE .matrix-cell {
+     background: var(--muted);
+     border-radius: 12px;
+     border: 1px solid rgba(0,64,113,0.1);
+   }
+   SCOPE .danger-card-front,
+   SCOPE .danger-card-back {
+     background: var(--muted);
+     border-radius: 14px;
+     border: 1px solid rgba(0,64,113,0.1);
+   }
+   SCOPE .area-card {
+     background: var(--muted);
+     border-radius: 14px;
+     border: 1px solid rgba(0,64,113,0.08);
+   }
+   SCOPE .activity-box {
+     background: rgba(237,243,247,0.9);
+     border: 1px solid rgba(211,178,87,0.35);
+     border-radius: 12px;
+   }
+   SCOPE .download-btn {
+     border-radius: 10px;
+     background: var(--light);
+     color: var(--dark);
+     border: 1px solid rgba(0,64,113,0.15);
+   }
+*/
+
+
+/* --- 11. dual-rail --- */
+/*
+   SCOPE .card {
+     background: var(--light);
+     border-left: 3px solid var(--primary);
+     border-right: 3px solid var(--gold);
+     border-radius: 4px;
+     box-shadow: none;
+   }
+   SCOPE .card.gold-border {
+     border-left-color: var(--gold);
+     border-right-color: var(--primary);
+   }
+   SCOPE .takeaway-num {
+     border-left: 3px solid var(--primary);
+     border-right: 3px solid var(--gold);
+     border-radius: 2px;
+   }
+   SCOPE .takeaway-num.alt {
+     border-left-color: var(--gold);
+     border-right-color: var(--primary);
+   }
+   SCOPE .smart-letter {
+     border-left: 3px solid var(--primary);
+     border-right: 3px solid var(--gold);
+     border-radius: 2px;
+   }
+   SCOPE .smart-letter.alt {
+     border-left-color: var(--gold);
+     border-right-color: var(--primary);
+   }
+   SCOPE .smart-content {
+     border-left: 2px solid var(--primary);
+     border-right: 2px solid var(--gold);
+     border-radius: 4px;
+     background: var(--light);
+   }
+   SCOPE .matrix-cell {
+     border-left: 3px solid var(--primary);
+     border-right: 3px solid var(--gold);
+     border-radius: 4px;
+   }
+   SCOPE .danger-card-front,
+   SCOPE .danger-card-back {
+     border-left: 3px solid var(--primary);
+     border-right: 3px solid var(--gold);
+     border-radius: 6px;
+   }
+   SCOPE .area-card {
+     border-left: 3px solid var(--primary);
+     border-right: 3px solid var(--gold);
+     border-radius: 6px;
+   }
+   SCOPE .activity-box {
+     border-left: 3px solid var(--gold);
+     border-right: 3px solid var(--accent);
+     border-radius: 4px;
+   }
+   SCOPE .download-btn {
+     border-left: 3px solid var(--accent);
+     border-right: 3px solid var(--primary);
+     border-radius: 4px;
+   }
+*/
+
+
+/* --- 12. soft-lift --- */
+/*
+   SCOPE .card {
+     background: var(--light);
+     border-left: none;
+     border: none;
+     border-radius: 16px;
+     box-shadow: 0 10px 28px rgba(0,64,113,0.1), 0 2px 6px rgba(0,64,113,0.04);
+   }
+   SCOPE .card.gold-border {
+     box-shadow: 0 10px 28px rgba(173,136,6,0.14), 0 2px 6px rgba(0,64,113,0.04);
+   }
+   SCOPE .takeaway-num {
+     border-radius: 12px;
+     box-shadow: 0 6px 16px rgba(0,64,113,0.12);
+   }
+   SCOPE .takeaway-num.alt {
+     box-shadow: 0 6px 16px rgba(173,136,6,0.16);
+   }
+   SCOPE .smart-letter {
+     border-radius: 12px;
+     box-shadow: 0 6px 16px rgba(0,64,113,0.12);
+   }
+   SCOPE .smart-content {
+     background: var(--light);
+     border-radius: 14px;
+     box-shadow: 0 8px 20px rgba(0,64,113,0.08);
+   }
+   SCOPE .matrix-cell {
+     border-radius: 14px;
+     box-shadow: 0 8px 22px rgba(0,64,113,0.1);
+   }
+   SCOPE .danger-card-front,
+   SCOPE .danger-card-back {
+     border-radius: 16px;
+     box-shadow: 0 10px 26px rgba(0,64,113,0.12);
+   }
+   SCOPE .area-card {
+     border-radius: 16px;
+     box-shadow: 0 10px 26px rgba(0,64,113,0.1);
+   }
+   SCOPE .activity-box {
+     border-radius: 14px;
+     box-shadow: 0 8px 20px rgba(173,136,6,0.12);
+   }
+   SCOPE .download-btn {
+     border-radius: 12px;
+     box-shadow: 0 6px 14px rgba(0,64,113,0.12);
+   }
+*/
+
+
+/* --- 13. rule-stack --- */
+/*
+   SCOPE .card {
+     background: transparent;
+     border-left: none;
+     border-top: 1px solid var(--offwhite);
+     border-bottom: 2px solid var(--dark);
+     border-radius: 0;
+     padding: 1.5rem 0.25rem;
+   }
+   SCOPE .card.gold-border {
+     border-bottom-color: var(--muted-gold);
+   }
+   SCOPE .takeaway-num {
+     background: transparent;
+     color: var(--dark);
+     border-bottom: 2px solid var(--primary);
+     border-radius: 0;
+   }
+   SCOPE .takeaway-num.alt {
+     color: var(--muted-gold);
+     border-bottom-color: var(--muted-gold);
+   }
+   SCOPE .smart-letter {
+     background: transparent;
+     color: var(--dark);
+     border-bottom: 2px solid var(--primary);
+     border-radius: 0;
+   }
+   SCOPE .smart-letter.alt {
+     color: var(--muted-gold);
+     border-bottom-color: var(--muted-gold);
+   }
+   SCOPE .smart-content {
+     background: transparent;
+     border-top: 1px solid var(--offwhite);
+     border-bottom: 2px solid var(--dark);
+     border-radius: 0;
+   }
+   SCOPE .matrix-cell {
+     background: transparent;
+     border-top: 1px solid var(--offwhite);
+     border-bottom: 2px solid var(--dark);
+     border-radius: 0;
+   }
+   SCOPE .danger-card-front,
+   SCOPE .danger-card-back {
+     background: var(--light);
+     border-top: 1px solid var(--offwhite);
+     border-bottom: 2px solid var(--dark);
+     border-radius: 0;
+   }
+   SCOPE .area-card {
+     background: transparent;
+     border-top: 1px solid var(--offwhite);
+     border-bottom: 2px solid var(--dark);
+     border-radius: 0;
+   }
+   SCOPE .activity-box {
+     background: transparent;
+     border-top: 1px solid var(--offwhite);
+     border-bottom: 2px solid var(--muted-gold);
+     border-radius: 0;
+   }
+   SCOPE .download-btn {
+     border-radius: 0;
+     border-bottom: 2px solid var(--accent);
+   }
+*/
+
+
+/* --- 14. stamp-frame --- */
+/*
+   SCOPE .card {
+     background: var(--light);
+     border: 3px solid var(--dark);
+     border-left: 3px solid var(--dark);
+     border-radius: 2px;
+     outline: 1px solid var(--dark);
+     outline-offset: 4px;
+   }
+   SCOPE .card.gold-border {
+     border-color: var(--muted-gold);
+     outline-color: var(--muted-gold);
+   }
+   SCOPE .takeaway-num {
+     border: 2px solid var(--dark);
+     border-radius: 2px;
+     outline: 1px solid var(--dark);
+     outline-offset: 2px;
+   }
+   SCOPE .takeaway-num.alt {
+     border-color: var(--muted-gold);
+     outline-color: var(--muted-gold);
+   }
+   SCOPE .smart-letter {
+     border: 2px solid var(--dark);
+     border-radius: 2px;
+   }
+   SCOPE .smart-content {
+     border: 2px solid var(--dark);
+     border-radius: 2px;
+     outline: 1px solid var(--dark);
+     outline-offset: 3px;
+   }
+   SCOPE .matrix-cell {
+     border: 2px solid var(--dark);
+     border-radius: 2px;
+   }
+   SCOPE .danger-card-front,
+   SCOPE .danger-card-back {
+     border: 3px solid var(--dark);
+     border-radius: 2px;
+     outline: 1px solid var(--dark);
+     outline-offset: 3px;
+   }
+   SCOPE .area-card {
+     border: 3px solid var(--dark);
+     border-radius: 2px;
+     outline: 1px solid var(--dark);
+     outline-offset: 3px;
+   }
+   SCOPE .activity-box {
+     border: 2px solid var(--muted-gold);
+     border-radius: 2px;
+     outline: 1px solid var(--muted-gold);
+     outline-offset: 3px;
+   }
+   SCOPE .download-btn {
+     border: 2px solid var(--dark);
+     border-radius: 2px;
+   }
+*/
+
+
+/* --- 15. banded-header --- */
+/*
+   SCOPE .card {
+     background: var(--light);
+     border-left: none;
+     border-radius: 10px;
+     overflow: hidden;
+     box-shadow: 0 2px 8px rgba(0,64,113,0.06);
+     background-image: linear-gradient(var(--primary), var(--primary));
+     background-size: 100% 10px;
+     background-repeat: no-repeat;
+     background-position: top left;
+     padding-top: 1.75rem;
+   }
+   SCOPE .card.gold-border {
+     background-image: linear-gradient(var(--gold), var(--gold));
+   }
+   SCOPE .takeaway-num {
+     border-radius: 8px;
+     background: linear-gradient(180deg, var(--primary) 0 8px, var(--dark) 8px);
+   }
+   SCOPE .takeaway-num.alt {
+     background: linear-gradient(180deg, var(--gold) 0 8px, var(--muted-gold) 8px);
+   }
+   SCOPE .smart-letter {
+     border-radius: 8px;
+     background: linear-gradient(180deg, var(--primary) 0 8px, var(--dark) 8px);
+   }
+   SCOPE .smart-letter.alt {
+     background: linear-gradient(180deg, var(--gold) 0 8px, var(--muted-gold) 8px);
+   }
+   SCOPE .smart-content {
+     background: var(--light);
+     border-radius: 10px;
+     background-image: linear-gradient(var(--primary), var(--primary));
+     background-size: 100% 8px;
+     background-repeat: no-repeat;
+     padding-top: 1.25rem;
+   }
+   SCOPE .matrix-cell {
+     border-radius: 10px;
+     background-image: linear-gradient(var(--primary), var(--primary));
+     background-size: 100% 8px;
+     background-repeat: no-repeat;
+   }
+   SCOPE .danger-card-front,
+   SCOPE .danger-card-back {
+     border-radius: 12px;
+     background-image: linear-gradient(var(--primary), var(--primary));
+     background-size: 100% 10px;
+     background-repeat: no-repeat;
+   }
+   SCOPE .area-card {
+     border-radius: 12px;
+     background-image: linear-gradient(var(--primary), var(--primary));
+     background-size: 100% 10px;
+     background-repeat: no-repeat;
+     padding-top: 1.5rem;
+   }
+   SCOPE .area-card.gold-card {
+     background-image: linear-gradient(var(--gold), var(--gold));
+   }
+   SCOPE .activity-box {
+     border-radius: 10px;
+     background-image: linear-gradient(var(--gold), var(--gold));
+     background-size: 100% 8px;
+     background-repeat: no-repeat;
+     padding-top: 1.25rem;
+   }
+   SCOPE .download-btn {
+     border-radius: 8px;
+     background-image: linear-gradient(var(--accent), var(--accent));
+     background-size: 100% 4px;
+     background-repeat: no-repeat;
+   }
+*/
+
+
+/* --- 16. quiet-outline --- */
+/*
+   SCOPE .card {
+     background: var(--light);
+     border: 1px solid rgba(0,64,113,0.18);
+     border-left: 1px solid rgba(0,64,113,0.18);
+     border-radius: 8px;
+     box-shadow: none;
+   }
+   SCOPE .card.gold-border {
+     border-color: rgba(173,136,6,0.45);
+   }
+   SCOPE .takeaway-num {
+     background: var(--light);
+     color: var(--dark);
+     border: 1px solid rgba(0,64,113,0.22);
+     border-radius: 6px;
+   }
+   SCOPE .takeaway-num.alt {
+     color: var(--muted-gold);
+     border-color: rgba(173,136,6,0.4);
+   }
+   SCOPE .smart-letter {
+     background: var(--light);
+     color: var(--dark);
+     border: 1px solid rgba(0,64,113,0.22);
+     border-radius: 6px;
+   }
+   SCOPE .smart-letter.alt {
+     color: var(--muted-gold);
+     border-color: rgba(173,136,6,0.4);
+   }
+   SCOPE .smart-content {
+     background: var(--light);
+     border: 1px solid rgba(0,64,113,0.14);
+     border-radius: 8px;
+   }
+   SCOPE .matrix-cell {
+     border: 1px solid rgba(0,64,113,0.18);
+     border-radius: 8px;
+     background: var(--light);
+   }
+   SCOPE .danger-card-front,
+   SCOPE .danger-card-back {
+     border: 1px solid rgba(0,64,113,0.18);
+     border-radius: 10px;
+     background: var(--light);
+   }
+   SCOPE .area-card {
+     border: 1px solid rgba(0,64,113,0.18);
+     border-radius: 10px;
+     background: var(--light);
+   }
+   SCOPE .activity-box {
+     border: 1px solid rgba(173,136,6,0.35);
+     border-radius: 8px;
+     background: var(--light);
+   }
+   SCOPE .download-btn {
+     border: 1px solid rgba(0,64,113,0.22);
+     border-radius: 8px;
+     background: var(--light);
+     color: var(--dark);
+   }
+*/
+
+
 /* ==========================================================================
    SECTION DIVIDER STYLES
    --------------------------------------------------------------------------
-   Five divider-style options. Each is a COMMENTED CSS block using the
-   DIVIDER_SCOPE prefix. When an agent builds a theme-override, it replaces
-   the literal text DIVIDER_SCOPE with .slide-section[data-chapter="N"] for
-   the assigned chapter.
+   Eight divider-style options (5 legacy + 3 Bespoke expansions). Each is a
+   COMMENTED CSS block using the DIVIDER_SCOPE prefix. When an agent builds a
+   theme-override, it replaces the literal text DIVIDER_SCOPE with
+   .slide-section[data-chapter="N"] for the assigned chapter.
    Example:  DIVIDER_SCOPE h2  -->  .slide-section[data-chapter="3"] h2
+
+   Stable IDs: dividers.{slug} — see bespoke-library-catalog.json.
    ========================================================================== */
 
 
@@ -688,13 +1216,56 @@
 */
 
 
+/* --- 6. gold-rail --- */
+/*
+   DIVIDER_SCOPE { background: var(--dark); align-items: flex-start; justify-content: center; padding-left: 4rem; }
+   DIVIDER_SCOPE::before { content: ''; position: absolute; left: 0; top: 0; bottom: 0; width: 12px; background: linear-gradient(180deg, var(--gold), var(--muted-gold)); }
+   DIVIDER_SCOPE h2 { color: var(--light); text-align: left; }
+   DIVIDER_SCOPE .chapter-label { color: var(--gold); }
+   DIVIDER_SCOPE .divider { background: var(--gold); margin: 0.75rem 0; }
+   DIVIDER_SCOPE .section-circle { border-color: var(--gold); }
+*/
+
+
+/* --- 7. stacked-bands --- */
+/* Uses layered backgrounds only — must NOT override ::after (chapter watermark). */
+/*
+   DIVIDER_SCOPE {
+     background:
+       linear-gradient(var(--primary), var(--primary)) top / 100% 28% no-repeat,
+       linear-gradient(var(--gold), var(--gold)) bottom / 100% 12% no-repeat,
+       var(--light);
+     flex-direction: column;
+     align-items: center;
+     justify-content: center;
+     padding: 0;
+   }
+   DIVIDER_SCOPE h2 { color: var(--dark); text-align: center; position: relative; z-index: 1; }
+   DIVIDER_SCOPE .chapter-label { color: var(--primary); position: relative; z-index: 1; }
+   DIVIDER_SCOPE .divider { background: var(--muted-gold); position: relative; z-index: 1; }
+   DIVIDER_SCOPE .section-circle { position: relative; z-index: 1; border-color: var(--primary); margin-bottom: 1rem; }
+*/
+
+
+/* --- 8. dark-masthead --- */
+/*
+   DIVIDER_SCOPE { background: linear-gradient(180deg, var(--royal) 0%, var(--dark) 100%); align-items: center; justify-content: center; }
+   DIVIDER_SCOPE h2 { color: var(--light); letter-spacing: 0.04em; }
+   DIVIDER_SCOPE .chapter-label { color: rgba(211,178,87,0.9); text-transform: uppercase; letter-spacing: 0.12em; }
+   DIVIDER_SCOPE .divider { width: 120px; height: 2px; background: var(--gold); }
+   DIVIDER_SCOPE .section-circle { border-color: rgba(211,178,87,0.5); box-shadow: 0 0 0 6px rgba(211,178,87,0.12); }
+*/
+
+
 /* ==========================================================================
    TITLE SLIDE DESIGNS
    --------------------------------------------------------------------------
-   Twelve title-slide design options. Each is a COMMENTED CSS block targeting
-   .slide-title and its children. Agents uncomment the one matching the
-   lesson's chosen title design and place the rules inside a
-   <style id="theme-override"> block.
+   Fifteen title-slide design options (12 legacy + 3 Bespoke expansions).
+   Each is a COMMENTED CSS block targeting .slide-title and its children.
+   Agents uncomment the one matching the lesson's chosen title design and
+   place the rules inside a <style id="theme-override"> block.
+
+   Stable IDs: titleSlides.{slug} — see bespoke-library-catalog.json.
    ========================================================================== */
 
 
@@ -798,4 +1369,36 @@
 /*
    .slide-title { background: linear-gradient(180deg, var(--royal) 0%, var(--dark) 50%, var(--dark) 50%, var(--primary) 100%); flex-direction: column; align-items: center; justify-content: center; }
    .slide-title .divider { width: 200px; height: 3px; background: linear-gradient(90deg, transparent, var(--gold), transparent); margin: 1rem auto; }
+*/
+
+
+/* --- 13. quiet-center --- */
+/*
+   .slide-title { background: var(--muted); flex-direction: column; align-items: center; justify-content: center; text-align: center; }
+   .slide-title h1 { color: var(--dark); max-width: 16ch; }
+   .slide-title .subtitle { color: var(--gray); max-width: 36ch; }
+   .slide-title .divider { width: 64px; height: 2px; background: var(--muted-gold); margin: 1rem auto; }
+   .slide-title .copyright { color: var(--gray); }
+*/
+
+
+/* --- 14. dual-band --- */
+/*
+   .slide-title { background: var(--light); flex-direction: column; align-items: stretch; justify-content: center; text-align: left; padding: 0; position: relative; }
+   .slide-title::before { content: ''; display: block; height: 18%; background: linear-gradient(90deg, var(--dark), var(--primary)); }
+   .slide-title::after { content: ''; display: block; height: 10px; background: var(--gold); margin-top: auto; }
+   .slide-title h1, .slide-title .subtitle, .slide-title .logo, .slide-title .copyright, .slide-title .divider { position: relative; z-index: 1; margin-left: 3rem; margin-right: 3rem; text-align: left; }
+   .slide-title h1 { color: var(--dark); }
+   .slide-title .subtitle { color: var(--gray); }
+*/
+
+
+/* --- 15. side-rail --- */
+/*
+   .slide-title { background: linear-gradient(135deg, var(--royal), var(--dark)); text-align: left; padding-left: 5.5rem; position: relative; overflow: hidden; }
+   .slide-title::before { content: ''; position: absolute; left: 0; top: 0; bottom: 0; width: 18px; background: linear-gradient(180deg, var(--primary), var(--gold), var(--accent)); }
+   .slide-title h1 { text-align: left; color: var(--light); }
+   .slide-title .subtitle { text-align: left; color: rgba(255,255,255,0.75); }
+   .slide-title .divider { margin: 0.75rem 0; background: var(--gold); }
+   .slide-title .copyright { text-align: left; color: rgba(255,255,255,0.55); }
 */

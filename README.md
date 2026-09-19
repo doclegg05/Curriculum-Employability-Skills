@@ -18,6 +18,8 @@ SPOKES interactive employability curriculum system with standards, templates, an
 - `SPOKES-Project-Plan.md` — phased project delivery plan
 - `SPOKES-Master-Action-Plan.md` — consolidated issue register + sprint plan
 - `Dashboard.html` — curriculum launcher/dashboard (`index.html` redirects here)
+- `bespoke/` — Bespoke instructor design wizard (prototype; GitHub Pages at `/bespoke/`)
+- `docs/bespoke/decisions.md` — greenlit Bespoke lock decisions
 - `lesson-registry.json` — per-lesson status, theme, and quality-gate registry
 - `lesson-time-management/` — Time Management lesson
 - `lesson-interview-skills/` — Interview Skills lesson

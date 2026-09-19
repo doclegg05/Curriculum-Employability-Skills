@@ -13,15 +13,15 @@ Each lesson's visual identity is defined in `theme-registry.json`. The agent rea
 | colorLead | theme-registry.json | Which brand color dominates (blue, mauve, gold, green, royal, or dual-tone) |
 | sidebarColor | theme-registry.json | Sidebar background: "dark" (#004071) or "royal" (#00133f) |
 | backgroundTexture | theme-registry.json | Content area pattern: plain, dot-grid, diagonal, crosshatch, soft-gradient, or dark-royal |
-| titleSlide | theme-registry.json | Opening slide layout (12 options) |
+| titleSlide | theme-registry.json | Opening slide layout (15 options) |
 | fontPairing | theme-registry.json + font-pairings.md | Heading + body font pair |
 
 ### Layer 2 — Chapter Variation (rotates per chapter)
 
 | Property | Source | Description |
 |----------|--------|-------------|
-| cards | theme-registry.json per chapter | Card/component styling (8 options) |
-| divider | theme-registry.json per chapter | Section divider layout (5 options) |
+| cards | theme-registry.json per chapter | Card/component styling (16 options — see bespoke-library-catalog.json) |
+| divider | theme-registry.json per chapter | Section divider layout (8 options) |
 | leadComponent | theme-registry.json per chapter | First component type after section divider |
 | secondaryAccent | theme-registry.json per chapter | Alternating accent color for borders/highlights |
 
@@ -37,8 +37,9 @@ Each lesson's visual identity is defined in `theme-registry.json`. The agent rea
 
 ### Rules
 
-- **Never invent a theme.** Only use what's in theme-registry.json.
-- **Never write custom CSS.** Only use snippets from theme-library.css.
-- **Never modify theme-library.css.** It's a shared library.
-- **All 11 brand colors remain available** — the colorLead just determines which dominates.
+- **Never invent a theme.** Only use what's in theme-registry.json (or Bespoke wizard selections that resolve to catalog slugs).
+- **Never write custom CSS in a lesson build.** Only use snippets from theme-library.css.
+- **Do not ad-hoc edit theme-library.css during lesson builds.** Library expansion is a separate Bespoke workstream: add snippets + register IDs in `bespoke-library-catalog.json` / `bespoke-library-ids.md`, then open a dedicated PR.
+- **All 11 brand colors remain available** — the colorLead just determines which dominates. Do not rewrite the colorLead/registry color model (D6).
 - **WCAG AA contrast** must be maintained in all text/background combinations.
+- **Wizard catalog:** selectable option IDs are `{family}.{slug}` — see `bespoke-library-ids.md`.

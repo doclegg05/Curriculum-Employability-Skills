@@ -1,0 +1,125 @@
+{
+  "version": "1.1.0",
+  "description": "Bespoke wizard meta (lessons, presets, fonts, color-lead preview cues). Selectable library options load from SPOKES Builder/bespoke-library-catalog.json.",
+  "libraryCatalog": "../SPOKES Builder/bespoke-library-catalog.json",
+  "libraryDocs": "../SPOKES Builder/bespoke-library-ids.md",
+  "libraryPreview": "../SPOKES Builder/library-preview.html",
+  "lessons": [
+    { "id": "goal-setting", "title": "Goal Setting", "round": 2 },
+    { "id": "money-management", "title": "Money Management", "round": 2, "note": "Dogfood team" },
+    { "id": "professionalism-and-diversity", "title": "Professionalism and Diversity", "round": 2 },
+    { "id": "knowing-your-rights", "title": "Knowing Your Rights in the Workplace", "round": 2 },
+    { "id": "communicating-assertively", "title": "Communicating Assertively", "round": 2 },
+    { "id": "workplace-ethics", "title": "Workplace Ethics", "round": 2 }
+  ],
+  "colorLeadPreview": {
+    "blue": { "heading": "var(--primary)", "button": "var(--primary)", "gradientFrom": "var(--primary)", "gradientTo": "var(--dark)", "usedBy": ["Time Management"] },
+    "royal": { "heading": "var(--royal)", "button": "var(--royal)", "gradientFrom": "var(--royal)", "gradientTo": "var(--dark)", "usedBy": ["Interview Skills"] },
+    "green": { "heading": "var(--primary)", "button": "var(--primary)", "gradientFrom": "var(--accent)", "gradientTo": "var(--primary)", "usedBy": ["Employee Accountability"] },
+    "mauve": { "heading": "var(--mauve)", "button": "var(--mauve)", "gradientFrom": "var(--mauve)", "gradientTo": "var(--royal)", "usedBy": ["Controlling Anger"] },
+    "gold": { "heading": "var(--muted-gold)", "button": "var(--dark)", "gradientFrom": "var(--muted-gold)", "gradientTo": "var(--primary)", "usedBy": [] },
+    "dual-blue-green": { "heading": "var(--primary)", "button": "var(--primary)", "gradientFrom": "var(--primary)", "gradientTo": "var(--accent)", "usedBy": ["Communicating with the Public"] },
+    "dual-gold-green": { "heading": "var(--muted-gold)", "button": "var(--dark)", "gradientFrom": "var(--muted-gold)", "gradientTo": "var(--accent)", "usedBy": ["Problem Solving & Decision Making"] },
+    "dual-mauve-blue": { "heading": "var(--mauve)", "button": "var(--mauve)", "gradientFrom": "var(--mauve)", "gradientTo": "var(--primary)", "usedBy": [] },
+    "dual-mauve-gold": { "heading": "var(--mauve)", "button": "var(--mauve)", "gradientFrom": "var(--mauve)", "gradientTo": "var(--muted-gold)", "usedBy": [] }
+  },
+  "sidebarPreview": {
+    "dark": "var(--dark)",
+    "royal": "var(--royal)"
+  },
+  "fontPairings": [
+    { "id": "dm-serif-display-outfit", "label": "DM Serif Display + Outfit", "heading": "DM Serif Display", "body": "Outfit", "mood": "Clean, modern, professional" },
+    { "id": "playfair-display-inter", "label": "Playfair Display + Inter", "heading": "Playfair Display", "body": "Inter", "mood": "Elegant, boardroom" },
+    { "id": "merriweather-source-sans-3", "label": "Merriweather + Source Sans 3", "heading": "Merriweather", "body": "Source Sans 3", "mood": "Trustworthy, warm" },
+    { "id": "vollkorn-fira-sans", "label": "Vollkorn + Fira Sans", "heading": "Vollkorn", "body": "Fira Sans", "mood": "Serious, grounded" },
+    { "id": "crimson-pro-work-sans", "label": "Crimson Pro + Work Sans", "heading": "Crimson Pro", "body": "Work Sans", "mood": "Approachable, lively" },
+    { "id": "bitter-raleway", "label": "Bitter + Raleway", "heading": "Bitter", "body": "Raleway", "mood": "Bold, outspoken" }
+  ],
+  "chapterKeys": ["W", "I", "P1", "P2", "P3", "E", "A"],
+  "presets": [
+    {
+      "id": "professional",
+      "label": "Professional",
+      "blurb": "Clean boardroom polish for workplace skills.",
+      "defaults": {
+        "colorLead": "blue",
+        "sidebarColor": "dark",
+        "backgroundTexture": "dot-grid",
+        "titleSlide": "centered-gradient",
+        "dividerStyle": "gradient-sweep",
+        "cardStyle": "left-border",
+        "fontPairing": "dm-serif-display-outfit"
+      }
+    },
+    {
+      "id": "modern",
+      "label": "Modern",
+      "blurb": "Sharp contrast and contemporary geometry.",
+      "defaults": {
+        "colorLead": "royal",
+        "sidebarColor": "royal",
+        "backgroundTexture": "diagonal",
+        "titleSlide": "split-hero",
+        "dividerStyle": "framed-gold",
+        "cardStyle": "sharp-border",
+        "fontPairing": "playfair-display-inter"
+      }
+    },
+    {
+      "id": "serious",
+      "label": "Serious",
+      "blurb": "Grounded and focused for high-stakes topics.",
+      "defaults": {
+        "colorLead": "mauve",
+        "sidebarColor": "dark",
+        "backgroundTexture": "dark-royal",
+        "titleSlide": "framed-center",
+        "dividerStyle": "framed-gold",
+        "cardStyle": "outlined",
+        "fontPairing": "vollkorn-fira-sans"
+      }
+    },
+    {
+      "id": "light-hearted",
+      "label": "Light-hearted",
+      "blurb": "Warm and welcoming without losing clarity.",
+      "defaults": {
+        "colorLead": "green",
+        "sidebarColor": "dark",
+        "backgroundTexture": "soft-gradient",
+        "titleSlide": "bottom-anchored",
+        "dividerStyle": "centered-badge",
+        "cardStyle": "pill",
+        "fontPairing": "merriweather-source-sans-3"
+      }
+    },
+    {
+      "id": "fun",
+      "label": "Fun",
+      "blurb": "Energetic dual tones and layered cards.",
+      "defaults": {
+        "colorLead": "dual-blue-green",
+        "sidebarColor": "dark",
+        "backgroundTexture": "crosshatch",
+        "titleSlide": "top-banner",
+        "dividerStyle": "bold-full-bleed",
+        "cardStyle": "layered",
+        "fontPairing": "crimson-pro-work-sans"
+      }
+    },
+    {
+      "id": "outspoken",
+      "label": "Outspoken",
+      "blurb": "Bold high-contrast look that speaks up.",
+      "defaults": {
+        "colorLead": "dual-gold-green",
+        "sidebarColor": "dark",
+        "backgroundTexture": "plain",
+        "titleSlide": "offset-left",
+        "dividerStyle": "split-panel",
+        "cardStyle": "gradient-fill",
+        "fontPairing": "bitter-raleway"
+      }
+    }
+  ]
+}

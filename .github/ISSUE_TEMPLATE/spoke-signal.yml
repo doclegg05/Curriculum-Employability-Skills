@@ -1,0 +1,27 @@
+name: Spoke Signal
+description: Bespoke instructor design submission (opens a lesson-tagged PR via Action)
+title: "[Spoke Signal] <lesson-id> — YYYY-MM-DD"
+labels: ["spoke-signal", "bespoke"]
+body:
+  - type: markdown
+    attributes:
+      value: |
+        Paste the JSON downloaded from Bespoke between the markers below (or use the wizard’s pre-filled issue link).
+        Do **not** put a GitHub token anywhere — the Spoke Signals Action opens the PR.
+  - type: textarea
+    id: payload
+    attributes:
+      label: Bespoke payload
+      description: Full bespoke-selection/v1 JSON
+      render: json
+      value: |
+        <!-- bespoke-payload:begin -->
+        ```json
+        {
+          "schema": "bespoke-selection/v1",
+          "lesson": { "id": "money-management", "title": "Money Management" }
+        }
+        ```
+        <!-- bespoke-payload:end -->
+    validations:
+      required: true
