@@ -6,17 +6,20 @@
   const LIBRARY_URL = "../SPOKES%20Builder/bespoke-library-catalog.json";
   const META_URL = "./catalog.json";
 
+  /** `view` = the preview the step lands on; a manual tab pick sticks until the step changes. */
   const STEPS = [
-    { id: "team", label: "Lesson & team" },
-    { id: "preset", label: "Personality" },
-    { id: "color", label: "Color lead" },
-    { id: "surface", label: "Sidebar & texture" },
-    { id: "layouts", label: "Title & divider" },
-    { id: "cards", label: "Card style" },
-    { id: "fonts", label: "Font pairing" },
-    { id: "content", label: "Sample content" },
-    { id: "review", label: "Review & submit" }
+    { id: "team", label: "Lesson & team", view: "title" },
+    { id: "preset", label: "Personality", view: "title" },
+    { id: "color", label: "Color lead", view: "title" },
+    { id: "surface", label: "Sidebar & texture", view: "title" },
+    { id: "layouts", label: "Title & divider", view: "title" },
+    { id: "cards", label: "Card style", view: "cards" },
+    { id: "fonts", label: "Font pairing", view: "cards" },
+    { id: "content", label: "Sample content", view: "cards" },
+    { id: "review", label: "Review & submit", view: "title" }
   ];
+
+  const VIEW_NAMES = { title: "Title slide", divider: "Section divider", cards: "Content slide" };
 
   const state = {
     step: 0,
@@ -43,6 +46,16 @@
     unspoken: "",
     previewView: "title"
   };
+
+  /** Transient UI state — never saved to the draft. */
+  const ui = {
+    renderedStep: null,
+    previewPinned: false,
+    lastChange: null,
+    pulseTimer: null
+  };
+
+  const prefersReduced = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
 
   function byId(id) {
     return document.getElementById(id);
@@ -83,9 +96,23 @@
   function applyPreset(presetId) {
     const preset = findMeta(state.meta.presets, presetId);
     if (!preset) return;
+    const changed = Object.entries(preset.defaults).filter(([k, v]) => state[k] !== v).length;
     state.presetId = presetId;
     Object.assign(state, preset.defaults);
     if (!state.varyCardsByChapter) state.chapterCards = {};
+    noteChange(
+      `Applied ${preset.label} preset`,
+      `${changed} setting${changed === 1 ? "" : "s"} changed — everything stays editable.`,
+      true
+    );
+  }
+
+  /**
+   * Record what just changed so the preview caption and live region can say it
+   * (e.g. "Updated · Card style → Shadow Float"). `plain` skips the arrow format.
+   */
+  function noteChange(dimension, label, plain = false) {
+    ui.lastChange = { dimension, label, plain };
   }
 
   /** THM-04: adjacent WIPPEA chapters must not share the same card slug. */
@@ -285,6 +312,7 @@
           pressed: state.colorLead === opt.slug,
           onSelect: () => {
             state.colorLead = opt.slug;
+            noteChange("Color lead", opt.label);
             saveDraft();
             render();
           }
@@ -305,11 +333,13 @@
     const sidePreview = state.meta.sidebarPreview || {};
     renderLibraryOptions(byId("sidebarGrid"), "sidebarColors", state.sidebarColor, (opt) => {
       state.sidebarColor = opt.slug;
+      noteChange("Sidebar", opt.label);
       saveDraft();
       render();
     }, { swatchFor: (opt) => sidePreview[opt.slug] || "var(--dark)" });
     renderLibraryOptions(byId("textureGrid"), "backgroundTextures", state.backgroundTexture, (opt) => {
       state.backgroundTexture = opt.slug;
+      noteChange("Background", opt.label);
       saveDraft();
       render();
     });
@@ -326,13 +356,15 @@
     `;
     renderLibraryOptions(byId("titleGrid"), "titleSlides", state.titleSlide, (opt) => {
       state.titleSlide = opt.slug;
-      state.previewView = "title";
+      showView("title");
+      noteChange("Title slide", opt.label);
       saveDraft();
       render();
     }, { showNew: true });
     renderLibraryOptions(byId("dividerGrid"), "dividers", state.dividerStyle, (opt) => {
       state.dividerStyle = opt.slug;
-      state.previewView = "divider";
+      showView("divider");
+      noteChange("Divider", opt.label);
       saveDraft();
       render();
     }, { showNew: true });
@@ -355,7 +387,8 @@
     `;
     renderLibraryOptions(byId("cardGrid"), "cards", state.cardStyle, (opt) => {
       state.cardStyle = opt.slug;
-      state.previewView = "cards";
+      showView("cards");
+      noteChange("Card style", opt.label);
       saveDraft();
       render();
     }, { showNew: true });
@@ -363,6 +396,8 @@
     byId("varyCards").addEventListener("change", (e) => {
       state.varyCardsByChapter = e.target.checked;
       if (state.varyCardsByChapter) seedChapterCards();
+      showView("cards");
+      noteChange("Vary by chapter", state.varyCardsByChapter ? "On" : "Off");
       saveDraft();
       render();
     });
@@ -390,6 +425,7 @@
             select.value = adjusted;
             thmNote.textContent = `THM-04: ${key} adjusted to ${findOption("cards", adjusted)?.label || adjusted} so it differs from neighbors.`;
           }
+          noteChange(`Chapter ${key} cards`, findOption("cards", state.chapterCards[key])?.label || state.chapterCards[key]);
           saveDraft();
           updatePreview();
         });
@@ -415,6 +451,7 @@
           pressed: state.fontPairing === item.id,
           onSelect: () => {
             state.fontPairing = item.id;
+            noteChange("Fonts", item.label);
             saveDraft();
             render();
           }
@@ -687,7 +724,45 @@
       tab.setAttribute("aria-selected", selected ? "true" : "false");
     });
 
-    byId("liveRegion").textContent = `Spokes Model showing ${state.previewView} preview for ${title}`;
+    announcePreview(title);
+  }
+
+  /** Pin a view chosen by an option/tab click until the next step change. */
+  function showView(view) {
+    state.previewView = view;
+    ui.previewPinned = true;
+  }
+
+  /** Caption under the frame + live region text; gold ring pulse on option changes. */
+  function announcePreview(title) {
+    const caption = byId("stageCaption");
+    const live = byId("liveRegion");
+    const viewName = VIEW_NAMES[state.previewView] || "Preview";
+    const change = ui.lastChange;
+    ui.lastChange = null;
+    if (change) {
+      const text = change.plain
+        ? `${change.dimension} · ${change.label}`
+        : `Updated · ${change.dimension} → ${change.label}`;
+      caption.innerHTML = change.plain
+        ? `<strong>${escapeHtml(change.dimension)}</strong> · ${escapeHtml(change.label)}`
+        : `Updated · ${escapeHtml(change.dimension)} → <strong>${escapeHtml(change.label)}</strong>`;
+      live.textContent = `${text}. Spokes Model showing ${viewName.toLowerCase()} for ${title}.`;
+      pulseFrame();
+    } else {
+      caption.innerHTML = `<strong>${escapeHtml(viewName)}</strong> · ${escapeHtml(title)}`;
+      live.textContent = `Spokes Model showing ${viewName.toLowerCase()} for ${title}`;
+    }
+  }
+
+  function pulseFrame() {
+    if (prefersReduced) return;
+    const frame = byId("spokesModel");
+    frame.classList.remove("is-updated");
+    void frame.offsetWidth;
+    frame.classList.add("is-updated");
+    clearTimeout(ui.pulseTimer);
+    ui.pulseTimer = setTimeout(() => frame.classList.remove("is-updated"), 260);
   }
 
   function renderTitleSlide(title, subtitle) {
@@ -1037,6 +1112,12 @@ _Full P2–A content delivered via the team OneDrive folder. This prototype inta
         ? { start: active.selectionStart, end: active.selectionEnd }
         : null;
 
+    if (ui.renderedStep !== state.step) {
+      ui.renderedStep = state.step;
+      state.previewView = STEPS[state.step].view;
+      ui.previewPinned = false;
+    }
+
     buildStepper();
     renderPanel();
     updatePreview();
@@ -1077,16 +1158,11 @@ _Full P2–A content delivered via the team OneDrive folder. This prototype inta
 
     document.querySelectorAll('#previewTabs [role="tab"]').forEach((tab) => {
       tab.addEventListener("click", () => {
-        state.previewView = tab.dataset.view;
+        showView(tab.dataset.view);
         updatePreview();
       });
-      tab.addEventListener("keydown", (e) => {
-        if (e.key === "Enter" || e.key === " ") {
-          e.preventDefault();
-          tab.click();
-        }
-      });
     });
+    bindTablistKeys(byId("previewTabs"));
 
     const workspace = byId("workspace");
     document.querySelectorAll('#surfaceSwitcher [role="tab"]').forEach((tab) => {
@@ -1099,15 +1175,29 @@ _Full P2–A content delivered via the team OneDrive folder. This prototype inta
         const live = byId("liveRegion");
         if (live) live.textContent = surface === "preview" ? "Showing Spokes Model preview" : "Showing design options";
       });
-      tab.addEventListener("keydown", (e) => {
-        if (e.key === "Enter" || e.key === " ") {
-          e.preventDefault();
-          tab.click();
-        }
-      });
     });
+    bindTablistKeys(byId("surfaceSwitcher"));
 
     render();
+  }
+
+  /** A11Y-01 keyboard support: Enter/Space activate, Left/Right/Home/End move between tabs. */
+  function bindTablistKeys(tablist) {
+    const tabs = Array.from(tablist.querySelectorAll('[role="tab"]'));
+    tabs.forEach((tab, i) => {
+      tab.addEventListener("keydown", (e) => {
+        let target = null;
+        if (e.key === "Enter" || e.key === " ") target = tab;
+        else if (e.key === "ArrowRight") target = tabs[(i + 1) % tabs.length];
+        else if (e.key === "ArrowLeft") target = tabs[(i - 1 + tabs.length) % tabs.length];
+        else if (e.key === "Home") target = tabs[0];
+        else if (e.key === "End") target = tabs[tabs.length - 1];
+        if (!target) return;
+        e.preventDefault();
+        target.focus();
+        target.click();
+      });
+    });
   }
 
   document.addEventListener("DOMContentLoaded", () => {
