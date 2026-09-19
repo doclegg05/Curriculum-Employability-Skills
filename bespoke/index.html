@@ -46,7 +46,7 @@
       <div class="preview-header">
         <div>
           <h2>Spokes Model</h2>
-          <p class="preview-note">Demo-first preview with sample content. Not a full lesson build.</p>
+          <p class="preview-note">Live preview — updates as you choose.</p>
         </div>
         <div class="preview-tabs" role="tablist" aria-label="Preview surface" id="previewTabs">
           <button type="button" role="tab" id="tab-title" data-view="title" aria-selected="true" aria-controls="modelStage">Title</button>
@@ -54,13 +54,21 @@
           <button type="button" role="tab" id="tab-cards" data-view="cards" aria-selected="false" aria-controls="modelStage">Cards</button>
         </div>
       </div>
-      <div class="spokes-model">
-        <div class="model-chrome">
-          <div class="model-sidebar" id="modelSidebar" aria-hidden="true"></div>
-          <div class="model-main" id="modelMain">
-            <div id="modelStage" role="tabpanel" aria-label="Preview stage"></div>
+      <div class="stage">
+        <div class="stage-canvas">
+          <div class="spokes-model" id="spokesModel">
+            <div class="model-chrome">
+              <div class="model-sidebar" id="modelSidebar" aria-hidden="true"></div>
+              <div class="model-main" id="modelMain">
+                <span class="model-progress" aria-hidden="true"></span>
+                <div id="modelStage" role="tabpanel" aria-label="Preview stage"></div>
+                <img class="model-logo" src="../SPOKES-Logo.png" alt="" aria-hidden="true" width="40" height="40">
+              </div>
+            </div>
+            <span class="stage-pill" aria-hidden="true">Sample content</span>
           </div>
         </div>
+        <p class="stage-caption" id="stageCaption" aria-hidden="true"></p>
       </div>
     </aside>
   </div>
