@@ -9,13 +9,13 @@
   /** `view` = the preview the step lands on; a manual tab pick sticks until the step changes. */
   const STEPS = [
     { id: "team", label: "Lesson & team", view: "title" },
-    { id: "preset", label: "Personality", view: "title" },
+    { id: "preset", label: "Theme preset", view: "title" },
     { id: "color", label: "Color lead", view: "title" },
-    { id: "surface", label: "Sidebar & texture", view: "title" },
-    { id: "layouts", label: "Title & divider", view: "title" },
-    { id: "cards", label: "Card style", view: "cards" },
-    { id: "fonts", label: "Font pairing", view: "cards" },
-    { id: "content", label: "Sample content", view: "cards" },
+    { id: "surface", label: "Sidebar & background", view: "title" },
+    { id: "layouts", label: "Title & dividers", view: "title" },
+    { id: "cards", label: "Cards", view: "cards" },
+    { id: "fonts", label: "Fonts", view: "cards" },
+    { id: "content", label: "Your content", view: "cards" },
     { id: "review", label: "Review & submit", view: "title" }
   ];
 
@@ -132,6 +132,12 @@
       return alt.slug;
     }
     return null;
+  }
+
+  function neighborKeys(key) {
+    const keys = state.meta.chapterKeys;
+    const idx = keys.indexOf(key);
+    return [keys[idx - 1], keys[idx + 1]].filter(Boolean);
   }
 
   function seedChapterCards() {
@@ -311,9 +317,9 @@
 
   function renderPreset(panel) {
     panel.innerHTML = `
-      <h1>Personality preset</h1>
-      <p class="panel-lead">Starters only — every choice stays editable on later steps. Most teams stop here.</p>
-      <div class="preset-grid" id="presetGrid" role="group" aria-label="Personality presets"></div>
+      <h1>Theme preset</h1>
+      <p class="panel-lead">Pick the closest starting point. Every choice stays editable on the next steps — most teams stop here.</p>
+      <div class="preset-grid" id="presetGrid" role="group" aria-label="Theme presets"></div>
     `;
     const grid = byId("presetGrid");
     state.meta.presets.forEach((preset) => {
@@ -342,7 +348,7 @@
   function renderColor(panel) {
     panel.innerHTML = `
       <h1>Color lead</h1>
-      <p class="panel-lead">Existing SPOKES color leads only (D6 — display &amp; choice, no model rewrite). Options already used by Phase 1 lessons are tagged. Catalog id <code>colorLeads.{slug}</code>; intake stores the slug.</p>
+      <p class="panel-lead">The main color for headings and buttons. Every option is already on-brand; leads used by earlier lessons are marked.</p>
       <div class="option-grid" id="colorGrid" role="group" aria-label="Color leads"></div>
     `;
     const grid = byId("colorGrid");
@@ -369,12 +375,12 @@
 
   function renderSurface(panel) {
     panel.innerHTML = `
-      <h1>Sidebar &amp; texture</h1>
-      <p class="panel-lead">From <code>bespoke-library-catalog.json</code>. UI keys <code>sidebarColors.*</code> / <code>backgroundTextures.*</code>; persist slugs.</p>
-      <p><strong>Sidebar</strong></p>
-      <div class="option-grid" id="sidebarGrid"></div>
-      <p style="margin-top:1.25rem"><strong>Background texture</strong></p>
-      <div class="option-grid" id="textureGrid"></div>
+      <h1>Sidebar &amp; background</h1>
+      <p class="panel-lead">The chapter sidebar tone and the slide background. Dark Royal flips the whole lesson to a dark theme.</p>
+      <p class="group-label" id="sidebarLabel">Sidebar</p>
+      <div class="option-grid" id="sidebarGrid" role="group" aria-labelledby="sidebarLabel"></div>
+      <p class="group-label" id="textureLabel">Background</p>
+      <div class="option-grid" id="textureGrid" role="group" aria-labelledby="textureLabel"></div>
     `;
     const sidePreview = state.meta.sidebarPreview || {};
     renderLibraryOptions(byId("sidebarGrid"), "sidebarColors", state.sidebarColor, (opt) => {
@@ -393,12 +399,12 @@
 
   function renderLayouts(panel) {
     panel.innerHTML = `
-      <h1>Title slide &amp; divider</h1>
-      <p class="panel-lead">Library family options including new variants. Keys <code>titleSlides.*</code> / <code>dividers.*</code>; intake gets slugs only.</p>
-      <p><strong>Title slide</strong> · <a href="../SPOKES%20Builder/library-preview.html" target="_blank" rel="noopener">Library preview</a></p>
-      <div class="option-grid" id="titleGrid"></div>
-      <p style="margin-top:1.25rem"><strong>Section divider</strong></p>
-      <div class="option-grid" id="dividerGrid"></div>
+      <h1>Title &amp; dividers</h1>
+      <p class="panel-lead">How the opening slide and each chapter's divider look. Watch the preview switch as you pick.</p>
+      <p class="group-label" id="titleLabel">Title slide</p>
+      <div class="option-grid" id="titleGrid" role="group" aria-labelledby="titleLabel"></div>
+      <p class="group-label" id="dividerLabel">Section divider</p>
+      <div class="option-grid" id="dividerGrid" role="group" aria-labelledby="dividerLabel"></div>
     `;
     renderLibraryOptions(byId("titleGrid"), "titleSlides", state.titleSlide, (opt) => {
       state.titleSlide = opt.slug;
@@ -418,14 +424,14 @@
 
   function renderCards(panel) {
     panel.innerHTML = `
-      <h1>Card style</h1>
-      <p class="panel-lead">Catalog keys <code>cards.{slug}</code> (16 styles). Persist <strong>slug only</strong>. Opt in to vary by WIPPEA chapter (D12). Adjacent chapters cannot share a card style (THM-04).</p>
-      <div class="option-grid" id="cardGrid"></div>
+      <h1>Cards</h1>
+      <p class="panel-lead">The card style for content slides. Turn on <em>Vary by chapter</em> to give each WIPPEA stage its own look — neighbouring chapters always differ.</p>
+      <div class="option-grid" id="cardGrid" role="group" aria-label="Card styles"></div>
       <div class="toggle-row">
         <input type="checkbox" id="varyCards" ${state.varyCardsByChapter ? "checked" : ""}>
         <label for="varyCards">
-          <strong>Vary card style by chapter / topic</strong><br>
-          <span style="font-weight:400;color:var(--gray)">Different library pieces for different WIPPEA stages.</span>
+          <strong>Vary by chapter</strong><br>
+          <span style="font-weight:400;color:var(--gray)">A different card style for each WIPPEA stage.</span>
         </label>
       </div>
       <p id="thmNote" class="panel-lead" style="margin-top:0"></p>
@@ -451,7 +457,7 @@
     const chapterVary = byId("chapterVary");
     const thmNote = byId("thmNote");
     if (state.varyCardsByChapter) {
-      thmNote.textContent = "THM-04 enforced: changing a chapter to match a neighbor auto-picks another library card.";
+      thmNote.textContent = "Neighbouring chapters always get different card styles — if two would match, the second is switched for you.";
       state.meta.chapterKeys.forEach((key) => {
         const label = document.createElement("label");
         label.textContent = key;
@@ -469,7 +475,8 @@
           const adjusted = enforceAdjacentCardUniqueness(key);
           if (adjusted && adjusted !== select.value) {
             select.value = adjusted;
-            thmNote.textContent = `THM-04: ${key} adjusted to ${findOption("cards", adjusted)?.label || adjusted} so it differs from neighbors.`;
+            const neighbors = neighborKeys(key).join(" and ");
+            thmNote.textContent = `Changed ${key} to ${findOption("cards", adjusted)?.label || adjusted} so it differs from ${neighbors}.`;
           }
           noteChange(`Chapter ${key} cards`, findOption("cards", state.chapterCards[key])?.label || state.chapterCards[key]);
           saveDraft();
@@ -483,9 +490,9 @@
 
   function renderFonts(panel) {
     panel.innerHTML = `
-      <h1>Font pairing</h1>
-      <p class="panel-lead">Self-hosted pairings from the SPOKES font library (wizard meta; not part of the card/layout library catalog).</p>
-      <div class="option-grid" id="fontGrid"></div>
+      <h1>Fonts</h1>
+      <p class="panel-lead">Heading and body typefaces, self-hosted so they work offline and behind school filters.</p>
+      <div class="option-grid" id="fontGrid" role="group" aria-label="Font pairings"></div>
     `;
     const grid = byId("fontGrid");
     state.meta.fontPairings.forEach((item) => {
@@ -509,8 +516,8 @@
   function renderContent(panel) {
     const lesson = findMeta(state.meta.lessons, state.lessonId);
     panel.innerHTML = `
-      <h1>Try your content</h1>
-      <p class="panel-lead">Paste a little sample text. The Spokes Model preview updates with demo slides — not a full lesson build.</p>
+      <h1>Your content</h1>
+      <p class="panel-lead">Paste a little real text so the preview looks like your lesson. This is a sample — the full lesson is built later.</p>
       <div class="field-grid">
         <label class="field">Lesson title
           <input id="lessonTitle" type="text" placeholder="${lesson ? lesson.title : "Lesson title"}">
@@ -518,10 +525,10 @@
         <label class="field">Subtitle
           <input id="lessonSubtitle" type="text" placeholder="Short phrase under the title">
         </label>
-        <label class="field">Sample bullets (become takeaways)
+        <label class="field">Key points (one per line — become cards)
           <textarea id="sampleBullets"></textarea>
         </label>
-        <label class="field">Myth / reality sample (becomes flip-style cards)
+        <label class="field">Myth / reality pair (card detail and takeaway)
           <textarea id="sampleMyth"></textarea>
         </label>
       </div>
@@ -548,18 +555,31 @@
     const labels = selectionLabels();
     panel.innerHTML = `
       <h1>Review &amp; submit</h1>
-      <p class="panel-lead">Spoke Signals opens a lesson-tagged PR. Merge is Britt’s greenlight. No GitHub token in this browser. Theme fields store <strong>slugs</strong> (e.g. <code>top-accent</code>), not full UI ids.</p>
+      <p class="panel-lead">Check your choices, then send the Spoke Signal. Britt reviews the request; approval is the go-ahead to build.</p>
       <ul class="summary-list" id="summaryList"></ul>
       <label class="field" style="margin-top:1.25rem">Unspoken — something we wish existed in the library
         <textarea id="unspoken" placeholder="Optional wish-list for future library pieces"></textarea>
       </label>
       <div id="submitStatus"></div>
+      <details class="builder-note">
+        <summary>For builders</summary>
+        <dl id="builderDetails"></dl>
+        <p>Options load from <code>SPOKES Builder/bespoke-library-catalog.json</code> (UI key <code>{family}.{slug}</code>); the selection payload and intake markdown store <strong>slugs only</strong>, matching <code>theme-registry.json</code>. Card styles may vary by WIPPEA chapter (D12); adjacent chapters never share a style (THM-04). Submit opens a labelled GitHub issue — no token in this browser — and the Spoke Signals Action opens the lesson-tagged PR; merge is the greenlight (D10). Visual reference: <a href="../SPOKES%20Builder/library-preview.html" target="_blank" rel="noopener">library preview</a>.</p>
+      </details>
     `;
     const list = byId("summaryList");
     Object.entries(labels).forEach(([k, v]) => {
       const li = document.createElement("li");
       li.innerHTML = `<span>${k}</span><strong>${escapeHtml(v)}</strong>`;
       list.appendChild(li);
+    });
+    const details = byId("builderDetails");
+    Object.entries(builderIds()).forEach(([k, v]) => {
+      const dt = document.createElement("dt");
+      dt.textContent = k;
+      const dd = document.createElement("dd");
+      dd.innerHTML = `<code>${escapeHtml(v)}</code>`;
+      details.append(dt, dd);
     });
     const unspoken = byId("unspoken");
     unspoken.value = state.unspoken || "";
@@ -577,18 +597,34 @@
       Lesson: lesson ? lesson.title : state.lessonId,
       Team: state.teamName || "—",
       Spokesperson: state.spokespersonName || "—",
-      Preset: preset ? preset.label : state.presetId,
-      "Color lead": `${findOption("colorLeads", state.colorLead)?.label || state.colorLead} (${uiKey("colorLeads", state.colorLead)})`,
+      "Theme preset": preset ? preset.label : state.presetId,
+      "Color lead": findOption("colorLeads", state.colorLead)?.label || state.colorLead,
       Sidebar: findOption("sidebarColors", state.sidebarColor)?.label || state.sidebarColor,
-      Texture: findOption("backgroundTextures", state.backgroundTexture)?.label || state.backgroundTexture,
+      Background: findOption("backgroundTextures", state.backgroundTexture)?.label || state.backgroundTexture,
       "Title slide": findOption("titleSlides", state.titleSlide)?.label || state.titleSlide,
       Divider: findOption("dividers", state.dividerStyle)?.label || state.dividerStyle,
       Cards: state.varyCardsByChapter
-        ? `Vary by chapter (${Object.entries(state.chapterCards)
-            .map(([k, v]) => `${k}:${v}`)
-            .join(", ")})`
-        : `${cardLabel(state.cardStyle)} → slug \`${state.cardStyle}\``,
+        ? `Vary by chapter — ${state.meta.chapterKeys
+            .map((k) => `${k}: ${cardLabel(state.chapterCards[k] || state.cardStyle)}`)
+            .join(", ")}`
+        : cardLabel(state.cardStyle),
       Fonts: findMeta(state.meta.fontPairings, state.fontPairing)?.label || state.fontPairing
+    };
+  }
+
+  /** Catalog ids for the collapsed "For builders" footnote on Review. */
+  function builderIds() {
+    return {
+      Preset: state.presetId,
+      "Color lead": uiKey("colorLeads", state.colorLead),
+      Sidebar: uiKey("sidebarColors", state.sidebarColor),
+      Background: uiKey("backgroundTextures", state.backgroundTexture),
+      "Title slide": uiKey("titleSlides", state.titleSlide),
+      Divider: uiKey("dividers", state.dividerStyle),
+      Cards: state.varyCardsByChapter
+        ? state.meta.chapterKeys.map((k) => `${k}=${uiKey("cards", state.chapterCards[k] || state.cardStyle)}`).join(" ")
+        : uiKey("cards", state.cardStyle),
+      Fonts: state.fontPairing
     };
   }
 

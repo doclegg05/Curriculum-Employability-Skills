@@ -7,13 +7,15 @@ Instructor design-choice wizard for Round 2 SPOKES lessons. Hosted from this rep
 1. Open the Pages site root, then **`/bespoke/`**  
    Example: `https://<org-or-user>.github.io/Curriculum-Employability-Skills/bespoke/`
 2. Or open `bespoke/index.html` from the curriculum hub (**Dashboard.html** → “Open Bespoke”).
-3. Pick a lesson + spokesperson, choose a personality preset (or edit every option), watch the **Spokes Model** preview, then **Submit Spoke Signal**.
+3. Pick a lesson + spokesperson, choose a **theme preset** (or edit every option), watch the **Spokes Model** preview, then **Submit Spoke Signal**.
+
+Steps: Lesson & team · Theme preset · Color lead · Sidebar & background · Title & dividers · Cards · Fonts · Your content · Review & submit. The preview follows the step (title slide → content slide) and shows the same 16:9 frame at every screen size; catalog ids live in a collapsed **For builders** note on Review.
 
 ## What ships in this prototype
 
 - Loads **`SPOKES Builder/bespoke-library-catalog.json`** for selectable options (cards, dividers, title slides, textures, color leads, sidebars)
 - UI keys = `{family}.{slug}` (e.g. `cards.top-accent`); intake / selection payload persists **slug only**
-- Six presets: Professional, Modern, Serious, Light-hearted, Fun, Outspoken (starters; all editable after)
+- Six theme presets: Professional, Modern, Serious, Light-hearted, Fun, Outspoken (starters; all editable after)
 - Demo-first Spokes Model (sample content, not a full lesson build)
 - Opt-in vary card style by WIPPEA chapter (D12) with THM-04 adjacent uniqueness
 - Emits filled `content-intake-template.md` shape + `selection.json` (D11)

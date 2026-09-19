@@ -1548,6 +1548,32 @@ label.field textarea { min-height: 110px; resize: vertical; }
 .summary-list span { color: var(--gray); }
 .summary-list strong { text-align: right; }
 
+.builder-note {
+  margin-top: var(--s5);
+  padding: var(--s3) var(--s4);
+  border: 1px dashed rgba(0, 64, 113, 0.25);
+  border-radius: 8px;
+  font-size: var(--fs-xs);
+  color: var(--gray);
+  line-height: var(--lh-body);
+}
+.builder-note summary {
+  cursor: pointer;
+  font-weight: 600;
+  color: var(--dark);
+  font-size: var(--fs-sm);
+}
+.builder-note dl {
+  display: grid;
+  grid-template-columns: max-content 1fr;
+  gap: 0.2rem 0.75rem;
+  margin: var(--s3) 0;
+}
+.builder-note dt { font-weight: 600; }
+.builder-note dd { margin: 0; overflow-wrap: anywhere; }
+.builder-note code { font-size: 0.95em; }
+.builder-note p { margin: var(--s3) 0 0; }
+
 .status-box {
   margin-top: var(--s5);
   padding: var(--s5);
