@@ -1358,3 +1358,48 @@ label.field textarea { min-height: 110px; resize: vertical; }
   .brand-text span { display: none; }
   .footer-bar { display: none; }
 }
+
+/* P4 — honesty caption, what-happens-next, share/import */
+.honesty-caption {
+  display: block;
+  margin-top: 0.35rem;
+  font-size: 0.78rem;
+  color: var(--gray);
+  line-height: 1.35;
+  max-width: 42rem;
+}
+.next-hops {
+  margin: 1.25rem 0;
+  padding: 1rem 1.1rem;
+  border-left: 4px solid var(--primary);
+  background: rgba(0, 123, 175, 0.06);
+}
+.next-hops h2 {
+  margin: 0 0 0.5rem;
+  font-size: 1rem;
+  color: var(--dark);
+}
+.next-hops ol {
+  margin: 0;
+  padding-left: 1.2rem;
+  color: var(--dark);
+  font-size: var(--fs-sm);
+  line-height: 1.45;
+}
+.next-hops-note {
+  margin: 0.65rem 0 0;
+  font-size: var(--fs-xs);
+  color: var(--gray);
+}
+.share-row, .import-row {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 0.75rem;
+  margin-top: 1rem;
+}
+.share-status {
+  font-size: var(--fs-xs);
+  color: var(--gray);
+}
+.import-row .field { flex: 1 1 16rem; }

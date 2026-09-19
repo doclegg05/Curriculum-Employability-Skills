@@ -83,14 +83,14 @@
       const raw = localStorage.getItem(STORAGE_KEY);
       if (!raw) return;
       const saved = JSON.parse(raw);
-      Object.assign(state, saved, { meta: state.meta, library: state.library });
+      Object.assign(state, saved, { meta: state.meta, library: state.library, themeOptions: state.themeOptions });
     } catch {
       /* ignore */
     }
   }
 
   function saveDraft() {
-    const { meta, library, ...rest } = state;
+    const { meta, library, themeOptions, ...rest } = state;
     localStorage.setItem(STORAGE_KEY, JSON.stringify(rest));
   }
 
@@ -298,6 +298,12 @@
           <input id="spokespersonEmail" type="email" autocomplete="email" placeholder="you@example.org">
         </label>
       </div>
+      <div class="import-row">
+        <label class="field">Import a saved <code>selection.json</code>
+          <input id="importSelection" type="file" accept="application/json,.json">
+        </label>
+        <p id="importStatus" class="share-status" aria-live="polite"></p>
+      </div>
     `;
     const select = byId("lessonSelect");
     state.meta.lessons.forEach((lesson) => {
@@ -327,6 +333,21 @@
     bind("teamName", "teamName");
     bind("spokespersonName", "spokespersonName");
     bind("spokespersonEmail", "spokespersonEmail");
+    byId("importSelection").addEventListener("change", async (e) => {
+      const file = e.target.files && e.target.files[0];
+      const status = byId("importStatus");
+      if (!file) return;
+      try {
+        const text = await file.text();
+        const payload = JSON.parse(text);
+        applySelectionPayload(payload);
+        status.textContent = `Imported ${payload.lesson?.id || "selection"} — draft restored.`;
+        saveDraft();
+        render();
+      } catch (err) {
+        status.textContent = `Could not import: ${err.message || err}`;
+      }
+    });
   }
 
   function renderPreset(panel) {
@@ -573,6 +594,20 @@
       <h1>Review &amp; submit</h1>
       <p class="panel-lead">Check your choices, then send the Spoke Signal. Britt reviews the request; approval is the go-ahead to build.</p>
       <ul class="summary-list" id="summaryList"></ul>
+      <section class="next-hops" aria-labelledby="nextHopsTitle">
+        <h2 id="nextHopsTitle">What happens next</h2>
+        <ol>
+          <li>You open a <strong>Spoke Signal</strong> issue with your <code>selection.json</code>.</li>
+          <li>An Action opens a <strong>draft PR</strong> (intake markdown written by the Action).</li>
+          <li><strong>Britt merges</strong> — that merge is the greenlight to build (D10).</li>
+          <li>A builder agent builds the lesson from the registry + intake.</li>
+        </ol>
+        <p class="next-hops-note">The builder chooses slide components for each piece of content; your card style applies wherever cards appear.</p>
+      </section>
+      <div class="share-row">
+        <button type="button" class="btn btn-secondary" id="btnShareLink">Copy share link</button>
+        <span id="shareStatus" class="share-status" aria-live="polite"></span>
+      </div>
       <label class="field" style="margin-top:1.25rem">Unspoken — something we wish existed in the library
         <textarea id="unspoken" placeholder="Optional wish-list for future library pieces"></textarea>
       </label>
@@ -602,6 +637,17 @@
     unspoken.addEventListener("input", () => {
       state.unspoken = unspoken.value;
       saveDraft();
+    });
+    byId("btnShareLink").addEventListener("click", async () => {
+      const url = buildShareUrl();
+      const status = byId("shareStatus");
+      try {
+        await navigator.clipboard.writeText(url);
+        status.textContent = "Share link copied";
+      } catch {
+        status.textContent = "Copy failed — select the URL from the address bar after opening the link.";
+        window.prompt("Copy this share link:", url);
+      }
     });
   }
 
@@ -945,25 +991,38 @@
     ui.previewPinned = true;
   }
 
+  /** FID-10 — honesty line under the frame for each preview view. */
+  const HONESTY = {
+    title: { label: "Exact", detail: "Title slide layout matches the build." },
+    divider: { label: "Exact — chapter image added at build", detail: "Divider layout matches; the chapter photo is added when the lesson is built." },
+    cards: {
+      label: "Representative",
+      detail: "The builder picks the component per content type; this card style applies to all cards in this chapter."
+    }
+  };
+
   /** Caption under the frame + live region text; gold ring pulse on option changes. */
   function announcePreview(title) {
     const caption = byId("stageCaption");
     const live = byId("liveRegion");
     const viewName = VIEW_NAMES[state.previewView] || "Preview";
+    const honesty = HONESTY[state.previewView] || HONESTY.title;
     const change = ui.lastChange;
     ui.lastChange = null;
+    const honestyHtml = `<span class="honesty-caption"><strong>${escapeHtml(honesty.label)}</strong> — ${escapeHtml(honesty.detail)}</span>`;
     if (change) {
       const text = change.plain
         ? `${change.dimension} · ${change.label}`
         : `Updated · ${change.dimension} → ${change.label}`;
-      caption.innerHTML = change.plain
+      const changeHtml = change.plain
         ? `<strong>${escapeHtml(change.dimension)}</strong> · ${escapeHtml(change.label)}`
         : `Updated · ${escapeHtml(change.dimension)} → <strong>${escapeHtml(change.label)}</strong>`;
-      live.textContent = `${text}. Spokes Model showing ${viewName.toLowerCase()} for ${title}.`;
+      caption.innerHTML = `${changeHtml}<br>${honestyHtml}`;
+      live.textContent = `${text}. ${honesty.label}. Spokes Model showing ${viewName.toLowerCase()} for ${title}.`;
       pulseFrame();
     } else {
-      caption.innerHTML = `<strong>${escapeHtml(viewName)}</strong> · ${escapeHtml(title)}`;
-      live.textContent = `Spokes Model showing ${viewName.toLowerCase()} for ${title}`;
+      caption.innerHTML = `<strong>${escapeHtml(viewName)}</strong> · ${escapeHtml(title)}<br>${honestyHtml}`;
+      live.textContent = `Spokes Model showing ${viewName.toLowerCase()} for ${title}. ${honesty.label}: ${honesty.detail}`;
     }
   }
 
@@ -1018,6 +1077,75 @@
         <div class="cards-grid">${cards}</div>
         <p class="takeaway"><strong>Takeaway:</strong> ${escapeHtml(String(reality).replace(/^reality:\s*/i, ""))}</p>
       </div>`;
+  }
+
+  function draftFieldsFromSelection(payload) {
+    const theme = payload.theme || {};
+    const cards = theme.cards || {};
+    const team = payload.team || {};
+    const sp = team.spokesperson || {};
+    const lesson = payload.lesson || {};
+    return {
+      lessonId: lesson.id || state.lessonId,
+      lessonTitle: lesson.displayTitle || lesson.title || "",
+      lessonSubtitle: lesson.subtitle || "",
+      teamName: team.name || "",
+      spokespersonName: sp.name || "",
+      spokespersonEmail: sp.email || "",
+      presetId: payload.presetId || state.presetId,
+      colorLead: theme.colorLead || state.colorLead,
+      sidebarColor: theme.sidebarColor || state.sidebarColor,
+      backgroundTexture: theme.backgroundTexture || state.backgroundTexture,
+      titleSlide: theme.titleSlide || state.titleSlide,
+      dividerStyle: theme.dividerStyle || state.dividerStyle,
+      fontPairing: theme.fontPairing || state.fontPairing,
+      cardStyle: cards.lessonWide || state.cardStyle,
+      varyCardsByChapter: Boolean(cards.varyByChapter),
+      chapterCards: cards.varyByChapter && cards.chapterStyles ? { ...cards.chapterStyles } : {},
+      sampleBullets: (payload.sampleContent && payload.sampleContent.bullets) || state.sampleBullets,
+      sampleMyth: (payload.sampleContent && payload.sampleContent.mythReality) || state.sampleMyth,
+      unspoken: payload.unspoken || ""
+    };
+  }
+
+  function applySelectionPayload(payload) {
+    if (payload.schema && payload.schema !== "bespoke-selection/v1") {
+      throw new Error(`Unexpected schema ${payload.schema}`);
+    }
+    Object.assign(state, draftFieldsFromSelection(payload));
+  }
+
+  function buildShareUrl() {
+    const payload = buildSelectionPayload();
+    const compact = {
+      schema: payload.schema,
+      lesson: payload.lesson,
+      team: payload.team,
+      presetId: payload.presetId,
+      theme: payload.theme,
+      sampleContent: payload.sampleContent,
+      unspoken: payload.unspoken
+    };
+    const encoded = btoa(unescape(encodeURIComponent(JSON.stringify(compact))));
+    const url = new URL(location.href);
+    url.hash = `s=${encoded}`;
+    return url.toString();
+  }
+
+  function tryLoadShareHash() {
+    const hash = location.hash || "";
+    const match = hash.match(/^#?s=(.+)$/);
+    if (!match) return false;
+    try {
+      const json = decodeURIComponent(escape(atob(match[1])));
+      const payload = JSON.parse(json);
+      applySelectionPayload(payload);
+      history.replaceState(null, "", location.pathname + location.search);
+      return true;
+    } catch (err) {
+      console.warn("Bespoke share link could not be imported", err);
+      return false;
+    }
   }
 
   function buildSelectionPayload() {
@@ -1216,6 +1344,7 @@
     state.library = await libRes.json();
     state.themeOptions = await themeRes.json();
     loadDraft();
+    tryLoadShareHash();
     if (!state.chapterCards || typeof state.chapterCards !== "object") state.chapterCards = {};
 
     byId("btnClear").addEventListener("click", () => {
