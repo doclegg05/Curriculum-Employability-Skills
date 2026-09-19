@@ -623,12 +623,42 @@
       .slice(0, 4);
   }
 
+  /** Lesson chrome shown on every view: chapter list, current chapter, slide counter. */
+  const CHAPTERS = [
+    ["W", "Warm-Up"],
+    ["I", "Introduction"],
+    ["P1", "Presentation 1"],
+    ["P2", "Presentation 2"],
+    ["P3", "Presentation 3"],
+    ["E", "Evaluation"],
+    ["A", "Application"]
+  ];
+  const VIEW_CHROME = {
+    title: { chapter: "W", slide: 1 },
+    divider: { chapter: "P1", slide: 9 },
+    cards: { chapter: "P1", slide: 10 }
+  };
+  const DARK_DIVIDERS = ["gradient-sweep", "bold-full-bleed", "framed-gold", "gold-rail", "dark-masthead"];
+
+  function renderModelSidebar(title) {
+    const chrome = VIEW_CHROME[state.previewView] || VIEW_CHROME.title;
+    const rows = CHAPTERS.map(
+      ([key, name]) =>
+        `<li${key === chrome.chapter ? ' class="is-current"' : ""}><span class="ms-letter">${key}</span><span class="ms-name">${name}</span></li>`
+    ).join("");
+    return `<div class="ms-title">${escapeHtml(title)}</div><ol class="ms-chapters">${rows}</ol><div class="ms-counter">Slide ${chrome.slide} of 30</div>`;
+  }
+
+  function lessonChipText() {
+    const team = state.teamName.trim();
+    return team || "Round 2 · SPOKES lesson";
+  }
+
   function updatePreview() {
     applyLeadVars();
     const main = byId("modelMain");
     const sidebar = byId("modelSidebar");
     const stage = byId("modelStage");
-    sidebar.style.background = getComputedStyle(document.documentElement).getPropertyValue("--sidebar-tone");
 
     main.className = "model-main";
     if (state.backgroundTexture === "dark-royal") main.classList.add("is-dark");
@@ -642,35 +672,14 @@
       .map((l) => l.trim())
       .filter(Boolean);
 
+    sidebar.innerHTML = renderModelSidebar(title);
+
     if (state.previewView === "title") {
       stage.innerHTML = renderTitleSlide(title, subtitle);
     } else if (state.previewView === "divider") {
-      stage.innerHTML = `
-        <div class="model-divider divider-${state.dividerStyle}">
-          <span class="watermark" aria-hidden="true">P1</span>
-          ${
-            state.dividerStyle === "centered-badge"
-              ? `<span class="badge">${escapeHtml(title)}</span>`
-              : `<h3>${escapeHtml(title)}</h3>`
-          }
-        </div>`;
+      stage.innerHTML = renderDividerSlide(title);
     } else {
-      const previewCard = state.varyCardsByChapter
-        ? state.chapterCards.P1 || state.cardStyle
-        : state.cardStyle;
-      const cardClass = `cards-${previewCard}`;
-      const cards = (bullets.length ? bullets : ["Sample point one", "Sample point two", "Sample point three"])
-        .map((b, i) => {
-          const myth = mythLines[i] || "";
-          return `<div class="demo-card"><strong>${escapeHtml(b)}</strong>${myth ? escapeHtml(myth) : "Demo card from your sample content."}</div>`;
-        })
-        .join("");
-      stage.innerHTML = `
-        <div class="model-slide">
-          <h3>Key points</h3>
-          <p>Demo-first Spokes Model — sample content, not a full build. Showing <code>${escapeHtml(uiKey("cards", previewCard))}</code>.</p>
-        </div>
-        <div class="model-cards ${cardClass}">${cards}</div>`;
+      stage.innerHTML = renderContentSlide(bullets, mythLines, subtitle);
     }
 
     document.querySelectorAll('#previewTabs [role="tab"]').forEach((tab) => {
@@ -683,16 +692,60 @@
 
   function renderTitleSlide(title, subtitle) {
     const cls = `model-title title-${state.titleSlide}`;
+    const chip = `<span class="slide-chip">${escapeHtml(lessonChipText())}</span>`;
+    const copy = `${chip}<h3>${escapeHtml(title)}</h3><p>${escapeHtml(subtitle)}</p>`;
+    const foot = `<span class="slide-foot" aria-hidden="true">SPOKES · Skills for Life</span>`;
     if (["split-hero", "diagonal-split", "vertical-strip", "side-rail"].includes(state.titleSlide)) {
       return `<div class="${cls}">
         <div class="title-hero-panel" aria-hidden="true"></div>
-        <div class="title-copy model-slide"><h3>${escapeHtml(title)}</h3><p>${escapeHtml(subtitle)}</p></div>
+        <div class="title-copy">${copy}</div>
+        ${foot}
       </div>`;
     }
     if (state.titleSlide === "framed-center") {
-      return `<div class="${cls}"><div class="title-frame"><h3>${escapeHtml(title)}</h3><p>${escapeHtml(subtitle)}</p></div></div>`;
+      return `<div class="${cls}"><div class="title-frame">${copy}</div>${foot}</div>`;
     }
-    return `<div class="${cls} model-slide"><h3>${escapeHtml(title)}</h3><p>${escapeHtml(subtitle)}</p></div>`;
+    return `<div class="${cls}">${copy}${foot}</div>`;
+  }
+
+  function renderDividerSlide(title) {
+    const onDark = DARK_DIVIDERS.includes(state.dividerStyle);
+    const heading =
+      state.dividerStyle === "centered-badge"
+        ? `<span class="badge">${escapeHtml(title)}</span>`
+        : `<h3>${escapeHtml(title)}</h3>`;
+    return `
+      <div class="model-divider divider-${state.dividerStyle}${onDark ? " is-on-dark" : ""}">
+        <span class="watermark" aria-hidden="true">P1</span>
+        <div class="divider-body">
+          <span class="section-circle" aria-hidden="true"></span>
+          <div class="divider-copy">
+            <span class="divider-kicker">Presentation 1</span>
+            ${heading}
+          </div>
+        </div>
+      </div>`;
+  }
+
+  function renderContentSlide(bullets, mythLines, subtitle) {
+    const previewCard = state.varyCardsByChapter ? state.chapterCards.P1 || state.cardStyle : state.cardStyle;
+    const cards = (bullets.length ? bullets : ["Sample point one", "Sample point two", "Sample point three"])
+      .slice(0, 3)
+      .map((b, i) => {
+        const myth = mythLines[i] || "";
+        return `<div class="demo-card"><strong>${escapeHtml(b)}</strong>${myth ? escapeHtml(myth) : "Sample card from your content."}</div>`;
+      })
+      .join("");
+    const chip = state.varyCardsByChapter
+      ? `<span class="slide-chip">Chapter P1 · ${escapeHtml(findOption("cards", previewCard)?.label || previewCard)}</span>`
+      : "";
+    const reality = mythLines.find((l) => /^reality/i.test(l)) || subtitle;
+    return `
+      <div class="model-content">
+        <div class="slide-head"><h3>Key points</h3>${chip}</div>
+        <div class="model-cards cards-${previewCard}">${cards}</div>
+        <p class="takeaway"><strong>Takeaway:</strong> ${escapeHtml(reality.replace(/^reality:\s*/i, ""))}</p>
+      </div>`;
   }
 
   function buildSelectionPayload() {
