@@ -157,7 +157,8 @@
       const li = document.createElement("li");
       const btn = document.createElement("button");
       btn.type = "button";
-      btn.innerHTML = `<span class="step-num">${String(index + 1).padStart(2, "0")}</span><span>${step.label}</span>`;
+      btn.innerHTML = `<span class="step-num" aria-hidden="true"><span>${String(index + 1).padStart(2, "0")}</span></span><span>${step.label}</span>`;
+      btn.setAttribute("aria-label", `Step ${index + 1} of ${STEPS.length}: ${step.label}`);
       if (index === state.step) btn.setAttribute("aria-current", "step");
       if (index < state.step) btn.classList.add("is-done");
       btn.addEventListener("click", () => {
