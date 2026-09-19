@@ -462,6 +462,7 @@ label.field textarea { min-height: 110px; resize: vertical; }
 
 .option,
 .preset {
+  position: relative;
   appearance: none;
   text-align: left;
   background: var(--light);
@@ -470,24 +471,95 @@ label.field textarea { min-height: 110px; resize: vertical; }
   padding: var(--s4);
   cursor: pointer;
   color: inherit;
-  transition: border-color 0.15s ease, box-shadow 0.15s ease, transform 0.15s ease;
+  transition: border-color 0.15s ease, box-shadow 0.15s ease, transform 0.15s ease, background 0.12s ease;
 }
-.option:hover,
-.preset:hover {
-  border-color: var(--primary);
-  transform: translateY(-2px);
+/* Hover lift only where a pointer can hover (MOB-01); tap feedback via :active (MOB-04) */
+@media (hover: hover) {
+  .option:hover,
+  .preset:hover {
+    border-color: var(--primary);
+    transform: translateY(-2px);
+    box-shadow: 0 6px 14px rgba(0, 64, 113, 0.12);
+  }
+}
+.option:active,
+.preset:active {
+  transform: none;
+  background: var(--muted);
+  box-shadow: none;
+  transition-duration: 0.12s;
 }
 .option[aria-pressed="true"],
 .preset[aria-pressed="true"] {
   border-color: var(--royal);
   box-shadow: 0 0 0 2px rgba(0, 19, 63, 0.12), inset 0 0 0 1px var(--gold);
-  background: linear-gradient(180deg, #fff 0%, var(--muted) 100%);
+  background: linear-gradient(180deg, var(--light) 0%, var(--muted) 100%);
+}
+.option:focus-visible,
+.preset:focus-visible {
+  outline-offset: 3px;
+}
+/* Check badge: royal disc, CSS-drawn tick — visible only when pressed */
+.option-check {
+  position: absolute;
+  top: 6px;
+  right: 6px;
+  z-index: 1;
+  width: 20px;
+  height: 20px;
+  border-radius: 50%;
+  background: var(--royal);
+  border: 2px solid var(--light);
+  box-shadow: 0 1px 3px rgba(0, 19, 63, 0.25);
+  display: none;
+}
+.option-check::after {
+  content: "";
+  position: absolute;
+  left: 5px;
+  top: 2px;
+  width: 4px;
+  height: 8px;
+  border: solid var(--light);
+  border-width: 0 2px 2px 0;
+  transform: rotate(45deg);
+}
+.option[aria-pressed="true"] .option-check,
+.preset[aria-pressed="true"] .option-check {
+  display: block;
+}
+.option[aria-pressed="true"] > strong:first-of-type,
+.preset[aria-pressed="true"] > strong:first-of-type {
+  padding-right: 1.4rem;
+}
+.option[aria-pressed="true"] .swatch ~ strong,
+.preset[aria-pressed="true"] .preset-swatch ~ strong {
+  padding-right: 0;
 }
 .option .swatch {
   height: 36px;
   border-radius: 6px;
   margin-bottom: var(--s3);
-  border: 1px solid rgba(0, 0, 0, 0.06);
+  border: 1px solid rgba(0, 19, 63, 0.08);
+}
+.option .swatch-texture {
+  height: 32px;
+  background-color: var(--light);
+}
+.option .swatch-texture.is-texture-dot-grid { background-size: 8px 8px; }
+.preset-swatch {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  grid-template-rows: 22px 4px;
+  gap: 2px;
+  margin-bottom: var(--s3);
+  border-radius: 6px;
+  overflow: hidden;
+}
+.preset-swatch span { display: block; }
+.preset-swatch-gold {
+  grid-column: 1 / -1;
+  background: var(--gold);
 }
 .option strong,
 .preset strong {
@@ -502,11 +574,24 @@ label.field textarea { min-height: 110px; resize: vertical; }
   display: block;
 }
 .used-tag {
-  display: inline-block;
-  margin-top: 0.4rem;
+  display: block;
+  margin-top: 0.35rem;
   font-size: 0.72rem;
+  font-weight: 600;
+  color: var(--gray);
+}
+.used-tag::before {
+  content: "● ";
+  font-size: 0.6em;
+  vertical-align: 0.15em;
+  color: var(--muted-gold);
+}
+.new-tag {
+  display: inline-block;
+  margin-top: 0.35rem;
+  font-size: 0.68rem;
   font-weight: 700;
-  letter-spacing: 0.02em;
+  letter-spacing: 0.04em;
   text-transform: uppercase;
   color: var(--muted-gold);
 }

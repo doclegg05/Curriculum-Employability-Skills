@@ -169,16 +169,36 @@
     });
   }
 
-  function optionButton({ id, label, detail, usedBy, swatch, pressed, badge, onSelect }) {
+  /**
+   * Selected state is never colour-only (A11Y-16): a check badge plus
+   * visually-hidden "Selected" text accompany the border/ring styling.
+   */
+  function selectionMark(pressed) {
+    const frag = document.createDocumentFragment();
+    const check = document.createElement("span");
+    check.className = "option-check";
+    check.setAttribute("aria-hidden", "true");
+    frag.appendChild(check);
+    if (pressed) {
+      const sr = document.createElement("span");
+      sr.className = "sr-only";
+      sr.textContent = "Selected";
+      frag.appendChild(sr);
+    }
+    return frag;
+  }
+
+  function optionButton({ id, label, detail, usedBy, swatch, swatchClass, pressed, badge, onSelect }) {
     const btn = document.createElement("button");
     btn.type = "button";
     btn.className = "option";
     btn.setAttribute("aria-pressed", pressed ? "true" : "false");
     btn.dataset.id = id;
-    if (swatch) {
+    btn.appendChild(selectionMark(pressed));
+    if (swatch || swatchClass) {
       const sw = document.createElement("div");
-      sw.className = "swatch";
-      sw.style.background = swatch;
+      sw.className = swatchClass ? `swatch ${swatchClass}` : "swatch";
+      if (swatch) sw.style.background = swatch;
       btn.appendChild(sw);
     }
     const strong = document.createElement("strong");
@@ -191,7 +211,7 @@
     }
     if (badge) {
       const tag = document.createElement("span");
-      tag.className = "used-tag";
+      tag.className = "new-tag";
       tag.textContent = badge;
       btn.appendChild(tag);
     }
@@ -205,21 +225,38 @@
     return btn;
   }
 
-  function renderLibraryOptions(grid, family, selectedSlug, onPick, { swatchFor, showNew } = {}) {
+  function renderLibraryOptions(grid, family, selectedSlug, onPick, { swatchFor, swatchClassFor, showNew } = {}) {
     familyOptions(family).forEach((opt) => {
-      const preview = swatchFor ? swatchFor(opt) : null;
       grid.appendChild(
         optionButton({
           id: opt.id,
           label: opt.label,
           detail: opt.description || null,
-          swatch: preview,
+          swatch: swatchFor ? swatchFor(opt) : null,
+          swatchClass: swatchClassFor ? swatchClassFor(opt) : null,
           pressed: selectedSlug === opt.slug,
           badge: showNew && opt.legacy === false ? "New" : null,
           onSelect: () => onPick(opt)
         })
       );
     });
+  }
+
+  /** Three-band strip (lead gradient · sidebar tone · gold hairline) from the preset's defaults. */
+  function presetSwatch(preset) {
+    const cue = (state.meta.colorLeadPreview || {})[preset.defaults.colorLead] || {};
+    const side = (state.meta.sidebarPreview || {})[preset.defaults.sidebarColor] || "var(--dark)";
+    const strip = document.createElement("div");
+    strip.className = "preset-swatch";
+    strip.setAttribute("aria-hidden", "true");
+    const lead = document.createElement("span");
+    lead.style.background = `linear-gradient(135deg, ${cue.gradientFrom || "var(--primary)"}, ${cue.gradientTo || "var(--dark)"})`;
+    const sidebar = document.createElement("span");
+    sidebar.style.background = side;
+    const gold = document.createElement("span");
+    gold.className = "preset-swatch-gold";
+    strip.append(lead, sidebar, gold);
+    return strip;
   }
 
   function renderTeam(panel) {
@@ -279,11 +316,19 @@
     `;
     const grid = byId("presetGrid");
     state.meta.presets.forEach((preset) => {
+      const pressed = preset.id === state.presetId;
       const btn = document.createElement("button");
       btn.type = "button";
       btn.className = "preset";
-      btn.setAttribute("aria-pressed", preset.id === state.presetId ? "true" : "false");
-      btn.innerHTML = `<strong>${preset.label}</strong><small>${preset.blurb}</small>`;
+      btn.dataset.id = preset.id;
+      btn.setAttribute("aria-pressed", pressed ? "true" : "false");
+      btn.appendChild(selectionMark(pressed));
+      btn.appendChild(presetSwatch(preset));
+      const strong = document.createElement("strong");
+      strong.textContent = preset.label;
+      const small = document.createElement("small");
+      small.textContent = preset.blurb;
+      btn.append(strong, small);
       btn.addEventListener("click", () => {
         applyPreset(preset.id);
         saveDraft();
@@ -342,7 +387,7 @@
       noteChange("Background", opt.label);
       saveDraft();
       render();
-    });
+    }, { swatchClassFor: (opt) => `swatch-texture is-texture-${opt.slug}` });
   }
 
   function renderLayouts(panel) {
