@@ -10,7 +10,7 @@ Instructor design-choice wizard for Round 2 SPOKES lessons. Hosted from this rep
 3. Pick a lesson + spokesperson, choose a **theme preset** (or edit every option), watch the **Spokes Model** preview, then **Submit Spoke Signal**.
 4. Choices save on this computer as you go. On Review, **Copy view link for your team** (read-only) and **Copy edit link (team lead only)** (this computer). The team cannot change or submit from the view link.
 
-Steps: Lesson & team · Theme preset · Color lead · Sidebar & background · Title & dividers · Cards · Fonts · Your content · Review & submit. The preview follows the step (title slide → content slide) and shows the same 16:9 frame at every screen size; catalog ids live in a collapsed **For builders** note on Review. Instructors never need a design file.
+Steps: How to use Bespoke · Lesson & team · Theme preset · Color lead · Sidebar & background · Title & dividers · Cards · Fonts · Your content · Review & submit · Save and come back. The preview follows the step (title slide → content slide) and shows the same 16:9 frame at every screen size; catalog ids live in a collapsed **For builders** note on Review. Instructors never need a design file.
 
 ## What ships in this prototype
 

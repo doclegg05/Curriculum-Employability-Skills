@@ -19,6 +19,7 @@
 
   /** `view` = the preview the step lands on; a manual tab pick sticks until the step changes. */
   const STEPS = [
+    { id: "welcome", label: "How to use Bespoke", view: "title" },
     { id: "team", label: "Lesson & team", view: "title" },
     { id: "preset", label: "Theme preset", view: "title" },
     { id: "color", label: "Color lead", view: "title" },
@@ -27,8 +28,11 @@
     { id: "cards", label: "Cards", view: "cards" },
     { id: "fonts", label: "Fonts", view: "cards" },
     { id: "content", label: "Your content", view: "cards" },
-    { id: "review", label: "Review & submit", view: "title" }
+    { id: "review", label: "Review & submit", view: "title" },
+    { id: "return", label: "Save and come back", view: "title" }
   ];
+  /** Step ids from before the instruction steps, so an older saved draft still opens the right screen. */
+  const LEGACY_STEP_IDS = ["team", "preset", "color", "surface", "layouts", "cards", "fonts", "content", "review"];
 
   const VIEW_NAMES = { title: "Title slide", divider: "Section divider", cards: "Content slide" };
 
@@ -96,12 +100,28 @@
     return `${family}.${slug}`;
   }
 
+  function stepIndex(id) {
+    const index = STEPS.findIndex((step) => step.id === id);
+    return index < 0 ? 0 : index;
+  }
+
+  function restoreStep(saved) {
+    if (saved.stepId && STEPS.some((step) => step.id === saved.stepId)) {
+      state.step = stepIndex(saved.stepId);
+      return;
+    }
+    if (Number.isInteger(saved.step) && LEGACY_STEP_IDS[saved.step]) {
+      state.step = stepIndex(LEGACY_STEP_IDS[saved.step]);
+    }
+  }
+
   function loadDraft() {
     try {
       const raw = localStorage.getItem(STORAGE_KEY);
       if (!raw) return;
       const saved = JSON.parse(raw);
       Object.assign(state, saved, { meta: state.meta, library: state.library, themeOptions: state.themeOptions });
+      restoreStep(saved);
     } catch {
       /* ignore */
     }
@@ -147,6 +167,7 @@
 
   function saveDraft() {
     if (!isLeadSession()) return false;
+    state.stepId = STEPS[state.step] ? STEPS[state.step].id : "welcome";
     const { meta, library, themeOptions, ...rest } = state;
     try {
       localStorage.setItem(STORAGE_KEY, JSON.stringify(rest));
@@ -890,10 +911,50 @@
       .replace(/"/g, "&quot;");
   }
 
+  function renderWelcome(panel) {
+    panel.innerHTML = `
+      <h1>How to use Bespoke</h1>
+      <p class="panel-lead">For the team lead. This is a short guide. The preview on the right is a sample of your lesson.</p>
+      <ol class="guide-list">
+        <li>You are the only person who can change this look and send it in.</li>
+        <li>Pick a starter theme, then change any option. The starter does not lock anything.</li>
+        <li>The preview on the right updates as you choose.</li>
+        <li>Your choices save on this computer automatically.</li>
+        <li>Give teammates the <strong>view link</strong> so they can look, but not change anything.</li>
+        <li>Keep the <strong>edit link</strong> for yourself.</li>
+        <li>When the team agrees, choose <strong>Submit</strong>. That sends the design for Britt to review (a pull request). It does not build the lesson by itself.</li>
+      </ol>
+    `;
+  }
+
+  function renderReturn(panel) {
+    const lead = isLeadSession();
+    panel.innerHTML = `
+      <h1>Save and come back</h1>
+      <p class="panel-lead">You can leave and finish later. The preview still shows your lesson.</p>
+      <ol class="guide-list">
+        <li>Your choices are already saved on this computer.</li>
+        <li>To edit later on <strong>this same computer</strong>, open Bespoke again. The draft comes back.</li>
+        <li>To edit later from the link, use <strong>Copy edit link (team lead only)</strong> and open it on this same computer. It will not restore the editable draft on someone else’s computer.</li>
+        <li>Teammates use the view link only.</li>
+        <li>Submit when the team is ready. You can submit again later if you revise.</li>
+      </ol>
+      ${lead ? `
+      <div class="share-actions return-actions">
+        <button type="button" class="btn btn-primary btn-lg" id="btnCopyView">Copy view link for your team</button>
+        <button type="button" class="btn btn-secondary btn-lg" id="btnCopyEdit">Copy edit link (team lead only)</button>
+      </div>
+      <p id="shareStatus" class="share-status" role="status" aria-live="polite"></p>` : ""}
+    `;
+    byId("btnCopyView")?.addEventListener("click", () => copyLink("view"));
+    byId("btnCopyEdit")?.addEventListener("click", () => copyLink("edit"));
+  }
+
   function renderPanel() {
     const panel = byId("stepPanel");
     const id = STEPS[state.step].id;
     const renderers = {
+      welcome: renderWelcome,
       team: renderTeam,
       preset: renderPreset,
       color: renderColor,
@@ -902,7 +963,8 @@
       cards: renderCards,
       fonts: renderFonts,
       content: renderContent,
-      review: renderReview
+      review: renderReview,
+      return: renderReturn
     };
     renderers[id](panel);
 
@@ -911,12 +973,11 @@
     nav.innerHTML = `
       <button type="button" class="btn btn-secondary" id="btnBack"${state.step === 0 ? " disabled" : ""}>Back</button>
       <div style="display:flex;gap:0.5rem;flex-wrap:wrap">
+        ${id === "return" ? "" : `<button type="button" class="btn btn-primary" id="btnNext">Next</button>`}
         ${
-          id === "review"
-            ? (isLeadSession()
-              ? `<button type="button" class="btn btn-accent btn-lg" id="btnSubmit">Submit Spoke Signal</button>`
-              : "")
-            : `<button type="button" class="btn btn-primary" id="btnNext">Next</button>`
+          (id === "review" || id === "return") && isLeadSession()
+            ? `<button type="button" class="btn btn-accent btn-lg" id="btnSubmit">Submit Spoke Signal</button>`
+            : ""
         }
       </div>
     `;
@@ -1423,7 +1484,7 @@
         ui.restoreNote = "This link could not be opened. The design saved on this computer was left as it was.";
         return;
       }
-      state.step = STEPS.length - 1;
+      state.step = stepIndex("review");
       ui.restoredFromLink = true;
       return;
     }
