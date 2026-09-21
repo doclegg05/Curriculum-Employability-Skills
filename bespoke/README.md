@@ -8,8 +8,9 @@ Instructor design-choice wizard for Round 2 SPOKES lessons. Hosted from this rep
    Example: `https://<org-or-user>.github.io/Curriculum-Employability-Skills/bespoke/`
 2. Or open `bespoke/index.html` from the curriculum hub (**Dashboard.html** → “Open Bespoke”).
 3. Pick a lesson + spokesperson, choose a **theme preset** (or edit every option), watch the **Spokes Model** preview, then **Submit Spoke Signal**.
+4. On the first step, the team lead writes down a short edit code. Choices also save on this computer as they go. **Copy view link for your team** shares a read-only link. Teammates can look, but they cannot change or submit. The lead opens that same link on any computer, chooses **I am the team lead**, and enters the code to edit and submit.
 
-Steps: Lesson & team · Theme preset · Color lead · Sidebar & background · Title & dividers · Cards · Fonts · Your content · Review & submit. The preview follows the step (title slide → content slide) and shows the same 16:9 frame at every screen size; catalog ids live in a collapsed **For builders** note on Review.
+Steps: How to use Bespoke · Lesson & team · Theme preset · Color lead · Sidebar & background · Title & dividers · Cards · Fonts · Your content · Review & submit · Save and come back. The preview follows the step (title slide → content slide) and shows the same 16:9 frame at every screen size; catalog ids live in a collapsed **For builders** note on Review. Instructors never need a design file.
 
 ## What ships in this prototype
 
@@ -19,8 +20,8 @@ Steps: Lesson & team · Theme preset · Color lead · Sidebar & background · Ti
 - Six theme presets: Professional, Modern, Serious, Light-hearted, Fun, Outspoken (starters; all editable after)
 - Demo-first Spokes Model (sample content, not a full lesson build)
 - Opt-in vary card style by WIPPEA chapter (D12) with THM-04 adjacent uniqueness
-- Emits `selection.json` only from the browser; `scripts/bespoke-write-submission.py` is the single source of `content-intake.md` in the PR (FID-7)
-- Spoke Signals: browser opens a labeled GitHub issue (no token in the browser); Action opens a lesson-tagged PR
+- Lead choices auto-save in this browser as a convenience. A view link (`#v=`, compressed `bespoke-selection/v1` plus `editCodeHash`) is read-only and does not write that draft. The raw edit code is never in the link. Entering the code unlocks editing and Submit on any computer. Old `#e=` links do not grant edit. `scripts/bespoke-write-submission.py` is the single source of `content-intake.md` in the PR (FID-7)
+- Spoke Signals: the lead’s browser opens a labeled GitHub issue (no token in the browser); Action opens a lesson-tagged PR. Design-file download/open stays under **For builders**
 - Docs: `SPOKES Builder/bespoke-library-ids.md` · visual ref: `SPOKES Builder/library-preview.html`
 
 ## Catalog sources
@@ -35,10 +36,12 @@ Steps: Lesson & team · Theme preset · Color lead · Sidebar & background · Ti
 
 ## Spoke Signals
 
-1. Submit downloads `*-selection.json` only.
-2. Open the pre-filled **Spoke Signal** issue (or paste the JSON between the payload markers).
+1. The team lead submits from an editable session. The issue body still carries `bespoke-selection/v1` between the payload markers (unchanged Action contract).
+2. Open the pre-filled **Spoke Signal** issue (or, if the issue URL is too long, a builder downloads the design file from **For builders** and adds `selection.json` between the payload markers).
 3. Workflow `.github/workflows/spoke-signals.yml` runs `bespoke-write-submission.py` to create `docs/phase-2/submissions/<lesson>/<date>/{selection.json,content-intake.md}` and opens a PR tagged with the lesson id.
 4. Britt reviews; **merge = greenlight to build** (D10). Registry upsert via `bespoke-apply-selection.py` is available as a script but not yet wired into the Action.
+
+View links are not a submit path until someone enters the lead’s edit code. There are no accounts (D2): the browser checks a hash of that code. Only the hash is stored in the view link.
 
 Manual test path: Actions → **Spoke Signals** → Run workflow → paste JSON into `payload_json`.
 

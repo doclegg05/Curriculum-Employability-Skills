@@ -2,6 +2,20 @@
   "use strict";
 
   const STORAGE_KEY = "bespoke-draft-v1";
+  /**
+   * Max length of a team view URL (origin + path + hash).
+   * View link: `#v=` + base64url(deflate-raw(selection plus editCodeHash)).
+   * editCodeHash is SHA-256 of the lead's edit code. The raw code is never in the link.
+   * Anyone with the code can unlock editing on any computer. No accounts.
+   * Legacy `#s=` / `#c=` open read-only. Old `#e=` links do not grant edit.
+   * 8000 stays inside common email, Teams, and Slack paste limits.
+   * A normal design view link is about 1,000 characters.
+   */
+  const SHARE_URL_MAX = 8000;
+  const EDIT_CODE_MIN = 4;
+  const EDIT_CODE_MAX = 40;
+  const UNLOCK_HASH_KEY = "bespoke-lead-ok";
+  const UNLOCK_CODE_KEY = "bespoke-lead-code";
   const REPO = "doclegg05/Curriculum-Employability-Skills";
   const LIBRARY_URL = "../SPOKES%20Builder/bespoke-library-catalog.json";
   const THEME_OPTIONS_URL = "../SPOKES%20Builder/theme-options.json";
@@ -9,6 +23,7 @@
 
   /** `view` = the preview the step lands on; a manual tab pick sticks until the step changes. */
   const STEPS = [
+    { id: "welcome", label: "How to use Bespoke", view: "title" },
     { id: "team", label: "Lesson & team", view: "title" },
     { id: "preset", label: "Theme preset", view: "title" },
     { id: "color", label: "Color lead", view: "title" },
@@ -17,8 +32,11 @@
     { id: "cards", label: "Cards", view: "cards" },
     { id: "fonts", label: "Fonts", view: "cards" },
     { id: "content", label: "Your content", view: "cards" },
-    { id: "review", label: "Review & submit", view: "title" }
+    { id: "review", label: "Review & submit", view: "title" },
+    { id: "return", label: "Save and come back", view: "title" }
   ];
+  /** Step ids from before the instruction steps, so an older saved draft still opens the right screen. */
+  const LEGACY_STEP_IDS = ["team", "preset", "color", "surface", "layouts", "cards", "fonts", "content", "review"];
 
   const VIEW_NAMES = { title: "Title slide", divider: "Section divider", cards: "Content slide" };
 
@@ -45,6 +63,8 @@
     sampleBullets: "1. Name one money goal for this month\n2. List your fixed costs\n3. Find one place to trim spending",
     sampleMyth: "Myth: Budgets are only for people in debt.\nReality: A budget is a plan that works for any income.",
     unspoken: "",
+    /** Raw edit code. Saved on this computer only. Never copied into the view link. */
+    editCode: "",
     previewView: "title"
   };
 
@@ -53,8 +73,18 @@
     renderedStep: null,
     previewPinned: false,
     lastChange: null,
-    pulseTimer: null
+    pulseTimer: null,
+    restoredFromLink: false,
+    restoreNote: "",
+    builderNote: "",
+    /** SHA-256 of the edit code, from a view link. Not the raw code. */
+    editCodeHash: "",
+    /** "view" until init grants a lead session, or the lead unlocks a view link. */
+    mode: "view"
   };
+
+  let saveAnnounceTimer = null;
+  let saveAnnounceReady = false;
 
   const prefersReduced = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
 
@@ -78,23 +108,131 @@
     return `${family}.${slug}`;
   }
 
+  function stepIndex(id) {
+    const index = STEPS.findIndex((step) => step.id === id);
+    return index < 0 ? 0 : index;
+  }
+
+  function restoreStep(saved) {
+    if (saved.stepId && STEPS.some((step) => step.id === saved.stepId)) {
+      state.step = stepIndex(saved.stepId);
+      return;
+    }
+    if (Number.isInteger(saved.step) && LEGACY_STEP_IDS[saved.step]) {
+      state.step = stepIndex(LEGACY_STEP_IDS[saved.step]);
+    }
+  }
+
   function loadDraft() {
     try {
       const raw = localStorage.getItem(STORAGE_KEY);
       if (!raw) return;
       const saved = JSON.parse(raw);
       Object.assign(state, saved, { meta: state.meta, library: state.library, themeOptions: state.themeOptions });
+      restoreStep(saved);
     } catch {
       /* ignore */
     }
   }
 
+  function setSaveStatus(text) {
+    const el = byId("saveStatus");
+    if (el) el.textContent = text;
+  }
+
+  function queueSaveAnnouncement() {
+    if (!saveAnnounceReady) return;
+    clearTimeout(saveAnnounceTimer);
+    saveAnnounceTimer = setTimeout(() => {
+      const live = byId("saveLive");
+      if (!live) return;
+      live.textContent = "";
+      window.setTimeout(() => {
+        live.textContent = "Saved";
+      }, 30);
+    }, 600);
+  }
+
+  function isLeadSession() {
+    return ui.mode === "edit";
+  }
+
+  function peekDraft() {
+    try {
+      const raw = localStorage.getItem(STORAGE_KEY);
+      if (!raw) return null;
+      const saved = JSON.parse(raw);
+      return saved && typeof saved === "object" ? saved : null;
+    } catch {
+      return null;
+    }
+  }
+
   function saveDraft() {
+    if (!isLeadSession()) return false;
+    state.stepId = STEPS[state.step] ? STEPS[state.step].id : "welcome";
     const { meta, library, themeOptions, ...rest } = state;
-    localStorage.setItem(STORAGE_KEY, JSON.stringify(rest));
+    try {
+      localStorage.setItem(STORAGE_KEY, JSON.stringify(rest));
+      setSaveStatus("Saved on this computer");
+      queueSaveAnnouncement();
+      return true;
+    } catch {
+      setSaveStatus("Could not save on this computer");
+      return false;
+    }
+  }
+
+  function syncAccessChrome() {
+    const locked = !isLeadSession();
+    document.body.classList.toggle("is-view-only", locked);
+    document.body.dataset.access = locked ? "view" : "edit";
+    const banner = byId("accessBanner");
+    if (banner) {
+      if (locked && banner.hidden) {
+        banner.textContent = "Only the team lead can change this.";
+        banner.hidden = false;
+      } else if (!locked) {
+        banner.hidden = true;
+      }
+    }
+    const notice = byId("restoreNotice");
+    if (notice) {
+      notice.hidden = !ui.restoreNote;
+      notice.textContent = ui.restoreNote || "";
+    }
+    const unlock = byId("leadUnlock");
+    if (unlock) unlock.hidden = !locked;
+    if (!locked) {
+      const form = byId("leadCodeForm");
+      const leadBtn = byId("btnLeadUnlock");
+      if (form) form.hidden = true;
+      if (leadBtn) leadBtn.setAttribute("aria-expanded", "false");
+      const leadErr = byId("leadCodeError");
+      if (leadErr) leadErr.textContent = "";
+    }
+    const clearBtn = byId("btnClear");
+    if (clearBtn) {
+      clearBtn.disabled = locked;
+      if (locked) clearBtn.setAttribute("aria-describedby", "accessBanner");
+      else clearBtn.removeAttribute("aria-describedby");
+    }
+    if (locked) setSaveStatus("");
+  }
+
+  function lockViewControls() {
+    if (isLeadSession()) return;
+    const panel = byId("stepPanel");
+    if (!panel) return;
+    panel.querySelectorAll("input, select, textarea, button").forEach((el) => {
+      if (el.id === "btnBack" || el.id === "btnNext" || el.id === "btnDownloadDesign" || el.id === "btnCopySelection") return;
+      el.disabled = true;
+      el.setAttribute("aria-disabled", "true");
+    });
   }
 
   function applyPreset(presetId) {
+    if (!isLeadSession()) return;
     const preset = findMeta(state.meta.presets, presetId);
     if (!preset) return;
     const changed = Object.entries(preset.defaults).filter(([k, v]) => state[k] !== v).length;
@@ -164,11 +302,22 @@
       const li = document.createElement("li");
       const btn = document.createElement("button");
       btn.type = "button";
-      btn.innerHTML = `<span class="step-num" aria-hidden="true"><span>${String(index + 1).padStart(2, "0")}</span></span><span>${step.label}</span>`;
-      btn.setAttribute("aria-label", `Step ${index + 1} of ${STEPS.length}: ${step.label}`);
+      const label = step.id === "review" && !isLeadSession() ? "Review" : step.label;
+      btn.innerHTML = `<span class="step-num" aria-hidden="true"><span>${String(index + 1).padStart(2, "0")}</span></span><span>${label}</span>`;
+      btn.setAttribute("aria-label", `Step ${index + 1} of ${STEPS.length}: ${label}`);
       if (index === state.step) btn.setAttribute("aria-current", "step");
       if (index < state.step) btn.classList.add("is-done");
       btn.addEventListener("click", () => {
+        if (isLeadSession() && index > state.step && STEPS[state.step].id === "welcome") {
+          const input = byId("editCode");
+          if (input) state.editCode = input.value.trim();
+          if ((state.editCode || "").length < EDIT_CODE_MIN) {
+            const err = byId("editCodeError");
+            if (err) err.textContent = `Enter an edit code of at least ${EDIT_CODE_MIN} characters.`;
+            input?.focus();
+            return;
+          }
+        }
         state.step = index;
         render();
       });
@@ -298,12 +447,6 @@
           <input id="spokespersonEmail" type="email" autocomplete="email" placeholder="you@example.org">
         </label>
       </div>
-      <div class="import-row">
-        <label class="field">Import a saved <code>selection.json</code>
-          <input id="importSelection" type="file" accept="application/json,.json">
-        </label>
-        <p id="importStatus" class="share-status" aria-live="polite"></p>
-      </div>
     `;
     const select = byId("lessonSelect");
     state.meta.lessons.forEach((lesson) => {
@@ -333,27 +476,14 @@
     bind("teamName", "teamName");
     bind("spokespersonName", "spokespersonName");
     bind("spokespersonEmail", "spokespersonEmail");
-    byId("importSelection").addEventListener("change", async (e) => {
-      const file = e.target.files && e.target.files[0];
-      const status = byId("importStatus");
-      if (!file) return;
-      try {
-        const text = await file.text();
-        const payload = JSON.parse(text);
-        applySelectionPayload(payload);
-        status.textContent = `Imported ${payload.lesson?.id || "selection"} — draft restored.`;
-        saveDraft();
-        render();
-      } catch (err) {
-        status.textContent = `Could not import: ${err.message || err}`;
-      }
-    });
   }
 
   function renderPreset(panel) {
     panel.innerHTML = `
       <h1>Theme preset</h1>
-      <p class="panel-lead">Pick the closest starting point. Every choice stays editable on the next steps — most teams stop here.</p>
+      <p class="panel-lead">${isLeadSession()
+        ? "Pick the closest starting point. Every choice stays editable on the next steps — most teams stop here."
+        : "This is the starting point in the shared design."}</p>
       <div class="preset-grid" id="presetGrid" role="group" aria-label="Theme presets"></div>
     `;
     const grid = byId("presetGrid");
@@ -590,32 +720,53 @@
 
   function renderReview(panel) {
     const labels = selectionLabels();
+    const lead = isLeadSession();
     panel.innerHTML = `
-      <h1>Review &amp; submit</h1>
-      <p class="panel-lead">Check your choices, then send the Spoke Signal. Britt reviews the request; approval is the go-ahead to build.</p>
+      <h1>${lead ? "Review &amp; submit" : "Review"}</h1>
+      <p class="panel-lead">${lead
+        ? "Check your choices, then send the Spoke Signal. Britt reviews the request; approval is the go-ahead to build."
+        : "This is the shared design. You can look through every step. Only the team lead can change it."}</p>
+      ${lead ? `
+      <section class="share-card" aria-labelledby="shareTitle">
+        <h2 id="shareTitle">Share this design</h2>
+        <p id="shareHelp">Send the view link to your team. They can look, but not change anything. To edit later, open that same link and enter your edit code.</p>
+        <div class="share-actions">
+          <button type="button" class="btn btn-primary btn-lg" id="btnCopyView" aria-describedby="shareHelp">Copy view link for your team</button>
+        </div>
+        <p id="shareStatus" class="share-status" role="status" aria-live="polite"></p>
+        <label class="field share-link-fallback" id="shareLinkFallback" hidden>
+          Link
+          <input id="shareLinkField" type="text" readonly>
+        </label>
+      </section>` : ""}
       <ul class="summary-list" id="summaryList"></ul>
+      ${lead ? `
       <section class="next-hops" aria-labelledby="nextHopsTitle">
         <h2 id="nextHopsTitle">What happens next</h2>
         <ol>
-          <li>You open a <strong>Spoke Signal</strong> issue with your <code>selection.json</code>.</li>
-          <li>An Action opens a <strong>draft PR</strong> (intake markdown written by the Action).</li>
-          <li><strong>Britt merges</strong> — that merge is the greenlight to build (D10).</li>
-          <li>A builder agent builds the lesson from the registry + intake.</li>
+          <li>You send a <strong>Spoke Signal</strong> with this design.</li>
+          <li>An Action opens a <strong>draft</strong> for Britt to review.</li>
+          <li><strong>Britt merges</strong> — that merge is the go-ahead to build.</li>
+          <li>A builder makes the lesson from the approved design.</li>
         </ol>
-        <p class="next-hops-note">The builder chooses slide components for each piece of content; your card style applies wherever cards appear.</p>
-      </section>
-      <div class="share-row">
-        <button type="button" class="btn btn-secondary" id="btnShareLink">Copy share link</button>
-        <span id="shareStatus" class="share-status" aria-live="polite"></span>
-      </div>
-      <label class="field" style="margin-top:1.25rem">Unspoken — something we wish existed in the library
+        <p class="next-hops-note">The builder chooses slide pieces for the content. Your card style applies wherever cards appear.</p>
+      </section>` : ""}
+      <label class="field unspoken-field">Unspoken — something we wish existed in the library
         <textarea id="unspoken" placeholder="Optional wish-list for future library pieces"></textarea>
       </label>
-      <div id="submitStatus"></div>
-      <details class="builder-note">
+      <div id="submitStatus" role="status" aria-live="polite"></div>
+      <details class="builder-note"${ui.builderNote ? " open" : ""}>
         <summary>For builders</summary>
+        <p class="builder-instructor-note">Instructors don't need this.</p>
+        <div class="builder-files">
+          <button type="button" class="btn btn-secondary" id="btnDownloadDesign">Download design file</button>
+          <button type="button" class="btn btn-secondary" id="btnOpenDesign">Open a design file</button>
+          <input id="importSelection" class="builder-file-input" type="file" accept="application/json,.json" tabindex="-1" aria-hidden="true">
+          <button type="button" class="btn btn-secondary" id="btnCopySelection">Copy selection.json</button>
+        </div>
+        <p id="builderFileStatus" class="share-status" role="status" aria-live="polite">${escapeHtml(ui.builderNote || "")}</p>
         <dl id="builderDetails"></dl>
-        <p>Options load from <code>SPOKES Builder/bespoke-library-catalog.json</code> (UI key <code>{family}.{slug}</code>); the selection payload stores <strong>slugs only</strong>. <code>bespoke-apply-selection.py</code> (not yet wired to the Action) upserts <code>theme-registry.json</code> with derived Layer 2 fields below. Card styles may vary by WIPPEA chapter (D12); adjacent chapters never share a style (THM-04). Submit opens a labelled GitHub issue — no token in this browser — and the Spoke Signals Action opens the lesson-tagged PR; merge is the greenlight (D10). Visual reference: <a href="../SPOKES%20Builder/library-preview.html" target="_blank" rel="noopener">library preview</a>.</p>
+        <p>Options load from <code>SPOKES Builder/bespoke-library-catalog.json</code> (UI key <code>{family}.{slug}</code>); the selection payload stores <strong>slugs only</strong>. <code>bespoke-apply-selection.py</code> (not yet wired to the Action) upserts <code>theme-registry.json</code> with derived Layer 2 fields below. Card styles may vary by WIPPEA chapter (D12); adjacent chapters never share a style (THM-04). Submit opens a labelled GitHub issue — no token in this browser — and the Spoke Signals Action opens the lesson-tagged PR; merge is the greenlight (D10). A view link (<code>#v=</code>) is compressed <code>selection.json</code> plus <code>editCodeHash</code> (SHA-256 of the edit code, never the raw code). It opens read-only until that code is entered. View URLs longer than ${SHARE_URL_MAX} characters are not copied. Visual reference: <a href="../SPOKES%20Builder/library-preview.html" target="_blank" rel="noopener">library preview</a>.</p>
       </details>
     `;
     const list = byId("summaryList");
@@ -633,22 +784,87 @@
       details.append(dt, dd);
     });
     const unspoken = byId("unspoken");
-    unspoken.value = state.unspoken || "";
-    unspoken.addEventListener("input", () => {
-      state.unspoken = unspoken.value;
-      saveDraft();
+    if (unspoken) {
+      unspoken.value = state.unspoken || "";
+      unspoken.addEventListener("input", () => {
+        if (!isLeadSession()) return;
+        state.unspoken = unspoken.value;
+        saveDraft();
+      });
+    }
+    byId("btnCopyView")?.addEventListener("click", () => copyLink());
+    byId("btnDownloadDesign")?.addEventListener("click", () => {
+      if (!isLeadSession()) return;
+      const payload = buildSelectionPayload();
+      const stamp = payload.date;
+      downloadText(
+        `${payload.lesson.id}-${stamp}-selection.json`,
+        JSON.stringify(payload, null, 2),
+        "application/json"
+      );
+      const status = byId("builderFileStatus");
+      if (status) status.textContent = "Downloaded the design file (selection.json).";
     });
-    byId("btnShareLink").addEventListener("click", async () => {
-      const url = buildShareUrl();
-      const status = byId("shareStatus");
+    byId("btnOpenDesign")?.addEventListener("click", () => {
+      if (!isLeadSession()) return;
+      byId("importSelection")?.click();
+    });
+    byId("importSelection")?.addEventListener("change", async (e) => {
+      if (!isLeadSession()) return;
+      const file = e.target.files && e.target.files[0];
+      const status = byId("builderFileStatus");
+      if (!file) return;
       try {
-        await navigator.clipboard.writeText(url);
-        status.textContent = "Share link copied";
-      } catch {
-        status.textContent = "Copy failed — select the URL from the address bar after opening the link.";
-        window.prompt("Copy this share link:", url);
+        const text = await file.text();
+        const payload = JSON.parse(text);
+        applySelectionPayload(payload);
+        ui.builderNote = "Opened the design file.";
+        saveDraft();
+        render();
+      } catch (err) {
+        if (status) status.textContent = `Could not open that design file. ${err.message || err}`;
       }
     });
+    byId("btnCopySelection")?.addEventListener("click", async () => {
+      if (!isLeadSession()) return;
+      const status = byId("builderFileStatus");
+      try {
+        await navigator.clipboard.writeText(JSON.stringify(buildSelectionPayload(), null, 2));
+        if (status) status.textContent = "Copied selection.json.";
+      } catch {
+        if (status) status.textContent = "Could not copy. Download the design file instead.";
+      }
+    });
+  }
+
+  async function copyLink() {
+    if (!isLeadSession()) return;
+    const status = byId("shareStatus");
+    const button = byId("btnCopyView");
+    if (button) button.disabled = true;
+    try {
+      const result = await buildViewUrl();
+      if (!result.url) {
+        if (status) status.textContent = result.message;
+        return;
+      }
+      try {
+        await navigator.clipboard.writeText(result.url);
+        if (status) status.textContent = result.message;
+      } catch {
+        const fallback = byId("shareLinkFallback");
+        const field = byId("shareLinkField");
+        if (fallback && field) {
+          fallback.hidden = false;
+          field.value = result.url;
+          field.focus();
+          field.select();
+        }
+        if (status) status.textContent = "Could not copy automatically. Select the link below.";
+      }
+    } finally {
+      if (button) button.disabled = false;
+    }
   }
 
   function selectionLabels() {
@@ -716,10 +932,64 @@
       .replace(/"/g, "&quot;");
   }
 
+  function renderWelcome(panel) {
+    panel.innerHTML = `
+      <h1>How to use Bespoke</h1>
+      <p class="panel-lead">For the team lead. Choose an edit code and write it down. The preview on the right is a sample of your lesson.</p>
+      <label class="field" for="editCode">Your edit code
+        <input id="editCode" type="text" autocomplete="off" minlength="${EDIT_CODE_MIN}" maxlength="${EDIT_CODE_MAX}" required>
+      </label>
+      <p id="editCodeHint" class="field-hint">At least ${EDIT_CODE_MIN} characters. Write it down. Capital letters matter. You will enter this code to edit again from the view link, on any computer.</p>
+      <p id="editCodeError" class="share-status" role="status" aria-live="polite"></p>
+      <ol class="guide-list">
+        <li>You are the only person who can change this look and send it in.</li>
+        <li>Write down your edit code. Open the view link later and enter the code to edit again.</li>
+        <li>Pick a starter theme, then change any option. The starter does not lock anything.</li>
+        <li>The preview on the right updates as you choose.</li>
+        <li>Your choices also save on this computer, so you can come back here.</li>
+        <li>Give teammates the <strong>view link</strong>. They can look, but they cannot change anything.</li>
+        <li>When the team agrees, choose <strong>Submit</strong>. That sends the design for Britt to review (a pull request). It does not build the lesson by itself.</li>
+      </ol>
+    `;
+    const input = byId("editCode");
+    if (!input) return;
+    input.value = state.editCode || "";
+    const sync = () => {
+      state.editCode = input.value.trim();
+      const err = byId("editCodeError");
+      if (err && state.editCode.length >= EDIT_CODE_MIN) err.textContent = "";
+      saveDraft();
+    };
+    input.addEventListener("input", sync);
+    input.addEventListener("change", sync);
+  }
+
+  function renderReturn(panel) {
+    const lead = isLeadSession();
+    panel.innerHTML = `
+      <h1>Save and come back</h1>
+      <p class="panel-lead">You can leave and finish later. The preview still shows your lesson.</p>
+      <ol class="guide-list">
+        <li>Write down your edit code.</li>
+        <li>Your choices are also saved on this computer. Open Bespoke here again and the draft comes back.</li>
+        <li>To edit later from the link, open the view link and choose <strong>I am the team lead</strong>. Enter your edit code. This works on any computer.</li>
+        <li>Teammates use the view link only. They do not need your code.</li>
+        <li>Submit when the team is ready. You can submit again later if you revise.</li>
+      </ol>
+      ${lead ? `
+      <div class="share-actions return-actions">
+        <button type="button" class="btn btn-primary btn-lg" id="btnCopyView">Copy view link for your team</button>
+      </div>
+      <p id="shareStatus" class="share-status" role="status" aria-live="polite"></p>` : ""}
+    `;
+    byId("btnCopyView")?.addEventListener("click", () => copyLink());
+  }
+
   function renderPanel() {
     const panel = byId("stepPanel");
     const id = STEPS[state.step].id;
     const renderers = {
+      welcome: renderWelcome,
       team: renderTeam,
       preset: renderPreset,
       color: renderColor,
@@ -728,7 +998,8 @@
       cards: renderCards,
       fonts: renderFonts,
       content: renderContent,
-      review: renderReview
+      review: renderReview,
+      return: renderReturn
     };
     renderers[id](panel);
 
@@ -737,10 +1008,11 @@
     nav.innerHTML = `
       <button type="button" class="btn btn-secondary" id="btnBack"${state.step === 0 ? " disabled" : ""}>Back</button>
       <div style="display:flex;gap:0.5rem;flex-wrap:wrap">
+        ${id === "return" ? "" : `<button type="button" class="btn btn-primary" id="btnNext">Next</button>`}
         ${
-          id === "review"
-            ? `<button type="button" class="btn btn-accent" id="btnSubmit">Submit Spoke Signal</button>`
-            : `<button type="button" class="btn btn-primary" id="btnNext">Next</button>`
+          (id === "review" || id === "return") && isLeadSession()
+            ? `<button type="button" class="btn btn-accent btn-lg" id="btnSubmit">Submit Spoke Signal</button>`
+            : ""
         }
       </div>
     `;
@@ -771,7 +1043,19 @@
   }
 
   function validateCurrentStep() {
+    if (!isLeadSession()) return true;
     const id = STEPS[state.step].id;
+    if (id === "welcome") {
+      const input = byId("editCode");
+      if (input) state.editCode = input.value.trim();
+      const err = byId("editCodeError");
+      if ((state.editCode || "").length < EDIT_CODE_MIN) {
+        if (err) err.textContent = `Enter an edit code of at least ${EDIT_CODE_MIN} characters.`;
+        input?.focus();
+        return false;
+      }
+      if (err) err.textContent = "";
+    }
     if (id === "team") {
       syncTeamFieldsFromDom();
       if (!state.spokespersonName.trim()) {
@@ -1115,37 +1399,212 @@
     Object.assign(state, draftFieldsFromSelection(payload));
   }
 
-  function buildShareUrl() {
-    const payload = buildSelectionPayload();
-    const compact = {
-      schema: payload.schema,
-      lesson: payload.lesson,
-      team: payload.team,
-      presetId: payload.presetId,
-      theme: payload.theme,
-      sampleContent: payload.sampleContent,
-      unspoken: payload.unspoken
-    };
-    const encoded = btoa(unescape(encodeURIComponent(JSON.stringify(compact))));
-    const url = new URL(location.href);
-    url.hash = `s=${encoded}`;
-    return url.toString();
+  function bytesToBase64Url(bytes) {
+    let bin = "";
+    for (let i = 0; i < bytes.length; i++) bin += String.fromCharCode(bytes[i]);
+    return btoa(bin).replace(/\+/g, "-").replace(/\//g, "_").replace(/=+$/g, "");
   }
 
-  function tryLoadShareHash() {
-    const hash = location.hash || "";
-    const match = hash.match(/^#?s=(.+)$/);
-    if (!match) return false;
-    try {
-      const json = decodeURIComponent(escape(atob(match[1])));
-      const payload = JSON.parse(json);
-      applySelectionPayload(payload);
-      history.replaceState(null, "", location.pathname + location.search);
-      return true;
-    } catch (err) {
-      console.warn("Bespoke share link could not be imported", err);
-      return false;
+  function base64UrlToBytes(str) {
+    const pad = "=".repeat((4 - (str.length % 4)) % 4);
+    const b64 = str.replace(/-/g, "+").replace(/_/g, "/") + pad;
+    const bin = atob(b64);
+    const bytes = new Uint8Array(bin.length);
+    for (let i = 0; i < bin.length; i++) bytes[i] = bin.charCodeAt(i);
+    return bytes;
+  }
+
+  async function encodeCompressedHash(json) {
+    if (typeof CompressionStream === "undefined") return null;
+    const bytes = new TextEncoder().encode(json);
+    const stream = new Blob([bytes]).stream().pipeThrough(new CompressionStream("deflate-raw"));
+    const buf = new Uint8Array(await new Response(stream).arrayBuffer());
+    return bytesToBase64Url(buf);
+  }
+
+  async function decodeCompressedHash(b64url) {
+    if (typeof DecompressionStream === "undefined") {
+      throw new Error("This browser cannot open a compressed link");
     }
+    const bytes = base64UrlToBytes(b64url);
+    const stream = new Blob([bytes]).stream().pipeThrough(new DecompressionStream("deflate-raw"));
+    const text = await new Response(stream).text();
+    return JSON.parse(text);
+  }
+
+  function decodeLegacyBase64(b64) {
+    return JSON.parse(decodeURIComponent(escape(atob(b64))));
+  }
+
+  function hashBody() {
+    const raw = location.hash.startsWith("#") ? location.hash.slice(1) : location.hash;
+    if (!raw) return "";
+    try {
+      return decodeURIComponent(raw);
+    } catch {
+      return raw;
+    }
+  }
+
+  async function decodeViewPayload(value) {
+    try {
+      return await decodeCompressedHash(value);
+    } catch {
+      return decodeLegacyBase64(value);
+    }
+  }
+
+  async function hashEditCode(code) {
+    const bytes = new TextEncoder().encode(String(code).trim());
+    const digest = await crypto.subtle.digest("SHA-256", bytes);
+    return bytesToBase64Url(new Uint8Array(digest));
+  }
+
+  function hashesMatch(a, b) {
+    if (!a || !b || a.length !== b.length) return false;
+    let diff = 0;
+    for (let i = 0; i < a.length; i++) diff |= a.charCodeAt(i) ^ b.charCodeAt(i);
+    return diff === 0;
+  }
+
+  /**
+   * View hashes carry the design plus editCodeHash. They open read-only
+   * until someone enters the matching edit code. Old `#e=` links do not grant edit.
+   */
+  async function readShareLink() {
+    const body = hashBody();
+    if (!body) return { kind: "none" };
+    const eq = body.indexOf("=");
+    if (eq < 1) return { kind: "none" };
+    const kind = body.slice(0, eq);
+    const value = body.slice(eq + 1);
+    if (!value) return { kind: "none" };
+    if (kind === "v" || kind === "s" || kind === "c") {
+      const payload = kind === "s" ? decodeLegacyBase64(value) : await decodeViewPayload(value);
+      return { kind: "view", payload };
+    }
+    if (kind === "e") return { kind: "retired" };
+    return { kind: "none" };
+  }
+
+  async function buildViewUrl() {
+    const code = (state.editCode || "").trim();
+    if (code.length < EDIT_CODE_MIN) {
+      return {
+        url: "",
+        message: `Enter your edit code first. It is on How to use Bespoke. Use at least ${EDIT_CODE_MIN} characters.`
+      };
+    }
+    const payload = buildSelectionPayload();
+    payload.editCodeHash = await hashEditCode(code);
+    const json = JSON.stringify(payload);
+    const compressed = await encodeCompressedHash(json);
+    if (!compressed) {
+      return {
+        url: "",
+        message: "This browser cannot make a view link. Ask a builder for help."
+      };
+    }
+    const url = new URL(location.href);
+    url.hash = `v=${compressed}`;
+    const href = url.toString();
+    if (href.length > SHARE_URL_MAX) {
+      return {
+        url: "",
+        message: "This design is too long to share. Shorten the lesson text, then copy the view link again."
+      };
+    }
+    return { url: href, message: "Link copied" };
+  }
+
+  function rememberUnlock(code) {
+    try {
+      sessionStorage.setItem(UNLOCK_HASH_KEY, ui.editCodeHash);
+      sessionStorage.setItem(UNLOCK_CODE_KEY, code);
+    } catch {
+      /* private mode */
+    }
+  }
+
+  async function rememberedLeadCode() {
+    try {
+      const hash = sessionStorage.getItem(UNLOCK_HASH_KEY) || "";
+      const code = sessionStorage.getItem(UNLOCK_CODE_KEY) || "";
+      if (!hash || !code || !hashesMatch(hash, ui.editCodeHash)) return "";
+      const check = await hashEditCode(code);
+      return hashesMatch(check, ui.editCodeHash) ? code : "";
+    } catch {
+      return "";
+    }
+  }
+
+  async function tryUnlockLead() {
+    const input = byId("leadCodeInput");
+    const err = byId("leadCodeError");
+    const code = (input?.value || "").trim();
+    if (code.length < EDIT_CODE_MIN) {
+      if (err) err.textContent = `Enter your edit code. It needs at least ${EDIT_CODE_MIN} characters.`;
+      input?.focus();
+      return;
+    }
+    if (!ui.editCodeHash) {
+      if (err) err.textContent = "This shared design has no edit code. Ask the team lead to copy a new view link.";
+      return;
+    }
+    const hashed = await hashEditCode(code);
+    if (!hashesMatch(hashed, ui.editCodeHash)) {
+      if (err) err.textContent = "That code is not right. Try again.";
+      input?.focus();
+      return;
+    }
+    state.editCode = code;
+    ui.mode = "edit";
+    rememberUnlock(code);
+    if (err) err.textContent = "";
+    saveDraft();
+    render();
+    clearTimeout(saveAnnounceTimer);
+    const live = byId("saveLive");
+    if (live) live.textContent = "You can edit this design now.";
+  }
+
+  async function openShareLink() {
+    let link;
+    try {
+      link = await readShareLink();
+    } catch (err) {
+      console.warn("Bespoke share link could not be opened", err);
+      ui.mode = "view";
+      ui.restoreNote = "This link could not be opened. The design saved on this computer was left as it was.";
+      return;
+    }
+    if (link.kind === "view") {
+      ui.mode = "view";
+      ui.editCodeHash = typeof link.payload.editCodeHash === "string" ? link.payload.editCodeHash : "";
+      try {
+        applySelectionPayload(link.payload);
+      } catch (err) {
+        console.warn("Bespoke share link could not be opened", err);
+        ui.restoreNote = "This link could not be opened. The design saved on this computer was left as it was.";
+        return;
+      }
+      state.editCode = "";
+      state.step = stepIndex("review");
+      const remembered = await rememberedLeadCode();
+      if (remembered) {
+        state.editCode = remembered;
+        ui.mode = "edit";
+      }
+      ui.restoredFromLink = true;
+      return;
+    }
+    if (link.kind === "retired") {
+      ui.mode = "view";
+      ui.restoreNote = "This link is out of date. Ask the team lead for the view link.";
+      return;
+    }
+    loadDraft();
+    ui.mode = "edit";
   }
 
   function buildSelectionPayload() {
@@ -1240,6 +1699,7 @@
   }
 
   function onSubmit() {
+    if (!isLeadSession()) return;
     syncTeamFieldsFromDom();
     ["lessonTitle", "lessonSubtitle", "sampleBullets", "sampleMyth", "unspoken"].forEach((fieldId) => {
       const el = byId(fieldId);
@@ -1254,9 +1714,6 @@
 
     const payload = buildSelectionPayload();
     const stamp = payload.date;
-    const base = `${payload.lesson.id}-${stamp}`;
-
-    downloadText(`${base}-selection.json`, JSON.stringify(payload, null, 2), "application/json");
 
     const issueBody = buildIssueBody(payload);
     const title = `[Spoke Signal] ${payload.lesson.id} — ${stamp}`;
@@ -1271,25 +1728,15 @@
     const urlTooLong = issueUrl.length > 7000;
     box.innerHTML = `
       <h3>Spoke Signal ready</h3>
-      <p>Download started for <code>selection.json</code> (the Action writer builds <code>content-intake.md</code> in the PR).
-      ${
+      <p>${
         urlTooLong
-          ? "The payload is large — open a blank Spoke Signal issue and paste the JSON from your download between the payload markers (or ask Britt to run the workflow_dispatch Action)."
-          : "Open the pre-filled GitHub issue. When it is created, the Spoke Signals Action opens a lesson-tagged PR. No token stays in this browser."
+          ? "This design is too big to attach by itself. Open For builders, download the design file, and ask a builder to add it to the Spoke Signal."
+          : "Open the Spoke Signal so Britt can review this design. When the issue is created, an Action opens a lesson draft."
       }</p>
       <div class="status-actions">
-        <a class="btn btn-primary" id="openIssue" href="${urlTooLong ? `https://github.com/${REPO}/issues/new?labels=spoke-signal,bespoke&title=${encodeURIComponent(title)}` : issueUrl}" target="_blank" rel="noopener">Open Spoke Signal issue</a>
-        <button type="button" class="btn btn-secondary" id="copyPayload">Copy JSON payload</button>
+        <a class="btn btn-primary btn-lg" id="openIssue" href="${urlTooLong ? `https://github.com/${REPO}/issues/new?labels=spoke-signal,bespoke&title=${encodeURIComponent(title)}` : issueUrl}" target="_blank" rel="noopener">Open Spoke Signal</a>
       </div>
     `;
-    byId("copyPayload").addEventListener("click", async () => {
-      try {
-        await navigator.clipboard.writeText(JSON.stringify(payload, null, 2));
-        byId("copyPayload").textContent = "Copied";
-      } catch {
-        byId("copyPayload").textContent = "Copy failed — use the download";
-      }
-    });
 
     saveDraft();
   }
@@ -1311,8 +1758,10 @@
 
     buildStepper();
     renderPanel();
+    lockViewControls();
+    syncAccessChrome();
     updatePreview();
-    saveDraft();
+    if (isLeadSession()) saveDraft();
 
     if (keepFocusId) {
       const el = byId(keepFocusId);
@@ -1343,13 +1792,38 @@
     state.meta = await metaRes.json();
     state.library = await libRes.json();
     state.themeOptions = await themeRes.json();
-    loadDraft();
-    tryLoadShareHash();
+    await openShareLink();
     if (!state.chapterCards || typeof state.chapterCards !== "object") state.chapterCards = {};
 
+    byId("btnLeadUnlock")?.addEventListener("click", () => {
+      const form = byId("leadCodeForm");
+      const leadBtn = byId("btnLeadUnlock");
+      if (form) form.hidden = false;
+      if (leadBtn) leadBtn.setAttribute("aria-expanded", "true");
+      const err = byId("leadCodeError");
+      if (err) err.textContent = "";
+      const input = byId("leadCodeInput");
+      if (input) {
+        input.value = "";
+        input.focus();
+      }
+    });
+    byId("leadCodeForm")?.addEventListener("submit", (e) => {
+      e.preventDefault();
+      tryUnlockLead();
+    });
+
     byId("btnClear").addEventListener("click", () => {
-      if (confirm("Clear the saved Bespoke draft in this browser?")) {
+      if (!isLeadSession()) return;
+      if (confirm("Clear the design saved on this computer?")) {
         localStorage.removeItem(STORAGE_KEY);
+        try {
+          sessionStorage.removeItem(UNLOCK_HASH_KEY);
+          sessionStorage.removeItem(UNLOCK_CODE_KEY);
+        } catch {
+          /* private mode */
+        }
+        location.hash = "";
         location.reload();
       }
     });
@@ -1376,7 +1850,21 @@
     });
     bindTablistKeys(byId("surfaceSwitcher"));
 
+    window.addEventListener("hashchange", () => {
+      openShareLink()
+        .then(() => {
+          ui.renderedStep = null;
+          render();
+        })
+        .catch((err) => console.error(err));
+    });
+
     render();
+    saveAnnounceReady = true;
+    if (isLeadSession() && ui.restoredFromLink) {
+      const live = byId("saveLive");
+      if (live) live.textContent = "Saved";
+    }
   }
 
   /** A11Y-01 keyboard support: Enter/Space activate, Left/Right/Home/End move between tabs. */
