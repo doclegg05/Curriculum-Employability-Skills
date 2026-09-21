@@ -2,6 +2,16 @@
   "use strict";
 
   const STORAGE_KEY = "bespoke-draft-v1";
+  /**
+   * Max length of a team view URL (origin + path + hash).
+   * View link: `#v=` + base64url(deflate-raw(selection.json shape)). Read-only. Any computer.
+   * Edit link: `#e=` + secret token. Restores the lead draft from localStorage on this computer only.
+   * The token is not in the view link, so a view link cannot be turned into an edit link.
+   * Legacy `#s=` (uncompressed) and `#c=` (compressed) open read-only and never write the lead draft.
+   * 8000 stays inside common email, Teams, and Slack paste limits.
+   * A normal design view link is about 1,000 characters.
+   */
+  const SHARE_URL_MAX = 8000;
   const REPO = "doclegg05/Curriculum-Employability-Skills";
   const LIBRARY_URL = "../SPOKES%20Builder/bespoke-library-catalog.json";
   const THEME_OPTIONS_URL = "../SPOKES%20Builder/theme-options.json";
@@ -53,8 +63,16 @@
     renderedStep: null,
     previewPinned: false,
     lastChange: null,
-    pulseTimer: null
+    pulseTimer: null,
+    restoredFromLink: false,
+    restoreNote: "",
+    builderNote: "",
+    /** "view" until init grants a lead session. View links never write localStorage. */
+    mode: "view"
   };
+
+  let saveAnnounceTimer = null;
+  let saveAnnounceReady = false;
 
   const prefersReduced = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
 
@@ -89,12 +107,98 @@
     }
   }
 
+  function setSaveStatus(text) {
+    const el = byId("saveStatus");
+    if (el) el.textContent = text;
+  }
+
+  function queueSaveAnnouncement() {
+    if (!saveAnnounceReady) return;
+    clearTimeout(saveAnnounceTimer);
+    saveAnnounceTimer = setTimeout(() => {
+      const live = byId("saveLive");
+      if (!live) return;
+      live.textContent = "";
+      window.setTimeout(() => {
+        live.textContent = "Saved";
+      }, 30);
+    }, 600);
+  }
+
+  function isLeadSession() {
+    return ui.mode === "edit";
+  }
+
+  function peekDraft() {
+    try {
+      const raw = localStorage.getItem(STORAGE_KEY);
+      if (!raw) return null;
+      const saved = JSON.parse(raw);
+      return saved && typeof saved === "object" ? saved : null;
+    } catch {
+      return null;
+    }
+  }
+
+  function newEditToken() {
+    const bytes = crypto.getRandomValues(new Uint8Array(16));
+    return bytesToBase64Url(bytes);
+  }
+
   function saveDraft() {
+    if (!isLeadSession()) return false;
     const { meta, library, themeOptions, ...rest } = state;
-    localStorage.setItem(STORAGE_KEY, JSON.stringify(rest));
+    try {
+      localStorage.setItem(STORAGE_KEY, JSON.stringify(rest));
+      setSaveStatus("Saved on this computer");
+      queueSaveAnnouncement();
+      return true;
+    } catch {
+      setSaveStatus("Could not save on this computer");
+      return false;
+    }
+  }
+
+  function syncAccessChrome() {
+    const locked = !isLeadSession();
+    document.body.classList.toggle("is-view-only", locked);
+    document.body.dataset.access = locked ? "view" : "edit";
+    const banner = byId("accessBanner");
+    if (banner) {
+      if (locked && banner.hidden) {
+        banner.textContent = "Only the team lead can change this.";
+        banner.hidden = false;
+      } else if (!locked) {
+        banner.hidden = true;
+      }
+    }
+    const notice = byId("restoreNotice");
+    if (notice) {
+      notice.hidden = !ui.restoreNote;
+      notice.textContent = ui.restoreNote || "";
+    }
+    const clearBtn = byId("btnClear");
+    if (clearBtn) {
+      clearBtn.disabled = locked;
+      if (locked) clearBtn.setAttribute("aria-describedby", "accessBanner");
+      else clearBtn.removeAttribute("aria-describedby");
+    }
+    if (locked) setSaveStatus("");
+  }
+
+  function lockViewControls() {
+    if (isLeadSession()) return;
+    const panel = byId("stepPanel");
+    if (!panel) return;
+    panel.querySelectorAll("input, select, textarea, button").forEach((el) => {
+      if (el.id === "btnBack" || el.id === "btnNext" || el.id === "btnDownloadDesign" || el.id === "btnCopySelection") return;
+      el.disabled = true;
+      el.setAttribute("aria-disabled", "true");
+    });
   }
 
   function applyPreset(presetId) {
+    if (!isLeadSession()) return;
     const preset = findMeta(state.meta.presets, presetId);
     if (!preset) return;
     const changed = Object.entries(preset.defaults).filter(([k, v]) => state[k] !== v).length;
@@ -164,8 +268,9 @@
       const li = document.createElement("li");
       const btn = document.createElement("button");
       btn.type = "button";
-      btn.innerHTML = `<span class="step-num" aria-hidden="true"><span>${String(index + 1).padStart(2, "0")}</span></span><span>${step.label}</span>`;
-      btn.setAttribute("aria-label", `Step ${index + 1} of ${STEPS.length}: ${step.label}`);
+      const label = step.id === "review" && !isLeadSession() ? "Review" : step.label;
+      btn.innerHTML = `<span class="step-num" aria-hidden="true"><span>${String(index + 1).padStart(2, "0")}</span></span><span>${label}</span>`;
+      btn.setAttribute("aria-label", `Step ${index + 1} of ${STEPS.length}: ${label}`);
       if (index === state.step) btn.setAttribute("aria-current", "step");
       if (index < state.step) btn.classList.add("is-done");
       btn.addEventListener("click", () => {
@@ -298,12 +403,6 @@
           <input id="spokespersonEmail" type="email" autocomplete="email" placeholder="you@example.org">
         </label>
       </div>
-      <div class="import-row">
-        <label class="field">Import a saved <code>selection.json</code>
-          <input id="importSelection" type="file" accept="application/json,.json">
-        </label>
-        <p id="importStatus" class="share-status" aria-live="polite"></p>
-      </div>
     `;
     const select = byId("lessonSelect");
     state.meta.lessons.forEach((lesson) => {
@@ -333,27 +432,14 @@
     bind("teamName", "teamName");
     bind("spokespersonName", "spokespersonName");
     bind("spokespersonEmail", "spokespersonEmail");
-    byId("importSelection").addEventListener("change", async (e) => {
-      const file = e.target.files && e.target.files[0];
-      const status = byId("importStatus");
-      if (!file) return;
-      try {
-        const text = await file.text();
-        const payload = JSON.parse(text);
-        applySelectionPayload(payload);
-        status.textContent = `Imported ${payload.lesson?.id || "selection"} — draft restored.`;
-        saveDraft();
-        render();
-      } catch (err) {
-        status.textContent = `Could not import: ${err.message || err}`;
-      }
-    });
   }
 
   function renderPreset(panel) {
     panel.innerHTML = `
       <h1>Theme preset</h1>
-      <p class="panel-lead">Pick the closest starting point. Every choice stays editable on the next steps — most teams stop here.</p>
+      <p class="panel-lead">${isLeadSession()
+        ? "Pick the closest starting point. Every choice stays editable on the next steps — most teams stop here."
+        : "This is the starting point in the shared design."}</p>
       <div class="preset-grid" id="presetGrid" role="group" aria-label="Theme presets"></div>
     `;
     const grid = byId("presetGrid");
@@ -590,32 +676,54 @@
 
   function renderReview(panel) {
     const labels = selectionLabels();
+    const lead = isLeadSession();
     panel.innerHTML = `
-      <h1>Review &amp; submit</h1>
-      <p class="panel-lead">Check your choices, then send the Spoke Signal. Britt reviews the request; approval is the go-ahead to build.</p>
+      <h1>${lead ? "Review &amp; submit" : "Review"}</h1>
+      <p class="panel-lead">${lead
+        ? "Check your choices, then send the Spoke Signal. Britt reviews the request; approval is the go-ahead to build."
+        : "This is the shared design. You can look through every step. Only the team lead can change it."}</p>
+      ${lead ? `
+      <section class="share-card" aria-labelledby="shareTitle">
+        <h2 id="shareTitle">Share this design</h2>
+        <p id="shareHelp">Your choices are saved on this computer. Send the view link to your team. The edit link stays with the team lead and works on this computer only.</p>
+        <div class="share-actions">
+          <button type="button" class="btn btn-primary btn-lg" id="btnCopyView" aria-describedby="shareHelp">Copy view link for your team</button>
+          <button type="button" class="btn btn-secondary btn-lg" id="btnCopyEdit" aria-describedby="shareHelp">Copy edit link (team lead only)</button>
+        </div>
+        <p id="shareStatus" class="share-status" role="status" aria-live="polite"></p>
+        <label class="field share-link-fallback" id="shareLinkFallback" hidden>
+          Link
+          <input id="shareLinkField" type="text" readonly>
+        </label>
+      </section>` : ""}
       <ul class="summary-list" id="summaryList"></ul>
+      ${lead ? `
       <section class="next-hops" aria-labelledby="nextHopsTitle">
         <h2 id="nextHopsTitle">What happens next</h2>
         <ol>
-          <li>You open a <strong>Spoke Signal</strong> issue with your <code>selection.json</code>.</li>
-          <li>An Action opens a <strong>draft PR</strong> (intake markdown written by the Action).</li>
-          <li><strong>Britt merges</strong> — that merge is the greenlight to build (D10).</li>
-          <li>A builder agent builds the lesson from the registry + intake.</li>
+          <li>You send a <strong>Spoke Signal</strong> with this design.</li>
+          <li>An Action opens a <strong>draft</strong> for Britt to review.</li>
+          <li><strong>Britt merges</strong> — that merge is the go-ahead to build.</li>
+          <li>A builder makes the lesson from the approved design.</li>
         </ol>
-        <p class="next-hops-note">The builder chooses slide components for each piece of content; your card style applies wherever cards appear.</p>
-      </section>
-      <div class="share-row">
-        <button type="button" class="btn btn-secondary" id="btnShareLink">Copy share link</button>
-        <span id="shareStatus" class="share-status" aria-live="polite"></span>
-      </div>
-      <label class="field" style="margin-top:1.25rem">Unspoken — something we wish existed in the library
+        <p class="next-hops-note">The builder chooses slide pieces for the content. Your card style applies wherever cards appear.</p>
+      </section>` : ""}
+      <label class="field unspoken-field">Unspoken — something we wish existed in the library
         <textarea id="unspoken" placeholder="Optional wish-list for future library pieces"></textarea>
       </label>
-      <div id="submitStatus"></div>
-      <details class="builder-note">
+      <div id="submitStatus" role="status" aria-live="polite"></div>
+      <details class="builder-note"${ui.builderNote ? " open" : ""}>
         <summary>For builders</summary>
+        <p class="builder-instructor-note">Instructors don't need this.</p>
+        <div class="builder-files">
+          <button type="button" class="btn btn-secondary" id="btnDownloadDesign">Download design file</button>
+          <button type="button" class="btn btn-secondary" id="btnOpenDesign">Open a design file</button>
+          <input id="importSelection" class="builder-file-input" type="file" accept="application/json,.json" tabindex="-1" aria-hidden="true">
+          <button type="button" class="btn btn-secondary" id="btnCopySelection">Copy selection.json</button>
+        </div>
+        <p id="builderFileStatus" class="share-status" role="status" aria-live="polite">${escapeHtml(ui.builderNote || "")}</p>
         <dl id="builderDetails"></dl>
-        <p>Options load from <code>SPOKES Builder/bespoke-library-catalog.json</code> (UI key <code>{family}.{slug}</code>); the selection payload stores <strong>slugs only</strong>. <code>bespoke-apply-selection.py</code> (not yet wired to the Action) upserts <code>theme-registry.json</code> with derived Layer 2 fields below. Card styles may vary by WIPPEA chapter (D12); adjacent chapters never share a style (THM-04). Submit opens a labelled GitHub issue — no token in this browser — and the Spoke Signals Action opens the lesson-tagged PR; merge is the greenlight (D10). Visual reference: <a href="../SPOKES%20Builder/library-preview.html" target="_blank" rel="noopener">library preview</a>.</p>
+        <p>Options load from <code>SPOKES Builder/bespoke-library-catalog.json</code> (UI key <code>{family}.{slug}</code>); the selection payload stores <strong>slugs only</strong>. <code>bespoke-apply-selection.py</code> (not yet wired to the Action) upserts <code>theme-registry.json</code> with derived Layer 2 fields below. Card styles may vary by WIPPEA chapter (D12); adjacent chapters never share a style (THM-04). Submit opens a labelled GitHub issue — no token in this browser — and the Spoke Signals Action opens the lesson-tagged PR; merge is the greenlight (D10). A view link (<code>#v=</code>) is read-only compressed <code>selection.json</code> and never writes the lead draft. An edit link (<code>#e=</code>) is a secret token that restores the editable draft on this computer only. View URLs longer than ${SHARE_URL_MAX} characters are not copied. Visual reference: <a href="../SPOKES%20Builder/library-preview.html" target="_blank" rel="noopener">library preview</a>.</p>
       </details>
     `;
     const list = byId("summaryList");
@@ -633,22 +741,88 @@
       details.append(dt, dd);
     });
     const unspoken = byId("unspoken");
-    unspoken.value = state.unspoken || "";
-    unspoken.addEventListener("input", () => {
-      state.unspoken = unspoken.value;
-      saveDraft();
+    if (unspoken) {
+      unspoken.value = state.unspoken || "";
+      unspoken.addEventListener("input", () => {
+        if (!isLeadSession()) return;
+        state.unspoken = unspoken.value;
+        saveDraft();
+      });
+    }
+    byId("btnCopyView")?.addEventListener("click", () => copyLink("view"));
+    byId("btnCopyEdit")?.addEventListener("click", () => copyLink("edit"));
+    byId("btnDownloadDesign")?.addEventListener("click", () => {
+      if (!isLeadSession()) return;
+      const payload = buildSelectionPayload();
+      const stamp = payload.date;
+      downloadText(
+        `${payload.lesson.id}-${stamp}-selection.json`,
+        JSON.stringify(payload, null, 2),
+        "application/json"
+      );
+      const status = byId("builderFileStatus");
+      if (status) status.textContent = "Downloaded the design file (selection.json).";
     });
-    byId("btnShareLink").addEventListener("click", async () => {
-      const url = buildShareUrl();
-      const status = byId("shareStatus");
+    byId("btnOpenDesign")?.addEventListener("click", () => {
+      if (!isLeadSession()) return;
+      byId("importSelection")?.click();
+    });
+    byId("importSelection")?.addEventListener("change", async (e) => {
+      if (!isLeadSession()) return;
+      const file = e.target.files && e.target.files[0];
+      const status = byId("builderFileStatus");
+      if (!file) return;
       try {
-        await navigator.clipboard.writeText(url);
-        status.textContent = "Share link copied";
-      } catch {
-        status.textContent = "Copy failed — select the URL from the address bar after opening the link.";
-        window.prompt("Copy this share link:", url);
+        const text = await file.text();
+        const payload = JSON.parse(text);
+        applySelectionPayload(payload);
+        ui.builderNote = "Opened the design file.";
+        saveDraft();
+        render();
+      } catch (err) {
+        if (status) status.textContent = `Could not open that design file. ${err.message || err}`;
       }
     });
+    byId("btnCopySelection")?.addEventListener("click", async () => {
+      if (!isLeadSession()) return;
+      const status = byId("builderFileStatus");
+      try {
+        await navigator.clipboard.writeText(JSON.stringify(buildSelectionPayload(), null, 2));
+        if (status) status.textContent = "Copied selection.json.";
+      } catch {
+        if (status) status.textContent = "Could not copy. Download the design file instead.";
+      }
+    });
+  }
+
+  async function copyLink(which) {
+    if (!isLeadSession()) return;
+    const status = byId("shareStatus");
+    const button = byId(which === "edit" ? "btnCopyEdit" : "btnCopyView");
+    if (button) button.disabled = true;
+    try {
+      const result = which === "edit" ? await buildEditUrl() : await buildViewUrl();
+      if (!result.url) {
+        if (status) status.textContent = result.message;
+        return;
+      }
+      try {
+        await navigator.clipboard.writeText(result.url);
+        if (status) status.textContent = result.message;
+      } catch {
+        const fallback = byId("shareLinkFallback");
+        const field = byId("shareLinkField");
+        if (fallback && field) {
+          fallback.hidden = false;
+          field.value = result.url;
+          field.focus();
+          field.select();
+        }
+        if (status) status.textContent = "Could not copy automatically. Select the link below.";
+      }
+    } finally {
+      if (button) button.disabled = false;
+    }
   }
 
   function selectionLabels() {
@@ -739,7 +913,9 @@
       <div style="display:flex;gap:0.5rem;flex-wrap:wrap">
         ${
           id === "review"
-            ? `<button type="button" class="btn btn-accent" id="btnSubmit">Submit Spoke Signal</button>`
+            ? (isLeadSession()
+              ? `<button type="button" class="btn btn-accent btn-lg" id="btnSubmit">Submit Spoke Signal</button>`
+              : "")
             : `<button type="button" class="btn btn-primary" id="btnNext">Next</button>`
         }
       </div>
@@ -771,6 +947,7 @@
   }
 
   function validateCurrentStep() {
+    if (!isLeadSession()) return true;
     const id = STEPS[state.step].id;
     if (id === "team") {
       syncTeamFieldsFromDom();
@@ -1115,37 +1292,156 @@
     Object.assign(state, draftFieldsFromSelection(payload));
   }
 
-  function buildShareUrl() {
-    const payload = buildSelectionPayload();
-    const compact = {
-      schema: payload.schema,
-      lesson: payload.lesson,
-      team: payload.team,
-      presetId: payload.presetId,
-      theme: payload.theme,
-      sampleContent: payload.sampleContent,
-      unspoken: payload.unspoken
-    };
-    const encoded = btoa(unescape(encodeURIComponent(JSON.stringify(compact))));
-    const url = new URL(location.href);
-    url.hash = `s=${encoded}`;
-    return url.toString();
+  function bytesToBase64Url(bytes) {
+    let bin = "";
+    for (let i = 0; i < bytes.length; i++) bin += String.fromCharCode(bytes[i]);
+    return btoa(bin).replace(/\+/g, "-").replace(/\//g, "_").replace(/=+$/g, "");
   }
 
-  function tryLoadShareHash() {
-    const hash = location.hash || "";
-    const match = hash.match(/^#?s=(.+)$/);
-    if (!match) return false;
-    try {
-      const json = decodeURIComponent(escape(atob(match[1])));
-      const payload = JSON.parse(json);
-      applySelectionPayload(payload);
-      history.replaceState(null, "", location.pathname + location.search);
-      return true;
-    } catch (err) {
-      console.warn("Bespoke share link could not be imported", err);
-      return false;
+  function base64UrlToBytes(str) {
+    const pad = "=".repeat((4 - (str.length % 4)) % 4);
+    const b64 = str.replace(/-/g, "+").replace(/_/g, "/") + pad;
+    const bin = atob(b64);
+    const bytes = new Uint8Array(bin.length);
+    for (let i = 0; i < bin.length; i++) bytes[i] = bin.charCodeAt(i);
+    return bytes;
+  }
+
+  async function encodeCompressedHash(json) {
+    if (typeof CompressionStream === "undefined") return null;
+    const bytes = new TextEncoder().encode(json);
+    const stream = new Blob([bytes]).stream().pipeThrough(new CompressionStream("deflate-raw"));
+    const buf = new Uint8Array(await new Response(stream).arrayBuffer());
+    return bytesToBase64Url(buf);
+  }
+
+  async function decodeCompressedHash(b64url) {
+    if (typeof DecompressionStream === "undefined") {
+      throw new Error("This browser cannot open a compressed link");
     }
+    const bytes = base64UrlToBytes(b64url);
+    const stream = new Blob([bytes]).stream().pipeThrough(new DecompressionStream("deflate-raw"));
+    const text = await new Response(stream).text();
+    return JSON.parse(text);
+  }
+
+  function decodeLegacyBase64(b64) {
+    return JSON.parse(decodeURIComponent(escape(atob(b64))));
+  }
+
+  function hashBody() {
+    const raw = location.hash.startsWith("#") ? location.hash.slice(1) : location.hash;
+    if (!raw) return "";
+    try {
+      return decodeURIComponent(raw);
+    } catch {
+      return raw;
+    }
+  }
+
+  async function decodeViewPayload(value) {
+    try {
+      return await decodeCompressedHash(value);
+    } catch {
+      return decodeLegacyBase64(value);
+    }
+  }
+
+  /**
+   * View hashes carry the design and open read-only.
+   * Edit hashes carry only the secret token. Edit is granted only when that
+   * token matches the draft already saved on this computer.
+   */
+  async function readShareLink() {
+    const body = hashBody();
+    if (!body) return { kind: "none" };
+    const eq = body.indexOf("=");
+    if (eq < 1) return { kind: "none" };
+    const kind = body.slice(0, eq);
+    const value = body.slice(eq + 1);
+    if (!value) return { kind: "none" };
+    if (kind === "v" || kind === "s" || kind === "c") {
+      const payload = kind === "s" ? decodeLegacyBase64(value) : await decodeViewPayload(value);
+      return { kind: "view", payload };
+    }
+    if (kind === "e") {
+      const token = value.split(".")[0];
+      if (!/^[A-Za-z0-9_-]{16,}$/.test(token)) throw new Error("This edit link is not valid.");
+      return { kind: "edit", token };
+    }
+    return { kind: "none" };
+  }
+
+  async function buildViewUrl() {
+    const json = JSON.stringify(buildSelectionPayload());
+    const compressed = await encodeCompressedHash(json);
+    if (!compressed) {
+      return {
+        url: "",
+        message: "This browser cannot make a view link. Ask a builder for help."
+      };
+    }
+    const url = new URL(location.href);
+    url.hash = `v=${compressed}`;
+    const href = url.toString();
+    if (href.length > SHARE_URL_MAX) {
+      return {
+        url: "",
+        message: "This design is too long to share. Shorten the lesson text, then copy the view link again."
+      };
+    }
+    return { url: href, message: "Link copied" };
+  }
+
+  async function buildEditUrl() {
+    if (!state.editToken) state.editToken = newEditToken();
+    saveDraft();
+    const url = new URL(location.href);
+    url.hash = `e=${state.editToken}`;
+    return {
+      url: url.toString(),
+      message: "Link copied. It only works on this computer."
+    };
+  }
+
+  async function openShareLink() {
+    let link;
+    try {
+      link = await readShareLink();
+    } catch (err) {
+      console.warn("Bespoke share link could not be opened", err);
+      ui.mode = "view";
+      ui.restoreNote = "This link could not be opened. The design saved on this computer was left as it was.";
+      return;
+    }
+    if (link.kind === "view") {
+      ui.mode = "view";
+      try {
+        applySelectionPayload(link.payload);
+      } catch (err) {
+        console.warn("Bespoke share link could not be opened", err);
+        ui.restoreNote = "This link could not be opened. The design saved on this computer was left as it was.";
+        return;
+      }
+      state.step = STEPS.length - 1;
+      ui.restoredFromLink = true;
+      return;
+    }
+    if (link.kind === "edit") {
+      const stored = peekDraft();
+      if (stored && stored.editToken === link.token) {
+        loadDraft();
+        ui.mode = "edit";
+        ui.restoredFromLink = true;
+        return;
+      }
+      ui.mode = "view";
+      ui.restoreNote = "This edit link only works on the team lead's computer.";
+      return;
+    }
+    loadDraft();
+    ui.mode = "edit";
+    if (!state.editToken) state.editToken = newEditToken();
   }
 
   function buildSelectionPayload() {
@@ -1240,6 +1536,7 @@
   }
 
   function onSubmit() {
+    if (!isLeadSession()) return;
     syncTeamFieldsFromDom();
     ["lessonTitle", "lessonSubtitle", "sampleBullets", "sampleMyth", "unspoken"].forEach((fieldId) => {
       const el = byId(fieldId);
@@ -1254,9 +1551,6 @@
 
     const payload = buildSelectionPayload();
     const stamp = payload.date;
-    const base = `${payload.lesson.id}-${stamp}`;
-
-    downloadText(`${base}-selection.json`, JSON.stringify(payload, null, 2), "application/json");
 
     const issueBody = buildIssueBody(payload);
     const title = `[Spoke Signal] ${payload.lesson.id} — ${stamp}`;
@@ -1271,25 +1565,15 @@
     const urlTooLong = issueUrl.length > 7000;
     box.innerHTML = `
       <h3>Spoke Signal ready</h3>
-      <p>Download started for <code>selection.json</code> (the Action writer builds <code>content-intake.md</code> in the PR).
-      ${
+      <p>${
         urlTooLong
-          ? "The payload is large — open a blank Spoke Signal issue and paste the JSON from your download between the payload markers (or ask Britt to run the workflow_dispatch Action)."
-          : "Open the pre-filled GitHub issue. When it is created, the Spoke Signals Action opens a lesson-tagged PR. No token stays in this browser."
+          ? "This design is too big to attach by itself. Open For builders, download the design file, and ask a builder to add it to the Spoke Signal."
+          : "Open the Spoke Signal so Britt can review this design. When the issue is created, an Action opens a lesson draft."
       }</p>
       <div class="status-actions">
-        <a class="btn btn-primary" id="openIssue" href="${urlTooLong ? `https://github.com/${REPO}/issues/new?labels=spoke-signal,bespoke&title=${encodeURIComponent(title)}` : issueUrl}" target="_blank" rel="noopener">Open Spoke Signal issue</a>
-        <button type="button" class="btn btn-secondary" id="copyPayload">Copy JSON payload</button>
+        <a class="btn btn-primary btn-lg" id="openIssue" href="${urlTooLong ? `https://github.com/${REPO}/issues/new?labels=spoke-signal,bespoke&title=${encodeURIComponent(title)}` : issueUrl}" target="_blank" rel="noopener">Open Spoke Signal</a>
       </div>
     `;
-    byId("copyPayload").addEventListener("click", async () => {
-      try {
-        await navigator.clipboard.writeText(JSON.stringify(payload, null, 2));
-        byId("copyPayload").textContent = "Copied";
-      } catch {
-        byId("copyPayload").textContent = "Copy failed — use the download";
-      }
-    });
 
     saveDraft();
   }
@@ -1311,8 +1595,10 @@
 
     buildStepper();
     renderPanel();
+    lockViewControls();
+    syncAccessChrome();
     updatePreview();
-    saveDraft();
+    if (isLeadSession()) saveDraft();
 
     if (keepFocusId) {
       const el = byId(keepFocusId);
@@ -1343,13 +1629,14 @@
     state.meta = await metaRes.json();
     state.library = await libRes.json();
     state.themeOptions = await themeRes.json();
-    loadDraft();
-    tryLoadShareHash();
+    await openShareLink();
     if (!state.chapterCards || typeof state.chapterCards !== "object") state.chapterCards = {};
 
     byId("btnClear").addEventListener("click", () => {
-      if (confirm("Clear the saved Bespoke draft in this browser?")) {
+      if (!isLeadSession()) return;
+      if (confirm("Clear the design saved on this computer?")) {
         localStorage.removeItem(STORAGE_KEY);
+        location.hash = "";
         location.reload();
       }
     });
@@ -1376,7 +1663,21 @@
     });
     bindTablistKeys(byId("surfaceSwitcher"));
 
+    window.addEventListener("hashchange", () => {
+      openShareLink()
+        .then(() => {
+          ui.renderedStep = null;
+          render();
+        })
+        .catch((err) => console.error(err));
+    });
+
     render();
+    saveAnnounceReady = true;
+    if (isLeadSession() && ui.restoredFromLink) {
+      const live = byId("saveLive");
+      if (live) live.textContent = "Saved";
+    }
   }
 
   /** A11Y-01 keyboard support: Enter/Space activate, Left/Right/Home/End move between tabs. */

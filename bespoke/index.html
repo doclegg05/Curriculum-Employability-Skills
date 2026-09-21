@@ -20,10 +20,14 @@
       </div>
     </a>
     <div class="header-actions">
+      <p id="saveStatus" class="save-status"></p>
+      <span id="saveLive" class="sr-only" aria-live="polite"></span>
       <a class="btn btn-ghost" href="../Dashboard.html">Curriculum hub</a>
       <button type="button" class="btn btn-secondary" id="btnClear">Clear draft</button>
     </div>
   </header>
+  <p id="accessBanner" class="access-banner" role="status" hidden>Only the team lead can change this.</p>
+  <p id="restoreNotice" class="restore-notice" role="status" hidden></p>
 
   <div class="surface-switcher" role="tablist" aria-label="Workspace surface" id="surfaceSwitcher">
     <button type="button" role="tab" id="surface-design" data-surface="design" aria-selected="true" aria-controls="chromeRail">Design</button>

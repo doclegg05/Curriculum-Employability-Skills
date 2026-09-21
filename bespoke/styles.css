@@ -243,6 +243,31 @@ textarea:focus-visible,
   display: flex;
   gap: var(--s3);
   flex-wrap: wrap;
+  align-items: center;
+}
+.save-status {
+  margin: 0;
+  font-size: 1rem;
+  font-weight: 700;
+  color: var(--dark);
+}
+.access-banner {
+  margin: 0;
+  padding: 0.85rem var(--s6);
+  background: var(--royal);
+  color: var(--light);
+  font-size: 1.15rem;
+  font-weight: 700;
+  text-align: center;
+  line-height: 1.35;
+}
+.restore-notice {
+  margin: 0;
+  padding: 0.75rem var(--s6);
+  background: #fff4e5;
+  color: var(--dark);
+  font-weight: 600;
+  text-align: center;
 }
 
 .btn {
@@ -250,6 +275,8 @@ textarea:focus-visible,
   border: 2px solid transparent;
   border-radius: 8px;
   padding: 0.45rem 0.9rem;
+  min-height: 44px;
+  font-size: 1rem;
   font-weight: 600;
   cursor: pointer;
   text-decoration: none;
@@ -258,6 +285,14 @@ textarea:focus-visible,
   justify-content: center;
   gap: 0.4rem;
   transition: transform 0.15s ease, background 0.15s ease, border-color 0.15s ease;
+}
+.btn-lg {
+  min-height: 52px;
+  padding: 0.85rem 1.15rem;
+  font-size: 1.05rem;
+  line-height: 1.3;
+  white-space: normal;
+  text-align: center;
 }
 
 /* Mobile Design | Preview surface switcher — hidden on desktop */
@@ -1359,6 +1394,24 @@ label.field textarea { min-height: 110px; resize: vertical; }
   .footer-bar { display: none; }
 }
 
+/* View link: choices stay visible, but only the lead session can change them. */
+body.is-view-only .option:disabled,
+body.is-view-only .preset:disabled {
+  opacity: 0.62;
+  filter: grayscale(1);
+  cursor: not-allowed;
+  transform: none;
+  box-shadow: none;
+}
+body.is-view-only .panel input:disabled,
+body.is-view-only .panel select:disabled,
+body.is-view-only .panel textarea:disabled {
+  opacity: 1;
+  color: var(--gray);
+  background: var(--muted);
+  cursor: not-allowed;
+}
+
 /* P4 — honesty caption, what-happens-next, share/import */
 .honesty-caption {
   display: block;
@@ -1391,15 +1444,66 @@ label.field textarea { min-height: 110px; resize: vertical; }
   font-size: var(--fs-xs);
   color: var(--gray);
 }
-.share-row, .import-row {
+.share-card {
+  margin: 0 0 1.1rem;
+  padding: 1rem 1.05rem 0.9rem;
+  border: 2px solid var(--royal);
+  border-radius: 12px;
+  background: rgba(0, 19, 63, 0.04);
+}
+.share-card h2 {
+  margin: 0 0 0.35rem;
+  font-family: var(--font-ui-heading);
+  font-size: 1.2rem;
+  line-height: 1.25;
+  color: var(--dark);
+}
+.share-card p {
+  margin: 0 0 0.75rem;
+  font-size: 1rem;
+  line-height: 1.45;
+  color: var(--dark);
+}
+.share-actions {
+  display: flex;
+  flex-direction: column;
+  gap: 0.6rem;
+}
+.share-actions .btn { width: 100%; }
+.share-status {
+  margin: 0.75rem 0 0;
+  min-height: 1.4em;
+  font-size: 1rem;
+  font-weight: 700;
+  color: var(--dark);
+}
+.share-link-fallback { margin-top: 0.75rem; }
+.unspoken-field { margin-top: 1.25rem; }
+.builder-instructor-note {
+  margin: 0.75rem 0 0;
+  font-size: 1rem;
+  font-weight: 700;
+  color: var(--dark);
+}
+.builder-files {
   display: flex;
   flex-wrap: wrap;
+  gap: 0.6rem;
+  margin-top: 0.75rem;
+}
+.builder-file-input {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  padding: 0;
+  margin: -1px;
+  overflow: hidden;
+  clip: rect(0, 0, 0, 0);
+  white-space: nowrap;
+  border: 0;
+}
+.builder-note summary {
+  min-height: 44px;
+  display: flex;
   align-items: center;
-  gap: 0.75rem;
-  margin-top: 1rem;
 }
-.share-status {
-  font-size: var(--fs-xs);
-  color: var(--gray);
-}
-.import-row .field { flex: 1 1 16rem; }
