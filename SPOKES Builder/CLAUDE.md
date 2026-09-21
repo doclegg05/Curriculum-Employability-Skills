@@ -6,7 +6,7 @@ You are building an interactive HTML slideshow presentation for **SPOKES** (Stra
 
 ## What You Build
 
-A **single self-contained `index.html` file** that is a fully interactive classroom presentation. No build tools, no frameworks, no external dependencies beyond Google Fonts. The CSS and JavaScript are embedded in the file.
+A **single self-contained `index.html` file** that is a fully interactive classroom presentation. No build tools, no frameworks, no external CDN dependencies. Fonts are **self-hosted** via `@font-face` (TYP-05). The CSS and JavaScript are embedded in the file.
 
 **Output:** A complete project folder ready to serve and deploy.
 
@@ -70,7 +70,7 @@ Additional Presentation chapters (P4, P5, etc.) may be added if the lesson has m
 
 ### Step 3: Read Theme Package
 
-1. Look up the lesson in `theme-registry.json`
+1. Look up the lesson in `theme-registry.json` (the entry may originate from a **merged Bespoke PR** that ran `bespoke-apply-selection.py` — honor `varyByChapter` card styles when present)
 2. Read Layer 1 properties: colorLead, sidebarColor, backgroundTexture, titleSlide, fontPairing
 3. Read Layer 2 chapterStyles: per-chapter divider, cards, leadComponent, secondaryAccent
 4. If the lesson is not in the registry, STOP — do not build without a theme package
@@ -78,15 +78,15 @@ Additional Presentation chapters (P4, P5, etc.) may be added if the lesson has m
 ### Step 4: Copy Template & Apply Theme
 
 1. Copy `template.html` to the new project directory as `index.html`
-2. Add lesson-specific Google Font `<link>` tags in `<head>` (look up import URL in `font-pairings.md`)
-3. Generate a `<style id="theme-override">` block AFTER the main CSS block by assembling snippets from `theme-library.css`:
+2. Add lesson-specific **self-hosted** `@font-face` rules in `<head>` (or a local CSS block) for the assigned pairing — look up file names in `font-pairings.md` / the repo `fonts/` directory. **Do not** add Google Fonts `<link>` tags (TYP-05). Use `font-display: swap`.
+3. Generate a `<style id="theme-override">` block AFTER the main CSS block by assembling snippets from `theme-library.css` (generated from `theme-options.json`):
    - Font family overrides
    - Background texture for the assigned `backgroundTexture`
    - Color lead overrides for the assigned `colorLead`
    - Sidebar color override if `sidebarColor` is "royal"
    - Dark theme inversion if `backgroundTexture` is "dark-royal" (add `class="theme-dark"` to `.main`)
    - Title slide design CSS for the assigned `titleSlide`
-   - Per-chapter card style CSS scoped to `[data-chapter="N"]` (replace SCOPE prefix)
+   - Per-chapter card style CSS scoped to `[data-chapter="N"]` (replace SCOPE prefix) — when Bespoke set `varyByChapter`, each chapter may use a different card slug
    - Per-chapter section divider CSS scoped to `.slide-section[data-chapter="N"]` (replace DIVIDER_SCOPE prefix)
    - Per-chapter secondary accent overrides
    - Video placeholder CSS

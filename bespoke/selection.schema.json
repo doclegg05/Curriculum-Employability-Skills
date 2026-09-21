@@ -1,0 +1,427 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://spokes.local/schemas/bespoke-selection/v1",
+  "title": "Bespoke selection (bespoke-selection/v1)",
+  "description": "Machine-readable Bespoke wizard payload. Enums are generated from SPOKES Builder/bespoke-library-catalog.json and bespoke/catalog.json by scripts/generate-selection-schema.py — do not hand-edit enums.",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "schema",
+    "date",
+    "lesson",
+    "team",
+    "presetId",
+    "theme"
+  ],
+  "properties": {
+    "schema": {
+      "type": "string",
+      "const": "bespoke-selection/v1"
+    },
+    "submittedAt": {
+      "type": "string",
+      "description": "ISO-8601 timestamp from the browser at submit time."
+    },
+    "date": {
+      "type": "string",
+      "pattern": "^[0-9]{4}-[0-9]{2}-[0-9]{2}$",
+      "description": "Calendar date (YYYY-MM-DD) used for submission folder naming."
+    },
+    "libraryCatalogVersion": {
+      "type": [
+        "string",
+        "null"
+      ],
+      "description": "Expected to match library catalog version ('1.0.0' at generation)."
+    },
+    "lesson": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "id",
+        "title"
+      ],
+      "properties": {
+        "id": {
+          "type": "string",
+          "pattern": "^[a-z0-9]+(?:-[a-z0-9]+)*$",
+          "minLength": 1,
+          "description": "Lesson slug without the lesson- prefix; FID-2 normalizes to lesson-<id> for registries."
+        },
+        "title": {
+          "type": "string",
+          "minLength": 1
+        },
+        "displayTitle": {
+          "type": "string"
+        },
+        "subtitle": {
+          "type": "string"
+        }
+      }
+    },
+    "team": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "spokesperson"
+      ],
+      "properties": {
+        "name": {
+          "type": "string"
+        },
+        "spokesperson": {
+          "type": "object",
+          "additionalProperties": false,
+          "required": [
+            "name"
+          ],
+          "properties": {
+            "name": {
+              "type": "string",
+              "minLength": 1
+            },
+            "email": {
+              "type": "string"
+            }
+          }
+        }
+      }
+    },
+    "presetId": {
+      "type": "string",
+      "enum": [
+        "professional",
+        "modern",
+        "serious",
+        "light-hearted",
+        "fun",
+        "outspoken"
+      ]
+    },
+    "theme": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "colorLead",
+        "sidebarColor",
+        "backgroundTexture",
+        "titleSlide",
+        "dividerStyle",
+        "fontPairing",
+        "cards"
+      ],
+      "properties": {
+        "colorLead": {
+          "type": "string",
+          "enum": [
+            "blue",
+            "mauve",
+            "gold",
+            "green",
+            "royal",
+            "dual-mauve-blue",
+            "dual-gold-green",
+            "dual-mauve-gold",
+            "dual-blue-green"
+          ]
+        },
+        "sidebarColor": {
+          "type": "string",
+          "enum": [
+            "dark",
+            "royal"
+          ]
+        },
+        "backgroundTexture": {
+          "type": "string",
+          "enum": [
+            "plain",
+            "dot-grid",
+            "diagonal",
+            "crosshatch",
+            "soft-gradient",
+            "dark-royal"
+          ]
+        },
+        "titleSlide": {
+          "type": "string",
+          "enum": [
+            "centered-gradient",
+            "split-hero",
+            "full-bleed",
+            "bottom-anchored",
+            "offset-left",
+            "diagonal-split",
+            "framed-center",
+            "top-banner",
+            "radial-glow",
+            "vertical-strip",
+            "corner-accent",
+            "horizon-line",
+            "quiet-center",
+            "dual-band",
+            "side-rail"
+          ]
+        },
+        "dividerStyle": {
+          "type": "string",
+          "enum": [
+            "gradient-sweep",
+            "framed-gold",
+            "bold-full-bleed",
+            "split-panel",
+            "centered-badge",
+            "gold-rail",
+            "stacked-bands",
+            "dark-masthead"
+          ]
+        },
+        "fontPairing": {
+          "type": "string",
+          "enum": [
+            "dm-serif-display-outfit",
+            "playfair-display-inter",
+            "merriweather-source-sans-3",
+            "vollkorn-fira-sans",
+            "crimson-pro-work-sans",
+            "bitter-raleway"
+          ]
+        },
+        "cards": {
+          "type": "object",
+          "additionalProperties": false,
+          "required": [
+            "lessonWide",
+            "varyByChapter"
+          ],
+          "properties": {
+            "lessonWide": {
+              "type": "string",
+              "enum": [
+                "left-border",
+                "shadow-float",
+                "sharp-border",
+                "glass",
+                "outlined",
+                "gradient-fill",
+                "pill",
+                "layered",
+                "top-accent",
+                "inset-panel",
+                "dual-rail",
+                "soft-lift",
+                "rule-stack",
+                "stamp-frame",
+                "banded-header",
+                "quiet-outline"
+              ]
+            },
+            "varyByChapter": {
+              "type": "boolean"
+            },
+            "chapterStyles": {
+              "type": [
+                "object",
+                "null"
+              ],
+              "additionalProperties": false,
+              "properties": {
+                "W": {
+                  "type": "string",
+                  "enum": [
+                    "left-border",
+                    "shadow-float",
+                    "sharp-border",
+                    "glass",
+                    "outlined",
+                    "gradient-fill",
+                    "pill",
+                    "layered",
+                    "top-accent",
+                    "inset-panel",
+                    "dual-rail",
+                    "soft-lift",
+                    "rule-stack",
+                    "stamp-frame",
+                    "banded-header",
+                    "quiet-outline"
+                  ]
+                },
+                "I": {
+                  "type": "string",
+                  "enum": [
+                    "left-border",
+                    "shadow-float",
+                    "sharp-border",
+                    "glass",
+                    "outlined",
+                    "gradient-fill",
+                    "pill",
+                    "layered",
+                    "top-accent",
+                    "inset-panel",
+                    "dual-rail",
+                    "soft-lift",
+                    "rule-stack",
+                    "stamp-frame",
+                    "banded-header",
+                    "quiet-outline"
+                  ]
+                },
+                "P1": {
+                  "type": "string",
+                  "enum": [
+                    "left-border",
+                    "shadow-float",
+                    "sharp-border",
+                    "glass",
+                    "outlined",
+                    "gradient-fill",
+                    "pill",
+                    "layered",
+                    "top-accent",
+                    "inset-panel",
+                    "dual-rail",
+                    "soft-lift",
+                    "rule-stack",
+                    "stamp-frame",
+                    "banded-header",
+                    "quiet-outline"
+                  ]
+                },
+                "P2": {
+                  "type": "string",
+                  "enum": [
+                    "left-border",
+                    "shadow-float",
+                    "sharp-border",
+                    "glass",
+                    "outlined",
+                    "gradient-fill",
+                    "pill",
+                    "layered",
+                    "top-accent",
+                    "inset-panel",
+                    "dual-rail",
+                    "soft-lift",
+                    "rule-stack",
+                    "stamp-frame",
+                    "banded-header",
+                    "quiet-outline"
+                  ]
+                },
+                "P3": {
+                  "type": "string",
+                  "enum": [
+                    "left-border",
+                    "shadow-float",
+                    "sharp-border",
+                    "glass",
+                    "outlined",
+                    "gradient-fill",
+                    "pill",
+                    "layered",
+                    "top-accent",
+                    "inset-panel",
+                    "dual-rail",
+                    "soft-lift",
+                    "rule-stack",
+                    "stamp-frame",
+                    "banded-header",
+                    "quiet-outline"
+                  ]
+                },
+                "E": {
+                  "type": "string",
+                  "enum": [
+                    "left-border",
+                    "shadow-float",
+                    "sharp-border",
+                    "glass",
+                    "outlined",
+                    "gradient-fill",
+                    "pill",
+                    "layered",
+                    "top-accent",
+                    "inset-panel",
+                    "dual-rail",
+                    "soft-lift",
+                    "rule-stack",
+                    "stamp-frame",
+                    "banded-header",
+                    "quiet-outline"
+                  ]
+                },
+                "A": {
+                  "type": "string",
+                  "enum": [
+                    "left-border",
+                    "shadow-float",
+                    "sharp-border",
+                    "glass",
+                    "outlined",
+                    "gradient-fill",
+                    "pill",
+                    "layered",
+                    "top-accent",
+                    "inset-panel",
+                    "dual-rail",
+                    "soft-lift",
+                    "rule-stack",
+                    "stamp-frame",
+                    "banded-header",
+                    "quiet-outline"
+                  ]
+                }
+              }
+            }
+          }
+        },
+        "catalogIds": {
+          "type": "object",
+          "description": "UI keys {family}.{slug} for builder footnotes; not used by registry apply.",
+          "additionalProperties": true
+        }
+      }
+    },
+    "sampleContent": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "bullets": {
+          "type": "string"
+        },
+        "mythReality": {
+          "type": "string"
+        }
+      }
+    },
+    "unspoken": {
+      "type": "string"
+    }
+  },
+  "x-bespoke": {
+    "schemaId": "bespoke-selection/v1",
+    "generatedFrom": {
+      "libraryCatalog": "SPOKES Builder/bespoke-library-catalog.json",
+      "libraryCatalogVersion": "1.0.0",
+      "metaCatalog": "bespoke/catalog.json"
+    },
+    "chapterKeys": [
+      "W",
+      "I",
+      "P1",
+      "P2",
+      "P3",
+      "E",
+      "A"
+    ],
+    "customChecks": [
+      "lesson.id must be a kebab-case slug (no lesson- prefix required)",
+      "when theme.cards.varyByChapter is true, chapterStyles must include every chapter key",
+      "libraryCatalogVersion should match the committed library catalog version",
+      "THM-04 adjacent-chapter uniqueness is soft-warn until FID-4"
+    ]
+  }
+}

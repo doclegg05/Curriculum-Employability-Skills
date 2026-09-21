@@ -4,6 +4,7 @@
   const STORAGE_KEY = "bespoke-draft-v1";
   const REPO = "doclegg05/Curriculum-Employability-Skills";
   const LIBRARY_URL = "../SPOKES%20Builder/bespoke-library-catalog.json";
+  const THEME_OPTIONS_URL = "../SPOKES%20Builder/theme-options.json";
   const META_URL = "./catalog.json";
 
   /** `view` = the preview the step lands on; a manual tab pick sticks until the step changes. */
@@ -82,14 +83,14 @@
       const raw = localStorage.getItem(STORAGE_KEY);
       if (!raw) return;
       const saved = JSON.parse(raw);
-      Object.assign(state, saved, { meta: state.meta, library: state.library });
+      Object.assign(state, saved, { meta: state.meta, library: state.library, themeOptions: state.themeOptions });
     } catch {
       /* ignore */
     }
   }
 
   function saveDraft() {
-    const { meta, library, ...rest } = state;
+    const { meta, library, themeOptions, ...rest } = state;
     localStorage.setItem(STORAGE_KEY, JSON.stringify(rest));
   }
 
@@ -195,12 +196,17 @@
     return frag;
   }
 
-  function optionButton({ id, label, detail, usedBy, swatch, swatchClass, pressed, badge, onSelect }) {
+  function optionButton({ id, label, detail, usedBy, swatch, swatchClass, pressed, badge, onSelect, blocked, reason }) {
     const btn = document.createElement("button");
     btn.type = "button";
-    btn.className = "option";
+    btn.className = "option" + (blocked ? " is-blocked" : "");
     btn.setAttribute("aria-pressed", pressed ? "true" : "false");
     btn.dataset.id = id;
+    if (blocked) {
+      btn.disabled = true;
+      btn.setAttribute("aria-disabled", "true");
+      if (reason) btn.title = reason;
+    }
     btn.appendChild(selectionMark(pressed));
     if (swatch || swatchClass) {
       const sw = document.createElement("div");
@@ -228,7 +234,13 @@
       tag.textContent = `Used by ${usedBy.join(", ")}`;
       btn.appendChild(tag);
     }
-    btn.addEventListener("click", onSelect);
+    if (blocked && reason) {
+      const tag = document.createElement("span");
+      tag.className = "blocked-tag";
+      tag.textContent = reason;
+      btn.appendChild(tag);
+    }
+    if (!blocked) btn.addEventListener("click", onSelect);
     return btn;
   }
 
@@ -243,6 +255,8 @@
           swatchClass: swatchClassFor ? swatchClassFor(opt) : null,
           pressed: selectedSlug === opt.slug,
           badge: showNew && opt.legacy === false ? "New" : null,
+          blocked: Boolean(opt.blocked),
+          reason: opt.reason || "",
           onSelect: () => onPick(opt)
         })
       );
@@ -284,6 +298,12 @@
           <input id="spokespersonEmail" type="email" autocomplete="email" placeholder="you@example.org">
         </label>
       </div>
+      <div class="import-row">
+        <label class="field">Import a saved <code>selection.json</code>
+          <input id="importSelection" type="file" accept="application/json,.json">
+        </label>
+        <p id="importStatus" class="share-status" aria-live="polite"></p>
+      </div>
     `;
     const select = byId("lessonSelect");
     state.meta.lessons.forEach((lesson) => {
@@ -313,6 +333,21 @@
     bind("teamName", "teamName");
     bind("spokespersonName", "spokespersonName");
     bind("spokespersonEmail", "spokespersonEmail");
+    byId("importSelection").addEventListener("change", async (e) => {
+      const file = e.target.files && e.target.files[0];
+      const status = byId("importStatus");
+      if (!file) return;
+      try {
+        const text = await file.text();
+        const payload = JSON.parse(text);
+        applySelectionPayload(payload);
+        status.textContent = `Imported ${payload.lesson?.id || "selection"} — draft restored.`;
+        saveDraft();
+        render();
+      } catch (err) {
+        status.textContent = `Could not import: ${err.message || err}`;
+      }
+    });
   }
 
   function renderPreset(panel) {
@@ -362,6 +397,8 @@
           usedBy: cue.usedBy,
           swatch: `linear-gradient(135deg, ${cue.gradientFrom || "var(--primary)"}, ${cue.gradientTo || "var(--dark)"})`,
           pressed: state.colorLead === opt.slug,
+          blocked: Boolean(opt.blocked),
+          reason: opt.reason || "",
           onSelect: () => {
             state.colorLead = opt.slug;
             noteChange("Color lead", opt.label);
@@ -557,6 +594,20 @@
       <h1>Review &amp; submit</h1>
       <p class="panel-lead">Check your choices, then send the Spoke Signal. Britt reviews the request; approval is the go-ahead to build.</p>
       <ul class="summary-list" id="summaryList"></ul>
+      <section class="next-hops" aria-labelledby="nextHopsTitle">
+        <h2 id="nextHopsTitle">What happens next</h2>
+        <ol>
+          <li>You open a <strong>Spoke Signal</strong> issue with your <code>selection.json</code>.</li>
+          <li>An Action opens a <strong>draft PR</strong> (intake markdown written by the Action).</li>
+          <li><strong>Britt merges</strong> — that merge is the greenlight to build (D10).</li>
+          <li>A builder agent builds the lesson from the registry + intake.</li>
+        </ol>
+        <p class="next-hops-note">The builder chooses slide components for each piece of content; your card style applies wherever cards appear.</p>
+      </section>
+      <div class="share-row">
+        <button type="button" class="btn btn-secondary" id="btnShareLink">Copy share link</button>
+        <span id="shareStatus" class="share-status" aria-live="polite"></span>
+      </div>
       <label class="field" style="margin-top:1.25rem">Unspoken — something we wish existed in the library
         <textarea id="unspoken" placeholder="Optional wish-list for future library pieces"></textarea>
       </label>
@@ -564,7 +615,7 @@
       <details class="builder-note">
         <summary>For builders</summary>
         <dl id="builderDetails"></dl>
-        <p>Options load from <code>SPOKES Builder/bespoke-library-catalog.json</code> (UI key <code>{family}.{slug}</code>); the selection payload and intake markdown store <strong>slugs only</strong>, matching <code>theme-registry.json</code>. Card styles may vary by WIPPEA chapter (D12); adjacent chapters never share a style (THM-04). Submit opens a labelled GitHub issue — no token in this browser — and the Spoke Signals Action opens the lesson-tagged PR; merge is the greenlight (D10). Visual reference: <a href="../SPOKES%20Builder/library-preview.html" target="_blank" rel="noopener">library preview</a>.</p>
+        <p>Options load from <code>SPOKES Builder/bespoke-library-catalog.json</code> (UI key <code>{family}.{slug}</code>); the selection payload stores <strong>slugs only</strong>. <code>bespoke-apply-selection.py</code> (not yet wired to the Action) upserts <code>theme-registry.json</code> with derived Layer 2 fields below. Card styles may vary by WIPPEA chapter (D12); adjacent chapters never share a style (THM-04). Submit opens a labelled GitHub issue — no token in this browser — and the Spoke Signals Action opens the lesson-tagged PR; merge is the greenlight (D10). Visual reference: <a href="../SPOKES%20Builder/library-preview.html" target="_blank" rel="noopener">library preview</a>.</p>
       </details>
     `;
     const list = byId("summaryList");
@@ -586,6 +637,17 @@
     unspoken.addEventListener("input", () => {
       state.unspoken = unspoken.value;
       saveDraft();
+    });
+    byId("btnShareLink").addEventListener("click", async () => {
+      const url = buildShareUrl();
+      const status = byId("shareStatus");
+      try {
+        await navigator.clipboard.writeText(url);
+        status.textContent = "Share link copied";
+      } catch {
+        status.textContent = "Copy failed — select the URL from the address bar after opening the link.";
+        window.prompt("Copy this share link:", url);
+      }
     });
   }
 
@@ -613,7 +675,23 @@
   }
 
   /** Catalog ids for the collapsed "For builders" footnote on Review. */
+  const DERIVED_LAYER2 = {
+    W: { leadComponent: "takeaways", secondaryAccent: "gold" },
+    I: { leadComponent: "cards-grid", secondaryAccent: "primary" },
+    P1: { leadComponent: "smart-stack", secondaryAccent: "gold" },
+    P2: { leadComponent: "areas-grid", secondaryAccent: "primary" },
+    P3: { leadComponent: "dangers-grid", secondaryAccent: "gold" },
+    E: { leadComponent: "takeaways", secondaryAccent: "primary" },
+    A: { leadComponent: "content-list", secondaryAccent: "gold" }
+  };
+
   function builderIds() {
+    const derived = (state.meta.chapterKeys || Object.keys(DERIVED_LAYER2))
+      .map((k) => {
+        const d = DERIVED_LAYER2[k] || {};
+        return `${k}: ${d.leadComponent}/${d.secondaryAccent}`;
+      })
+      .join("; ");
     return {
       Preset: state.presetId,
       "Color lead": uiKey("colorLeads", state.colorLead),
@@ -624,7 +702,9 @@
       Cards: state.varyCardsByChapter
         ? state.meta.chapterKeys.map((k) => `${k}=${uiKey("cards", state.chapterCards[k] || state.cardStyle)}`).join(" ")
         : uiKey("cards", state.cardStyle),
-      Fonts: state.fontPairing
+      Fonts: state.fontPairing,
+      "Derived Layer 2 (FID-5)": derived,
+      "Registry key": state.lessonId ? `lesson-${state.lessonId}` : "—"
     };
   }
 
@@ -757,8 +837,6 @@
     divider: { chapter: "P1", slide: 9 },
     cards: { chapter: "P1", slide: 10 }
   };
-  const DARK_DIVIDERS = ["gradient-sweep", "bold-full-bleed", "framed-gold", "gold-rail", "dark-masthead"];
-
   function renderModelSidebar(title) {
     const chrome = VIEW_CHROME[state.previewView] || VIEW_CHROME.title;
     const rows = CHAPTERS.map(
@@ -773,15 +851,113 @@
     return team || "Round 2 · SPOKES lesson";
   }
 
+  const PREVIEW_CHAPTER = "3";
+  const PREVIEW_CHAPTER_NUM = "P1";
+
+  function themeOption(family, slug) {
+    const sections = state.themeOptions?.sections || [];
+    for (const section of sections) {
+      if ((section.family || section.id) !== family) continue;
+      const hit = (section.options || []).find((o) => o.slug === slug);
+      if (hit) return hit;
+    }
+    return null;
+  }
+
+  function scopeCss(css, scopePrefix) {
+    return String(css || "")
+      .replace(/\bSCOPE\b/g, scopePrefix)
+      .replace(/\bDIVIDER_SCOPE\b/g, scopePrefix);
+  }
+
+  function prefixSelectors(css, prefix) {
+    const trimmed = String(css || "").trim();
+    if (!trimmed) return "";
+    return trimmed.replace(/(^|})\s*([^@}/][^{]*)\{/g, (match, brace, selectors) => {
+      const scoped = selectors
+        .split(",")
+        .map((sel) => {
+          const s = sel.trim();
+          if (!s) return s;
+          if (s.startsWith(prefix.trim())) return s;
+          return `${prefix}${s}`;
+        })
+        .join(", ");
+      return `${brace}\n${scoped} {`;
+    });
+  }
+
+  function ensureInjectStyle() {
+    let el = document.getElementById("bespoke-theme-inject");
+    if (!el) {
+      el = document.createElement("style");
+      el.id = "bespoke-theme-inject";
+      document.head.appendChild(el);
+    }
+    return el;
+  }
+
+  function buildInjectedThemeCss() {
+    const main = ".spokes-model .model-main";
+    const chapterScope = `${main} [data-chapter="${PREVIEW_CHAPTER}"]`;
+    const dividerScope = `${main} .slide-section[data-chapter="${PREVIEW_CHAPTER}"]`;
+    const chunks = [];
+
+    const texture = themeOption("backgroundTextures", state.backgroundTexture);
+    if (texture && texture.css) {
+      chunks.push(String(texture.css).replace(/\.main\b/g, main));
+    }
+
+    const lead = themeOption("colorLeads", state.colorLead);
+    if (lead && lead.css) {
+      chunks.push(prefixSelectors(lead.css, main + " "));
+    }
+
+    const titleOpt = themeOption("titleSlides", state.titleSlide);
+    if (titleOpt && titleOpt.css) {
+      chunks.push(prefixSelectors(titleOpt.css, main + " "));
+    }
+
+    const divider = themeOption("dividers", state.dividerStyle);
+    if (divider && divider.css) {
+      chunks.push(scopeCss(divider.css, dividerScope));
+    }
+
+    const cardSlug = state.varyCardsByChapter
+      ? state.chapterCards.P1 || state.cardStyle
+      : state.cardStyle;
+    const card = themeOption("cards", cardSlug);
+    if (card && card.css) {
+      chunks.push(scopeCss(card.css, chapterScope));
+    }
+
+    if (state.backgroundTexture === "dark-royal") {
+      const darkSection = (state.themeOptions && state.themeOptions.sections || []).find((s) => s.id === "darkTheme");
+      for (const opt of (darkSection && darkSection.options) || []) {
+        if (!opt.css) continue;
+        chunks.push(String(opt.css).replace(/\.theme-dark\b/g, main + ".theme-dark"));
+      }
+    }
+
+    return chunks.filter(Boolean).join("\n\n");
+  }
+
+  function injectPreviewTheme() {
+    ensureInjectStyle().textContent = buildInjectedThemeCss();
+  }
+
   function updatePreview() {
     applyLeadVars();
+    injectPreviewTheme();
     const main = byId("modelMain");
     const sidebar = byId("modelSidebar");
     const stage = byId("modelStage");
 
     main.className = "model-main";
-    if (state.backgroundTexture === "dark-royal") main.classList.add("is-dark");
-    main.classList.add(`is-texture-${state.backgroundTexture}`);
+    if (state.backgroundTexture === "dark-royal") {
+      main.classList.add("is-dark");
+      main.classList.add("theme-dark");
+    }
 
     const title = lessonDisplayTitle();
     const subtitle = state.lessonSubtitle.trim() || "Skills for Life — sample preview";
@@ -815,25 +991,38 @@
     ui.previewPinned = true;
   }
 
+  /** FID-10 — honesty line under the frame for each preview view. */
+  const HONESTY = {
+    title: { label: "Exact", detail: "Title slide layout matches the build." },
+    divider: { label: "Exact — chapter image added at build", detail: "Divider layout matches; the chapter photo is added when the lesson is built." },
+    cards: {
+      label: "Representative",
+      detail: "The builder picks the component per content type; this card style applies to all cards in this chapter."
+    }
+  };
+
   /** Caption under the frame + live region text; gold ring pulse on option changes. */
   function announcePreview(title) {
     const caption = byId("stageCaption");
     const live = byId("liveRegion");
     const viewName = VIEW_NAMES[state.previewView] || "Preview";
+    const honesty = HONESTY[state.previewView] || HONESTY.title;
     const change = ui.lastChange;
     ui.lastChange = null;
+    const honestyHtml = `<span class="honesty-caption"><strong>${escapeHtml(honesty.label)}</strong> — ${escapeHtml(honesty.detail)}</span>`;
     if (change) {
       const text = change.plain
         ? `${change.dimension} · ${change.label}`
         : `Updated · ${change.dimension} → ${change.label}`;
-      caption.innerHTML = change.plain
+      const changeHtml = change.plain
         ? `<strong>${escapeHtml(change.dimension)}</strong> · ${escapeHtml(change.label)}`
         : `Updated · ${escapeHtml(change.dimension)} → <strong>${escapeHtml(change.label)}</strong>`;
-      live.textContent = `${text}. Spokes Model showing ${viewName.toLowerCase()} for ${title}.`;
+      caption.innerHTML = `${changeHtml}<br>${honestyHtml}`;
+      live.textContent = `${text}. ${honesty.label}. Spokes Model showing ${viewName.toLowerCase()} for ${title}.`;
       pulseFrame();
     } else {
-      caption.innerHTML = `<strong>${escapeHtml(viewName)}</strong> · ${escapeHtml(title)}`;
-      live.textContent = `Spokes Model showing ${viewName.toLowerCase()} for ${title}`;
+      caption.innerHTML = `<strong>${escapeHtml(viewName)}</strong> · ${escapeHtml(title)}<br>${honestyHtml}`;
+      live.textContent = `Spokes Model showing ${viewName.toLowerCase()} for ${title}. ${honesty.label}: ${honesty.detail}`;
     }
   }
 
@@ -848,39 +1037,24 @@
   }
 
   function renderTitleSlide(title, subtitle) {
-    const cls = `model-title title-${state.titleSlide}`;
     const chip = `<span class="slide-chip">${escapeHtml(lessonChipText())}</span>`;
-    const copy = `${chip}<h3>${escapeHtml(title)}</h3><p>${escapeHtml(subtitle)}</p>`;
-    const foot = `<span class="slide-foot" aria-hidden="true">SPOKES · Skills for Life</span>`;
-    if (["split-hero", "diagonal-split", "vertical-strip", "side-rail"].includes(state.titleSlide)) {
-      return `<div class="${cls}">
-        <div class="title-hero-panel" aria-hidden="true"></div>
-        <div class="title-copy">${copy}</div>
-        ${foot}
+    return `
+      <div class="slide-title" data-preview="title">
+        ${chip}
+        <h1>${escapeHtml(title)}</h1>
+        <div class="divider" aria-hidden="true"></div>
+        <p class="subtitle">${escapeHtml(subtitle)}</p>
+        <span class="copyright" aria-hidden="true">SPOKES · Skills for Life</span>
       </div>`;
-    }
-    if (state.titleSlide === "framed-center") {
-      return `<div class="${cls}"><div class="title-frame">${copy}</div>${foot}</div>`;
-    }
-    return `<div class="${cls}">${copy}${foot}</div>`;
   }
 
   function renderDividerSlide(title) {
-    const onDark = DARK_DIVIDERS.includes(state.dividerStyle);
-    const heading =
-      state.dividerStyle === "centered-badge"
-        ? `<span class="badge">${escapeHtml(title)}</span>`
-        : `<h3>${escapeHtml(title)}</h3>`;
     return `
-      <div class="model-divider divider-${state.dividerStyle}${onDark ? " is-on-dark" : ""}">
-        <span class="watermark" aria-hidden="true">P1</span>
-        <div class="divider-body">
-          <span class="section-circle" aria-hidden="true"></span>
-          <div class="divider-copy">
-            <span class="divider-kicker">Presentation 1</span>
-            ${heading}
-          </div>
-        </div>
+      <div class="slide-section" data-chapter="${PREVIEW_CHAPTER}" data-chapter-num="${PREVIEW_CHAPTER_NUM}">
+        <span class="section-circle" aria-hidden="true"></span>
+        <span class="chapter-label">Presentation 1</span>
+        <h2>${escapeHtml(title)}</h2>
+        <div class="divider" aria-hidden="true"></div>
       </div>`;
   }
 
@@ -890,7 +1064,7 @@
       .slice(0, 3)
       .map((b, i) => {
         const myth = mythLines[i] || "";
-        return `<div class="demo-card"><strong>${escapeHtml(b)}</strong>${myth ? escapeHtml(myth) : "Sample card from your content."}</div>`;
+        return `<div class="card"><h4>${escapeHtml(b)}</h4><p>${escapeHtml(myth || "Sample card from your content.")}</p></div>`;
       })
       .join("");
     const chip = state.varyCardsByChapter
@@ -898,11 +1072,80 @@
       : "";
     const reality = mythLines.find((l) => /^reality/i.test(l)) || subtitle;
     return `
-      <div class="model-content">
+      <div class="model-content" data-chapter="${PREVIEW_CHAPTER}">
         <div class="slide-head"><h3>Key points</h3>${chip}</div>
-        <div class="model-cards cards-${previewCard}">${cards}</div>
-        <p class="takeaway"><strong>Takeaway:</strong> ${escapeHtml(reality.replace(/^reality:\s*/i, ""))}</p>
+        <div class="cards-grid">${cards}</div>
+        <p class="takeaway"><strong>Takeaway:</strong> ${escapeHtml(String(reality).replace(/^reality:\s*/i, ""))}</p>
       </div>`;
+  }
+
+  function draftFieldsFromSelection(payload) {
+    const theme = payload.theme || {};
+    const cards = theme.cards || {};
+    const team = payload.team || {};
+    const sp = team.spokesperson || {};
+    const lesson = payload.lesson || {};
+    return {
+      lessonId: lesson.id || state.lessonId,
+      lessonTitle: lesson.displayTitle || lesson.title || "",
+      lessonSubtitle: lesson.subtitle || "",
+      teamName: team.name || "",
+      spokespersonName: sp.name || "",
+      spokespersonEmail: sp.email || "",
+      presetId: payload.presetId || state.presetId,
+      colorLead: theme.colorLead || state.colorLead,
+      sidebarColor: theme.sidebarColor || state.sidebarColor,
+      backgroundTexture: theme.backgroundTexture || state.backgroundTexture,
+      titleSlide: theme.titleSlide || state.titleSlide,
+      dividerStyle: theme.dividerStyle || state.dividerStyle,
+      fontPairing: theme.fontPairing || state.fontPairing,
+      cardStyle: cards.lessonWide || state.cardStyle,
+      varyCardsByChapter: Boolean(cards.varyByChapter),
+      chapterCards: cards.varyByChapter && cards.chapterStyles ? { ...cards.chapterStyles } : {},
+      sampleBullets: (payload.sampleContent && payload.sampleContent.bullets) || state.sampleBullets,
+      sampleMyth: (payload.sampleContent && payload.sampleContent.mythReality) || state.sampleMyth,
+      unspoken: payload.unspoken || ""
+    };
+  }
+
+  function applySelectionPayload(payload) {
+    if (payload.schema && payload.schema !== "bespoke-selection/v1") {
+      throw new Error(`Unexpected schema ${payload.schema}`);
+    }
+    Object.assign(state, draftFieldsFromSelection(payload));
+  }
+
+  function buildShareUrl() {
+    const payload = buildSelectionPayload();
+    const compact = {
+      schema: payload.schema,
+      lesson: payload.lesson,
+      team: payload.team,
+      presetId: payload.presetId,
+      theme: payload.theme,
+      sampleContent: payload.sampleContent,
+      unspoken: payload.unspoken
+    };
+    const encoded = btoa(unescape(encodeURIComponent(JSON.stringify(compact))));
+    const url = new URL(location.href);
+    url.hash = `s=${encoded}`;
+    return url.toString();
+  }
+
+  function tryLoadShareHash() {
+    const hash = location.hash || "";
+    const match = hash.match(/^#?s=(.+)$/);
+    if (!match) return false;
+    try {
+      const json = decodeURIComponent(escape(atob(match[1])));
+      const payload = JSON.parse(json);
+      applySelectionPayload(payload);
+      history.replaceState(null, "", location.pathname + location.search);
+      return true;
+    } catch (err) {
+      console.warn("Bespoke share link could not be imported", err);
+      return false;
+    }
   }
 
   function buildSelectionPayload() {
@@ -961,129 +1204,6 @@
     };
   }
 
-  function buildIntakeMarkdown(payload) {
-    const d = payload.date;
-    const title = payload.lesson.displayTitle || payload.lesson.title;
-    const bullets = parseBullets(payload.sampleContent.bullets)
-      .map((b, i) => `${i + 1}. ${b}`)
-      .join("\n");
-    const myth = payload.sampleContent.mythReality || "";
-    const theme = payload.theme;
-    return `# SPOKES Lesson Content Intake Template
-
-**Filled by Bespoke** (prototype). Template remains canonical (D11).
-Library catalog: \`SPOKES Builder/bespoke-library-catalog.json\` — UI keys \`{family}.{slug}\`; fields below store **slugs only**.
-
----
-
-## Section 1: Lesson Overview
-
-| Field | Your Entry |
-|-------|------------|
-| **Lesson Title** | ${title} |
-| **Lesson Subtitle** | ${payload.lesson.subtitle || "_TBD_"} |
-| **Module Number** | _TBD_ |
-| **Content Team / Author** | ${payload.team.name || payload.team.spokesperson.name} |
-| **Spokesperson** | ${payload.team.spokesperson.name} &lt;${payload.team.spokesperson.email || "n/a"}&gt; |
-| **Date Submitted** | ${d} |
-| **Lesson Description** | Prototype submission via Bespoke Spoke Signals. Full WIPPEA content follows in OneDrive; this file captures look choices and sample content. |
-
-### Design choices (from Bespoke)
-
-| Dimension | Slug (registry) | Catalog id |
-|-----------|-----------------|------------|
-| Preset | ${payload.presetId} | — |
-| Color lead | ${theme.colorLead} | ${theme.catalogIds.colorLead} |
-| Sidebar | ${theme.sidebarColor} | ${theme.catalogIds.sidebarColor} |
-| Texture | ${theme.backgroundTexture} | ${theme.catalogIds.backgroundTexture} |
-| Title slide | ${theme.titleSlide} | ${theme.catalogIds.titleSlide} |
-| Divider | ${theme.dividerStyle} | ${theme.catalogIds.dividerStyle} |
-| Font pairing | ${theme.fontPairing} | — |
-| Cards | ${
-      theme.cards.varyByChapter
-        ? `vary by chapter: ${JSON.stringify(theme.cards.chapterStyles)}`
-        : theme.cards.lessonWide
-    } | ${
-      typeof theme.catalogIds.cards === "string"
-        ? theme.catalogIds.cards
-        : JSON.stringify(theme.catalogIds.cards)
-    } |
-| Unspoken | ${payload.unspoken || "_none_"} | — |
-
----
-
-## Section 2: Content by WIPPEA Stage
-
-### Stage W -- Warm-Up (Chapter 1)
-
-**Opening Activity or Reflection Prompt:**
-
-\`\`\`
-${bullets || "[Write here]"}
-\`\`\`
-
-**Key Question(s) to Pose:**
-
-\`\`\`
-What is one goal this lesson should help learners reach?
-\`\`\`
-
----
-
-### Stage I -- Introduction (Chapter 2)
-
-**Module Objective / Learning Goal:**
-
-\`\`\`
-Learners will apply the skills in this lesson to a workplace or daily-life scenario.
-\`\`\`
-
-**Framing Statement:**
-
-\`\`\`
-${myth || "[Write here]"}
-\`\`\`
-
----
-
-### Stage P1 -- Presentation 1 (Chapter 3)
-
-**Topic / Section Title:**
-\`\`\`
-${title} — Core ideas
-\`\`\`
-
-**Main Content Points:**
-
-\`\`\`
-${bullets || "1.\\n2.\\n3."}
-\`\`\`
-
----
-
-### Remaining stages
-
-_Full P2–A content delivered via the team OneDrive folder. This prototype intake seeds look + sample content only._
-
----
-
-## Section 3: Media &amp; Resources
-
-| Item | Notes |
-|------|-------|
-| OneDrive folder | Linked from Bespoke confirmation (per-lesson) |
-| PowerPoint / PDFs | Delivered outside the wizard (D1) |
-
----
-
-## Section 4: Submission metadata
-
-- Pipeline: Spoke Signals
-- Schema: bespoke-selection/v1
-- Gate: Britt reviews PR; merge = greenlight to build (D10)
-`;
-  }
-
   function downloadText(filename, text, type) {
     const blob = new Blob([text], { type });
     const url = URL.createObjectURL(blob);
@@ -1096,7 +1216,7 @@ _Full P2–A content delivered via the team OneDrive folder. This prototype inta
     URL.revokeObjectURL(url);
   }
 
-  function buildIssueBody(payload, intakeMd) {
+  function buildIssueBody(payload) {
     const json = JSON.stringify(payload, null, 2);
     return [
       `## Spoke Signal — ${payload.lesson.title}`,
@@ -1109,22 +1229,13 @@ _Full P2–A content delivered via the team OneDrive folder. This prototype inta
       `| Preset | ${payload.presetId} |`,
       `| Date | ${payload.date} |`,
       "",
-      "An Action will open a lesson-tagged PR with `selection.json` and a filled content-intake markdown.",
+      "An Action will open a lesson-tagged PR with `selection.json`. The Action writer (`bespoke-write-submission.py`) is the single source of `content-intake.md`.",
       "",
       "<!-- bespoke-payload:begin -->",
       "```json",
       json,
       "```",
-      "<!-- bespoke-payload:end -->",
-      "",
-      "<details><summary>Preview of content-intake.md</summary>",
-      "",
-      "```markdown",
-      intakeMd.slice(0, 3500),
-      intakeMd.length > 3500 ? "\n…(truncated in issue body; full file in PR)" : "",
-      "```",
-      "",
-      "</details>"
+      "<!-- bespoke-payload:end -->"
     ].join("\n");
   }
 
@@ -1142,14 +1253,12 @@ _Full P2–A content delivered via the team OneDrive folder. This prototype inta
     }
 
     const payload = buildSelectionPayload();
-    const intakeMd = buildIntakeMarkdown(payload);
     const stamp = payload.date;
     const base = `${payload.lesson.id}-${stamp}`;
 
     downloadText(`${base}-selection.json`, JSON.stringify(payload, null, 2), "application/json");
-    downloadText(`${base}-content-intake.md`, intakeMd, "text/markdown");
 
-    const issueBody = buildIssueBody(payload, intakeMd);
+    const issueBody = buildIssueBody(payload);
     const title = `[Spoke Signal] ${payload.lesson.id} — ${stamp}`;
     const issueUrl =
       `https://github.com/${REPO}/issues/new` +
@@ -1162,7 +1271,7 @@ _Full P2–A content delivered via the team OneDrive folder. This prototype inta
     const urlTooLong = issueUrl.length > 7000;
     box.innerHTML = `
       <h3>Spoke Signal ready</h3>
-      <p>Downloads started for <code>selection.json</code> and the filled <code>content-intake</code> markdown.
+      <p>Download started for <code>selection.json</code> (the Action writer builds <code>content-intake.md</code> in the PR).
       ${
         urlTooLong
           ? "The payload is large — open a blank Spoke Signal issue and paste the JSON from your download between the payload markers (or ask Britt to run the workflow_dispatch Action)."
@@ -1223,12 +1332,19 @@ _Full P2–A content delivered via the team OneDrive folder. This prototype inta
   }
 
   async function init() {
-    const [metaRes, libRes] = await Promise.all([fetch(META_URL), fetch(LIBRARY_URL)]);
+    const [metaRes, libRes, themeRes] = await Promise.all([
+      fetch(META_URL),
+      fetch(LIBRARY_URL),
+      fetch(THEME_OPTIONS_URL)
+    ]);
     if (!metaRes.ok) throw new Error(`Failed to load ${META_URL}`);
     if (!libRes.ok) throw new Error(`Failed to load library catalog (${libRes.status}). Is SPOKES Builder/bespoke-library-catalog.json present?`);
+    if (!themeRes.ok) throw new Error(`Failed to load theme-options.json (${themeRes.status}).`);
     state.meta = await metaRes.json();
     state.library = await libRes.json();
+    state.themeOptions = await themeRes.json();
     loadDraft();
+    tryLoadShareHash();
     if (!state.chapterCards || typeof state.chapterCards !== "object") state.chapterCards = {};
 
     byId("btnClear").addEventListener("click", () => {

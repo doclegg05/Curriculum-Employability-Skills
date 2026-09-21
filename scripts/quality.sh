@@ -17,9 +17,30 @@ python3 -m unittest discover -s scripts -p 'test_validator.py' -v
 echo "==> registry / dashboard fallback sync"
 python3 scripts/check-registry-sync.py
 
+echo "==> bespoke selection schema (generate --check + fixtures + submissions)"
+python3 scripts/generate-selection-schema.py --check
+python3 -m unittest discover -s scripts -p 'test_bespoke_selection.py' -v
+python3 -m unittest discover -s scripts -p 'test_bespoke_apply.py' -v
+# Valid fixtures + any docs/phase-2/submissions/**/selection.json (skips *invalid*/*broken*)
+python3 scripts/validate-bespoke-selection.py \
+  scripts/test-fixtures/bespoke/selection-money-management.json
+if [ -d docs/phase-2/submissions ]; then
+  mapfile -t SUBMISSION_SELECTIONS < <(find docs/phase-2/submissions -type f -name 'selection.json' | sort)
+  if [ "${#SUBMISSION_SELECTIONS[@]}" -gt 0 ]; then
+    python3 scripts/validate-bespoke-selection.py "${SUBMISSION_SELECTIONS[@]}"
+  fi
+fi
+# Negative fixture must fail
+python3 scripts/validate-bespoke-selection.py --expect-fail \
+  scripts/test-fixtures/bespoke/selection-invalid-slug.json
+
 # REPORT-ONLY: prints per-deck Flesch-Kincaid grades (grade-8 ceiling) and
 # always exits 0. Turning this into a blocking check is a later, deliberate
 # calibration decision — do not drop --baseline without one.
+echo "==> bespoke theme library (generate --check + library sync)"
+python3 scripts/generate-theme-library.py --check
+python3 scripts/check-library-sync.py
+
 echo "==> readability baseline (report-only)"
 node scripts/readability-gate.mjs --baseline --format html \
   --allowlist config/readability-allowlist.json \

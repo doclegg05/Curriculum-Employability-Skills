@@ -1,8 +1,9 @@
 {
   "version": "1.0.0",
   "product": "bespoke",
-  "description": "Selectable SPOKES theme-library options for the Bespoke wizard catalog. IDs are stable; CSS lives in theme-library.css. Color leads are listed for catalog display only — do not rewrite the colorLead/registry color model.",
+  "description": "Selectable SPOKES theme-library options for the Bespoke wizard catalog. IDs are stable; CSS lives in theme-options.json (generated to theme-library.css). Optional per-option fields: blocked (bool) + reason (string) grey an option in the wizard without hiding it (D8). Color leads are listed for catalog display only — do not rewrite the colorLead/registry color model.",
   "sourceCss": "SPOKES Builder/theme-library.css",
+  "sourceOptions": "SPOKES Builder/theme-options.json",
   "sourceRegistry": "SPOKES Builder/theme-registry.json",
   "idScheme": {
     "pattern": "{family}.{slug}",

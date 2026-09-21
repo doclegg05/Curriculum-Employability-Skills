@@ -1,0 +1,28 @@
+{
+  "schema": "bespoke-selection/v1",
+  "date": "2026-09-19",
+  "libraryCatalogVersion": "1.0.0",
+  "lesson": {
+    "id": "NOT A SLUG",
+    "title": "Broken Fixture"
+  },
+  "team": {
+    "spokesperson": {
+      "name": "Nobody"
+    }
+  },
+  "presetId": "professional",
+  "theme": {
+    "colorLead": "not-a-real-lead",
+    "sidebarColor": "dark",
+    "backgroundTexture": "dot-grid",
+    "titleSlide": "centered-gradient",
+    "dividerStyle": "gradient-sweep",
+    "fontPairing": "dm-serif-display-outfit",
+    "cards": {
+      "lessonWide": "left-border",
+      "varyByChapter": false,
+      "chapterStyles": null
+    }
+  }
+}

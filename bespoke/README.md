@@ -14,11 +14,12 @@ Steps: Lesson & team · Theme preset · Color lead · Sidebar & background · Ti
 ## What ships in this prototype
 
 - Loads **`SPOKES Builder/bespoke-library-catalog.json`** for selectable options (cards, dividers, title slides, textures, color leads, sidebars)
+- Preview styles come from **`SPOKES Builder/theme-options.json`** (same CSS the generator writes to `theme-library.css`) injected into template markup
 - UI keys = `{family}.{slug}` (e.g. `cards.top-accent`); intake / selection payload persists **slug only**
 - Six theme presets: Professional, Modern, Serious, Light-hearted, Fun, Outspoken (starters; all editable after)
 - Demo-first Spokes Model (sample content, not a full lesson build)
 - Opt-in vary card style by WIPPEA chapter (D12) with THM-04 adjacent uniqueness
-- Emits filled `content-intake-template.md` shape + `selection.json` (D11)
+- Emits `selection.json` only from the browser; `scripts/bespoke-write-submission.py` is the single source of `content-intake.md` in the PR (FID-7)
 - Spoke Signals: browser opens a labeled GitHub issue (no token in the browser); Action opens a lesson-tagged PR
 - Docs: `SPOKES Builder/bespoke-library-ids.md` · visual ref: `SPOKES Builder/library-preview.html`
 
@@ -26,16 +27,18 @@ Steps: Lesson & team · Theme preset · Color lead · Sidebar & background · Ti
 
 | File | Role |
 |------|------|
-| `SPOKES Builder/bespoke-library-catalog.json` | Authoritative option list (from card-library workstream) |
+| `SPOKES Builder/bespoke-library-catalog.json` | Authoritative option list (optional `blocked` + `reason`) |
+| `SPOKES Builder/theme-options.json` | Uncommented CSS snippets (FID-3 single source) |
 | `bespoke/catalog.json` | Lessons, presets, font pairings, color-lead preview cues |
-| `SPOKES Builder/theme-library.css` | CSS snippets agents copy into `theme-override` |
+| `SPOKES Builder/theme-library.css` | Generated agent-facing library (`generate-theme-library.py`) |
+| `bespoke/selection.schema.json` | Generated selection payload schema (`generate-selection-schema.py`) |
 
 ## Spoke Signals
 
-1. Submit downloads `*-selection.json` and `*-content-intake.md`.
+1. Submit downloads `*-selection.json` only.
 2. Open the pre-filled **Spoke Signal** issue (or paste the JSON between the payload markers).
-3. Workflow `.github/workflows/spoke-signals.yml` creates `docs/phase-2/submissions/<lesson>/<date>/` and opens a PR tagged with the lesson id.
-4. Britt reviews; **merge = greenlight to build** (D10).
+3. Workflow `.github/workflows/spoke-signals.yml` runs `bespoke-write-submission.py` to create `docs/phase-2/submissions/<lesson>/<date>/{selection.json,content-intake.md}` and opens a PR tagged with the lesson id.
+4. Britt reviews; **merge = greenlight to build** (D10). Registry upsert via `bespoke-apply-selection.py` is available as a script but not yet wired into the Action.
 
 Manual test path: Actions → **Spoke Signals** → Run workflow → paste JSON into `payload_json`.
 
