@@ -1,9 +1,9 @@
 name: Spoke Signals
+run-name: ${{ inputs.submission_id && format('Bespoke receipt {0} {1}', inputs.lesson_id, inputs.submission_id) || format('Spoke Signal {0}', github.event.issue.number || github.run_id) }}
 
 # Opens a lesson-tagged PR from a Bespoke submission.
-# Browser never holds a GitHub token — instructors open a labeled issue
-# (or Britt runs workflow_dispatch with pasted JSON). GITHUB_TOKEN is
-# Action-side only.
+# BeSpoke dispatches a saved revision through its authenticated handoff service.
+# The browser never holds a GitHub token. Issues/manual dispatch remain builder fallbacks.
 
 on:
   issues:
@@ -14,6 +14,14 @@ on:
         description: "Full Bespoke selection JSON (bespoke-selection/v1)"
         required: true
         type: string
+      submission_id:
+        description: "Stable saved-design receipt ID (service only; leave empty for manual intake)"
+        required: false
+        type: string
+      lesson_id:
+        description: "Lesson slug paired with the receipt ID"
+        required: false
+        type: string
 
 permissions:
   contents: write
@@ -23,7 +31,7 @@ permissions:
 jobs:
   open-pr:
     concurrency:
-      group: spoke-signal-${{ github.event.issue.number || github.run_id }}
+      group: spoke-signal-${{ inputs.submission_id && format('{0}-{1}', inputs.lesson_id, inputs.submission_id) || github.event.issue.number || github.run_id }}
       cancel-in-progress: false
     if: >
       github.event_name == 'workflow_dispatch' ||
@@ -76,8 +84,11 @@ jobs:
         id: submission
         env:
           PAYLOAD_FILE: ${{ steps.payload.outputs.file }}
+          RECEIPT_ID: ${{ inputs.submission_id }}
+          RECEIPT_LESSON: ${{ inputs.lesson_id }}
         run: |
           python3 scripts/validate-bespoke-selection.py "$PAYLOAD_FILE"
+          python3 scripts/bespoke-check-receipt.py "$PAYLOAD_FILE"
           python3 -m unittest discover -s scripts -p 'test_bespoke*.py' -v
           python3 scripts/bespoke-write-submission.py "$PAYLOAD_FILE" --github-output "$GITHUB_OUTPUT"
 
@@ -86,6 +97,7 @@ jobs:
         uses: peter-evans/create-pull-request@v6
         with:
           token: ${{ secrets.GITHUB_TOKEN }}
+          base: main
           commit-message: "chore(bespoke): Spoke Signal for ${{ steps.submission.outputs.lesson_id }}"
           branch: bespoke-signal/${{ steps.submission.outputs.lesson_id }}/${{ steps.submission.outputs.submission_id }}
           add-paths: ${{ steps.submission.outputs.path }}/**
@@ -98,7 +110,8 @@ jobs:
             - Date: `${{ steps.submission.outputs.date }}`
             - Files: `${{ steps.submission.outputs.path }}/`
 
-            **Merge = greenlight to build** (D10). Britt is the sole gate.
+            **Merge approves this visual design proposal.** Britt is the sole review gate.
+            Building a lesson requires separate authorization and complete approved content.
             This immutable design proposal does not build or publish a lesson.
             Confirm full team content, source access, and any earlier proposal for this lesson before approval.
             Selection validation and Bespoke regression tests ran in this workflow.

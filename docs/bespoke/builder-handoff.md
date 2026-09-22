@@ -1,19 +1,35 @@
-# Bespoke builder handoff
+# BeSpoke builder handoff
 
-Teachers choose **Save**, **Open**, and **Send to Britt**. Save stores the design
-for a later Open on any computer. The edit code is the lock. Send starts the Spoke
-Signals workflow, which opens a draft pull request for Britt. Teachers do not need
-a GitHub account, a terminal, or a folder to pick. The browser still keeps a
-convenience copy, and **For builders** can still download a design file. This
-instructor workflow concerns the visual look only. No full lesson intake or
-content-authoring form is required to submit visual choices for review. The
-canonical intake generated below is a separate builder-side artifact for a later
-authorized lesson build.
+Teachers work only on the visual design. They open their private team link,
+compare approved styles during a Teams call, save the agreed look, and send it to
+Britt for design review. They do not need a Word form, lesson content, a GitHub
+account, command-line tools, or agent access.
 
-Send to Britt is the lead’s path. It dispatches the Spoke Signals workflow with
-the server token. The workflow writes the proposal and opens the draft pull
-request. It does not push to main and it does not apply a selection. Use the file
-command below when a builder downloads a design file instead.
+The shared design service authenticates the provisioned team access, stores
+encrypted revisions on `bespoke-drafts`, and rejects stale saves. A private team
+link automatically reopens the latest shared design when local work can be safely
+replaced. Local browser drafts and downloaded backups remain recovery options;
+they must not be mistaken for confirmed shared saves.
+
+**Send to Britt** uses the canonical saved selection to start Spoke Signals. The
+browser shows processing until a matching proposal pull request is confirmed.
+Only that receipt permits **Britt received the review request.** An accepted workflow dispatch alone is not
+delivery. Retrying the same selection must reuse or discover its existing
+proposal. Failed submissions remain visible and retryable.
+
+A proposal is a request to review the visual choices. It does not apply registries,
+create a lesson, merge itself, or publish. Approval of a design does not establish
+that lesson content exists or authorize agents to invent it. A later lesson build
+requires separate authorization and complete instructor-owned source material.
+The canonical content-intake artifact generated below is for that later builder
+stage, not a prerequisite or form assigned to teachers using BeSpoke.
+
+See [shared service setup](auto-handoff-setup.md) for provisioning, secrets,
+rotation, hosted acceptance checks, and the current deployment limitation. Keep
+private team links and credentials out of proposals and logs. Proposals contain
+only the agreed selection and its build artifacts. This repository is public, so
+proposal text and work contact details are publicly readable; team-draft access
+control does not make the proposal private.
 
 ## Receive a teacher file
 
@@ -49,11 +65,11 @@ See [GitHub workflow-trigger documentation](https://docs.github.com/en/actions/h
 The workflow requests review; repository protection settings must enforce any
 required approval rule. No protection settings are changed by this package.
 
-## After Britt approves the proposal
+## For a separately authorized lesson build
 
-Confirm the team's complete intake, referenced source files, permissions, and the
-approved proposal path. Design approval is not evidence that lesson content is
-complete. Build only after this check.
+Confirm explicit build authorization, complete instructor-owned content, referenced
+source files, permissions, and the approved design proposal path. Design approval
+alone is not evidence of content readiness or permission to begin a build.
 
 Registry preparation remains an explicit builder step. Preview the change first:
 

@@ -1,54 +1,94 @@
-# Bespoke
+# BeSpoke
 
-Bespoke helps instructor teams choose the look of the six planned Round 2 lessons.
-The wizard stays on GitHub Pages. Save, Open, and Send call a small handoff
-service that holds Britt’s token. It does not build lessons, and it does not
-connect to Teams or OneDrive. March 2027 is the soft phase target, subject to review.
+BeSpoke helps instructor teams choose the visual design of six planned Round 2
+lessons. Teams compare approved looks during a Teams call, save their choices,
+and ask Britt to review the agreed design. No lesson writing, Word form, GitHub
+account, or command-line work is required from teachers. March 2027 remains a
+soft phase target.
+
+The wizard stays on GitHub Pages. A Netlify function handles authenticated shared
+Save, Open, version history, and review requests. It does not connect directly to
+Teams or OneDrive. Teams holds the meeting and private team link; OneDrive can
+hold optional downloaded backups. BeSpoke does not build or publish lessons.
 
 ## For instructor teams
 
-Open the hosted curriculum hub and choose **Open Bespoke**. Use the website in a
-browser; opening its HTML file directly from OneDrive or `file://` does not load
-the catalogs. The existing lesson decks have a separate offline contract.
-
-1. The spokesperson opens Bespoke, chooses **Open**, and enters the lesson plus the edit code. On the first meeting they set an edit code of at least 4 characters and write it down.
-2. The team chooses a starter theme and adjusts the available options while the spokesperson shares the window in a Teams call.
-3. **Save** stores that design so **Open** can load it later on any computer. The browser also keeps a convenience copy.
-4. **Send to Britt** asks the Spoke Signals workflow to open a draft pull request. The lead does not sign in or pick a folder. Merge remains Britt’s greenlight. This does not build a lesson.
-5. **For builders** still downloads a design file. That download is not the lead’s main step.
-
-Teachers choose the UI's visual style, compare the previews together, and save or
-reopen their agreed choices. No completed lesson, separate form, GitHub account,
-command-line tools or agent access is needed to use BeSpoke or request a design
-review. Optional sample text is only for previewing appearance and fit.
 Read or print the [team meeting guide](team-guide.html).
 
-Browser saving is a convenience copy, not the team record. Opening a design asks
-before replacing the working draft and keeps one previous browser draft for
-recovery. A change from another tab pauses automatic saving to avoid silently
-replacing work. The builder download still works when browser storage fails.
+1. Open the private lesson link Britt supplied and pinned in the team's private
+   Teams channel. It identifies the team and opens the latest shared design when
+   there is no unsaved browser draft to protect.
+2. Choose one spokesperson to share the browser window and operate the design
+   during the call. Compare themes, colors, fonts, titles, dividers, and cards.
+3. Choose **Save shared design** and wait for confirmation. Return through the
+   same original team link on this or another computer; **Open team design** also
+   loads the shared record.
+4. Add the spokesperson’s name, save the agreed look, then choose **Send to Britt**. Processing means the
+   request is still underway. **Britt received the review request.** and its review receipt confirm delivery.
+5. Use **Download backup** if a save fails or you want a local copy. Use **Open
+   backup** in BeSpoke to recover its choices. The file need not be edited by hand.
 
-Optional view links are snapshots, not live collaboration. Copy a new link after
-changes. They contain readable sample text/contact details. Their optional edit
-code is a convenience lock, not authentication or confidentiality.
+Open the hosted website. Opening the wizard's HTML directly from OneDrive or
+`file://` does not load its catalogs; existing lesson decks have a separate offline
+contract. Preview text is optional sample material, not lesson content to submit.
 
-## For Britt and builders
+Private team links grant real access. Keep them within the intended team. BeSpoke
+removes the access credential from the address bar and remembers it locally when
+possible; use the original pinned link when returning on a new computer. On shared
+computers, save and then use **Leave team session on this browser** before closing
+all BeSpoke tabs. That removes remembered access and local drafts, not shared work.
 
-Follow [the builder handoff](../docs/bespoke/builder-handoff.md). A single command
-validates an incoming file and writes an immutable proposal containing the full
-canonical intake, selected CSS and a final-output design contract. Identical
-retries preserve the proposal; differing revisions have separate folders.
+A browser copy is a convenience, not a confirmed shared save. Failed, offline, or
+pending saves need attention. A stale save is rejected if another computer has
+saved a newer revision; download a backup, load the latest shared design, and
+reapply only the changes the team agrees to keep. **Previous versions** lists
+recent shared saves for recovery. Restoring an earlier look must be saved as a
+new revision; later history is not silently discarded.
 
-The lead’s **Send to Britt** button starts the same Spoke Signals workflow with
-Britt’s server token. **For builders** can still download a design file or prepare
-a GitHub issue. Britt's reviewed merge is the approval to begin a separate build.
-The workflow does not build, publish, or apply registries automatically. A review
-request alone does not enforce repository branch protection. One-time connection
-steps are in [auto handoff setup](../docs/bespoke/auto-handoff-setup.md).
+Optional view links are read-only snapshots, not live collaboration or team
+access. They can contain readable sample text and contact details. To edit and
+save, return through the administrator-provisioned private team link.
+
+## For Britt and administrators
+
+Follow [shared service setup](../docs/bespoke/auto-handoff-setup.md) for private
+team provisioning, independent encryption keys, restricted GitHub access, rotation,
+and the hosted acceptance checklist. Server credentials never belong in the
+browser bundle or repository. There is no public first-use claiming of a lesson.
+
+The service writes encrypted revisions to `bespoke-drafts`, checks the revision
+before every save, and uses the canonical saved selection for submission.
+Spoke Signals opens a draft proposal. A workflow dispatch alone is not a receipt;
+BeSpoke reports **Britt received the review request.** only after the matching proposal is confirmed.
+Identical retries must resolve to the same proposal.
+
+**Hosted status:** the Netlify integration is reconnected; full hosted acceptance
+of the deployed Save/Open/Send flow remains pending.
+Passing local tests does not establish that teachers can save online. The service
+must show a visible failure and keep backups available whenever the endpoint or
+its configuration is unavailable. **Check review status** resumes a pending
+receipt check after a connection problem.
+
+The review proposal is stored in a public repository. Use work contact details
+and non-sensitive sample text. Private team access protects shared draft editing;
+it does not make submitted proposal text private.
+
+## For builders
+
+Follow [the builder handoff](../docs/bespoke/builder-handoff.md). The proposal writer
+validates a selection and produces its chosen CSS and a final-output design
+contract. It also preserves the canonical content intake for the later builder
+stage. Teachers do not complete that form to choose or submit a visual design.
+
+A design review does not authorize lesson construction. Begin a later build only
+with separate authorization and complete instructor-owned source material. The
+handoff does not apply registries, build a lesson, merge a proposal, or publish.
+Repository protection must enforce any required review; a review request alone
+does not do that.
 
 After an authorized build, the design checker verifies selection identity, CSS,
-fonts, chapter mapping and required dark-theme class. This is a static check;
-final browser inspection, content review and teacher acceptance are still required.
+fonts, chapter mapping, and required dark-theme class. This is a static check;
+final browser inspection, content review, and teacher acceptance remain required.
 
 ## Catalog sources and guardrails
 
@@ -56,22 +96,22 @@ final browser inspection, content review and teacher acceptance are still requir
 |------|------|
 | `SPOKES Builder/bespoke-library-catalog.json` | Authoritative options, including blocked choices and reasons |
 | `SPOKES Builder/theme-options.json` | CSS source shared by preview and generated design artifacts |
-| `bespoke/catalog.json` | Six upcoming lessons, presets, font pairings and preview cues |
+| `bespoke/catalog.json` | Six upcoming lessons, presets, font pairings, and preview cues |
 | `SPOKES Builder/theme-library.css` | Generated agent-facing library |
-| `bespoke/selection.schema.json` | Generated payload schema; six lesson IDs and allowed theme values |
-| `SPOKES Builder/content-intake-template.md` | Canonical content intake and instructor ownership |
+| `bespoke/selection.schema.json` | Generated payload schema with the six allowed lesson IDs and theme values |
+| `SPOKES Builder/content-intake-template.md` | Canonical content intake and instructor ownership for a later authorized build |
 
-No arbitrary palette, font or CSS entry is exposed to instructors. Imported files
-and builder writes validate choices. Known defective `gradient-fill` cards and
-`split-panel` dividers are blocked pending remediation. Other combinations still
-need computed contrast and visual review in the finished lesson.
+No arbitrary palette, font, or CSS entry is exposed to instructors. Imported
+backups and service writes validate choices. Known defective `gradient-fill` cards
+and `split-panel` dividers remain blocked pending remediation. Other combinations
+still require computed contrast and visual review in the finished lesson.
 
 Card variation is optional (D12); when enabled, adjacent WIPPEA chapters must have
-different card styles. UI option keys use `family.slug`; payloads persist slugs.
-The preview is a sample. Full lesson content, source documents, chapter imagery
-and final component placement remain part of the approved build.
+different card styles. UI option keys use `family.slug`; selections persist slugs.
+The preview is a sample. Full content, source documents, chapter imagery, and final
+component placement belong to the separately authorized lesson build.
 
-## Checks
+## Local checks
 
 ```sh
 python3 -m unittest discover -s scripts -p 'test_bespoke*.py' -v
@@ -80,8 +120,9 @@ node scripts/test-bespoke-browser.mjs
 bash scripts/quality.sh
 ```
 
-The browser tests use synthetic files and isolated browser contexts. They do not
-send messages, upload to OneDrive, create GitHub issues or publish anything.
+The browser checks use synthetic designs and isolated browser contexts. They do
+not prove a real Teams call, OneDrive transfer, deployed save, or delivered review
+request. Use the setup guide's hosted acceptance checklist before inviting teams.
 
 Locked decisions: [docs/bespoke/decisions.md](../docs/bespoke/decisions.md).
 Current review: [project readiness review](../docs/qa-reports/project-review-2026-09-22.md).

@@ -1,219 +1,346 @@
-import assert from "node:assert/strict";
-import fs from "node:fs";
-import path from "node:path";
-import test from "node:test";
-import { fileURLToPath } from "node:url";
-import {
-  DRAFT_BRANCH,
-  LESSON_IDS,
-  REPO,
-  WRONG_CODE,
-  assertDraftWrite,
-  createGitHub,
-  handleAction,
-  handleRequest,
-  openBox
-} from "../netlify/functions/bespoke-handoff.mjs";
+import assert from 'node:assert/strict';
+import fs from 'node:fs';
+import path from 'node:path';
+import test from 'node:test';
+import { createHash, randomUUID } from 'node:crypto';
+import { execFileSync } from 'node:child_process';
+import { fileURLToPath } from 'node:url';
+import handler, { DRAFT_BRANCH, LESSON_IDS, REPO, WRONG_CODE, assertDraftWrite, createGitHub, handleAction, handleRequest, hashEditCode, openBox, seal, submissionId } from '../netlify/functions/bespoke-handoff.mjs';
 
-const root = path.resolve(path.dirname(fileURLToPath(import.meta.url)), "..");
-const token = "test-token-not-a-real-secret";
-const fixture = JSON.parse(fs.readFileSync(path.join(root, "scripts/test-fixtures/bespoke/selection-money-management.json"), "utf8"));
+const root = path.resolve(path.dirname(fileURLToPath(import.meta.url)), '..');
+const token = 'synthetic-token-not-a-secret';
+const draftKey = Buffer.alloc(32, 42).toString('base64');
+const code = 'synthetic-team-access-code-2026';
+const lessonId = 'money-management';
+const teamKeys = Object.fromEntries(LESSON_IDS.map(lesson => [lesson, hashEditCode(code)]));
+const fixture = JSON.parse(fs.readFileSync(path.join(root, 'scripts/test-fixtures/bespoke/selection-money-management.json'), 'utf8'));
+const sha = value => createHash('sha1').update(JSON.stringify(value)).digest('hex');
+const clone = value => structuredClone(value);
+const env = { BESPOKE_GITHUB_TOKEN: token, BESPOKE_DRAFT_KEY: draftKey, BESPOKE_TEAM_KEYS: JSON.stringify(teamKeys) };
+const request = (action, fields = {}) => ({ action, lessonId, editCode: code, ...fields });
+const savedRequest = (fields = {}) => request('save', { selection: clone(fixture), expectedRevision: null, mutationId: randomUUID(), ...fields });
 
 function memoryGitHub() {
-  const files = new Map();
+  const files = new Map(), revisions = new Map(), histories = new Map();
   const api = {
-    writes: [],
-    dispatches: [],
-    async readDraft(lessonId) {
-      assertDraftWrite(DRAFT_BRANCH, lessonId);
-      return files.get(lessonId) || null;
-    },
-    async writeDraft(lessonId, envelope, sha) {
-      assertDraftWrite(DRAFT_BRANCH, lessonId);
-      api.writes.push({ lessonId, branch: DRAFT_BRANCH, sha: sha || null });
-      const current = files.get(lessonId);
-      if (sha && (!current || current.sha !== sha)) {
-        const err = new Error("conflict");
-        err.status = 409;
-        throw err;
-      }
-      const next = { sha: `sha-${api.writes.length}`, envelope };
-      files.set(lessonId, next);
+    reads: 0, writes: [], dispatches: [], proposal: null, run: null,
+    async readDraft(lesson) { api.reads++; return clone(files.get(lesson) || null); },
+    async writeDraft(lesson, envelope, expected) {
+      assertDraftWrite(DRAFT_BRANCH, lesson);
+      const existing = files.get(lesson);
+      if ((existing?.sha || null) !== expected) throw Object.assign(new Error('Conflict'), { status: 409 });
+      const next = { sha: sha(envelope), envelope: clone(envelope) };
+      api.writes.push({ lesson, expected, branch: DRAFT_BRANCH });
+      files.set(lesson, next); revisions.set(next.sha, next);
+      histories.set(lesson, [next, ...(histories.get(lesson) || [])]);
       return next.sha;
     },
-    async dispatchSpokeSignal(payloadJson) {
-      api.dispatches.push(payloadJson);
+    async readDraftRevision(lesson, revision) { api.reads++; const old = revisions.get(revision); return old?.envelope.lessonId === lesson ? clone(old) : null; },
+    async listDraftHistory(lesson, limit) { api.reads++; return clone((histories.get(lesson) || []).slice(0, limit)); },
+    async findProposal() { api.reads++; return api.proposal; },
+    async findRun() { api.reads++; return api.run; },
+    async dispatchSpokeSignal(payload, lesson, receipt) {
+      api.dispatches.push({ payload, lesson, receipt });
+      api.run = { id: 42, status: 'queued', conclusion: null };
+      return { id: 42 };
     }
   };
-  return { api, files };
+  return { api, files, revisions };
+}
+function context(api, more = {}) { return { github: api, token, draftKey, teamKeys, ...more }; }
+async function initial(api, payload = clone(fixture)) {
+  const body = savedRequest({ selection: payload });
+  const result = await handleAction(body, context(api));
+  assert.equal(result.status, 200, JSON.stringify(result.body));
+  return { body, result };
 }
 
-test("lesson allowlist matches the wizard catalog", () => {
-  const catalog = JSON.parse(fs.readFileSync(path.join(root, "bespoke/catalog.json"), "utf8"));
-  assert.deepEqual(LESSON_IDS, catalog.lessons.map((lesson) => lesson.id));
+test('lesson authority matches the wizard catalog', () => {
+  assert.deepEqual(LESSON_IDS, JSON.parse(fs.readFileSync(path.join(root, 'bespoke/catalog.json'), 'utf8')).lessons.map(lesson => lesson.id));
 });
 
-test("save then open restores the design and keeps the edit code out of the stored file", async () => {
-  const { api, files } = memoryGitHub();
-  const saved = await handleAction({
-    action: "save",
-    lessonId: "money-management",
-    editCode: "room-code",
-    selection: fixture
-  }, { github: api, token });
-  assert.equal(saved.body.ok, true);
-  const envelope = files.get("money-management").envelope;
-  assert.equal(envelope.schema, "bespoke-cloud-draft/v1");
-  const plain = openBox(token, envelope);
-  assert.equal(JSON.stringify(plain).includes("room-code"), false);
-  assert.equal(plain.selection.team.name, "Dogfood team");
-  assert.equal(JSON.stringify({ lessonId: envelope.lessonId, nonce: envelope.nonce, box: envelope.box }).includes("Dogfood team"), false);
-  const opened = await handleAction({
-    action: "open",
-    lessonId: "money-management",
-    editCode: "room-code"
-  }, { github: api, token });
-  assert.equal(opened.status, 200);
-  assert.deepEqual(opened.body.selection, fixture);
-  assert.equal("editCode" in opened.body, false);
-  assert.equal(api.writes.every((write) => write.branch === "bespoke-drafts"), true);
+test('native OPTIONS is a real empty 204, without setup or JSON body errors', async () => {
+  const response = await handleRequest(new Request('http://local/api/bespoke', { method: 'OPTIONS' }), {});
+  assert.equal(response.status, 204);
+  assert.equal(await response.text(), '');
+  assert.equal(response.headers.get('Access-Control-Allow-Methods'), 'POST, OPTIONS');
+  assert.equal(response.headers.get('Access-Control-Max-Age'), '600');
 });
 
-test("wrong edit code returns the wizard failure and no design", async () => {
-  const { api } = memoryGitHub();
-  await handleAction({ action: "save", lessonId: "money-management", editCode: "room-code", selection: fixture }, { github: api, token });
-  const wrong = await handleAction({ action: "open", lessonId: "money-management", editCode: "nope" }, { github: api, token });
-  assert.equal(wrong.status, 403);
-  assert.deepEqual(wrong.body, { ok: false, error: "code", message: WRONG_CODE });
-  assert.equal(JSON.stringify(wrong.body).includes("Dogfood"), false);
-  const overwrite = await handleAction({
-    action: "save",
-    lessonId: "money-management",
-    editCode: "other-code",
-    selection: fixture
-  }, { github: api, token });
-  assert.equal(overwrite.body.message, WRONG_CODE);
-  assert.equal(api.dispatches.length, 0);
-});
-
-test("unknown lesson, short code, and missing draft are refused", async () => {
-  const { api } = memoryGitHub();
-  const unknown = await handleAction({ action: "open", lessonId: "time-management", editCode: "room-code" }, { github: api, token });
-  assert.equal(unknown.status, 400);
-  const short = await handleAction({ action: "save", lessonId: "money-management", editCode: "abc", selection: fixture }, { github: api, token });
-  assert.equal(short.status, 400);
-  const missing = await handleAction({ action: "open", lessonId: "goal-setting", editCode: "room-code" }, { github: api, token });
-  assert.equal(missing.status, 404);
-  assert.equal(api.writes.length, 0);
-});
-
-test("send dispatches the saved design and does not include the edit code", async () => {
-  const { api } = memoryGitHub();
-  const sent = await handleAction({
-    action: "send",
-    lessonId: "money-management",
-    editCode: "room-code",
-    selection: fixture
-  }, { github: api, token });
-  assert.equal(sent.body.sent, true);
-  assert.equal(api.dispatches.length, 1);
-  const payload = JSON.parse(api.dispatches[0]);
-  assert.equal(payload.lesson.id, "money-management");
-  assert.equal(api.dispatches[0].includes("room-code"), false);
-  const blocked = await handleAction({
-    action: "send",
-    lessonId: "money-management",
-    editCode: "nope",
-    selection: fixture
-  }, { github: api, token });
-  assert.equal(blocked.body.message, WRONG_CODE);
-  assert.equal(api.dispatches.length, 1);
-});
-
-test("a different token cannot read the stored design", async () => {
-  const { api, files } = memoryGitHub();
-  await handleAction({ action: "save", lessonId: "money-management", editCode: "room-code", selection: fixture }, { github: api, token });
-  assert.equal(openBox("another-token", files.get("money-management").envelope), null);
-  const opened = await handleAction({ action: "open", lessonId: "money-management", editCode: "room-code" }, { github: api, token: "another-token" });
-  assert.equal(opened.body.selection, undefined);
-});
-
-test("writes stay off main and dispatch only starts the workflow", async () => {
-  assert.throws(() => assertDraftWrite("main", "money-management"), /bespoke-drafts/);
-  const calls = [];
-  const blobs = new Map();
-  let draftBranch = false;
-  const fetchImpl = async (url, opts) => {
-    calls.push({ url, method: opts.method, body: opts.body ? JSON.parse(opts.body) : null, auth: opts.headers.Authorization });
-    const pathname = new URL(url).pathname;
-    if (pathname.endsWith("/git/ref/heads/bespoke-drafts")) {
-      return new Response(JSON.stringify(draftBranch ? { object: { sha: "mainsha" } } : { message: "Not Found" }), { status: draftBranch ? 200 : 404 });
-    }
-    if (pathname.endsWith("/git/ref/heads/main")) {
-      return new Response(JSON.stringify({ object: { sha: "mainsha" } }), { status: 200 });
-    }
-    if (opts.method === "POST" && pathname.endsWith("/git/refs")) {
-      assert.equal(calls.at(-1).body.ref, "refs/heads/bespoke-drafts");
-      draftBranch = true;
-      return new Response(JSON.stringify({ ref: calls.at(-1).body.ref }), { status: 201 });
-    }
-    if (opts.method === "PUT") {
-      assert.equal(draftBranch, true);
-      assert.equal(calls.at(-1).body.branch, "bespoke-drafts");
-      blobs.set(pathname, { sha: "sha-1", content: calls.at(-1).body.content });
-      return new Response(JSON.stringify({ content: { sha: "sha-1" } }), { status: 201 });
-    }
-    if (pathname.endsWith("/dispatches")) {
-      assert.equal(calls.at(-1).body.ref, "main");
-      assert.equal(calls.at(-1).body.inputs.payload_json.includes("room-code"), false);
-      return new Response(null, { status: 204 });
-    }
-    const hit = blobs.get(pathname);
-    if (!hit) return new Response(JSON.stringify({ message: "Not Found" }), { status: 404 });
-    return new Response(JSON.stringify(hit), { status: 200 });
-  };
-  const github = createGitHub(token, REPO, fetchImpl);
-  const sent = await handleAction({ action: "send", lessonId: "money-management", editCode: "room-code", selection: fixture }, { github, token });
-  assert.equal(sent.body.sent, true);
-  assert.equal(calls.some((call) => call.method === "PUT" && call.body.branch === "main"), false);
-  assert.equal(calls.some((call) => call.method === "POST" && call.body && call.body.ref === "refs/heads/main"), false);
-  assert.equal(calls.some((call) => call.url.includes("bespoke-apply-selection")), false);
-  const opened = await handleAction({ action: "open", lessonId: "money-management", editCode: "room-code" }, { github, token });
-  assert.equal(opened.body.selection.team.name, "Dogfood team");
-});
-
-test("http gate refuses anonymous setup and hides the token", async () => {
-  const missing = await handleRequest(new Request("http://local/api/bespoke", {
-    method: "POST",
-    body: JSON.stringify({ action: "save", lessonId: "money-management", editCode: "room-code", selection: fixture })
-  }), {});
-  assert.equal(missing.status, 503);
-  const text = await missing.text();
-  assert.equal(text.includes("BESPOKE_GITHUB_TOKEN"), false);
-  assert.equal(text.includes(token), false);
-  assert.equal(JSON.parse(text).message, "Saving is not connected yet.");
-
-  const { api } = memoryGitHub();
-  const response = await handleRequest(new Request("http://local/api/bespoke", {
-    method: "POST",
-    headers: { "Content-Type": "application/json" },
-    body: JSON.stringify({ action: "open", lessonId: "money-management", editCode: "nope", branch: "main" })
-  }), { BESPOKE_GITHUB_TOKEN: token }, { github: api });
-  assert.equal(response.status, 404);
-  assert.equal(api.writes.length, 0);
-});
-
-test("source and wizard files do not embed a token", () => {
-  const source = fs.readFileSync(path.join(root, "netlify/functions/bespoke-handoff.mjs"), "utf8");
-  assert.equal(source.includes("bespoke-apply-selection"), false);
-  assert.equal(source.includes("ghp_"), false);
-  assert.equal(source.includes("github_pat_"), false);
-  for (const rel of ["bespoke/app.js", "bespoke/index.html", "bespoke/styles.css", "bespoke/handoff-config.json", "bespoke/team-guide.html"]) {
-    const text = fs.readFileSync(path.join(root, rel), "utf8");
-    assert.equal(text.includes("ghp_"), false, rel);
-    assert.equal(text.includes("github_pat_"), false, rel);
-    assert.equal(text.includes("BESPOKE_GITHUB_TOKEN"), false, rel);
+test('production wrapper reads Netlify runtime env rather than treating context as env', async () => {
+  const previous = globalThis.Netlify;
+  const names = [];
+  globalThis.Netlify = { env: { get(name) { names.push(name); return env[name]; } } };
+  try {
+    const response = await handler(new Request('http://local/api/bespoke', { method: 'POST', body: JSON.stringify(request('open', { editCode: 'wrong-but-long-enough-code' })) }), { platformContext: true });
+    assert.equal(response.status, 403);
+    assert.ok(names.includes('BESPOKE_DRAFT_KEY'));
+    const options = await handler(new Request('http://local/api/bespoke', { method: 'OPTIONS' }));
+    assert.equal(options.status, 204); assert.equal(await options.text(), '');
+  } finally {
+    if (previous === undefined) delete globalThis.Netlify;
+    else globalThis.Netlify = previous;
   }
-  const guide = fs.readFileSync(path.join(root, "bespoke/team-guide.html"), "utf8");
-  assert.equal(/json/i.test(guide), false);
+});
+
+test('all actions authorize provisioned team access before any store read or write', async () => {
+  const { api } = memoryGitHub();
+  for (const action of ['save', 'open', 'history', 'openRevision', 'send', 'status']) {
+    const result = await handleAction(request(action, { editCode: 'wrong-but-long-enough-team-code', selection: fixture }), context(api));
+    assert.equal(result.status, 403);
+    assert.equal(result.body.message, WRONG_CODE);
+  }
+  assert.equal((await handleAction(request('save', { editCode: 'short' }), context(api))).status, 403);
+  assert.equal((await handleAction(request('open'), context(api, { teamKeys: { 'goal-setting': teamKeys['goal-setting'] } }))).status, 403);
+  assert.equal(api.reads, 0); assert.equal(api.writes.length, 0);
+});
+
+test('missing or malformed independent keys fail closed without repository access', async () => {
+  const { api } = memoryGitHub();
+  for (const settings of [{ token: '' }, { draftKey: token }, { draftKey: '' }, { teamKeys: {} }, { teamKeys: '{broken' }, { teamKeys: { [lessonId]: 'weak' } }]) {
+    assert.equal((await handleAction(request('open'), context(api, settings))).status, 503);
+  }
+  assert.equal(api.reads, 0);
+});
+
+test('new lesson opens empty; first save returns durable revision and encrypted draft', async () => {
+  const { api, files } = memoryGitHub();
+  assert.deepEqual((await handleAction(request('open'), context(api))).body, { ok: true, revision: null, savedAt: null, selection: null });
+  const { result } = await initial(api);
+  assert.match(result.body.revision, /^[a-f0-9]{40}$/);
+  const stored = files.get(lessonId);
+  assert.equal(stored.envelope.schema, 'bespoke-cloud-draft/v2');
+  assert.equal(JSON.stringify(stored.envelope).includes(fixture.team.name), false);
+  assert.equal(JSON.stringify(stored.envelope).includes(code), false);
+  assert.deepEqual(openBox(draftKey, stored.envelope).selection, fixture);
+  const opened = await handleAction(request('open'), context(api));
+  assert.deepEqual(opened.body.selection, fixture);
+  assert.equal(opened.body.savedAt, stored.envelope.savedAt);
+  assert.equal(opened.body.revision, result.body.revision);
+});
+
+test('rotating GitHub token preserves drafts, changing encryption key does not; metadata authenticated', async () => {
+  const { api, files } = memoryGitHub(); await initial(api);
+  const rotated = await handleAction(request('open'), context(api, { token: 'replacement-synthetic-token' }));
+  assert.equal(rotated.status, 200); assert.deepEqual(rotated.body.selection, fixture);
+  const badKey = await handleAction(request('open'), context(api, { draftKey: Buffer.alloc(32, 4).toString('base64') }));
+  assert.equal(badKey.status, 502); assert.equal(badKey.body.selection, undefined);
+  const envelope = clone(files.get(lessonId).envelope); envelope.savedAt = '1999-01-01';
+  assert.equal(openBox(draftKey, envelope), null);
+  assert.equal(api.writes.length, 1);
+});
+
+test('actual save requires revision and mutation id, and stale writes never overwrite', async () => {
+  const { api } = memoryGitHub(); const { result } = await initial(api);
+  const selection = { ...fixture, unspoken: 'Newer decision' };
+  const update = await handleAction(savedRequest({ selection, expectedRevision: result.body.revision }), context(api));
+  assert.equal(update.status, 200);
+  const stale = await handleAction(savedRequest({ selection: { ...fixture, unspoken: 'Old browser' }, expectedRevision: result.body.revision }), context(api));
+  assert.equal(stale.status, 409); assert.equal(stale.body.revision, update.body.revision);
+  assert.equal(stale.body.savedAt, update.body.savedAt);
+  const noRevision = savedRequest(); delete noRevision.expectedRevision;
+  assert.equal((await handleAction(noRevision, context(api))).status, 400);
+  assert.equal((await handleAction(savedRequest({ mutationId: 'not-a-uuid' }), context(api))).status, 400);
+  assert.equal(api.writes.length, 2);
+});
+
+test('concurrent first saves produce one success and one conflict, no blind retry', async () => {
+  const { api } = memoryGitHub();
+  const results = await Promise.all([handleAction(savedRequest(), context(api)), handleAction(savedRequest({ selection: { ...fixture, unspoken: 'Other first writer' } }), context(api))]);
+  assert.deepEqual(results.map(result => result.status).sort(), [200, 409]);
+  assert.equal(api.writes.length, 1);
+});
+
+test('lost response recognizes committed mutation; retry after later save returns original receipt', async () => {
+  const { api } = memoryGitHub();
+  const write = api.writeDraft;
+  api.writeDraft = async (...args) => { await write(...args); api.writeDraft = write; throw Object.assign(new Error('Lost reply'), { ambiguous: true }); };
+  const first = savedRequest();
+  const response = await handleAction(first, context(api));
+  assert.equal(response.status, 200); assert.equal(response.body.replayed, true);
+  const newer = await handleAction(savedRequest({ expectedRevision: response.body.revision, selection: { ...fixture, unspoken: 'A later save' } }), context(api));
+  assert.equal(newer.status, 200);
+  const retry = await handleAction(first, context(api));
+  assert.equal(retry.status, 200); assert.equal(retry.body.revision, response.body.revision); assert.equal(retry.body.replayed, true);
+  assert.equal(api.writes.length, 2);
+  const misuse = await handleAction({ ...first, selection: { ...fixture, unspoken: 'Different mutation payload' } }, context(api));
+  assert.equal(misuse.status, 409); assert.equal(misuse.body.error, 'mutation');
+});
+
+test('interrupted uncommitted save stays retryable without claiming a newer revision', async () => {
+  const { api } = memoryGitHub(); const write = api.writeDraft;
+  api.writeDraft = async () => { api.writeDraft = write; throw Object.assign(new Error('Network interrupted'), { ambiguous: true }); };
+  const pending = savedRequest();
+  const interrupted = await handleAction(pending, context(api));
+  assert.equal(interrupted.status, 502); assert.equal(api.writes.length, 0);
+  const retry = await handleAction(pending, context(api));
+  assert.equal(retry.status, 200); assert.equal(api.writes.length, 1);
+});
+
+test('semantic no-op ignores dates and timestamps and keeps canonical original selection', async () => {
+  const { api } = memoryGitHub(); const { result } = await initial(api);
+  const response = await handleAction(savedRequest({ expectedRevision: result.body.revision, selection: { ...fixture, submittedAt: '2027-03-01T12:00:00Z', date: '2027-03-01' } }), context(api));
+  assert.equal(response.body.unchanged, true); assert.equal(response.body.revision, result.body.revision);
+  assert.equal(response.body.savedAt, result.body.savedAt); assert.deepEqual(response.body.selection, fixture);
+  assert.equal(api.writes.length, 1);
+});
+
+test('schema, catalog, calendar, variation and design-reference violations cannot enter storage', async () => {
+  const badSelections = [];
+  for (const mutation of [p => { p.theme = []; }, p => { p.extra = true; }, p => { p.theme.colorLead = 'off-brand'; }, p => { p.date = '2026-02-30'; }, p => { p.date = '0000-01-01'; }, p => { p.unspoken = '\ud800'; }, p => { p.theme.dividerStyle = 'split-panel'; }, p => { p.theme.cards.chapterStyles.I = p.theme.cards.chapterStyles.W; }, p => { p.theme.cards.chapterStyles.P1 = 'gradient-fill'; }, p => { p.theme.catalogIds.colorLead = 'colorLeads.mauve'; }, p => { p.lesson.id = 'time-management'; }]) {
+    const selection = clone(fixture); mutation(selection); badSelections.push(selection);
+  }
+  const { api } = memoryGitHub();
+  for (const selection of badSelections) assert.equal((await handleAction(savedRequest({ selection }), context(api))).status, 400, JSON.stringify(selection));
+  assert.equal(api.writes.length, 0);
+});
+
+test('incomplete draft saves but cannot be sent until spokesperson is supplied and saved', async () => {
+  const { api } = memoryGitHub(); const selection = clone(fixture); selection.team.spokesperson.name = '';
+  const { result } = await initial(api, selection);
+  const response = await handleAction(request('send', { selection, expectedRevision: result.body.revision }), context(api));
+  assert.equal(response.status, 400); assert.equal(api.dispatches.length, 0);
+});
+
+test('history gives ten newest encrypted versions; recovered version remains old and conflicts on save', async () => {
+  const { api } = memoryGitHub(); let revision = null; const versions = [];
+  for (let index = 0; index < 12; index++) {
+    const response = await handleAction(savedRequest({ expectedRevision: revision, selection: { ...fixture, unspoken: `Revision ${index}` } }), context(api));
+    assert.equal(response.status, 200); revision = response.body.revision; versions.push(response.body);
+  }
+  const history = await handleAction(request('history'), context(api));
+  assert.equal(history.body.history.length, 10); assert.equal(history.body.history[0].revision, revision);
+  const old = await handleAction(request('openRevision', { revision: versions[4].revision }), context(api));
+  assert.equal(old.body.revision, versions[4].revision); assert.equal(old.body.selection.unspoken, 'Revision 4');
+  const conflict = await handleAction(savedRequest({ expectedRevision: old.body.revision, selection: old.body.selection }), context(api));
+  assert.equal(conflict.status, 409); assert.equal(conflict.body.revision, revision);
+});
+
+test('canonical receipt ID matches Python with Unicode and original saved timestamps', () => {
+  const unicode = clone(fixture); unicode.sampleContent.bullets = 'Résumé “team” café 😀\nLine 2';
+  const expected = execFileSync('python3', ['-c', 'import json,hashlib,sys;p=json.load(sys.stdin);print(p["date"]+"-"+hashlib.sha256(json.dumps(p,sort_keys=True,separators=(",",":"),ensure_ascii=False).encode()).hexdigest()[:16])'], { input: JSON.stringify(unicode), encoding: 'utf8' }).trim();
+  assert.equal(submissionId(unicode), expected);
+});
+
+test('send uses canonical saved selection and returns processing, then exact received proposal receipt', async () => {
+  const { api } = memoryGitHub(); const { result } = await initial(api);
+  const body = request('send', { selection: { ...fixture, date: '2027-01-01', submittedAt: '2027-01-01T10:00:00Z' }, expectedRevision: result.body.revision });
+  const sent = await handleAction(body, context(api));
+  assert.equal(sent.status, 200); assert.equal(sent.body.status, 'processing'); assert.equal(sent.body.runId, 42);
+  assert.equal(sent.body.submissionId, submissionId(fixture));
+  assert.deepEqual(JSON.parse(api.dispatches[0].payload), fixture);
+  assert.equal((await handleAction(body, context(api))).body.status, 'processing'); assert.equal(api.dispatches.length, 1);
+  api.proposal = { url: 'https://github.com/doclegg05/Curriculum-Employability-Skills/pull/999' };
+  const received = await handleAction(request('status', { submissionId: sent.body.submissionId, runId: 42 }), context(api));
+  assert.equal(received.body.status, 'received'); assert.equal(received.body.url, api.proposal.url);
+  assert.equal((await handleAction(body, context(api))).body.status, 'received'); assert.equal(api.dispatches.length, 1);
+});
+
+test('send rejects unsaved differences/stale revision, and failed workflow status never claims received', async () => {
+  const { api } = memoryGitHub(); const { result } = await initial(api);
+  assert.equal((await handleAction(request('send', { expectedRevision: null, selection: fixture }), context(api))).status, 409);
+  assert.equal((await handleAction(request('send', { expectedRevision: result.body.revision, selection: { ...fixture, unspoken: 'Unsaved' } }), context(api))).body.error, 'unsaved');
+  api.run = { id: 43, status: 'completed', conclusion: 'failure' };
+  const status = await handleAction(request('status', { submissionId: submissionId(fixture) }), context(api));
+  assert.equal(status.body.status, 'failed'); assert.equal(status.body.url, undefined);
+  assert.match(status.body.message, /saved design is safe/);
+});
+
+test('failed submission can retry safely with the same canonical receipt', async () => {
+  const { api } = memoryGitHub(); const { result } = await initial(api);
+  api.run = { id: 41, status: 'completed', conclusion: 'failure' };
+  const retried = await handleAction(request('send', { selection: fixture, expectedRevision: result.body.revision }), context(api));
+  assert.equal(retried.body.status, 'processing');
+  assert.equal(retried.body.submissionId, submissionId(fixture));
+  assert.equal(retried.body.runId, 42);
+  assert.equal(api.dispatches.length, 1);
+});
+
+test('old PAT-derived draft is not silently replaced', async () => {
+  const { api, files } = memoryGitHub(); files.set(lessonId, { sha: 'a'.repeat(40), envelope: { schema: 'bespoke-cloud-draft/v1', box: 'old' } });
+  assert.equal((await handleAction(savedRequest(), context(api))).status, 502); assert.equal(api.writes.length, 0);
+});
+
+test('HTTP injection path validates native requests, hides setup details and never echoes credentials', async () => {
+  const { api } = memoryGitHub();
+  const post = (body, settings = env) => handleRequest(new Request('http://local/api/bespoke', { method: 'POST', body: JSON.stringify(body) }), settings, { github: api });
+  assert.equal((await post(request('open'), {})).status, 503);
+  const saved = await post(savedRequest()); assert.equal(saved.status, 200);
+  const wrong = await post(request('open', { editCode: 'different-long-enough-code' }));
+  assert.equal(wrong.status, 403);
+  const text = await wrong.text(); assert.equal(text.includes(token), false); assert.equal(text.includes(draftKey), false); assert.equal(text.includes(code), false);
+  assert.equal((await handleRequest(new Request('http://local/api/bespoke', { method: 'POST', body: '{' }), env, { github: api })).status, 400);
+});
+
+// Exercise the production GitHub adapter, including documented 2026 dispatch
+// responses, encoded refs, branch CAS and proposal/run identity filtering.
+function fakeGitHubFetch() {
+  const calls = [], files = new Map(), blobs = new Map(), commits = [];
+  let branch = false, proposals = [], runs = [];
+  const response = (status, data) => new Response(data === undefined ? null : JSON.stringify(data), { status });
+  const fetchImpl = async (url, options) => {
+    const parsed = new URL(url), route = parsed.pathname, body = options.body ? JSON.parse(options.body) : null;
+    calls.push({ route, query: parsed.searchParams, method: options.method, body, headers: options.headers });
+    assert.equal(options.headers['X-GitHub-Api-Version'], '2026-03-10');
+    assert.ok(options.signal instanceof AbortSignal);
+    if (route.endsWith('/git/ref/heads/bespoke-drafts')) return response(branch ? 200 : 404, branch ? { object: { sha: 'a'.repeat(40) } } : {});
+    if (route.endsWith('/git/ref/heads/main')) return response(200, { object: { sha: 'a'.repeat(40) } });
+    if (route.endsWith('/git/refs')) { assert.equal(body.ref, 'refs/heads/bespoke-drafts'); branch = true; return response(201, {}); }
+    if (route.includes('/contents/drafts/')) {
+      if (options.method === 'PUT') {
+        assert.equal(body.branch, DRAFT_BRANCH);
+        if ((files.get(route)?.sha || null) !== (body.sha || null)) return response(409, {});
+        const id = sha(body.content), stored = { sha: id, content: body.content };
+        files.set(route, stored); blobs.set(id, stored); commits.unshift({ sha: sha(id), stored, route });
+        return response(201, { content: { sha: id } });
+      }
+      const ref = parsed.searchParams.get('ref');
+      const found = ref === DRAFT_BRANCH ? files.get(route) : commits.find(commit => commit.sha === ref && commit.route === route)?.stored;
+      return found ? response(200, found) : response(404, {});
+    }
+    if (route.includes('/git/blobs/')) return blobs.has(route.split('/').at(-1)) ? response(200, blobs.get(route.split('/').at(-1))) : response(404, {});
+    if (route.endsWith('/commits')) return response(200, commits.slice(0, Number(parsed.searchParams.get('per_page'))).map(({ sha }) => ({ sha })));
+    if (route.endsWith('/pulls')) return response(200, proposals);
+    if (route.endsWith('/dispatches')) {
+      assert.equal(body.ref, 'main');
+      runs = [{ id: 501, display_title: `Bespoke receipt ${body.inputs.lesson_id} ${body.inputs.submission_id}`, path: '.github/workflows/spoke-signals.yml', status: 'queued', conclusion: null }];
+      return response(200, { workflow_run_id: 501, run_url: 'https://api.github.com/run/501', html_url: `https://github.com/${REPO}/actions/runs/501` });
+    }
+    if (route.endsWith('/actions/runs/501')) return response(200, runs[0]);
+    if (route.endsWith('/runs')) return response(200, { workflow_runs: runs });
+    throw new Error('Unexpected test route: ' + route);
+  };
+  return { calls, fetchImpl, setProposals(value) { proposals = value; }, setRuns(value) { runs = value; } };
+}
+
+test('real adapter uses draft branch only, blob revisions/history, 2026 dispatch receipt and exact PR identity', async () => {
+  assert.throws(() => assertDraftWrite('main', lessonId), /bespoke-drafts/);
+  const fake = fakeGitHubFetch(), github = createGitHub(token, REPO, fake.fetchImpl);
+  const saved = await handleAction(savedRequest(), context(github)); assert.equal(saved.status, 200, JSON.stringify(saved.body));
+  const opened = await handleAction(request('open'), context(github)); assert.deepEqual(opened.body.selection, fixture);
+  const history = await handleAction(request('history'), context(github)); assert.equal(history.body.history[0].revision, saved.body.revision);
+  const old = await handleAction(request('openRevision', { revision: saved.body.revision }), context(github)); assert.deepEqual(old.body.selection, fixture);
+  const sent = await handleAction(request('send', { selection: fixture, expectedRevision: saved.body.revision }), context(github));
+  assert.equal(sent.body.status, 'processing'); assert.equal(sent.body.runId, 501);
+  const receipt = sent.body.submissionId, branch = `bespoke-signal/${lessonId}/${receipt}`;
+  fake.setProposals([{ head: { ref: 'another-branch', repo: { full_name: REPO } }, base: { ref: 'main' }, html_url: 'wrong' }]);
+  assert.equal((await handleAction(request('status', { submissionId: receipt, runId: 501 }), context(github))).body.status, 'processing');
+  fake.setProposals([{ head: { ref: branch, repo: { full_name: REPO } }, base: { ref: 'main' }, html_url: `https://github.com/${REPO}/pull/321`, number: 321 }]);
+  const received = await handleAction(request('status', { submissionId: receipt }), context(github)); assert.equal(received.body.status, 'received'); assert.match(received.body.url, /pull\/321$/);
+  assert.equal(fake.calls.some(call => call.method === 'PUT' && call.body.branch !== DRAFT_BRANCH), false);
+  assert.equal(fake.calls.filter(call => call.route.endsWith('/dispatches')).length, 1);
+});
+
+
+test('status prefers newest matching run over a stale failed run ID', async () => {
+  const fake = fakeGitHubFetch();
+  const github = createGitHub(token, REPO, fake.fetchImpl);
+  const receipt = submissionId(fixture);
+  const title = `Bespoke receipt ${lessonId} ${receipt}`;
+  fake.setRuns([
+    { id: 502, display_title: title, status: 'queued', conclusion: null },
+    { id: 501, display_title: title, status: 'completed', conclusion: 'failure' }
+  ]);
+  const status = await handleAction(request('status', { submissionId: receipt, runId: 501 }), context(github));
+  assert.equal(status.body.runId, 502); assert.equal(status.body.status, 'processing');
 });

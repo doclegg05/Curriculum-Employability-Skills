@@ -3,21 +3,24 @@
 
   const STORAGE_KEY = "bespoke-draft-v1";
   const BACKUP_KEY = "bespoke-previous-draft-v1";
+  const TEAM_SESSION_KEY = "bespoke-team-session-v1";
+  const PENDING_SUBMISSION_STORAGE = "bespoke-pending-submission-v1";
   const MAX_FILE_BYTES = 256000;
   let lastSavedRaw = null;
   let storageConflict = false;
   /**
    * Max length of a team view URL (origin + path + hash).
-   * View link: `#v=` + base64url(deflate-raw(selection plus editCodeHash)).
-   * editCodeHash is SHA-256 of the lead's edit code. The raw code is never in the link.
-   * Anyone with the code can unlock editing on any computer. No accounts.
-   * Legacy `#s=` / `#c=` open read-only. Old `#e=` links do not grant edit.
+   * View link: `#v=` + base64url(deflate-raw(selection)).
+   * View links are read-only snapshots. Private `#team=` access is separate and
+   * is consumed from the address bar before shared drafts are opened.
+   * Legacy `#s=` / `#c=` remain read-only. Old `#e=` links do not grant edit.
    * 8000 stays inside common email, Teams, and Slack paste limits.
    * A normal design view link is about 1,000 characters.
    */
   const SHARE_URL_MAX = 8000;
-  const EDIT_CODE_MIN = 4;
-  const EDIT_CODE_MAX = 40;
+  const EDIT_CODE_MIN = 20;
+  const EDIT_CODE_MAX = 128;
+  const HANDOFF_TIMEOUT_MS = 20000;
   const UNLOCK_HASH_KEY = "bespoke-lead-ok";
   const UNLOCK_CODE_KEY = "bespoke-lead-code";
   const REPO = "doclegg05/Curriculum-Employability-Skills";
@@ -27,6 +30,11 @@
   const LIBRARY_URL = "../SPOKES%20Builder/bespoke-library-catalog.json";
   const THEME_OPTIONS_URL = "../SPOKES%20Builder/theme-options.json";
   const META_URL = "./catalog.json";
+  let startupTeamLink = (() => {
+    const raw = location.hash.startsWith("#team=") ? location.hash.slice(6) : "";
+    if (raw) history.replaceState(null, "", location.pathname + location.search);
+    return raw;
+  })();
 
   /** `view` = the preview the step lands on; a manual tab pick sticks until the step changes. */
   const STEPS = [
@@ -70,7 +78,7 @@
     sampleBullets: "1. Name one money goal for this month\n2. List your fixed costs\n3. Find one place to trim spending",
     sampleMyth: "Myth: Budgets are only for people in debt.\nReality: A budget is a plan that works for any income.",
     unspoken: "",
-    /** Raw edit code. Saved on this computer only. Never copied into the view link. */
+    /** Administrator-provisioned team access code. Saved on this computer only. */
     editCode: "",
     previewView: "title"
   };
@@ -84,14 +92,19 @@
     restoredFromLink: false,
     restoreNote: "",
     builderNote: "",
-    /** SHA-256 of the edit code, from a view link. Not the raw code. */
+    /** Legacy snapshot hash. New view links never grant editing. */
     editCodeHash: "",
     /** "view" until init grants a lead session, or the lead unlocks a view link. */
-    mode: "view"
+    mode: "view",
+    teamSession: null,
+    cloudConflict: null,
+    cloudBusy: false,
+    skipNextLocalSave: false
   };
 
   let saveAnnounceTimer = null;
   let saveAnnounceReady = false;
+  let submissionPollTimer = null;
 
   const prefersReduced = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
 
@@ -166,13 +179,108 @@
       if (!live) return;
       live.textContent = "";
       window.setTimeout(() => {
-        live.textContent = "Saved";
+        live.textContent = "Browser draft saved";
       }, 30);
     }, 600);
   }
 
   function isLeadSession() {
     return ui.mode === "edit";
+  }
+
+  function newMutationId() {
+    return crypto.randomUUID ? crypto.randomUUID() : `${Date.now()}-${Math.random().toString(16).slice(2)}`;
+  }
+
+  function selectionKey(payload) {
+    const copy = JSON.parse(JSON.stringify(payload));
+    delete copy.date;
+    delete copy.submittedAt;
+    return JSON.stringify(copy);
+  }
+
+  function currentSelectionKey() {
+    try { return selectionKey(buildSelectionPayload()); }
+    catch { return ""; }
+  }
+
+  function persistTeamSession() {
+    if (!ui.teamSession) return;
+    try { localStorage.setItem(TEAM_SESSION_KEY, JSON.stringify(ui.teamSession)); }
+    catch { /* backups remain available when storage is blocked */ }
+  }
+
+  function forgetTeamSession() {
+    ui.teamSession = null;
+    ui.cloudConflict = null;
+    state.editCode = "";
+    try {
+      localStorage.removeItem(TEAM_SESSION_KEY);
+      localStorage.removeItem(PENDING_SUBMISSION_STORAGE);
+    } catch { /* private mode */ }
+  }
+
+  function restoreTeamSession() {
+    try {
+      const saved = JSON.parse(localStorage.getItem(TEAM_SESSION_KEY) || "null");
+      if (!saved || typeof saved !== "object") return null;
+      if (!findMeta(state.meta.lessons, saved.lessonId)) return null;
+      if (typeof saved.editCode !== "string" || saved.editCode.length < EDIT_CODE_MIN) return null;
+      ui.teamSession = saved;
+      state.editCode = saved.editCode;
+      return saved;
+    } catch { return null; }
+  }
+
+  function installTeamSession(lessonId, editCode) {
+    const same = ui.teamSession && ui.teamSession.lessonId === lessonId && ui.teamSession.editCode === editCode;
+    ui.teamSession = same ? ui.teamSession : {
+      lessonId,
+      editCode,
+      revision: null,
+      savedAt: null,
+      baseSelectionKey: null,
+      pendingSave: null
+    };
+    state.editCode = editCode;
+    persistTeamSession();
+  }
+
+  function parseTeamLink(value) {
+    let decoded = "";
+    try { decoded = decodeURIComponent(value); } catch { decoded = value; }
+    const split = decoded.indexOf(".");
+    if (split < 1) return null;
+    const lessonId = decoded.slice(0, split);
+    const editCode = decoded.slice(split + 1);
+    if (!findMeta(state.meta.lessons, lessonId)) return null;
+    if (editCode.length < EDIT_CODE_MIN || editCode.length > EDIT_CODE_MAX) return null;
+    return { lessonId, editCode };
+  }
+
+  function hasUnsavedTeamWork() {
+    if (!ui.teamSession) return false;
+    const key = currentSelectionKey();
+    return Boolean(key && key !== (ui.teamSession.baseSelectionKey || ""));
+  }
+
+  function updateCloudChrome() {
+    const session = ui.teamSession;
+    const panel = byId("teamSessionBar");
+    const status = byId("teamSessionStatus");
+    if (panel) panel.hidden = !session;
+    if (!status) return;
+    if (!session) {
+      status.textContent = "Browser draft only. Open your private team access to use shared saving.";
+      return;
+    }
+    const lesson = findMeta(state.meta?.lessons, session.lessonId);
+    const saved = session.savedAt ? ` Shared version saved ${new Date(session.savedAt).toLocaleString()}.` : " No shared version has been saved yet.";
+    const dirty = hasUnsavedTeamWork() ? " This browser has changes that are not in the shared design." : " This browser matches the shared design.";
+    status.textContent = `${lesson?.title || session.lessonId} team session.${saved}${dirty}`;
+    byId("btnLoadLatest")?.toggleAttribute("hidden", !ui.cloudConflict);
+    byId("btnKeepLocal")?.toggleAttribute("hidden", !ui.cloudConflict);
+    byId("btnCheckStatus")?.toggleAttribute("hidden", !pendingSubmission());
   }
 
   function peekDraft() {
@@ -205,7 +313,8 @@
       const nextRaw = JSON.stringify(rest);
       localStorage.setItem(STORAGE_KEY, nextRaw);
       lastSavedRaw = nextRaw;
-      setSaveStatus("Saved on this computer");
+      setSaveStatus(ui.teamSession && !hasUnsavedTeamWork() ? "Shared design up to date" : "Browser draft saved");
+      updateCloudChrome();
       queueSaveAnnouncement();
       return true;
     } catch {
@@ -233,7 +342,7 @@
       notice.textContent = ui.restoreNote || "";
     }
     const unlock = byId("leadUnlock");
-    if (unlock) unlock.hidden = !locked;
+    if (unlock) unlock.hidden = true;
     if (!locked) {
       const form = byId("leadCodeForm");
       const leadBtn = byId("btnLeadUnlock");
@@ -243,7 +352,7 @@
       if (leadErr) leadErr.textContent = "";
     }
     if (byId("btnSave")) byId("btnSave").disabled = locked;
-    if (byId("btnOpen")) byId("btnOpen").disabled = locked;
+    if (byId("btnOpen")) byId("btnOpen").disabled = false;
     if (byId("btnSend")) byId("btnSend").disabled = locked;
     if (byId("btnRecoverDraft")) {
       try { byId("btnRecoverDraft").hidden = locked || !localStorage.getItem(BACKUP_KEY); }
@@ -256,6 +365,7 @@
       else clearBtn.removeAttribute("aria-describedby");
     }
     if (locked) setSaveStatus("");
+    updateCloudChrome();
   }
 
   function lockViewControls() {
@@ -484,7 +594,14 @@
       if (lesson.id === state.lessonId) opt.selected = true;
       select.appendChild(opt);
     });
+    if (ui.teamSession) {
+      state.lessonId = ui.teamSession.lessonId;
+      select.value = ui.teamSession.lessonId;
+      select.disabled = true;
+      select.title = "This private team session is locked to its assigned lesson.";
+    }
     select.addEventListener("change", () => {
+      if (ui.teamSession) return;
       state.lessonId = select.value;
       saveDraft();
       updatePreview();
@@ -758,7 +875,7 @@
       ${lead ? `
       <section class="share-card" aria-labelledby="shareTitle">
         <h2 id="shareTitle">Share this design</h2>
-        <p id="shareHelp">This optional link is a snapshot: later changes need a new link. It includes the design, sample text and team contact details; anyone with it can read them. The edit code is a convenience lock, not an account. Choose Save to keep working at the next meeting.</p>
+        <p id="shareHelp">This optional link is a read-only snapshot: later changes need a new link. It includes the design, sample text and team contact details; anyone with it can read them. Use the separate private team access link to edit and save.</p>
         <div class="share-actions">
           <button type="button" class="btn btn-primary btn-lg" id="btnCopyView" aria-describedby="shareHelp">Copy view link for your team</button>
         </div>
@@ -773,7 +890,7 @@
       <section class="next-hops" aria-labelledby="nextHopsTitle">
         <h2 id="nextHopsTitle">What happens next</h2>
         <ol>
-          <li>Choose <strong>Save</strong> so you can open this design later on any computer.</li>
+          <li>Choose <strong>Save shared design</strong> so the team can return to this revision.</li>
           <li>Choose <strong>Send to Britt</strong> when the team agrees. You do not sign in or pick a folder.</li>
           <li>Britt reviews the draft. Approval is the go-ahead to build.</li>
           <li>Your team checks that the approved look appears in the finished lesson.</li>
@@ -785,7 +902,7 @@
       </label>
       <details class="builder-note"${ui.builderNote ? " open" : ""}>
         <summary>For builders</summary>
-        <p class="builder-instructor-note">Britt and builders only. Instructors use Save, Open, and Send to Britt.</p><button type="button" class="btn btn-secondary" id="btnBuilderIssue">Prepare GitHub issue</button>
+        <p class="builder-instructor-note">Britt and builders only. Instructors use shared Save, team Open, backup, and Send to Britt.</p><button type="button" class="btn btn-secondary" id="btnBuilderIssue">Prepare GitHub issue</button>
         <div class="builder-files">
           <button type="button" class="btn btn-secondary" id="btnDownloadDesign">Download design file</button>
           <button type="button" class="btn btn-secondary" id="btnOpenDesign">Open a design file</button>
@@ -794,7 +911,7 @@
         </div>
         <p id="builderFileStatus" class="share-status" role="status" aria-live="polite">${escapeHtml(ui.builderNote || "")}</p>
         <dl id="builderDetails"></dl>
-        <p>Options load from <code>SPOKES Builder/bespoke-library-catalog.json</code> (UI key <code>{family}.{slug}</code>); the selection payload stores <strong>slugs only</strong>. <code>bespoke-apply-selection.py</code> (not yet wired to the Action) upserts <code>theme-registry.json</code> with derived Layer 2 fields below. Card styles may vary by WIPPEA chapter (D12); adjacent chapters never share a style (THM-04). Submit opens a labelled GitHub issue — no token in this browser — and the Spoke Signals Action opens the lesson-tagged PR; merge is the greenlight (D10). A view link (<code>#v=</code>) is compressed <code>selection.json</code> plus <code>editCodeHash</code> (SHA-256 of the edit code, never the raw code). It opens read-only until that code is entered. View URLs longer than ${SHARE_URL_MAX} characters are not copied. Visual reference: <a href="../SPOKES%20Builder/library-preview.html" target="_blank" rel="noopener">library preview</a>.</p>
+        <p>Options load from <code>SPOKES Builder/bespoke-library-catalog.json</code> (UI key <code>{family}.{slug}</code>); the selection payload stores <strong>slugs only</strong>. <code>bespoke-apply-selection.py</code> upserts <code>theme-registry.json</code> with derived Layer 2 fields below. Card styles may vary by WIPPEA chapter (D12); adjacent chapters never share a style (THM-04). A view link (<code>#v=</code>) is a read-only compressed snapshot and is separate from the private team access link. View URLs longer than ${SHARE_URL_MAX} characters are not copied. Visual reference: <a href="../SPOKES%20Builder/library-preview.html" target="_blank" rel="noopener">library preview</a>.</p>
       </details>
     `;
     const list = byId("summaryList");
@@ -944,35 +1061,25 @@
       <h1>Design your lesson together</h1>
       <p class="panel-lead">One team member operates Bespoke and shares their screen during your Teams call. Everyone helps choose the look.</p>
       <ol class="guide-list">
-        <li><strong>Returning?</strong> Choose <strong>Open</strong>. Pick your lesson and enter the edit code from the last meeting.</li>
-        <li><strong>Starting?</strong> Choose Next, select your lesson and name your spokesperson. Set an edit code below, at least ${EDIT_CODE_MIN} characters, and write it down. Pick a starter theme, then try the options.</li>
-        <li><strong>Finishing the meeting?</strong> Choose <strong>Save</strong>. You can open that design on another computer. This browser also keeps a convenience copy.</li>
+        <li><strong>Returning?</strong> Open your private team access link. This browser remembers the last team session for an easier return.</li>
+        <li><strong>Starting?</strong> Use the private link Britt or your administrator gave the team. It locks this workspace to the right lesson.</li>
+        <li><strong>Finishing the meeting?</strong> Choose <strong>Save shared design</strong>. Download backup is always available too.</li>
         <li><strong>Ready for Britt?</strong> Choose <strong>Send to Britt</strong>. You do not sign in or pick a folder.</li>
       </ol>
-      <p>Your browser keeps one working draft as a convenience. Save is what you use at the next meeting, on any computer. Only the spokesperson should save.</p>
-      <p><a href="./team-guide.html" target="_blank" rel="noopener">Team meeting guide</a></p>
-      <details><summary>Your edit code</summary>
-        <label class="field" for="editCode">Edit code
-          <input id="editCode" type="text" autocomplete="off" minlength="${EDIT_CODE_MIN}" maxlength="${EDIT_CODE_MAX}">
-        </label>
-        <p class="field-hint">Use at least ${EDIT_CODE_MIN} characters and write them down. This code opens the saved design. It is a convenience lock, not an account.</p>
-        <p id="editCodeError" class="share-status" role="status" aria-live="polite"></p>
-      </details>`;
-    const input = byId("editCode");
-    input.value = state.editCode || "";
-    input.addEventListener("input", () => { state.editCode = input.value.trim(); saveDraft(); });
+      <p>Your browser keeps a working draft. Shared Save is the durable team copy. Keep the private access link inside the team.</p>
+      <p><a href="./team-guide.html" target="_blank" rel="noopener">Team meeting guide</a></p>`;
   }
 
   function renderReturn(panel) {
     panel.innerHTML = `
       <h1>Save for the next meeting</h1>
-      <p class="panel-lead">Save keeps this design where Open can load it on any computer.</p>
+      <p class="panel-lead">Save shared design keeps this team’s latest choices available from its private access.</p>
       <ol class="guide-list">
-        <li>Choose <strong>Save</strong>. Use the same edit code you wrote down.</li>
-        <li>Next time, choose <strong>Open</strong>, pick this lesson, and enter that edit code.</li>
+        <li>Choose <strong>Save shared design</strong>.</li>
+        <li>Next time, open the same private team link. This browser also remembers the last team.</li>
         <li>When the team agrees, choose <strong>Send to Britt</strong>. You do not sign in or pick a folder.</li>
       </ol>
-      <p>This browser also keeps a convenience copy. Recover previous draft can restore the previous browser copy. A shared view link is a snapshot and does not update itself.</p>`;
+      <p>Download backup is always available. A view link is a read-only snapshot and does not update itself.</p>`;
   }
 
   function renderPanel() {
@@ -1396,7 +1503,6 @@
   }
 
   function saveTeamFile() {
-    if (!isLeadSession()) return false;
     try {
       const payload = buildSelectionPayload();
       validateSelectionPayload(payload);
@@ -1404,28 +1510,34 @@
       const filename = `${payload.lesson.id}-${stamp}-selection.json`;
       downloadText(filename, JSON.stringify(payload, null, 2), "application/json");
       const status = byId("builderFileStatus");
-      if (status) status.textContent = "Downloaded a design file for builders.";
-      else fileNotice("Downloaded a design file for builders.");
+      if (status) status.textContent = "Downloaded a backup file without the private access code.";
+      fileNotice("Backup downloaded. Keep it in the team’s shared folder; it does not contain the private access code.");
       return true;
     } catch (err) { fileNotice(`Could not download the design file. ${err.message}`); return false; }
   }
 
   async function openTeamFile(file) {
-    if (!file || !isLeadSession()) return;
+    if (!file) return;
     try {
       if (file.size > MAX_FILE_BYTES) throw new Error("This file is too large. Select the small Bespoke design file, not a source document.");
       const payload = JSON.parse(await file.text());
       validateSelectionPayload(payload);
+      if (ui.teamSession && payload.lesson.id !== ui.teamSession.lessonId) {
+        throw new Error("This backup belongs to a different lesson than the open team session.");
+      }
       if (!prepareDraftReplacement()) return;
       applySelectionPayload(payload);
-      state.editCode = "";
+      if (!ui.teamSession) {
+        ui.mode = "edit";
+        state.editCode = "";
+      }
       state.step = stepIndex("review");
       ui.restoredFromLink = false;
       ui.editCodeHash = "";
       ui.restoreNote = "";
       history.replaceState(null, "", location.pathname + location.search);
       render();
-      fileNotice(`Opened ${file.name}. Check the lesson and choices. This is your working copy; choose Save after changes.`);
+      fileNotice(`Opened ${file.name}. Check the lesson and choices. This is your browser draft; choose Save shared design when team access is open.`);
     } catch (err) { fileNotice(`Could not open that team file. ${err.message} Your current draft has not changed.`); }
   }
 
@@ -1552,15 +1664,7 @@
   }
 
   async function buildViewUrl() {
-    const code = (state.editCode || "").trim();
-    if (code.length < EDIT_CODE_MIN) {
-      return {
-        url: "",
-        message: `Enter your edit code first. It is on How to use Bespoke. Use at least ${EDIT_CODE_MIN} characters.`
-      };
-    }
     const payload = buildSelectionPayload();
-    payload.editCodeHash = await hashEditCode(code);
     const json = JSON.stringify(payload);
     const compressed = await encodeCompressedHash(json);
     if (!compressed) {
@@ -1636,6 +1740,29 @@
   }
 
   async function openShareLink() {
+    if (startupTeamLink) {
+      loadDraft();
+      const teamValue = startupTeamLink;
+      startupTeamLink = "";
+      const team = parseTeamLink(teamValue);
+      if (!team) {
+        ui.mode = "edit";
+        ui.restoreNote = "This private team link is incomplete or out of date. Your browser draft was left unchanged.";
+        return { team: false };
+      }
+      const previousLesson = state.lessonId;
+      restoreTeamSession();
+      installTeamSession(team.lessonId, team.editCode);
+      ui.mode = "edit";
+      if (lastSavedRaw && previousLesson !== team.lessonId) {
+        keepRecoveryCopy();
+        resetDesignForLesson(team.lessonId);
+        lastSavedRaw = null;
+      } else {
+        state.lessonId = team.lessonId;
+      }
+      return { team: true };
+    }
     let link;
     try {
       link = await readShareLink();
@@ -1643,7 +1770,7 @@
       console.warn("Bespoke share link could not be opened", err);
       ui.mode = "view";
       ui.restoreNote = "This link could not be opened. The design saved on this computer was left as it was.";
-      return;
+      return { team: false, snapshot: true };
     }
     if (link.kind === "view") {
       ui.mode = "view";
@@ -1653,20 +1780,23 @@
       } catch (err) {
         console.warn("Bespoke share link could not be opened", err);
         ui.restoreNote = "This link could not be opened. The design saved on this computer was left as it was.";
-        return;
+        return { team: false, snapshot: true };
       }
       state.editCode = "";
       state.step = stepIndex("review");
       ui.restoredFromLink = true;
-      return;
+      return { team: false, snapshot: true };
     }
     if (link.kind === "retired") {
       ui.mode = "view";
       ui.restoreNote = "This link is out of date. Ask the team lead for the view link.";
-      return;
+      return { team: false, snapshot: true };
     }
     loadDraft();
     ui.mode = "edit";
+    const session = restoreTeamSession();
+    if (session) state.lessonId = session.lessonId;
+    return { team: Boolean(session) };
   }
 
   function buildSelectionPayload() {
@@ -1785,41 +1915,43 @@
     }
   }
 
-  async function handoffRequest(action, fields) {
+  async function handoffRequest(action, fields = {}) {
     if (!handoffApiBase) {
-      return { ok: false, error: "setup", message: "Saving is not connected yet. Britt connects it once." };
+      return { ok: false, error: "setup", message: "Shared saving is not connected. Your browser draft and backup file still work." };
     }
-    const body = { action, lessonId: fields.lessonId, editCode: fields.editCode };
-    if (fields.selection) body.selection = fields.selection;
+    const body = { action };
+    for (const key of ["lessonId", "editCode", "selection", "expectedRevision", "mutationId", "revision", "submissionId", "runId"]) {
+      if (Object.hasOwn(fields, key)) body[key] = fields[key];
+    }
+    const controller = new AbortController();
+    const timeout = window.setTimeout(() => controller.abort(), HANDOFF_TIMEOUT_MS);
     try {
       const res = await fetch(handoffApiBase, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify(body)
+        body: JSON.stringify(body),
+        signal: controller.signal
       });
       const data = await res.json().catch(() => null);
       if (!data || typeof data !== "object") {
-        return { ok: false, error: "store", message: "Saving could not reach the connected store. Try again." };
+        return { ok: false, error: "store", message: "The shared store returned an unreadable response. Your browser draft is safe.", httpStatus: res.status };
       }
-      if (!data.ok) {
-        return { ok: false, error: data.error || "store", message: typeof data.message === "string" ? data.message : "Could not finish that step. Try again." };
+      return { ...data, httpStatus: res.status };
+    } catch (error) {
+      if (controller.signal.aborted || error?.name === "AbortError") {
+        return { ok: false, error: "timeout", message: "The shared store took too long to respond. Your browser draft is safe. Try again." };
       }
-      return data;
-    } catch {
-      return { ok: false, error: "store", message: "Saving could not reach the connected store. Try again." };
+      return { ok: false, error: "network", message: "Could not reach the shared store. Your browser draft is safe. Try again when you are online." };
+    } finally {
+      window.clearTimeout(timeout);
     }
   }
 
-  function requireEditCode() {
-    const code = (state.editCode || "").trim();
-    if (code.length >= EDIT_CODE_MIN) return code;
-    fileNotice(`Enter your edit code on How to use Bespoke. Use at least ${EDIT_CODE_MIN} characters and write it down.`);
-    state.step = stepIndex("welcome");
-    render();
-    const details = byId("stepPanel")?.querySelector("details");
-    if (details) details.open = true;
-    byId("editCode")?.focus();
-    return "";
+  function requireTeamSession() {
+    if (ui.teamSession) return ui.teamSession;
+    fileNotice("Open your private team access before using shared Save or Send. Download backup still works.");
+    openOpenDialog();
+    return null;
   }
 
   function currentSelection() {
@@ -1828,45 +1960,283 @@
     return payload;
   }
 
+  function resetDesignForLesson(lessonId) {
+    Object.assign(state, {
+      step: stepIndex("welcome"),
+      lessonId,
+      teamName: "",
+      spokespersonName: "",
+      spokespersonEmail: "",
+      presetId: "professional",
+      colorLead: "blue",
+      sidebarColor: "dark",
+      backgroundTexture: "dot-grid",
+      titleSlide: "centered-gradient",
+      dividerStyle: "gradient-sweep",
+      cardStyle: "left-border",
+      varyCardsByChapter: false,
+      chapterCards: {},
+      fontPairing: "dm-serif-display-outfit",
+      lessonTitle: "",
+      lessonSubtitle: "",
+      sampleBullets: "",
+      sampleMyth: "",
+      unspoken: ""
+    });
+  }
+
+  function keepRecoveryCopy() {
+    try {
+      const raw = localStorage.getItem(STORAGE_KEY);
+      if (raw) localStorage.setItem(BACKUP_KEY, raw);
+      return true;
+    } catch {
+      fileNotice("Could not keep a browser recovery copy. Download backup before loading another design.");
+      return false;
+    }
+  }
+
+  async function fetchSharedDesign({ replace = false, announce = true } = {}) {
+    const session = requireTeamSession();
+    if (!session || handoffBusy) return false;
+    handoffBusy = true;
+    ui.cloudBusy = true;
+    if (announce) fileNotice("Checking the latest shared design…");
+    try {
+      const result = await handoffRequest("open", { lessonId: session.lessonId, editCode: session.editCode });
+      if (!result.ok) {
+        fileNotice(result.message || "Could not open the shared design. Your browser draft is unchanged.");
+        return false;
+      }
+      if (result.selection) {
+        try { validateSelectionPayload(result.selection); }
+        catch (error) {
+          fileNotice("The shared design could not be opened. " + error.message + " Your browser draft is unchanged.");
+          return false;
+        }
+      }
+      const dirty = hasUnsavedTeamWork();
+      const remoteChanged = result.revision !== session.revision;
+      if (dirty && !replace) {
+        if (remoteChanged) {
+          ui.cloudConflict = { revision: result.revision, savedAt: result.savedAt };
+          fileNotice("A newer shared version exists. This browser draft was kept. Download a backup, then load the latest shared design before recovering any local choices.");
+        } else {
+          fileNotice("This browser has unsaved changes, so the shared design was not loaded. Save them or download a backup first.");
+        }
+        updateCloudChrome();
+        return false;
+      }
+      if (replace && !keepRecoveryCopy()) return false;
+      if (result.selection) applySelectionPayload(result.selection);
+      else resetDesignForLesson(session.lessonId);
+      state.lessonId = session.lessonId;
+      session.revision = result.revision ?? null;
+      session.savedAt = result.savedAt ?? null;
+      session.pendingSave = null;
+      session.baseSelectionKey = currentSelectionKey();
+      ui.cloudConflict = null;
+      persistTeamSession();
+      storageConflict = false;
+      try {
+        lastSavedRaw = localStorage.getItem(STORAGE_KEY);
+      } catch {
+        lastSavedRaw = null;
+        storageConflict = true;
+        setSaveStatus("Browser storage unavailable");
+      }
+      render();
+      fileNotice(result.selection
+        ? "Opened the latest shared design."
+        : "This team has no shared design yet. Start with the library choices, then Save shared design.");
+      return true;
+    } finally {
+      handoffBusy = false;
+      ui.cloudBusy = false;
+      updateCloudChrome();
+    }
+  }
+
   async function cloudSave() {
     if (!isLeadSession() || handoffBusy) return;
-    const code = requireEditCode();
-    if (!code) return;
+    const session = requireTeamSession();
+    if (!session) return;
+    if (ui.cloudConflict) {
+      fileNotice("A newer shared version exists. Download a backup and load the latest shared design before saving.");
+      updateCloudChrome();
+      return;
+    }
     let payload;
     try { payload = currentSelection(); }
-    catch (err) { fileNotice(`Could not save. ${err.message}`); return; }
+    catch (err) { fileNotice("Could not save. " + err.message); return; }
+    if (payload.lesson.id !== session.lessonId) {
+      fileNotice("This team access is locked to a different lesson. Your draft was not saved.");
+      return;
+    }
+    const requestKey = selectionKey(payload);
+    let pending = session.pendingSave;
+    if (!pending || pending.selectionKey !== requestKey || pending.expectedRevision !== session.revision) {
+      pending = {
+        mutationId: newMutationId(),
+        expectedRevision: session.revision ?? null,
+        selectionKey: requestKey
+      };
+      session.pendingSave = pending;
+      persistTeamSession();
+    }
     handoffBusy = true;
-    fileNotice("Saving…");
+    fileNotice("Saving the shared design…");
     try {
-      const result = await handoffRequest("save", { lessonId: payload.lesson.id, editCode: code, selection: payload });
-      fileNotice(result.ok
-        ? "Saved. Choose Open on any computer, pick this lesson, and enter the same edit code."
-        : (result.message || "Could not save."));
+      const result = await handoffRequest("save", {
+        lessonId: session.lessonId,
+        editCode: session.editCode,
+        selection: payload,
+        expectedRevision: pending.expectedRevision,
+        mutationId: pending.mutationId
+      });
+      if (!result.ok) {
+        if (result.httpStatus === 409 || result.error === "conflict") {
+          ui.cloudConflict = { revision: result.revision, savedAt: result.savedAt };
+          session.pendingSave = null;
+          persistTeamSession();
+          fileNotice("Someone saved a newer shared version. Your browser draft is safe. Download a backup, then load the latest shared design.");
+          updateCloudChrome();
+          return;
+        }
+        fileNotice(result.message || "Shared Save did not finish. Your browser draft is safe; try Save again.");
+        return;
+      }
+      session.revision = result.revision;
+      session.savedAt = result.savedAt;
+      session.baseSelectionKey = requestKey;
+      session.pendingSave = null;
+      ui.cloudConflict = null;
+      persistTeamSession();
+      const changedDuringSave = currentSelectionKey() !== requestKey;
+      setSaveStatus(changedDuringSave ? "Newer browser changes not shared yet" : "Shared design up to date");
+      fileNotice(changedDuringSave
+        ? "The version that started saving is shared. You made newer changes while it saved; choose Save shared design again."
+        : (result.unchanged ? "The shared design was already up to date." : "Shared design saved."));
+    } finally {
+      handoffBusy = false;
+      updateCloudChrome();
+    }
+  }
+
+  function pendingSubmission() {
+    try { return JSON.parse(localStorage.getItem(PENDING_SUBMISSION_STORAGE) || "null"); }
+    catch { return null; }
+  }
+
+  function storePendingSubmission(value) {
+    try {
+      if (value) localStorage.setItem(PENDING_SUBMISSION_STORAGE, JSON.stringify(value));
+      else localStorage.removeItem(PENDING_SUBMISSION_STORAGE);
+    } catch { /* status stays visible for this page */ }
+    updateCloudChrome();
+  }
+
+  function scheduleSubmissionPoll(receipt, delay = 10000) {
+    clearTimeout(submissionPollTimer);
+    submissionPollTimer = window.setTimeout(() => pollSubmission(receipt), delay);
+  }
+
+  async function pollSubmission(receipt) {
+    const result = await handoffRequest("status", {
+      lessonId: receipt.lessonId,
+      editCode: receipt.editCode,
+      submissionId: receipt.submissionId,
+      runId: receipt.runId
+    });
+    if (!result.ok) {
+      fileNotice(result.message || "Britt’s receipt could not be checked. We will check again when this page opens.");
+      return;
+    }
+    if (result.status === "processing") {
+      storePendingSubmission({ ...receipt, runId: result.runId || receipt.runId, stage: "receipt" });
+      fileNotice("Britt’s review request is processing. You can close this page; this browser will check again when you return.");
+      scheduleSubmissionPoll({ ...receipt, runId: result.runId || receipt.runId }, 10000);
+      return;
+    }
+    if (result.status === "received") {
+      storePendingSubmission(null);
+      fileNotice(result.url ? "Britt received the review request. " + result.url : "Britt received the review request.");
+      return;
+    }
+    storePendingSubmission({ ...receipt, stage: "failed" });
+    fileNotice(result.message || "The review request failed. Your saved design is unchanged; try Send to Britt again.");
+  }
+
+  async function cloudSend() {
+    if (!isLeadSession() || handoffBusy) return;
+    const session = requireTeamSession();
+    if (!session) return;
+    if (!state.spokespersonName.trim()) {
+      fileNotice("Add the spokesperson's name on Lesson & team before sending.");
+      return;
+    }
+    if (ui.cloudConflict || !session.revision || hasUnsavedTeamWork()) {
+      fileNotice("Save the current shared design before sending it to Britt.");
+      return;
+    }
+    const existing = pendingSubmission();
+    let payload;
+    if (existing?.stage === "request" && existing.expectedRevision === session.revision && existing.selection) {
+      payload = existing.selection;
+    } else {
+      try { payload = currentSelection(); }
+      catch (err) { fileNotice("Could not send. " + err.message); return; }
+    }
+    const mutationId = existing?.stage === "request" && existing.expectedRevision === session.revision
+      ? existing.mutationId : newMutationId();
+    const pending = {
+      stage: "request",
+      lessonId: session.lessonId,
+      editCode: session.editCode,
+      expectedRevision: session.revision,
+      mutationId,
+      selection: payload
+    };
+    storePendingSubmission(pending);
+    handoffBusy = true;
+    fileNotice("Requesting Britt’s review…");
+    try {
+      const result = await handoffRequest("send", pending);
+      if (!result.ok) {
+        fileNotice(result.message || "The review request did not finish. Your saved design is safe; choose Send to Britt to retry.");
+        return;
+      }
+      const receipt = {
+        stage: "receipt",
+        lessonId: session.lessonId,
+        editCode: session.editCode,
+        expectedRevision: session.revision,
+        submissionId: result.submissionId,
+        runId: result.runId || null
+      };
+      storePendingSubmission(receipt);
+      if (result.status === "received") {
+        storePendingSubmission(null);
+        fileNotice(result.url ? "Britt received the review request. " + result.url : "Britt received the review request.");
+      } else {
+        fileNotice("Britt’s review request is processing. This is not a receipt yet.");
+        scheduleSubmissionPoll(receipt, 5000);
+      }
     } finally {
       handoffBusy = false;
     }
   }
 
-  async function cloudSend() {
-    if (!isLeadSession() || handoffBusy) return;
-    if (!state.spokespersonName.trim()) {
-      fileNotice("Add the spokesperson's name on Lesson & team before sending.");
-      return;
-    }
-    const code = requireEditCode();
-    if (!code) return;
-    let payload;
-    try { payload = currentSelection(); }
-    catch (err) { fileNotice(`Could not send. ${err.message}`); return; }
-    handoffBusy = true;
-    fileNotice("Sending to Britt…");
-    try {
-      const result = await handoffRequest("send", { lessonId: payload.lesson.id, editCode: code, selection: payload });
-      fileNotice(result.ok
-        ? "Sent to Britt. She gets a draft to review. This does not build the lesson."
-        : (result.message || "Could not send."));
-    } finally {
-      handoffBusy = false;
+  async function resumePendingSubmission() {
+    const pending = pendingSubmission();
+    if (!pending || !ui.teamSession || pending.lessonId !== ui.teamSession.lessonId) return;
+    if (pending.stage === "receipt" && pending.submissionId) {
+      fileNotice("Checking Britt’s pending review receipt…");
+      await pollSubmission(pending);
+    } else if (pending.stage === "request") {
+      fileNotice("A previous review request may not have returned a receipt. Choose Send to Britt to retry the exact saved revision.");
+    } else if (pending.stage === "failed") {
+      fileNotice("The previous review request failed. Your shared design is safe; choose Send to Britt to try again.");
     }
   }
 
@@ -1878,13 +2248,12 @@
       const option = document.createElement("option");
       option.value = lesson.id;
       option.textContent = lesson.title;
-      if (lesson.id === state.lessonId) option.selected = true;
+      if ((ui.teamSession?.lessonId || state.lessonId) === lesson.id) option.selected = true;
       select.appendChild(option);
     }
   }
 
   function openOpenDialog() {
-    if (!isLeadSession()) return;
     fillOpenLessons();
     const err = byId("openError");
     if (err) err.textContent = "";
@@ -1896,44 +2265,124 @@
   }
 
   async function cloudOpen() {
-    if (!isLeadSession() || handoffBusy) return;
+    if (handoffBusy) return;
     const lessonId = byId("openLesson")?.value || "";
     const editCode = (byId("openEditCode")?.value || "").trim();
     const err = byId("openError");
     if (editCode.length < EDIT_CODE_MIN) {
-      if (err) err.textContent = `Enter your edit code. It needs at least ${EDIT_CODE_MIN} characters.`;
+      if (err) err.textContent = "Enter the administrator-provided private access code. It needs at least " + EDIT_CODE_MIN + " characters.";
       return;
     }
     handoffBusy = true;
-    if (err) err.textContent = "Opening…";
+    ui.cloudBusy = true;
+    if (err) err.textContent = "Checking private team access…";
     try {
       const result = await handoffRequest("open", { lessonId, editCode });
-      if (!result.ok || !result.selection) {
-        if (err) err.textContent = result.message || "Could not open that design.";
+      if (!result.ok) {
+        if (err) err.textContent = result.message || "That private team access could not be opened. Check the lesson and code, then try again.";
+        byId("openEditCode")?.focus();
         return;
       }
-      try { validateSelectionPayload(result.selection); }
-      catch (error) {
-        if (err) err.textContent = `Could not open that design. ${error.message}`;
+      if (result.selection) {
+        try { validateSelectionPayload(result.selection); }
+        catch (error) {
+          if (err) err.textContent = "The shared design could not be opened. " + error.message;
+          return;
+        }
+      }
+      if (!keepRecoveryCopy()) {
+        if (err) err.textContent = "Could not keep a browser recovery copy. Download backup before opening another team.";
         return;
       }
-      if (!prepareDraftReplacement()) {
-        if (err) err.textContent = "";
-        return;
+
+      installTeamSession(lessonId, editCode);
+      ui.mode = "edit";
+      if (result.selection) applySelectionPayload(result.selection);
+      else resetDesignForLesson(lessonId);
+      state.lessonId = lessonId;
+      ui.teamSession.revision = result.revision ?? null;
+      ui.teamSession.savedAt = result.savedAt ?? null;
+      ui.teamSession.pendingSave = null;
+      ui.teamSession.baseSelectionKey = currentSelectionKey();
+      ui.cloudConflict = null;
+      persistTeamSession();
+      storageConflict = false;
+      try {
+        lastSavedRaw = localStorage.getItem(STORAGE_KEY);
+      } catch {
+        lastSavedRaw = null;
+        storageConflict = true;
+        setSaveStatus("Browser storage unavailable");
       }
-      applySelectionPayload(result.selection);
-      state.editCode = editCode;
-      state.step = stepIndex("review");
-      ui.restoredFromLink = false;
-      ui.editCodeHash = "";
-      ui.restoreNote = "";
-      history.replaceState(null, "", location.pathname + location.search);
+      if (err) err.textContent = "";
       byId("openDialog").close();
       render();
-      fileNotice("Opened the saved design. Check the lesson and choices.");
+      fileNotice(result.selection
+        ? "Opened the latest shared design."
+        : "This team has no shared design yet. Start with the library choices, then Save shared design.");
     } finally {
       handoffBusy = false;
+      ui.cloudBusy = false;
+      updateCloudChrome();
     }
+  }
+
+  async function loadHistory() {
+    const session = requireTeamSession();
+    if (!session || handoffBusy) return;
+    const panel = byId("historyPanel");
+    panel.hidden = false;
+    panel.textContent = "Loading previous versions…";
+    const [result, latest] = await Promise.all([
+      handoffRequest("history", { lessonId: session.lessonId, editCode: session.editCode }),
+      handoffRequest("open", { lessonId: session.lessonId, editCode: session.editCode })
+    ]);
+    if (!result.ok) {
+      panel.textContent = result.message || "Previous versions could not be loaded.";
+      return;
+    }
+    const list = document.createElement("ul");
+    list.className = "history-list";
+    for (const item of result.history || []) {
+      const li = document.createElement("li");
+      const text = document.createElement("span");
+      text.textContent = item.savedAt ? new Date(item.savedAt).toLocaleString() : item.revision;
+      const button = document.createElement("button");
+      button.type = "button";
+      button.className = "btn btn-secondary";
+      button.textContent = "Use these choices";
+      button.addEventListener("click", async () => {
+        if (!latest.ok) {
+          fileNotice("The latest shared version could not be checked. Previous choices were not loaded.");
+          return;
+        }
+        const latestRevision = latest.revision ?? null;
+        const latestKey = latest.selection ? selectionKey(latest.selection) : session.baseSelectionKey;
+        const opened = await handoffRequest("openRevision", {
+          lessonId: session.lessonId,
+          editCode: session.editCode,
+          revision: item.revision
+        });
+        if (!opened.ok || !opened.selection) {
+          fileNotice(opened.message || "That previous version could not be opened.");
+          return;
+        }
+        if (!keepRecoveryCopy()) return;
+        applySelectionPayload(opened.selection);
+        state.lessonId = session.lessonId;
+        session.revision = latestRevision;
+        session.baseSelectionKey = latestKey;
+        session.pendingSave = null;
+        ui.cloudConflict = null;
+        persistTeamSession();
+        state.step = stepIndex("review");
+        render();
+        fileNotice("Previous choices loaded into this browser draft. Review them, then Save shared design to create a new revision. Later history is preserved.");
+      });
+      li.append(text, button);
+      list.appendChild(li);
+    }
+    panel.replaceChildren(list);
   }
 
   function onSubmit() {
@@ -1960,7 +2409,10 @@
     lockViewControls();
     syncAccessChrome();
     updatePreview();
-    if (isLeadSession()) saveDraft();
+    if (isLeadSession()) {
+      if (ui.skipNextLocalSave) ui.skipNextLocalSave = false;
+      else saveDraft();
+    }
 
     if (keepFocusId) {
       const el = byId(keepFocusId);
@@ -1992,10 +2444,44 @@
     state.library = await libRes.json();
     state.themeOptions = await themeRes.json();
     await loadHandoffConfig();
-    await openShareLink();
+    const startup = await openShareLink();
+    try {
+      ui.skipNextLocalSave = sessionStorage.getItem("bespoke-left-session") === "1";
+      sessionStorage.removeItem("bespoke-left-session");
+    } catch { /* private mode */ }
+    const mayReplaceFromCloud = Boolean(ui.teamSession) && (
+      !lastSavedRaw || Boolean(ui.teamSession.baseSelectionKey && currentSelectionKey() === ui.teamSession.baseSelectionKey)
+    );
     byId("btnSave").addEventListener("click", () => { cloudSave(); });
-    byId("btnOpen").addEventListener("click", () => { openOpenDialog(); });
+    byId("btnOpen").addEventListener("click", () => {
+      if (ui.teamSession) fetchSharedDesign({ replace: false });
+      else openOpenDialog();
+    });
     byId("btnSend").addEventListener("click", () => { cloudSend(); });
+    byId("btnDownloadBackup").addEventListener("click", () => { saveTeamFile(); });
+    byId("btnOpenBackup").addEventListener("click", () => { byId("teamFileInput").click(); });
+    byId("btnLoadLatest").addEventListener("click", () => { fetchSharedDesign({ replace: true }); });
+    byId("btnKeepLocal").addEventListener("click", () => {
+      fileNotice("Browser draft kept. Download a backup before loading the latest shared design; this draft cannot overwrite a newer shared version.");
+      updateCloudChrome();
+    });
+    byId("btnHistory").addEventListener("click", () => { loadHistory(); });
+    byId("btnCheckStatus").addEventListener("click", () => {
+      const pending = pendingSubmission();
+      if (pending?.stage === "receipt") pollSubmission(pending);
+      else if (pending?.stage === "request") cloudSend();
+      else fileNotice("There is no pending review request on this browser.");
+    });
+    byId("btnLeaveSession").addEventListener("click", () => {
+      if (!confirm("Leave this team session on this browser? Save the shared design or download a backup first. Remembered access and local recovery copies will be removed.")) return;
+      forgetTeamSession();
+      try {
+        localStorage.removeItem(STORAGE_KEY);
+        localStorage.removeItem(BACKUP_KEY);
+        sessionStorage.setItem("bespoke-left-session", "1");
+      } catch { /* reload still drops the in-memory credential */ }
+      location.reload();
+    });
     byId("openCancel").addEventListener("click", () => byId("openDialog").close());
     byId("openForm").addEventListener("submit", (event) => {
       event.preventDefault();
@@ -2015,7 +2501,7 @@
         if (current) localStorage.setItem(BACKUP_KEY, current);
         history.replaceState(null, "", location.pathname + location.search);
         location.reload();
-      } catch { fileNotice("Could not recover the browser draft. Choose Open and enter your lesson and edit code."); }
+      } catch { fileNotice("Could not recover the browser draft. Open the private team access or an exported backup."); }
     });
     window.addEventListener("storage", (event) => {
       if ((event.key === STORAGE_KEY || event.key === null) && isLeadSession()) {
@@ -2093,9 +2579,13 @@
 
     render();
     saveAnnounceReady = true;
+    if (startup?.team || (!startup?.snapshot && ui.teamSession)) {
+      await fetchSharedDesign({ replace: mayReplaceFromCloud, announce: true });
+      await resumePendingSubmission();
+    }
     if (isLeadSession() && ui.restoredFromLink) {
       const live = byId("saveLive");
-      if (live) live.textContent = "Saved";
+      if (live) live.textContent = "Browser draft saved";
     }
   }
 
