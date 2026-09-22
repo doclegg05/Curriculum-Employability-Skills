@@ -2,7 +2,9 @@
 
 > **SUPERSEDED (2026-08-03):** Historical snapshot from the 3-lesson era. The
 > repo now contains 6 lessons — see `lesson-registry.json` for current status.
-> The release tag mentioned below was never created.
+> Correction verified 2026-09-22: `release-2026-03-01-p1` exists. Do not recreate
+> it. The dated release statements below are historical, not current sign-off;
+> see `qa-reports/project-review-2026-09-22.md`.
 
 Date: 2026-03-01
 
@@ -29,6 +31,6 @@ Date: 2026-03-01
 
 ## Next Actions
 
-1. Create release tag `release-2026-03-01-p1`.
+1. Release tag `release-2026-03-01-p1` already exists (verified 2026-09-22).
 2. Begin next lesson batch under the same gate model.
 3. Keep optional enhancements tracked in `docs/future-upgrades.md` as non-gating backlog.

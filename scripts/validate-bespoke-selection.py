@@ -4,12 +4,13 @@
 Uses a small Draft-2020-12 subset (type, const, enum, required, properties,
 additionalProperties, pattern, minLength, null unions) so quality.sh stays
 dependency-free. Custom post-schema checks cover chapter coverage and catalog
-version; THM-04 adjacent uniqueness is soft-warn until FID-4.
+version; THM-04 adjacent uniqueness is required when chapter variation is enabled.
 """
 
 from __future__ import annotations
 
 import argparse
+from datetime import date
 import json
 import re
 import sys
@@ -112,15 +113,24 @@ def custom_checks(payload: dict, schema: dict) -> tuple[list[str], list[str]]:
                 errors.append(
                     f"$.theme.cards.chapterStyles: missing chapter keys {missing}"
                 )
-            # THM-04 soft-warn: adjacent chapters must not share a card style
+            # Explicit chapter variation must preserve the wizard contract.
             ordered = [styles.get(k) for k in chapter_keys if k in styles]
             for i in range(len(ordered) - 1):
                 if ordered[i] and ordered[i] == ordered[i + 1]:
-                    warnings.append(
-                        f"THM-04 soft-warn: adjacent chapters "
+                    errors.append(
+                        f"THM-04: adjacent chapters "
                         f"{chapter_keys[i]!r}/{chapter_keys[i + 1]!r} share card style "
-                        f"{ordered[i]!r} (FID-4 pending)"
+                        f"{ordered[i]!r}"
                     )
+
+    try:
+        date.fromisoformat(payload["date"])
+    except ValueError:
+        errors.append("$.date: must be a real calendar date")
+    if not payload["team"]["spokesperson"]["name"].strip():
+        errors.append("$.team.spokesperson.name: must not be blank")
+    if not payload["lesson"]["title"].strip():
+        errors.append("$.lesson.title: must not be blank")
 
     expected_version = (meta.get("generatedFrom") or {}).get("libraryCatalogVersion")
     got_version = payload.get("libraryCatalogVersion")
@@ -135,6 +145,8 @@ def custom_checks(payload: dict, schema: dict) -> tuple[list[str], list[str]]:
 
 def validate_payload(payload: dict, schema: dict) -> tuple[list[str], list[str]]:
     errors = validate_against_schema(payload, schema)
+    if errors:
+        return errors, []
     custom_errors, warnings = custom_checks(payload, schema)
     errors.extend(custom_errors)
     return errors, warnings

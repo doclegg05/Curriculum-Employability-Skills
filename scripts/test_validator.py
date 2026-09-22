@@ -499,6 +499,12 @@ class TestTYP05SelfHostedFonts(unittest.TestCase):
         self.assertEqual(len(results), 1)
         return results[0]
 
+    def _typ(self, mod, html, rule_id):
+        doc = mod.parse_document(html)
+        results = [r for r in mod.check_typography(doc) if r.rule_id == rule_id]
+        self.assertEqual(len(results), 1)
+        return results[0]
+
     def test_warns_on_google_fonts_link(self):
         mod = self._load_mod()
         r = self._typ05(mod, """<!DOCTYPE html>
@@ -515,6 +521,28 @@ class TestTYP05SelfHostedFonts(unittest.TestCase):
   @font-face { font-family: "Outfit"; src: url("../fonts/outfit-latin.woff2") format("woff2"); font-weight: 300 800; font-display: swap; }
 </style></head><body></body></html>""")
         self.assertEqual(r.status, "PASS")
+
+    def test_font_face_family_names_do_not_trigger_token_warnings(self):
+        mod = self._load_mod()
+        html = """<!DOCTYPE html>
+<html lang="en"><head><style>
+  :root { --font-heading: "DM Serif Display", serif; --font-body: "Outfit", sans-serif; }
+  @font-face { font-family: "DM Serif Display"; src: url("heading.woff2"); font-display: swap; }
+  @font-face { font-family: "Outfit"; src: url("body.woff2"); font-display: swap; }
+  h1 { font-family: var(--font-heading); } body { font-family: var(--font-body); }
+</style></head><body></body></html>"""
+        self.assertEqual(self._typ(mod, html, "TYP-03").status, "PASS")
+        self.assertEqual(self._typ(mod, html, "TYP-04").status, "PASS")
+
+    def test_selector_hardcoding_still_triggers_token_warnings(self):
+        mod = self._load_mod()
+        html = """<!DOCTYPE html>
+<html lang="en"><head><style>
+  :root { --font-heading: "DM Serif Display", serif; --font-body: "Outfit", sans-serif; }
+  h1 { font-family: "DM Serif Display", serif; } body { font-family: "Outfit", sans-serif; }
+</style></head><body></body></html>"""
+        self.assertEqual(self._typ(mod, html, "TYP-03").status, "WARN")
+        self.assertEqual(self._typ(mod, html, "TYP-04").status, "WARN")
 
     def test_warns_on_font_face_missing_swap(self):
         mod = self._load_mod()

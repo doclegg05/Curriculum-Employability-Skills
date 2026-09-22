@@ -379,14 +379,15 @@ Generation D merges the best features from three incompatible navigation engine 
 ### MOB-02 — Sidebar Toggle Tap Target
 - **Severity:** CRITICAL
 - **Validation:** deterministic
-- **Rule:** Sidebar toggle must be at least 44x44px (WCAG 2.5.8 Level AA).
-- **Rationale:** The sidebar toggle was 36x36px across all lessons, violating WCAG 2.5.8's minimum target size of 44x44px. Undersized targets cause repeated mis-taps, especially for users with motor impairments.
+- **Rule:** Sidebar toggle must be at least 44x44 CSS px (the SPOKES project minimum).
+- **Rationale:** SPOKES deliberately requires a larger target for reliable classroom and touch use. WCAG 2.2 SC 2.5.8 (Level AA) requires 24x24 CSS px or an applicable exception; SC 2.5.5 (Level AAA) specifies 44x44 CSS px with exceptions. A 36x36px toggle fails this project's 44px rule, but its size alone does not establish an AA violation. Undersized targets cause repeated mis-taps, especially for users with motor impairments.
+- **Sources:** [W3C SC 2.5.8 Target Size (Minimum)](https://www.w3.org/WAI/WCAG22/Understanding/target-size-minimum), [W3C SC 2.5.5 Target Size](https://www.w3.org/WAI/WCAG21/Understanding/target-size).
 
 ### MOB-03 — Navigation Button Tap Target
 - **Severity:** CRITICAL
 - **Validation:** deterministic
-- **Rule:** Navigation prev/next buttons must be at least 44x44px (WCAG 2.5.8 Level AA).
-- **Rationale:** Same reasoning as MOB-02 — navigation buttons are the most frequently tapped elements and must meet the 44x44px minimum for reliable touch interaction.
+- **Rule:** Navigation prev/next buttons must be at least 44x44 CSS px (the SPOKES project minimum).
+- **Rationale:** Same reasoning and W3C references as MOB-02: navigation buttons are frequently tapped and must meet the stricter SPOKES 44x44px minimum for reliable touch interaction. This project rule must not be described as the 24x24px WCAG SC 2.5.8 AA threshold.
 
 ### MOB-04 — Touch Feedback for Hover Effects
 - **Severity:** WARN

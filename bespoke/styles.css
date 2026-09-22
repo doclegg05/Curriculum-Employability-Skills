@@ -443,7 +443,7 @@ textarea:focus-visible,
 .step-num {
   font-variant-numeric: tabular-nums;
   font-size: var(--fs-xs);
-  color: var(--muted-gold);
+  color: var(--dark);
   min-width: 1.4rem;
   flex-shrink: 0;
 }
@@ -1543,4 +1543,19 @@ body.is-view-only .panel textarea:disabled {
   min-height: 44px;
   display: flex;
   align-items: center;
+}
+
+/* Native hidden must win over flex/button display rules. */
+[hidden] { display: none !important; }
+@media (max-width: 899px) {
+  .app-header { flex-wrap: wrap; }
+  .header-actions { width: 100%; }
+  .save-status { flex-basis: 100%; font-size: 0.875rem; }
+  .header-actions .btn { min-height: 44px; }
+}
+@media (max-width: 640px) {
+  .app-header { gap: 0.4rem; }
+  .header-actions { gap: 0.35rem; }
+  .header-actions .btn { padding: 0.45rem 0.6rem; font-size: 0.85rem; }
+  .stepper { max-height: 155px; overflow-y: auto; }
 }

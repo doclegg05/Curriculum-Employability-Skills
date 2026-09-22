@@ -1,5 +1,10 @@
 # SPOKES Employability Skills Curriculum -- Project Plan
 
+> Historical project plan. As of September 22, 2026, six lessons exist and six
+> new instructor-team lessons are being prepared toward a soft March 2027 target.
+> Use `docs/qa-reports/project-review-2026-09-22.md` for current readiness and
+> `docs/bespoke/builder-handoff.md` for the approved intake/build boundary.
+
 **Date:** 2026-02-27 (last updated: 2026-04-03)
 **Goal:** Deliver 18 interactive HTML lessons built from the SPOKES Builder system
 **Current State:** 3 of 18 lessons release-approved; 2 additional lessons built and in QA (Communicating with the Public, Controlling Anger). Phase 1 target extended to June 15, 2026.
@@ -166,7 +171,7 @@
   1. **Automated checks:** Brand color scan (grep for non-palette hex values), structural validation (sequential data-chapter, required elements present)
   2. **Manual review:** Visual inspection by user, font pairing confirmation, component variety check
 - Create a simple bash script or checklist that runs the automated checks against any `index.html`
-- Document in `SPOKES Builder/quality-gate.md`
+- Document in `docs/release-checklist.md`
 
 **Definition of done:** Quality gate process documented. Automated check script created and tested against all existing lessons.
 

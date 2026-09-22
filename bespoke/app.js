@@ -2,6 +2,10 @@
   "use strict";
 
   const STORAGE_KEY = "bespoke-draft-v1";
+  const BACKUP_KEY = "bespoke-previous-draft-v1";
+  const MAX_FILE_BYTES = 256000;
+  let lastSavedRaw = null;
+  let storageConflict = false;
   /**
    * Max length of a team view URL (origin + path + hash).
    * View link: `#v=` + base64url(deflate-raw(selection plus editCodeHash)).
@@ -31,7 +35,7 @@
     { id: "layouts", label: "Title & dividers", view: "title" },
     { id: "cards", label: "Cards", view: "cards" },
     { id: "fonts", label: "Fonts", view: "cards" },
-    { id: "content", label: "Your content", view: "cards" },
+    { id: "content", label: "Try sample text", view: "cards" },
     { id: "review", label: "Review & submit", view: "title" },
     { id: "return", label: "Save and come back", view: "title" }
   ];
@@ -120,18 +124,29 @@
     }
     if (Number.isInteger(saved.step) && LEGACY_STEP_IDS[saved.step]) {
       state.step = stepIndex(LEGACY_STEP_IDS[saved.step]);
+    } else {
+      state.step = 0;
     }
   }
 
   function loadDraft() {
+    const previous = { ...state };
     try {
       const raw = localStorage.getItem(STORAGE_KEY);
       if (!raw) return;
       const saved = JSON.parse(raw);
-      Object.assign(state, saved, { meta: state.meta, library: state.library, themeOptions: state.themeOptions });
+      if (!saved || typeof saved !== "object" || Array.isArray(saved)) throw new Error("Invalid draft");
+      for (const key of Object.keys(state)) {
+        if (["meta", "library", "themeOptions"].includes(key)) continue;
+        if (Object.hasOwn(saved, key) && typeof saved[key] === typeof state[key]) state[key] = saved[key];
+      }
       restoreStep(saved);
+      validateSelectionPayload(buildSelectionPayload());
+      lastSavedRaw = raw;
     } catch {
-      /* ignore */
+      Object.assign(state, previous);
+      storageConflict = true;
+      ui.restoreNote = "The saved draft could not be read. It has not been replaced. Open a team file to recover, or clear the draft to start again.";
     }
   }
 
@@ -170,10 +185,23 @@
 
   function saveDraft() {
     if (!isLeadSession()) return false;
+    if (storageConflict) {
+      setSaveStatus("Not saved — another draft needs attention");
+      return false;
+    }
     state.stepId = STEPS[state.step] ? STEPS[state.step].id : "welcome";
     const { meta, library, themeOptions, ...rest } = state;
     try {
-      localStorage.setItem(STORAGE_KEY, JSON.stringify(rest));
+      const current = localStorage.getItem(STORAGE_KEY);
+      if (current !== lastSavedRaw) {
+        storageConflict = true;
+        fileNotice("A different tab changed this browser draft. Save a team file to keep your work, then reload to open the other tab's version. Automatic saving is paused.");
+        setSaveStatus("Not saved — another tab changed this draft");
+        return false;
+      }
+      const nextRaw = JSON.stringify(rest);
+      localStorage.setItem(STORAGE_KEY, nextRaw);
+      lastSavedRaw = nextRaw;
       setSaveStatus("Saved on this computer");
       queueSaveAnnouncement();
       return true;
@@ -190,7 +218,7 @@
     const banner = byId("accessBanner");
     if (banner) {
       if (locked && banner.hidden) {
-        banner.textContent = "Only the team lead can change this.";
+        banner.textContent = "This snapshot opens for viewing. The team lead can unlock an editing copy.";
         banner.hidden = false;
       } else if (!locked) {
         banner.hidden = true;
@@ -211,6 +239,12 @@
       const leadErr = byId("leadCodeError");
       if (leadErr) leadErr.textContent = "";
     }
+    if (byId("btnSaveFile")) byId("btnSaveFile").disabled = locked;
+    if (byId("btnOpenFile")) byId("btnOpenFile").disabled = locked;
+    if (byId("btnRecoverDraft")) {
+      try { byId("btnRecoverDraft").hidden = locked || !localStorage.getItem(BACKUP_KEY); }
+      catch { byId("btnRecoverDraft").hidden = true; }
+    }
     const clearBtn = byId("btnClear");
     if (clearBtn) {
       clearBtn.disabled = locked;
@@ -225,7 +259,7 @@
     const panel = byId("stepPanel");
     if (!panel) return;
     panel.querySelectorAll("input, select, textarea, button").forEach((el) => {
-      if (el.id === "btnBack" || el.id === "btnNext" || el.id === "btnDownloadDesign" || el.id === "btnCopySelection") return;
+      if (el.id === "btnBack" || el.id === "btnNext") return;
       el.disabled = true;
       el.setAttribute("aria-disabled", "true");
     });
@@ -263,7 +297,7 @@
     const neighbors = [keys[idx - 1], keys[idx + 1]].filter(Boolean);
     const conflict = neighbors.find((n) => state.chapterCards[n] === current);
     if (!conflict) return;
-    const alt = familyOptions("cards").find(
+    const alt = familyOptions("cards").filter((o) => !o.blocked).find(
       (o) => o.slug !== current && o.slug !== state.chapterCards[neighbors[0]] && o.slug !== state.chapterCards[neighbors[1]]
     );
     if (alt) {
@@ -280,7 +314,7 @@
   }
 
   function seedChapterCards() {
-    const cards = familyOptions("cards");
+    const cards = familyOptions("cards").filter((o) => !o.blocked);
     const keys = state.meta.chapterKeys;
     keys.forEach((key, i) => {
       if (state.chapterCards[key]) return;
@@ -308,16 +342,6 @@
       if (index === state.step) btn.setAttribute("aria-current", "step");
       if (index < state.step) btn.classList.add("is-done");
       btn.addEventListener("click", () => {
-        if (isLeadSession() && index > state.step && STEPS[state.step].id === "welcome") {
-          const input = byId("editCode");
-          if (input) state.editCode = input.value.trim();
-          if ((state.editCode || "").length < EDIT_CODE_MIN) {
-            const err = byId("editCodeError");
-            if (err) err.textContent = `Enter an edit code of at least ${EDIT_CODE_MIN} characters.`;
-            input?.focus();
-            return;
-          }
-        }
         state.step = index;
         render();
       });
@@ -432,7 +456,7 @@
   function renderTeam(panel) {
     panel.innerHTML = `
       <h1>Lesson &amp; spokesperson</h1>
-      <p class="panel-lead">One submission per Round 2 team. The spokesperson speaks for the team and sends the Spoke Signal.</p>
+      <p class="panel-lead">One spokesperson saves the team’s decisions and prepares the file for Britt. Choose the lesson this file belongs to.</p>
       <div class="field-grid two">
         <label class="field">Lesson
           <select id="lessonSelect"></select>
@@ -633,7 +657,8 @@
         familyOptions("cards").forEach((style) => {
           const opt = document.createElement("option");
           opt.value = style.slug;
-          opt.textContent = style.legacy === false ? `${style.label} (new)` : style.label;
+          opt.textContent = style.blocked ? `${style.label} — unavailable: ${style.reason}` : style.legacy === false ? `${style.label} (new)` : style.label;
+          opt.disabled = Boolean(style.blocked);
           if ((state.chapterCards[key] || state.cardStyle) === style.slug) opt.selected = true;
           select.appendChild(opt);
         });
@@ -683,8 +708,8 @@
   function renderContent(panel) {
     const lesson = findMeta(state.meta.lessons, state.lessonId);
     panel.innerHTML = `
-      <h1>Your content</h1>
-      <p class="panel-lead">Paste a little real text so the preview looks like your lesson. This is a sample — the full lesson is built later.</p>
+      <h1>Try sample text</h1>
+      <p class="panel-lead">Optional: try a title or a few sample lines to compare the look and fit. You can keep the supplied examples. This step does not collect your lesson content.</p>
       <div class="field-grid">
         <label class="field">Lesson title
           <input id="lessonTitle" type="text" placeholder="${lesson ? lesson.title : "Lesson title"}">
@@ -724,12 +749,12 @@
     panel.innerHTML = `
       <h1>${lead ? "Review &amp; submit" : "Review"}</h1>
       <p class="panel-lead">${lead
-        ? "Check your choices, then send the Spoke Signal. Britt reviews the request; approval is the go-ahead to build."
-        : "This is the shared design. You can look through every step. Only the team lead can change it."}</p>
+        ? "Check your choices, then prepare the team file for Britt. Britt reviews the request; approval is the go-ahead to build."
+        : "This is a shared snapshot. You can look through every step. It does not update when the lead makes changes."}</p>
       ${lead ? `
       <section class="share-card" aria-labelledby="shareTitle">
         <h2 id="shareTitle">Share this design</h2>
-        <p id="shareHelp">Send the view link to your team. They can look, but not change anything. To edit later, open that same link and enter your edit code.</p>
+        <p id="shareHelp">This optional link is a snapshot: later changes need a new link. It includes the design, sample text and team contact details; anyone with it can read them. The edit code is a convenience lock, not account security. Use the team file in your shared folder to continue work.</p>
         <div class="share-actions">
           <button type="button" class="btn btn-primary btn-lg" id="btnCopyView" aria-describedby="shareHelp">Copy view link for your team</button>
         </div>
@@ -744,10 +769,10 @@
       <section class="next-hops" aria-labelledby="nextHopsTitle">
         <h2 id="nextHopsTitle">What happens next</h2>
         <ol>
-          <li>You send a <strong>Spoke Signal</strong> with this design.</li>
-          <li>An Action opens a <strong>draft</strong> for Britt to review.</li>
-          <li><strong>Britt merges</strong> — that merge is the go-ahead to build.</li>
-          <li>A builder makes the lesson from the approved design.</li>
+          <li>Choose <strong>Prepare for Britt’s review</strong> to download the team file.</li>
+          <li>Put that file in your lesson’s shared OneDrive folder and tell Britt in Teams that it is ready.</li>
+          <li>Britt reviews the visual choices for use in the later lesson build.</li>
+          <li>Your team checks that the approved look appears in the finished lesson. You do not need a GitHub account.</li>
         </ol>
         <p class="next-hops-note">The builder chooses slide pieces for the content. Your card style applies wherever cards appear.</p>
       </section>` : ""}
@@ -757,7 +782,7 @@
       <div id="submitStatus" role="status" aria-live="polite"></div>
       <details class="builder-note"${ui.builderNote ? " open" : ""}>
         <summary>For builders</summary>
-        <p class="builder-instructor-note">Instructors don't need this.</p>
+        <p class="builder-instructor-note">Britt and builders only. Instructors use the team file.</p><button type="button" class="btn btn-secondary" id="btnBuilderIssue">Prepare GitHub issue</button>
         <div class="builder-files">
           <button type="button" class="btn btn-secondary" id="btnDownloadDesign">Download design file</button>
           <button type="button" class="btn btn-secondary" id="btnOpenDesign">Open a design file</button>
@@ -792,39 +817,18 @@
         saveDraft();
       });
     }
-    byId("btnCopyView")?.addEventListener("click", () => copyLink());
-    byId("btnDownloadDesign")?.addEventListener("click", () => {
-      if (!isLeadSession()) return;
+    byId("btnBuilderIssue")?.addEventListener("click", () => {
       const payload = buildSelectionPayload();
-      const stamp = payload.date;
-      downloadText(
-        `${payload.lesson.id}-${stamp}-selection.json`,
-        JSON.stringify(payload, null, 2),
-        "application/json"
-      );
-      const status = byId("builderFileStatus");
-      if (status) status.textContent = "Downloaded the design file (selection.json).";
+      if (!payload.team.spokesperson.name) { fileNotice("Add a spokesperson before submitting."); return; }
+      const url = `https://github.com/${REPO}/issues/new?title=${encodeURIComponent(`[Spoke Signal] ${payload.lesson.id} — ${payload.date}`)}&labels=spoke-signal,bespoke&body=${encodeURIComponent(buildIssueBody(payload))}`;
+      if (url.length > 7000) { fileNotice("Use the downloaded file with the submission script; this issue URL is too long."); return; }
+      const link = document.createElement("a");
+      link.href = url; link.target = "_blank"; link.rel = "noopener"; link.textContent = "Open prepared GitHub issue";
+      const status = byId("builderFileStatus"); status.replaceChildren(link);
     });
-    byId("btnOpenDesign")?.addEventListener("click", () => {
-      if (!isLeadSession()) return;
-      byId("importSelection")?.click();
-    });
-    byId("importSelection")?.addEventListener("change", async (e) => {
-      if (!isLeadSession()) return;
-      const file = e.target.files && e.target.files[0];
-      const status = byId("builderFileStatus");
-      if (!file) return;
-      try {
-        const text = await file.text();
-        const payload = JSON.parse(text);
-        applySelectionPayload(payload);
-        ui.builderNote = "Opened the design file.";
-        saveDraft();
-        render();
-      } catch (err) {
-        if (status) status.textContent = `Could not open that design file. ${err.message || err}`;
-      }
-    });
+    byId("btnCopyView")?.addEventListener("click", () => copyLink());
+    byId("btnDownloadDesign")?.addEventListener("click", () => saveTeamFile());
+    byId("btnOpenDesign")?.addEventListener("click", () => byId("teamFileInput").click());
     byId("btnCopySelection")?.addEventListener("click", async () => {
       if (!isLeadSession()) return;
       const status = byId("builderFileStatus");
@@ -934,55 +938,41 @@
 
   function renderWelcome(panel) {
     panel.innerHTML = `
-      <h1>How to use Bespoke</h1>
-      <p class="panel-lead">For the team lead. Choose an edit code and write it down. The preview on the right is a sample of your lesson.</p>
-      <label class="field" for="editCode">Your edit code
-        <input id="editCode" type="text" autocomplete="off" minlength="${EDIT_CODE_MIN}" maxlength="${EDIT_CODE_MAX}" required>
-      </label>
-      <p id="editCodeHint" class="field-hint">At least ${EDIT_CODE_MIN} characters. Write it down. Capital letters matter. You will enter this code to edit again from the view link, on any computer.</p>
-      <p id="editCodeError" class="share-status" role="status" aria-live="polite"></p>
+      <h1>Design your lesson together</h1>
+      <p class="panel-lead">One team member operates Bespoke and shares their screen during your Teams call. Everyone helps choose the look.</p>
       <ol class="guide-list">
-        <li>You are the only person who can change this look and send it in.</li>
-        <li>Write down your edit code. Open the view link later and enter the code to edit again.</li>
-        <li>Pick a starter theme, then change any option. The starter does not lock anything.</li>
-        <li>The preview on the right updates as you choose.</li>
-        <li>Your choices also save on this computer, so you can come back here.</li>
-        <li>Give teammates the <strong>view link</strong>. They can look, but they cannot change anything.</li>
-        <li>When the team agrees, choose <strong>Submit</strong>. That sends the design for Britt to review (a pull request). It does not build the lesson by itself.</li>
+        <li><strong>Returning?</strong> Download the latest team file from your shared OneDrive folder. Choose <strong>Open team file</strong> at the top of this page. You do not need to open or edit the file yourself.</li>
+        <li><strong>Starting?</strong> Choose Next, select your lesson and name your spokesperson. Pick a starter theme, then try the options.</li>
+        <li><strong>Finishing the meeting?</strong> Choose <strong>Save team file</strong>. Move the downloaded file into your shared lesson folder and wait for OneDrive to finish syncing.</li>
+        <li><strong>Ready for Britt?</strong> Use Review &amp; submit to prepare your agreed visual choices for review.</li>
       </ol>
-    `;
+      <p>Your browser keeps one working draft as a convenience. The team file in your shared folder is what you use at the next meeting. Only the spokesperson should save a new team version.</p>
+      <p><a href="./team-guide.html" target="_blank" rel="noopener">Team meeting and file guide</a></p>
+      <details><summary>Optional: share a view link</summary>
+        <label class="field" for="editCode">Edit code for a view link
+          <input id="editCode" type="text" autocomplete="off" minlength="${EDIT_CODE_MIN}" maxlength="${EDIT_CODE_MAX}">
+        </label>
+        <p class="field-hint">Use at least ${EDIT_CODE_MIN} characters and write them down. A view link is a snapshot, not a live shared document. This code is a convenience lock, not account security. Team files do not need a code.</p>
+        <p id="editCodeError" class="share-status" role="status" aria-live="polite"></p>
+      </details>`;
     const input = byId("editCode");
-    if (!input) return;
     input.value = state.editCode || "";
-    const sync = () => {
-      state.editCode = input.value.trim();
-      const err = byId("editCodeError");
-      if (err && state.editCode.length >= EDIT_CODE_MIN) err.textContent = "";
-      saveDraft();
-    };
-    input.addEventListener("input", sync);
-    input.addEventListener("change", sync);
+    input.addEventListener("input", () => { state.editCode = input.value.trim(); saveDraft(); });
   }
 
   function renderReturn(panel) {
-    const lead = isLeadSession();
     panel.innerHTML = `
-      <h1>Save and come back</h1>
-      <p class="panel-lead">You can leave and finish later. The preview still shows your lesson.</p>
+      <h1>Save for the next meeting</h1>
+      <p class="panel-lead">Your team file carries your design choices to another computer.</p>
       <ol class="guide-list">
-        <li>Write down your edit code.</li>
-        <li>Your choices are also saved on this computer. Open Bespoke here again and the draft comes back.</li>
-        <li>To edit later from the link, open the view link and choose <strong>I am the team lead</strong>. Enter your edit code. This works on any computer.</li>
-        <li>Teammates use the view link only. They do not need your code.</li>
-        <li>Submit when the team is ready. You can submit again later if you revise.</li>
+        <li>Choose <strong>Save team file</strong> at the top. Find it in your browser’s Downloads.</li>
+        <li>Move the file into your lesson’s shared OneDrive folder. Its name includes your lesson and the time it was saved. Keep earlier versions until the new one is checked.</li>
+        <li>Wait for OneDrive to finish syncing. Tell teammates which file is the latest.</li>
+        <li>Next time, download that file, open Bespoke and choose <strong>Open team file</strong>. Check the lesson and choices before changing anything.</li>
       </ol>
-      ${lead ? `
-      <div class="share-actions return-actions">
-        <button type="button" class="btn btn-primary btn-lg" id="btnCopyView">Copy view link for your team</button>
-      </div>
-      <p id="shareStatus" class="share-status" role="status" aria-live="polite"></p>` : ""}
-    `;
-    byId("btnCopyView")?.addEventListener("click", () => copyLink());
+      <p>Opening a team file replaces this browser’s working draft after confirmation. Recover previous draft can restore the previous browser copy. OneDrive’s version history is separate.</p>
+      <p>Save is a download, not an automatic upload to OneDrive. Shared view links are snapshots and never update themselves.</p>
+      <div id="submitStatus" role="status" aria-live="polite"></div>`;
   }
 
   function renderPanel() {
@@ -1011,7 +1001,7 @@
         ${id === "return" ? "" : `<button type="button" class="btn btn-primary" id="btnNext">Next</button>`}
         ${
           (id === "review" || id === "return") && isLeadSession()
-            ? `<button type="button" class="btn btn-accent btn-lg" id="btnSubmit">Submit Spoke Signal</button>`
+            ? `<button type="button" class="btn btn-accent btn-lg" id="btnSubmit">Prepare for Britt’s review</button>`
             : ""
         }
       </div>
@@ -1045,17 +1035,6 @@
   function validateCurrentStep() {
     if (!isLeadSession()) return true;
     const id = STEPS[state.step].id;
-    if (id === "welcome") {
-      const input = byId("editCode");
-      if (input) state.editCode = input.value.trim();
-      const err = byId("editCodeError");
-      if ((state.editCode || "").length < EDIT_CODE_MIN) {
-        if (err) err.textContent = `Enter an edit code of at least ${EDIT_CODE_MIN} characters.`;
-        input?.focus();
-        return false;
-      }
-      if (err) err.textContent = "";
-    }
     if (id === "team") {
       syncTeamFieldsFromDom();
       if (!state.spokespersonName.trim()) {
@@ -1277,8 +1256,8 @@
 
   /** FID-10 — honesty line under the frame for each preview view. */
   const HONESTY = {
-    title: { label: "Exact", detail: "Title slide layout matches the build." },
-    divider: { label: "Exact — chapter image added at build", detail: "Divider layout matches; the chapter photo is added when the lesson is built." },
+    title: { label: "Design sample", detail: "Selected title style; the finished lesson still needs a team review." },
+    divider: { label: "Design sample", detail: "Selected divider style; chapter images and final layout are reviewed after the build." },
     cards: {
       label: "Representative",
       detail: "The builder picks the component per content type; this card style applies to all cards in this chapter."
@@ -1363,6 +1342,91 @@
       </div>`;
   }
 
+  function fileNotice(message) {
+    const notice = byId("fileStatus");
+    notice.hidden = false;
+    notice.textContent = message;
+  }
+
+  function validateSelectionPayload(payload) {
+    const object = (value) => value && typeof value === "object" && !Array.isArray(value);
+    if (!object(payload) || payload.schema !== "bespoke-selection/v1") throw new Error("Choose a Bespoke team file (.json).");
+    if (!object(payload.lesson) || !findMeta(state.meta.lessons, payload.lesson.id)) throw new Error("This file does not name one of the six new lessons.");
+    if (!object(payload.theme) || !object(payload.theme.cards) || !object(payload.team) || !object(payload.team.spokesperson)) throw new Error("The design or team details are incomplete.");
+    const theme = payload.theme;
+    for (const [field, family] of Object.entries({colorLead: "colorLeads", sidebarColor: "sidebarColors", backgroundTexture: "backgroundTextures", titleSlide: "titleSlides", dividerStyle: "dividers"})) {
+      const option = findOption(family, theme[field]);
+      if (!option || option.blocked) throw new Error(`The ${field} choice is not available. Ask Britt to check this file.`);
+    }
+    if (!findMeta(state.meta.fontPairings, theme.fontPairing) || !findMeta(state.meta.presets, payload.presetId)) throw new Error("The font or starter theme is not available.");
+    const legalCard = (slug) => { const option = findOption("cards", slug); return option && !option.blocked; };
+    if (!legalCard(theme.cards.lessonWide) || typeof theme.cards.varyByChapter !== "boolean") throw new Error("The card style is not available.");
+    if (theme.cards.varyByChapter) {
+      if (!object(theme.cards.chapterStyles)) throw new Error("Chapter card choices are missing.");
+      let previous;
+      for (const chapter of state.meta.chapterKeys) {
+        const slug = theme.cards.chapterStyles[chapter];
+        if (!legalCard(slug) || slug === previous) throw new Error("Each chapter needs an available card style different from the chapter before it.");
+        previous = slug;
+      }
+    }
+    for (const value of [payload.lesson.title, payload.lesson.displayTitle, payload.lesson.subtitle, payload.team.name, payload.team.spokesperson.name, payload.team.spokesperson.email, payload.unspoken, payload.sampleContent?.bullets, payload.sampleContent?.mythReality]) {
+      if (value !== undefined && typeof value !== "string") throw new Error("This file has invalid text fields. Your current draft has not changed.");
+    }
+    if (payload.sampleContent !== undefined && !object(payload.sampleContent)) throw new Error("The sample text is invalid.");
+    if (JSON.stringify(payload).length > MAX_FILE_BYTES) throw new Error("This file is too large. Keep source documents and media in the shared folder.");
+  }
+
+  function prepareDraftReplacement() {
+    let raw;
+    try { raw = localStorage.getItem(STORAGE_KEY); }
+    catch {
+      if (!confirm("Browser saving is unavailable. Open this copy? Save your current work to a team file first if you need it.")) return false;
+      storageConflict = false;
+      return true;
+    }
+    if (raw) {
+      if (!confirm("Open this copy instead of the current browser draft? Save a team file first if you need to keep your current work. One previous browser draft will be kept for recovery.")) return false;
+      try { localStorage.setItem(BACKUP_KEY, raw); }
+      catch { fileNotice("Could not keep a recovery copy. Save your current team file before clearing the browser draft and trying again."); return false; }
+    }
+    lastSavedRaw = raw;
+    storageConflict = false;
+    return true;
+  }
+
+  function saveTeamFile(forReview = false) {
+    if (!isLeadSession()) return false;
+    try {
+      const payload = buildSelectionPayload();
+      validateSelectionPayload(payload);
+      const stamp = payload.submittedAt.replace(/[:.]/g, "-");
+      const filename = `${payload.lesson.id}-${stamp}${forReview ? "-REVIEW" : ""}-selection.json`;
+      downloadText(filename, JSON.stringify(payload, null, 2), "application/json");
+      fileNotice(`Downloaded ${filename}. Move it into your shared OneDrive lesson folder and wait for syncing to finish. It has not been uploaded or sent to Britt automatically.`);
+      return true;
+    } catch (err) { fileNotice(`Could not save the team file. ${err.message}`); return false; }
+  }
+
+  async function openTeamFile(file) {
+    if (!file || !isLeadSession()) return;
+    try {
+      if (file.size > MAX_FILE_BYTES) throw new Error("This file is too large. Select the small Bespoke .json file, not a source document.");
+      const payload = JSON.parse(await file.text());
+      validateSelectionPayload(payload);
+      if (!prepareDraftReplacement()) return;
+      applySelectionPayload(payload);
+      state.editCode = "";
+      state.step = stepIndex("review");
+      ui.restoredFromLink = false;
+      ui.editCodeHash = "";
+      ui.restoreNote = "";
+      history.replaceState(null, "", location.pathname + location.search);
+      render();
+      fileNotice(`Opened ${file.name}. Check the lesson and choices. This is your working copy; save a new team file after changes.`);
+    } catch (err) { fileNotice(`Could not open that team file. ${err.message} Your current draft has not changed.`); }
+  }
+
   function draftFieldsFromSelection(payload) {
     const theme = payload.theme || {};
     const cards = theme.cards || {};
@@ -1386,16 +1450,14 @@
       cardStyle: cards.lessonWide || state.cardStyle,
       varyCardsByChapter: Boolean(cards.varyByChapter),
       chapterCards: cards.varyByChapter && cards.chapterStyles ? { ...cards.chapterStyles } : {},
-      sampleBullets: (payload.sampleContent && payload.sampleContent.bullets) || state.sampleBullets,
-      sampleMyth: (payload.sampleContent && payload.sampleContent.mythReality) || state.sampleMyth,
+      sampleBullets: payload.sampleContent?.bullets ?? "",
+      sampleMyth: payload.sampleContent?.mythReality ?? "",
       unspoken: payload.unspoken || ""
     };
   }
 
   function applySelectionPayload(payload) {
-    if (payload.schema && payload.schema !== "bespoke-selection/v1") {
-      throw new Error(`Unexpected schema ${payload.schema}`);
-    }
+    validateSelectionPayload(payload);
     Object.assign(state, draftFieldsFromSelection(payload));
   }
 
@@ -1502,7 +1564,7 @@
     if (!compressed) {
       return {
         url: "",
-        message: "This browser cannot make a view link. Ask a builder for help."
+        message: "This browser cannot make a view link. Use Save team file and share the file through OneDrive."
       };
     }
     const url = new URL(location.href);
@@ -1511,10 +1573,10 @@
     if (href.length > SHARE_URL_MAX) {
       return {
         url: "",
-        message: "This design is too long to share. Shorten the lesson text, then copy the view link again."
+        message: "This design is too long for a view link. Use Save team file and share the file through OneDrive; keep your lesson text."
       };
     }
-    return { url: href, message: "Link copied" };
+    return { url: href, message: "Snapshot link copied. Copy a new link after changes; use Save team file for the next meeting." };
   }
 
   function rememberUnlock(code) {
@@ -1557,8 +1619,11 @@
       input?.focus();
       return;
     }
+    if (!prepareDraftReplacement()) return;
     state.editCode = code;
     ui.mode = "edit";
+    history.replaceState(null, "", location.pathname + location.search);
+    ui.restoreNote = "Editing this snapshot. Save a new team file after changes; old view links do not update.";
     rememberUnlock(code);
     if (err) err.textContent = "";
     saveDraft();
@@ -1580,7 +1645,7 @@
     }
     if (link.kind === "view") {
       ui.mode = "view";
-      ui.editCodeHash = typeof link.payload.editCodeHash === "string" ? link.payload.editCodeHash : "";
+      ui.editCodeHash = typeof link.payload?.editCodeHash === "string" ? link.payload.editCodeHash : "";
       try {
         applySelectionPayload(link.payload);
       } catch (err) {
@@ -1590,11 +1655,6 @@
       }
       state.editCode = "";
       state.step = stepIndex("review");
-      const remembered = await rememberedLeadCode();
-      if (remembered) {
-        state.editCode = remembered;
-        ui.mode = "edit";
-      }
       ui.restoredFromLink = true;
       return;
     }
@@ -1700,45 +1760,20 @@
 
   function onSubmit() {
     if (!isLeadSession()) return;
-    syncTeamFieldsFromDom();
-    ["lessonTitle", "lessonSubtitle", "sampleBullets", "sampleMyth", "unspoken"].forEach((fieldId) => {
-      const el = byId(fieldId);
-      if (el) state[fieldId] = el.value;
-    });
-    if (!state.spokespersonName.trim() || !state.lessonId) {
-      const box = byId("submitStatus");
+    const box = byId("submitStatus") || byId("fileStatus");
+    box.hidden = false;
+    if (!state.spokespersonName.trim()) {
       box.className = "status-box error";
-      box.innerHTML = `<h3>Spoke Too Soon</h3><p>Pick a lesson and name a spokesperson before submitting.</p>`;
+      box.textContent = "Add the spokesperson's name on Lesson & team before preparing the file for review.";
       return;
     }
-
-    const payload = buildSelectionPayload();
-    const stamp = payload.date;
-
-    const issueBody = buildIssueBody(payload);
-    const title = `[Spoke Signal] ${payload.lesson.id} — ${stamp}`;
-    const issueUrl =
-      `https://github.com/${REPO}/issues/new` +
-      `?title=${encodeURIComponent(title)}` +
-      `&labels=${encodeURIComponent("spoke-signal,bespoke")}` +
-      `&body=${encodeURIComponent(issueBody)}`;
-
-    const box = byId("submitStatus");
+    if (!saveTeamFile(true)) return;
     box.className = "status-box success";
-    const urlTooLong = issueUrl.length > 7000;
-    box.innerHTML = `
-      <h3>Spoke Signal ready</h3>
-      <p>${
-        urlTooLong
-          ? "This design is too big to attach by itself. Open For builders, download the design file, and ask a builder to add it to the Spoke Signal."
-          : "Open the Spoke Signal so Britt can review this design. When the issue is created, an Action opens a lesson draft."
-      }</p>
-      <div class="status-actions">
-        <a class="btn btn-primary btn-lg" id="openIssue" href="${urlTooLong ? `https://github.com/${REPO}/issues/new?labels=spoke-signal,bespoke&title=${encodeURIComponent(title)}` : issueUrl}" target="_blank" rel="noopener">Open Spoke Signal</a>
-      </div>
-    `;
-
-    saveDraft();
+    box.innerHTML = `<h3>Review file downloaded — not sent yet</h3>
+      <ol><li>Move the downloaded file into your lesson’s shared OneDrive folder.</li>
+      <li>Wait until OneDrive shows that it has finished syncing.</li>
+      <li>Tell Britt in Teams which file is ready for review.</li></ol>
+      <p>This file holds your visual choices and optional preview text. You do not need a completed lesson or a separate form to request a design review. No GitHub account is needed.</p>`;
   }
 
   function render() {
@@ -1793,6 +1828,31 @@
     state.library = await libRes.json();
     state.themeOptions = await themeRes.json();
     await openShareLink();
+    byId("btnSaveFile").addEventListener("click", () => saveTeamFile());
+    byId("btnOpenFile").addEventListener("click", () => byId("teamFileInput").click());
+    byId("teamFileInput").addEventListener("change", async (event) => {
+      await openTeamFile(event.target.files?.[0]);
+      event.target.value = "";
+    });
+    byId("btnRecoverDraft").addEventListener("click", () => {
+      if (!isLeadSession()) return;
+      try {
+        const previous = localStorage.getItem(BACKUP_KEY);
+        if (!previous || !confirm("Restore the previous browser draft? Save your current work to a team file first if you need it.")) return;
+        const current = localStorage.getItem(STORAGE_KEY);
+        localStorage.setItem(STORAGE_KEY, previous);
+        if (current) localStorage.setItem(BACKUP_KEY, current);
+        history.replaceState(null, "", location.pathname + location.search);
+        location.reload();
+      } catch { fileNotice("Could not recover the browser draft. Open a team file from your shared folder instead."); }
+    });
+    window.addEventListener("storage", (event) => {
+      if ((event.key === STORAGE_KEY || event.key === null) && isLeadSession()) {
+        storageConflict = true;
+        setSaveStatus("Not saved — another tab changed this draft");
+        fileNotice("Another tab changed the saved draft. Save a team file to keep this tab’s work, then reload to open the latest browser copy. Automatic saving is paused.");
+      }
+    });
     if (!state.chapterCards || typeof state.chapterCards !== "object") state.chapterCards = {};
 
     byId("btnLeadUnlock")?.addEventListener("click", () => {
@@ -1816,7 +1876,8 @@
     byId("btnClear").addEventListener("click", () => {
       if (!isLeadSession()) return;
       if (confirm("Clear the design saved on this computer?")) {
-        localStorage.removeItem(STORAGE_KEY);
+        try { localStorage.removeItem(STORAGE_KEY); }
+        catch { fileNotice("Browser storage is unavailable. Save a team file before closing this page."); return; }
         try {
           sessionStorage.removeItem(UNLOCK_HASH_KEY);
           sessionStorage.removeItem(UNLOCK_CODE_KEY);

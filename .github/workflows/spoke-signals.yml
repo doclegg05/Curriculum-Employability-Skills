@@ -22,6 +22,9 @@ permissions:
 
 jobs:
   open-pr:
+    concurrency:
+      group: spoke-signal-${{ github.event.issue.number || github.run_id }}
+      cancel-in-progress: false
     if: >
       github.event_name == 'workflow_dispatch' ||
       (github.event_name == 'issues' &&
@@ -63,46 +66,43 @@ jobs:
               core.setFailed('Invalid JSON payload: ' + e.message);
               return;
             }
-            if (data.schema !== 'bespoke-selection/v1') {
-              core.setFailed('Unexpected schema: ' + data.schema);
-              return;
-            }
-            if (!data.lesson || !data.lesson.id) {
-              core.setFailed('Payload missing lesson.id');
-              return;
-            }
-            const lessonId = String(data.lesson.id).replace(/[^a-z0-9-]/gi, '').toLowerCase();
-            const date = String(data.date || new Date().toISOString().slice(0, 10)).replace(/[^0-9-]/g, '');
-            data.lesson.id = lessonId;
-            data.date = date;
-            const out = 'bespoke-payload.json';
+            const out = require('path').join(process.env.RUNNER_TEMP, 'bespoke-payload.json');
             fs.writeFileSync(out, JSON.stringify(data, null, 2));
-            core.setOutput('lesson_id', lessonId);
-            core.setOutput('date', date);
             core.setOutput('file', out);
 
-      - name: Build submission files
+      # GITHUB_TOKEN-created PR workflow runs require human approval. Validate
+      # here before creating the proposal; still approve and run full PR CI.
+      - name: Validate and build immutable submission files
+        id: submission
         env:
           PAYLOAD_FILE: ${{ steps.payload.outputs.file }}
         run: |
-          chmod +x scripts/bespoke-write-submission.py
-          python3 scripts/bespoke-write-submission.py "$PAYLOAD_FILE"
+          python3 scripts/validate-bespoke-selection.py "$PAYLOAD_FILE"
+          python3 -m unittest discover -s scripts -p 'test_bespoke*.py' -v
+          python3 scripts/bespoke-write-submission.py "$PAYLOAD_FILE" --github-output "$GITHUB_OUTPUT"
 
       - name: Create pull request
+        id: proposal
         uses: peter-evans/create-pull-request@v6
         with:
           token: ${{ secrets.GITHUB_TOKEN }}
-          commit-message: "chore(bespoke): Spoke Signal for ${{ steps.payload.outputs.lesson_id }}"
-          branch: bespoke-signal/${{ steps.payload.outputs.lesson_id }}/${{ steps.payload.outputs.date }}
-          title: "[Bespoke] ${{ steps.payload.outputs.lesson_id }} design choices (${{ steps.payload.outputs.date }})"
+          commit-message: "chore(bespoke): Spoke Signal for ${{ steps.submission.outputs.lesson_id }}"
+          branch: bespoke-signal/${{ steps.submission.outputs.lesson_id }}/${{ steps.submission.outputs.submission_id }}
+          add-paths: ${{ steps.submission.outputs.path }}/**
+          reviewers: doclegg05
+          title: "[Bespoke] ${{ steps.submission.outputs.lesson_id }} design choices (${{ steps.submission.outputs.date }})"
           body: |
             Spoke Signal from Bespoke.
 
-            - Lesson: `${{ steps.payload.outputs.lesson_id }}`
-            - Date: `${{ steps.payload.outputs.date }}`
-            - Files: `docs/phase-2/submissions/${{ steps.payload.outputs.lesson_id }}/${{ steps.payload.outputs.date }}/`
+            - Lesson: `${{ steps.submission.outputs.lesson_id }}`
+            - Date: `${{ steps.submission.outputs.date }}`
+            - Files: `${{ steps.submission.outputs.path }}/`
 
             **Merge = greenlight to build** (D10). Britt is the sole gate.
+            This immutable design proposal does not build or publish a lesson.
+            Confirm full team content, source access, and any earlier proposal for this lesson before approval.
+            Selection validation and Bespoke regression tests ran in this workflow.
+            Approve the GitHub-token-created PR workflow runs and require full quality before merging.
 
             ${{ github.event_name == 'issues' && format('Source issue: #{0}', github.event.issue.number) || 'Source: workflow_dispatch' }}
           labels: |
@@ -111,13 +111,15 @@ jobs:
           draft: true
 
       - name: Comment on issue
-        if: github.event_name == 'issues'
+        if: github.event_name == 'issues' && steps.proposal.outputs.pull-request-url != ''
         uses: actions/github-script@v7
+        env:
+          PROPOSAL_URL: ${{ steps.proposal.outputs.pull-request-url }}
         with:
           script: |
             await github.rest.issues.createComment({
               owner: context.repo.owner,
               repo: context.repo.repo,
               issue_number: context.issue.number,
-              body: 'Spoke Signals received. A draft PR with `selection.json` and filled `content-intake.md` is being opened (or updated) for Britt’s review.'
+              body: 'Validated design proposal: ' + process.env.PROPOSAL_URL + '. Britt must review this draft before any lesson build. The intake template still needs the team’s full content.'
             });

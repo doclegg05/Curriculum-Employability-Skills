@@ -46,6 +46,14 @@
           "type": "string",
           "pattern": "^[a-z0-9]+(?:-[a-z0-9]+)*$",
           "minLength": 1,
+          "enum": [
+            "goal-setting",
+            "money-management",
+            "professionalism-and-diversity",
+            "knowing-your-rights",
+            "communicating-assertively",
+            "workplace-ethics"
+          ],
           "description": "Lesson slug without the lesson- prefix; FID-2 normalizes to lesson-<id> for registries."
         },
         "title": {
@@ -170,7 +178,6 @@
             "gradient-sweep",
             "framed-gold",
             "bold-full-bleed",
-            "split-panel",
             "centered-badge",
             "gold-rail",
             "stacked-bands",
@@ -204,7 +211,6 @@
                 "sharp-border",
                 "glass",
                 "outlined",
-                "gradient-fill",
                 "pill",
                 "layered",
                 "top-accent",
@@ -235,7 +241,6 @@
                     "sharp-border",
                     "glass",
                     "outlined",
-                    "gradient-fill",
                     "pill",
                     "layered",
                     "top-accent",
@@ -256,7 +261,6 @@
                     "sharp-border",
                     "glass",
                     "outlined",
-                    "gradient-fill",
                     "pill",
                     "layered",
                     "top-accent",
@@ -277,7 +281,6 @@
                     "sharp-border",
                     "glass",
                     "outlined",
-                    "gradient-fill",
                     "pill",
                     "layered",
                     "top-accent",
@@ -298,7 +301,6 @@
                     "sharp-border",
                     "glass",
                     "outlined",
-                    "gradient-fill",
                     "pill",
                     "layered",
                     "top-accent",
@@ -319,7 +321,6 @@
                     "sharp-border",
                     "glass",
                     "outlined",
-                    "gradient-fill",
                     "pill",
                     "layered",
                     "top-accent",
@@ -340,7 +341,6 @@
                     "sharp-border",
                     "glass",
                     "outlined",
-                    "gradient-fill",
                     "pill",
                     "layered",
                     "top-accent",
@@ -361,7 +361,6 @@
                     "sharp-border",
                     "glass",
                     "outlined",
-                    "gradient-fill",
                     "pill",
                     "layered",
                     "top-accent",
@@ -421,7 +420,7 @@
       "lesson.id must be a kebab-case slug (no lesson- prefix required)",
       "when theme.cards.varyByChapter is true, chapterStyles must include every chapter key",
       "libraryCatalogVersion should match the committed library catalog version",
-      "THM-04 adjacent-chapter uniqueness is soft-warn until FID-4"
+      "when varying cards, adjacent chapters must use different styles"
     ]
   }
 }

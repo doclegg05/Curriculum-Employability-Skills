@@ -1,50 +1,83 @@
-# Bespoke (prototype)
+# Bespoke
 
-Instructor design-choice wizard for Round 2 SPOKES lessons. Hosted from this repo on GitHub Pages.
+Bespoke helps instructor teams choose the look of the six planned Round 2 lessons.
+It is a static, hosted design tool. It does not build lessons or connect directly
+to Teams or OneDrive. March 2027 is the soft phase target, subject to review.
 
-## Try it
+## For instructor teams
 
-1. Open the Pages site root, then **`/bespoke/`**  
-   Example: `https://<org-or-user>.github.io/Curriculum-Employability-Skills/bespoke/`
-2. Or open `bespoke/index.html` from the curriculum hub (**Dashboard.html** → “Open Bespoke”).
-3. Pick a lesson + spokesperson, choose a **theme preset** (or edit every option), watch the **Spokes Model** preview, then **Submit Spoke Signal**.
-4. On the first step, the team lead writes down a short edit code. Choices also save on this computer as they go. **Copy view link for your team** shares a read-only link. Teammates can look, but they cannot change or submit. The lead opens that same link on any computer, chooses **I am the team lead**, and enters the code to edit and submit.
+Open the hosted curriculum hub and choose **Open Bespoke**. Use the website in a
+browser; opening its HTML file directly from OneDrive or `file://` does not load
+the catalogs. The existing lesson decks have a separate offline contract.
 
-Steps: How to use Bespoke · Lesson & team · Theme preset · Color lead · Sidebar & background · Title & dividers · Cards · Fonts · Your content · Review & submit · Save and come back. The preview follows the step (title slide → content slide) and shows the same 16:9 frame at every screen size; catalog ids live in a collapsed **For builders** note on Review. Instructors never need a design file.
+1. The spokesperson opens the latest team file and shares the Bespoke window in a Teams call.
+2. The team chooses a starter theme and adjusts the available options.
+3. **Save team file** downloads a timestamped file. Put it in the shared lesson folder and wait for OneDrive to sync.
+4. At the next meeting, download that file and choose **Open team file**. Do not edit its JSON contents.
+5. **Prepare for Britt’s review** downloads a REVIEW file. Put it in the folder and tell Britt in Teams. This does not send or upload automatically.
 
-## What ships in this prototype
+Teachers choose the UI's visual style, compare the previews together, and save or
+reopen their agreed choices. No completed lesson, separate form, GitHub account,
+command-line tools or agent access is needed to use BeSpoke or request a design
+review. Optional sample text is only for previewing appearance and fit.
+Read or print the [visual design and file guide](team-guide.html).
 
-- Loads **`SPOKES Builder/bespoke-library-catalog.json`** for selectable options (cards, dividers, title slides, textures, color leads, sidebars)
-- Preview styles come from **`SPOKES Builder/theme-options.json`** (same CSS the generator writes to `theme-library.css`) injected into template markup
-- UI keys = `{family}.{slug}` (e.g. `cards.top-accent`); intake / selection payload persists **slug only**
-- Six theme presets: Professional, Modern, Serious, Light-hearted, Fun, Outspoken (starters; all editable after)
-- Demo-first Spokes Model (sample content, not a full lesson build)
-- Opt-in vary card style by WIPPEA chapter (D12) with THM-04 adjacent uniqueness
-- Lead choices auto-save in this browser as a convenience. A view link (`#v=`, compressed `bespoke-selection/v1` plus `editCodeHash`) is read-only and does not write that draft. The raw edit code is never in the link. Entering the code unlocks editing and Submit on any computer. Old `#e=` links do not grant edit. `scripts/bespoke-write-submission.py` is the single source of `content-intake.md` in the PR (FID-7)
-- Spoke Signals: the lead’s browser opens a labeled GitHub issue (no token in the browser); Action opens a lesson-tagged PR. Design-file download/open stays under **For builders**
-- Docs: `SPOKES Builder/bespoke-library-ids.md` · visual ref: `SPOKES Builder/library-preview.html`
+Browser saving is a convenience copy, not the team record. Importing a file asks
+before replacing the working draft and keeps one previous browser draft for
+recovery. A change from another tab pauses automatic saving to avoid silently
+replacing work. Downloading a team file still works when browser storage fails.
 
-## Catalog sources
+Optional view links are snapshots, not live collaboration. Copy a new link after
+changes. They contain readable sample text/contact details. Their optional edit
+code is a convenience lock, not authentication or confidentiality.
+
+## For Britt and builders
+
+Follow [the builder handoff](../docs/bespoke/builder-handoff.md). A single command
+validates an incoming file and writes an immutable proposal containing the full
+canonical intake, selected CSS and a final-output design contract. Identical
+retries preserve the proposal; differing revisions have separate folders.
+
+The optional **For builders** GitHub flow or Spoke Signals workflow opens a draft
+PR. Britt's reviewed merge is the approval to begin a separate build. The workflow
+does not build, publish or apply registries automatically. A review request alone
+does not enforce repository branch protection.
+
+After an authorized build, the design checker verifies selection identity, CSS,
+fonts, chapter mapping and required dark-theme class. This is a static check;
+final browser inspection, content review and teacher acceptance are still required.
+
+## Catalog sources and guardrails
 
 | File | Role |
 |------|------|
-| `SPOKES Builder/bespoke-library-catalog.json` | Authoritative option list (optional `blocked` + `reason`) |
-| `SPOKES Builder/theme-options.json` | Uncommented CSS snippets (FID-3 single source) |
-| `bespoke/catalog.json` | Lessons, presets, font pairings, color-lead preview cues |
-| `SPOKES Builder/theme-library.css` | Generated agent-facing library (`generate-theme-library.py`) |
-| `bespoke/selection.schema.json` | Generated selection payload schema (`generate-selection-schema.py`) |
+| `SPOKES Builder/bespoke-library-catalog.json` | Authoritative options, including blocked choices and reasons |
+| `SPOKES Builder/theme-options.json` | CSS source shared by preview and generated design artifacts |
+| `bespoke/catalog.json` | Six upcoming lessons, presets, font pairings and preview cues |
+| `SPOKES Builder/theme-library.css` | Generated agent-facing library |
+| `bespoke/selection.schema.json` | Generated payload schema; six lesson IDs and allowed theme values |
+| `SPOKES Builder/content-intake-template.md` | Canonical content intake and instructor ownership |
 
-## Spoke Signals
+No arbitrary palette, font or CSS entry is exposed to instructors. Imported files
+and builder writes validate choices. Known defective `gradient-fill` cards and
+`split-panel` dividers are blocked pending remediation. Other combinations still
+need computed contrast and visual review in the finished lesson.
 
-1. The team lead submits from an editable session. The issue body still carries `bespoke-selection/v1` between the payload markers (unchanged Action contract).
-2. Open the pre-filled **Spoke Signal** issue (or, if the issue URL is too long, a builder downloads the design file from **For builders** and adds `selection.json` between the payload markers).
-3. Workflow `.github/workflows/spoke-signals.yml` runs `bespoke-write-submission.py` to create `docs/phase-2/submissions/<lesson>/<date>/{selection.json,content-intake.md}` and opens a PR tagged with the lesson id.
-4. Britt reviews; **merge = greenlight to build** (D10). Registry upsert via `bespoke-apply-selection.py` is available as a script but not yet wired into the Action.
+Card variation is optional (D12); when enabled, adjacent WIPPEA chapters must have
+different card styles. UI option keys use `family.slug`; payloads persist slugs.
+The preview is a sample. Full lesson content, source documents, chapter imagery
+and final component placement remain part of the approved build.
 
-View links are not a submit path until someone enters the lead’s edit code. There are no accounts (D2): the browser checks a hash of that code. Only the hash is stored in the view link.
+## Checks
 
-Manual test path: Actions → **Spoke Signals** → Run workflow → paste JSON into `payload_json`.
+```sh
+python3 -m unittest discover -s scripts -p 'test_bespoke*.py' -v
+node scripts/test-bespoke-browser.mjs
+bash scripts/quality.sh
+```
 
-## Decisions
+The browser tests use synthetic files and isolated browser contexts. They do not
+send messages, upload to OneDrive, create GitHub issues or publish anything.
 
-See `docs/bespoke/decisions.md` (greenlit lock file mirrored from the project store).
+Locked decisions: [docs/bespoke/decisions.md](../docs/bespoke/decisions.md).
+Current review: [project readiness review](../docs/qa-reports/project-review-2026-09-22.md).

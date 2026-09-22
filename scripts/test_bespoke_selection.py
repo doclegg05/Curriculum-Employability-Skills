@@ -79,7 +79,7 @@ class SelectionSchemaTests(unittest.TestCase):
                 encoding="utf-8"
             )
         )
-        card_slugs = [o["slug"] for o in library["families"]["cards"]["options"]]
+        card_slugs = [o["slug"] for o in library["families"]["cards"]["options"] if not o.get("blocked")]
         self.assertEqual(
             schema["properties"]["theme"]["properties"]["cards"]["properties"]["lessonWide"][
                 "enum"

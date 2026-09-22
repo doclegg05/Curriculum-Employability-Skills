@@ -116,8 +116,8 @@
         "sidebarColor": "dark",
         "backgroundTexture": "plain",
         "titleSlide": "offset-left",
-        "dividerStyle": "split-panel",
-        "cardStyle": "gradient-fill",
+        "dividerStyle": "gold-rail",
+        "cardStyle": "stamp-frame",
         "fontPairing": "bitter-raleway"
       }
     }

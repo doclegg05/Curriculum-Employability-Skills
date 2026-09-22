@@ -214,7 +214,7 @@
         "brand": "pending",
         "engagement": "pending"
       },
-      "notes": "Build 2026-04-02. Font: Vollkorn + Fira Sans (CSS vars fixed 2026-04-03). 31 slides, 7 chapters, 6 interactive components (tabs, spinner wheel, accordion, Jeopardy game, matrix, checkpoint). 4 videos embedded, 4 handout downloads."
+      "notes": "Build 2026-04-02. Font: Vollkorn + Fira Sans (CSS vars fixed 2026-04-03). 33 slides, 7 chapters, 6 interactive components (tabs, spinner wheel, accordion, Jeopardy game, matrix, checkpoint). 4 videos embedded, 4 handout downloads."
     },
     {
       "id": "lesson-problem-solving-and-decision-making",
