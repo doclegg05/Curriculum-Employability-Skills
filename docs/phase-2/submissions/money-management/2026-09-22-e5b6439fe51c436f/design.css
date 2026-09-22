@@ -1,0 +1,362 @@
+/* Bespoke selection SHA-256: e5b6439fe51c436ff4ace6e6d4f8c2fa8b6ba8a0bd03a835ee9737c1c170b85c */
+
+@font-face {
+  font-family: "DM Serif Display";
+  src: url("../fonts/dm-serif-display-latin.woff2") format("woff2");
+  font-weight: 400;
+  font-style: normal;
+  font-display: swap;
+}
+
+@font-face {
+  font-family: "Outfit";
+  src: url("../fonts/outfit-latin.woff2") format("woff2");
+  font-weight: 300 800;
+  font-style: normal;
+  font-display: swap;
+}
+
+body { --font-heading: 'DM Serif Display', serif; --font-body: 'Outfit', sans-serif; font-family: var(--font-body); }
+
+.slide-title h1,
+.slide h2,
+.slide h3,
+.card h4,
+.smart-content h4,
+.matrix-cell .matrix-action,
+.area-card h4,
+.big-statement h2,
+.slide-video h2,
+.slide-section h2,
+.slide-section::after,
+.closing-box h2 { font-family: var(--font-heading); }
+
+body,
+.slide-section .chapter-label { font-family: var(--font-body); }
+
+.slide h2 { color: var(--primary); }
+  .download-btn { background: var(--primary); }
+  .chapter-item.active > .chapter-header { background: rgba(0,123,175,0.25); }
+  .divider { background: linear-gradient(90deg, var(--primary), var(--gold)); }
+  .slide-section { background: linear-gradient(135deg, var(--primary), var(--dark)); }
+  .slide-section h2 { color: var(--light); }
+  .slide-section .chapter-label { color: rgba(255,255,255,0.7); }
+
+.sidebar { background: var(--dark); }
+
+.main {
+    background-color: var(--light);
+    background-image: radial-gradient(rgba(0,123,175,0.08) 1px, transparent 1px);
+    background-size: 16px 16px;
+  }
+
+[data-chapter="2"] .card {
+  background: var(--light);
+  border-left: none;
+  border-top: 3px solid var(--primary);
+  border-radius: 10px;
+  box-shadow: 0 4px 15px rgba(0,64,113,0.08);
+}
+[data-chapter="2"] .card.gold-border {
+  border-top-color: var(--gold);
+  border-left: none;
+}
+[data-chapter="2"] .takeaway-num {
+  background: var(--light);
+  color: var(--primary);
+  border-radius: 6px;
+  box-shadow: 0 2px 6px rgba(0,0,0,0.08);
+}
+[data-chapter="2"] .takeaway-num.alt {
+  color: var(--gold);
+}
+[data-chapter="2"] .smart-letter {
+  border-radius: 6px;
+  box-shadow: 0 2px 6px rgba(0,0,0,0.08);
+}
+[data-chapter="2"] .smart-content {
+  background: var(--light);
+  border-radius: 10px;
+  box-shadow: 0 2px 8px rgba(0,0,0,0.06);
+}
+[data-chapter="2"] .matrix-cell {
+  border-radius: 10px;
+  box-shadow: 0 4px 12px rgba(0,0,0,0.08);
+}
+[data-chapter="2"] .danger-card-front,
+[data-chapter="2"] .danger-card-back {
+  border-radius: 12px;
+  box-shadow: 0 4px 15px rgba(0,0,0,0.1);
+}
+[data-chapter="2"] .area-card {
+  border-radius: 12px;
+  box-shadow: 0 4px 15px rgba(0,0,0,0.08);
+}
+[data-chapter="2"] .activity-box {
+  border-radius: 10px;
+  box-shadow: 0 2px 8px rgba(0,0,0,0.06);
+}
+[data-chapter="2"] .download-btn {
+  border-radius: 8px;
+  box-shadow: 0 2px 6px rgba(0,0,0,0.1);
+}
+
+[data-chapter="3"] .card {
+  background: var(--light);
+  border: 1px solid var(--offwhite);
+  border-bottom: 3px solid var(--primary);
+  border-left: 1px solid var(--offwhite);
+  border-radius: 8px;
+}
+[data-chapter="3"] .card.gold-border {
+  border-bottom-color: var(--gold);
+}
+[data-chapter="3"] .takeaway-num {
+  background: var(--light);
+  border: 2px solid var(--primary);
+  color: var(--primary);
+}
+[data-chapter="3"] .takeaway-num.alt {
+  border-color: var(--gold);
+  color: var(--gold);
+}
+[data-chapter="3"] .smart-letter {
+  background: var(--light);
+  border: 2px solid var(--primary);
+  color: var(--primary);
+}
+[data-chapter="3"] .smart-letter.alt {
+  border-color: var(--gold);
+  color: var(--gold);
+}
+[data-chapter="3"] .smart-content {
+  background: var(--light);
+  border: 1px solid var(--offwhite);
+  border-radius: 8px;
+}
+[data-chapter="3"] .matrix-cell {
+  border: 1px solid var(--offwhite);
+  border-bottom: 3px solid;
+  border-radius: 8px;
+}
+[data-chapter="3"] .danger-card-front,
+[data-chapter="3"] .danger-card-back {
+  border: 1px solid var(--offwhite);
+  border-radius: 8px;
+}
+[data-chapter="3"] .area-card {
+  border: 1px solid var(--offwhite);
+  border-bottom: 3px solid var(--primary);
+  border-radius: 8px;
+}
+[data-chapter="3"] .activity-box {
+  border: 1px solid var(--offwhite);
+  border-bottom: 3px solid var(--gold);
+  border-radius: 8px;
+}
+[data-chapter="3"] .download-btn {
+  border-radius: 8px;
+}
+
+[data-chapter="4"] .card {
+  background: var(--light);
+  border: 1px solid var(--offwhite);
+  border-left: 1px solid var(--offwhite);
+  border-radius: 24px;
+  padding: 1.25rem 1.5rem;
+}
+[data-chapter="4"] .card.gold-border {
+  border-color: var(--offwhite);
+}
+[data-chapter="4"] .takeaway-num {
+  border-radius: 50%;
+}
+[data-chapter="4"] .takeaway-num.alt {
+  border-radius: 50%;
+}
+[data-chapter="4"] .smart-letter {
+  border-radius: 50%;
+}
+[data-chapter="4"] .smart-content {
+  border-radius: 16px;
+  border: 1px solid var(--offwhite);
+}
+[data-chapter="4"] .matrix-cell {
+  border-radius: 16px;
+}
+[data-chapter="4"] .danger-card-front,
+[data-chapter="4"] .danger-card-back {
+  border-radius: 20px;
+}
+[data-chapter="4"] .area-card {
+  border-radius: 20px;
+}
+[data-chapter="4"] .activity-box {
+  border-radius: 16px;
+}
+[data-chapter="4"] .download-btn {
+  border-radius: 20px;
+}
+
+[data-chapter="5"] .card {
+  background: var(--light);
+  border: 1px solid var(--offwhite);
+  border-left: 1px solid var(--offwhite);
+  border-radius: 6px;
+  box-shadow: 4px 4px 0 rgba(0,123,175,0.15);
+}
+[data-chapter="5"] .card.gold-border {
+  box-shadow: 4px 4px 0 rgba(211,178,87,0.2);
+}
+[data-chapter="5"] .takeaway-num {
+  box-shadow: 2px 2px 0 rgba(0,123,175,0.2);
+}
+[data-chapter="5"] .takeaway-num.alt {
+  box-shadow: 2px 2px 0 rgba(211,178,87,0.2);
+}
+[data-chapter="5"] .smart-letter {
+  box-shadow: 3px 3px 0 rgba(0,123,175,0.15);
+}
+[data-chapter="5"] .smart-content {
+  box-shadow: 3px 3px 0 rgba(0,0,0,0.06);
+  border-radius: 6px;
+}
+[data-chapter="5"] .matrix-cell {
+  box-shadow: 4px 4px 0 rgba(0,0,0,0.08);
+  border-radius: 6px;
+}
+[data-chapter="5"] .danger-card-front,
+[data-chapter="5"] .danger-card-back {
+  box-shadow: 4px 4px 0 rgba(0,0,0,0.1);
+  border-radius: 8px;
+}
+[data-chapter="5"] .area-card {
+  box-shadow: 4px 4px 0 rgba(0,123,175,0.12);
+  border-radius: 8px;
+}
+[data-chapter="5"] .activity-box {
+  box-shadow: 3px 3px 0 rgba(211,178,87,0.15);
+  border-radius: 6px;
+}
+[data-chapter="5"] .download-btn {
+  box-shadow: 2px 2px 0 rgba(55,181,80,0.2);
+  border-radius: 6px;
+}
+
+[data-chapter="6"] .card {
+  background: var(--light);
+  border-left: none;
+  border-top: 5px solid var(--primary);
+  border-radius: 0 0 10px 10px;
+  box-shadow: 0 2px 10px rgba(0,64,113,0.06);
+}
+[data-chapter="6"] .card.gold-border {
+  border-top-color: var(--gold);
+  border-left: none;
+}
+[data-chapter="6"] .takeaway-num {
+  background: var(--primary);
+  color: var(--light);
+  border-radius: 4px 4px 0 0;
+}
+[data-chapter="6"] .takeaway-num.alt {
+  background: var(--muted-gold);
+  color: var(--light);
+}
+[data-chapter="6"] .smart-letter {
+  border-radius: 4px 4px 0 0;
+}
+[data-chapter="6"] .smart-content {
+  background: var(--light);
+  border-top: 3px solid var(--primary);
+  border-radius: 0 0 10px 10px;
+}
+[data-chapter="6"] .matrix-cell {
+  border-top: 4px solid var(--primary);
+  border-radius: 0 0 10px 10px;
+}
+[data-chapter="6"] .danger-card-front,
+[data-chapter="6"] .danger-card-back {
+  border-top: 4px solid var(--primary);
+  border-radius: 0 0 12px 12px;
+}
+[data-chapter="6"] .area-card {
+  border-left: none;
+  border-top: 5px solid var(--primary);
+  border-radius: 0 0 12px 12px;
+}
+[data-chapter="6"] .area-card.gold-card {
+  border-top-color: var(--gold);
+}
+[data-chapter="6"] .activity-box {
+  border-left: none;
+  border-top: 4px solid var(--gold);
+  border-radius: 0 0 10px 10px;
+}
+[data-chapter="6"] .download-btn {
+  border-radius: 0 0 8px 8px;
+  border-top: 3px solid var(--accent);
+}
+
+[data-chapter="7"] .card {
+  background: var(--light);
+  border: 1px solid rgba(0,64,113,0.18);
+  border-left: 1px solid rgba(0,64,113,0.18);
+  border-radius: 8px;
+  box-shadow: none;
+}
+[data-chapter="7"] .card.gold-border {
+  border-color: rgba(173,136,6,0.45);
+}
+[data-chapter="7"] .takeaway-num {
+  background: var(--light);
+  color: var(--dark);
+  border: 1px solid rgba(0,64,113,0.22);
+  border-radius: 6px;
+}
+[data-chapter="7"] .takeaway-num.alt {
+  color: var(--muted-gold);
+  border-color: rgba(173,136,6,0.4);
+}
+[data-chapter="7"] .smart-letter {
+  background: var(--light);
+  color: var(--dark);
+  border: 1px solid rgba(0,64,113,0.22);
+  border-radius: 6px;
+}
+[data-chapter="7"] .smart-letter.alt {
+  color: var(--muted-gold);
+  border-color: rgba(173,136,6,0.4);
+}
+[data-chapter="7"] .smart-content {
+  background: var(--light);
+  border: 1px solid rgba(0,64,113,0.14);
+  border-radius: 8px;
+}
+[data-chapter="7"] .matrix-cell {
+  border: 1px solid rgba(0,64,113,0.18);
+  border-radius: 8px;
+  background: var(--light);
+}
+[data-chapter="7"] .danger-card-front,
+[data-chapter="7"] .danger-card-back {
+  border: 1px solid rgba(0,64,113,0.18);
+  border-radius: 10px;
+  background: var(--light);
+}
+[data-chapter="7"] .area-card {
+  border: 1px solid rgba(0,64,113,0.18);
+  border-radius: 10px;
+  background: var(--light);
+}
+[data-chapter="7"] .activity-box {
+  border: 1px solid rgba(173,136,6,0.35);
+  border-radius: 8px;
+  background: var(--light);
+}
+[data-chapter="7"] .download-btn {
+  border: 1px solid rgba(0,64,113,0.22);
+  border-radius: 8px;
+  background: var(--light);
+  color: var(--dark);
+}

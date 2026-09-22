@@ -1,0 +1,94 @@
+{
+  "schema": "bespoke-build-contract/v1",
+  "lessonId": "money-management",
+  "selectionSha256": "e5b6439fe51c436ff4ace6e6d4f8c2fa8b6ba8a0bd03a835ee9737c1c170b85c",
+  "themeOptionsSha256": "b0755a316fd77eb3c333a228373bcf3b4abcbbc55760af2786a67f300c0f3888",
+  "templateSha256": "ddbcc7a1993a14ef988f70309f14fed82899eaceab51b32c0eb9d567bc13b8de",
+  "cssSha256": "dd2f7f398c7da0ccbbcaadc209c3ba2792f73b790d2e855cd22204f5e7f6024f",
+  "theme": {
+    "colorLead": "blue",
+    "sidebarColor": "dark",
+    "backgroundTexture": "dot-grid",
+    "titleSlide": "centered-gradient",
+    "dividerStyle": "gradient-sweep",
+    "fontPairing": "dm-serif-display-outfit",
+    "cards": {
+      "lessonWide": "left-border",
+      "varyByChapter": true,
+      "chapterStyles": {
+        "W": "left-border",
+        "I": "shadow-float",
+        "P1": "outlined",
+        "P2": "pill",
+        "P3": "layered",
+        "E": "top-accent",
+        "A": "quiet-outline"
+      }
+    },
+    "catalogIds": {
+      "colorLead": "colorLeads.blue",
+      "sidebarColor": "sidebarColors.dark",
+      "backgroundTexture": "backgroundTextures.dot-grid",
+      "titleSlide": "titleSlides.centered-gradient",
+      "dividerStyle": "dividers.gradient-sweep",
+      "cards": {
+        "W": "cards.left-border",
+        "I": "cards.shadow-float",
+        "P1": "cards.outlined",
+        "P2": "cards.pill",
+        "P3": "cards.layered",
+        "E": "cards.top-accent",
+        "A": "cards.quiet-outline"
+      }
+    }
+  },
+  "chapterMap": {
+    "W": "1",
+    "I": "2",
+    "P1": "3",
+    "P2": "4",
+    "P3": "5",
+    "E": "6",
+    "A": "7"
+  },
+  "fontPairing": {
+    "id": "dm-serif-display-outfit",
+    "label": "DM Serif Display + Outfit",
+    "heading": "DM Serif Display",
+    "body": "Outfit",
+    "mood": "Clean, modern, professional"
+  },
+  "fontPaths": [
+    "../fonts/dm-serif-display-latin.woff2",
+    "../fonts/outfit-latin.woff2"
+  ],
+  "fontSelectors": {
+    "heading": [
+      ".slide-title h1",
+      ".slide h2",
+      ".slide h3",
+      ".card h4",
+      ".smart-content h4",
+      ".matrix-cell .matrix-action",
+      ".area-card h4",
+      ".big-statement h2",
+      ".slide-video h2",
+      ".slide-section h2",
+      ".slide-section::after",
+      ".closing-box h2"
+    ],
+    "body": [
+      "body",
+      ".slide-section .chapter-label"
+    ]
+  },
+  "mainClassRequired": null,
+  "acceptance": [
+    "Insert design.css verbatim into style#theme-override after base CSS.",
+    "Add meta[name=bespoke-selection-sha256] with selectionSha256 as content.",
+    "Retain canonical template markup and match chapterMap; do not override chosen theme in later CSS.",
+    "Run scripts/bespoke-check-design.py with this contract and the finished HTML.",
+    "Run lesson validator and full quality gate; inspect all slides and chosen components in a browser.",
+    "Britt and the team review final visual and content fidelity before release. Static checks do not prove appearance."
+  ]
+}
