@@ -4,12 +4,18 @@ SPOKES interactive employability curriculum system with standards, templates, an
 
 ## Instructor collaboration
 
-Round 2 teams use Bespoke during Teams calls to choose the visual style of their
-lessons: colors, fonts, backgrounds, layouts and cards. Save and reopen those
-choices using a Bespoke team file in the shared OneDrive folder. No lesson-writing
-form, coding or GitHub account is required for this workflow.
-Start with the [Bespoke visual design guide](bespoke/team-guide.html).
+Round 2 teams use BeSpoke during Teams calls to choose the visual style of their
+lessons: colors, fonts, backgrounds, layouts and cards. Britt supplies a private
+lesson link to pin in each team's private Teams channel. Teams use **Save shared
+design** and **Open team design** to save and resume their shared choices across
+computers. One spokesperson operates BeSpoke during the call; OneDrive can hold
+optional files from **Download backup**. No lesson-writing form, coding or GitHub
+account is required for this workflow.
+Start with the [BeSpoke visual design guide](bespoke/team-guide.html).
 Britt/builders follow [the handoff and design verification procedure](docs/bespoke/builder-handoff.md).
+Administrators follow [shared service setup and hosted acceptance](docs/bespoke/auto-handoff-setup.md).
+The hosted Save/Open/Send flow still requires recorded deployment acceptance;
+local checks alone do not establish that it is ready for teams.
 The six new lessons remain unbuilt; March 2027 is the soft phase target.
 
 Current evidence and remaining release blockers:
@@ -31,7 +37,8 @@ Current evidence and remaining release blockers:
 - `SPOKES-Project-Plan.md` — phased project delivery plan
 - `SPOKES-Master-Action-Plan.md` — consolidated issue register + sprint plan
 - `Dashboard.html` — curriculum launcher/dashboard (`index.html` redirects here)
-- `bespoke/` — Bespoke instructor design wizard (prototype; GitHub Pages at `/bespoke/`)
+- `bespoke/` — BeSpoke instructor design wizard (GitHub Pages at `/bespoke/`; hosted shared-service acceptance pending)
+- `netlify/` — private-team Save/Open and review handoff service; deploy the staged service package
 - `docs/bespoke/decisions.md` — greenlit Bespoke lock decisions
 - `lesson-registry.json` — per-lesson status, theme, and quality-gate registry
 - `lesson-time-management/` — Time Management lesson

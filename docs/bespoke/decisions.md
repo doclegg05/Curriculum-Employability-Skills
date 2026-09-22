@@ -2,6 +2,8 @@
 
 **Status: GREENLIT** (Britt, 2026-09-18). Build the prototype.
 
+September 22 clarification: the teacher workflow is visual design only. Shared Save/Open and private team access were authorized as its implementation; neither Save nor Send builds lessons.
+
 Source of truth at greenlight: project store `docs/bespoke-open-questions.md`. This file mirrors the locked table into the curriculum repo.
 
 ## Locked
@@ -10,10 +12,10 @@ Source of truth at greenlight: project store `docs/bespoke-open-questions.md`. T
 |------|----------|
 | D6 | Keep existing colors; present for choice / legal mix-match. |
 | D7 / library | Same product as wizard: catalog of colors, cards, layouts the wizard displays. |
-| D10 | Submit → PR; Britt sole gate; merge = greenlight to build lesson. |
+| D10 | Send → receipt-confirmed draft PR; Britt is the visual-design review gate. A lesson build needs separate authorization and complete approved content. |
 | D11 | Wizard fills `content-intake-template.md`; template canonical. |
 | D12 | Opt-in vary card styles by chapter / topic; function = different library pieces for different jobs. |
-| Hosting | Same repo; GitHub Pages; no custom domain required for prototype. |
+| Hosting | Same repo; GitHub Pages wizard with a dedicated Netlify Save/Open service. No custom domain required. |
 | Wizard | One app; team ≈ lesson + spokesperson; demo-first Spokes Model; submit → Action → lesson-tagged PR. |
 | Presets | Six: Professional, Modern, Serious, Light-hearted, Fun, Outspoken. Fully editable after pick. |
 | Timeline | Undetermined; prototype. |

@@ -22,9 +22,11 @@
     <div class="header-actions">
       <p id="saveStatus" class="save-status"></p>
       <span id="saveLive" class="sr-only" aria-live="polite"></span>
-      <button type="button" class="btn btn-primary" id="btnSave">Save</button>
-      <button type="button" class="btn btn-secondary" id="btnOpen">Open</button>
+      <button type="button" class="btn btn-primary" id="btnSave">Save shared design</button>
+      <button type="button" class="btn btn-secondary" id="btnOpen">Open team design</button>
       <button type="button" class="btn btn-accent" id="btnSend">Send to Britt</button>
+      <button type="button" class="btn btn-ghost" id="btnDownloadBackup">Download backup</button>
+      <button type="button" class="btn btn-ghost" id="btnOpenBackup">Open backup</button>
       <button type="button" class="btn btn-ghost" id="btnRecoverDraft" hidden>Recover previous draft</button>
       <input id="teamFileInput" type="file" accept="application/json,.json" hidden>
       <a class="btn btn-ghost" href="../Dashboard.html">Curriculum hub</a>
@@ -32,27 +34,28 @@
     </div>
   </header>
   <p id="fileStatus" class="restore-notice" role="status" hidden></p>
+  <section id="teamSessionBar" class="team-session-bar" aria-label="Shared team session" hidden>
+    <p id="teamSessionStatus"></p>
+    <div class="team-session-actions">
+      <button type="button" class="btn btn-primary" id="btnLoadLatest" hidden>Load latest shared design</button>
+      <button type="button" class="btn btn-secondary" id="btnKeepLocal" hidden>Keep this browser draft</button>
+      <button type="button" class="btn btn-ghost" id="btnHistory">Previous versions</button>
+      <button type="button" class="btn btn-ghost" id="btnCheckStatus" hidden>Check review status</button>
+      <button type="button" class="btn btn-ghost" id="btnLeaveSession">Leave team session on this browser</button>
+    </div>
+    <div id="historyPanel" class="history-panel" hidden></div>
+  </section>
   <p id="accessBanner" class="access-banner" role="status" hidden>Only the team lead can change this.</p>
-  <div id="leadUnlock" class="lead-unlock" hidden>
-    <button type="button" class="btn btn-accent btn-lg" id="btnLeadUnlock" aria-expanded="false" aria-controls="leadCodeForm">I am the team lead</button>
-    <form id="leadCodeForm" class="lead-code-form" hidden>
-      <label class="field" for="leadCodeInput">Your edit code
-        <input id="leadCodeInput" type="text" autocomplete="off" maxlength="40" enterkeyhint="done">
-      </label>
-      <button type="submit" class="btn btn-primary btn-lg">Unlock editing</button>
-      <p id="leadCodeError" class="share-status" role="status" aria-live="polite"></p>
-    </form>
-  </div>
   <p id="restoreNotice" class="restore-notice" role="status" hidden></p>
   <dialog id="openDialog" class="open-dialog" aria-labelledby="openDialogTitle">
     <form id="openForm">
-      <h2 id="openDialogTitle">Open a saved design</h2>
-      <p>Pick the lesson and enter the edit code from the meeting where it was saved.</p>
+      <h2 id="openDialogTitle">Open your team design</h2>
+      <p>Use the lesson and private access code Britt or your administrator gave your team.</p>
       <label class="field" for="openLesson">Lesson
         <select id="openLesson" required></select>
       </label>
-      <label class="field" for="openEditCode">Edit code
-        <input id="openEditCode" type="text" autocomplete="off" minlength="4" maxlength="40" required>
+      <label class="field" for="openEditCode">Private access code
+        <input id="openEditCode" type="password" autocomplete="off" minlength="20" maxlength="128" required>
       </label>
       <p id="openError" class="share-status" role="status" aria-live="polite"></p>
       <div class="share-actions">

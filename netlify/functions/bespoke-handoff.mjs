@@ -1,338 +1,283 @@
-/**
- * Secret-holding endpoint for Bespoke Save, Open, and Send.
- * The GitHub token is read from BESPOKE_GITHUB_TOKEN only. Never from the request.
- * Drafts are encrypted and stored on branch bespoke-drafts. This file never writes main.
- * Send starts the existing Spoke Signals workflow. It does not build a lesson
- * and it does not apply the selection registry.
- */
-import {
-  createCipheriv,
-  createDecipheriv,
-  createHash,
-  randomBytes,
-  timingSafeEqual
-} from "node:crypto";
+/** Durable, team-authorized Bespoke drafts. No writes to main and no lesson builds. */
+import { createCipheriv, createDecipheriv, createHash, randomBytes, timingSafeEqual } from 'node:crypto';
+import { LESSON_IDS, selectionErrors, semanticDigest, digest, submissionId } from './_shared/selection.mjs';
+export { LESSON_IDS, submissionId };
+export const DRAFT_BRANCH = 'bespoke-drafts';
+export const WORKFLOW_FILE = 'spoke-signals.yml';
+export const REPO = 'doclegg05/Curriculum-Employability-Skills';
+export const WRONG_CODE = 'That team access code is not right. Check the code from Britt.';
+export const SETUP_MESSAGE = 'Saving is not connected yet. Ask Britt to finish the connection.';
+export const config = { path: '/api/bespoke', rateLimit: { action: 'rate_limit', aggregateBy: ['ip'], windowSize: 60, windowLimit: 120 } };
+const MAX_BODY_BYTES = 80000;
+const MAX_SELECTION_BYTES = 60000;
+const UUID = /^[0-9a-f]{8}-[0-9a-f]{4}-[1-8][0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$/i;
+const SHA = /^[0-9a-f]{40}$/;
+const RECEIPT = /^\d{4}-\d{2}-\d{2}-[0-9a-f]{16}$/;
+const fail = (status, error, message, details = {}) => ({ status, body: { ok: false, error, message, ...details } });
+const ok = body => ({ status: 200, body: { ok: true, ...body } });
+const object = value => value && typeof value === 'object' && !Array.isArray(value);
 
-export const DRAFT_BRANCH = "bespoke-drafts";
-export const WORKFLOW_FILE = "spoke-signals.yml";
-export const REPO = "doclegg05/Curriculum-Employability-Skills";
-export const LESSON_IDS = [
-  "goal-setting",
-  "money-management",
-  "professionalism-and-diversity",
-  "knowing-your-rights",
-  "communicating-assertively",
-  "workplace-ethics"
-];
-export const WRONG_CODE = "That code is not right. Try again.";
-export const SETUP_MESSAGE = "Saving is not connected yet.";
-const MAX_BODY_CHARS = 80000;
-const MAX_SELECTION_CHARS = 60000;
-const EDIT_CODE_MIN = 4;
-const EDIT_CODE_MAX = 40;
-
-export const config = {
-  path: "/api/bespoke"
-};
-
-function fail(status, error, message) {
-  return { status, body: { ok: false, error, message } };
+export function hashEditCode(code) { return createHash('sha256').update(String(code).trim(), 'utf8').digest('base64url'); }
+export function hashesMatch(a, b) {
+  if (typeof a !== 'string' || typeof b !== 'string') return false;
+  const left = Buffer.from(a), right = Buffer.from(b);
+  return left.length === right.length && timingSafeEqual(left, right);
 }
-
-function ok(body) {
-  return { status: 200, body };
+function keyBytes(key) {
+  if (Buffer.isBuffer(key) && key.length === 32) return key;
+  if (typeof key !== 'string') throw new Error('Invalid draft key');
+  const result = Buffer.from(key, 'base64');
+  if (result.length !== 32 || result.toString('base64') !== key) throw new Error('Invalid draft key');
+  return result;
 }
-
-export function hashEditCode(code) {
-  return createHash("sha256").update(String(code).trim(), "utf8").digest("base64url");
+function accessKeys(raw) {
+  const value = typeof raw === 'string' ? JSON.parse(raw) : raw;
+  if (!object(value) || Object.keys(value).length === 0) throw new Error('Missing team configuration');
+  for (const [lesson, hash] of Object.entries(value)) {
+    if (!LESSON_IDS.includes(lesson) || typeof hash !== 'string' || !(/^[A-Za-z0-9_-]{43}$/.test(hash) || /^[a-f0-9]{64}$/i.test(hash))) throw new Error('Invalid team configuration');
+  }
+  return value;
 }
-
-export function hashesMatch(left, right) {
-  if (typeof left !== "string" || typeof right !== "string") return false;
-  const a = Buffer.from(left);
-  const b = Buffer.from(right);
-  if (a.length !== b.length) return false;
-  return timingSafeEqual(a, b);
-}
-
-function draftKey(token) {
-  return createHash("sha256").update(String(token), "utf8").digest();
-}
-
-export function seal(token, payload, lessonId) {
+function aad(envelope) { return Buffer.from(JSON.stringify([envelope.schema, envelope.lessonId, envelope.savedAt]), 'utf8'); }
+export function seal(key, payload, lessonId, savedAt = new Date().toISOString()) {
+  const envelope = { schema: 'bespoke-cloud-draft/v2', lessonId, savedAt };
   const nonce = randomBytes(12);
-  const cipher = createCipheriv("aes-256-gcm", draftKey(token), nonce);
-  const inner = Buffer.from(JSON.stringify({
-    editCodeHash: payload.editCodeHash,
-    selection: payload.selection
-  }), "utf8");
-  const enc = Buffer.concat([cipher.update(inner), cipher.final()]);
-  const savedAt = new Date().toISOString();
-  return {
-    schema: "bespoke-cloud-draft/v1",
-    lessonId,
-    savedAt,
-    nonce: nonce.toString("base64url"),
-    box: Buffer.concat([enc, cipher.getAuthTag()]).toString("base64url")
-  };
+  const cipher = createCipheriv('aes-256-gcm', keyBytes(key), nonce);
+  cipher.setAAD(aad(envelope));
+  const encrypted = Buffer.concat([cipher.update(JSON.stringify(payload), 'utf8'), cipher.final()]);
+  return { ...envelope, nonce: nonce.toString('base64url'), box: Buffer.concat([encrypted, cipher.getAuthTag()]).toString('base64url') };
 }
-
-export function openBox(token, envelope) {
-  if (!envelope || envelope.schema !== "bespoke-cloud-draft/v1" || typeof envelope.box !== "string") return null;
+export function openBox(key, envelope) {
   try {
-    const box = Buffer.from(envelope.box, "base64url");
-    if (box.length < 17) return null;
-    const decipher = createDecipheriv("aes-256-gcm", draftKey(token), Buffer.from(envelope.nonce, "base64url"));
-    decipher.setAuthTag(box.subarray(box.length - 16));
-    const plain = Buffer.concat([decipher.update(box.subarray(0, box.length - 16)), decipher.final()]);
-    const parsed = JSON.parse(plain.toString("utf8"));
-    if (!parsed || typeof parsed.editCodeHash !== "string" || !parsed.selection || typeof parsed.selection !== "object") return null;
-    return parsed;
-  } catch {
-    return null;
-  }
+    if (!envelope || envelope.schema !== 'bespoke-cloud-draft/v2' || !LESSON_IDS.includes(envelope.lessonId)) return null;
+    const nonce = Buffer.from(envelope.nonce, 'base64url'), box = Buffer.from(envelope.box, 'base64url');
+    if (nonce.length !== 12 || box.length < 17) return null;
+    const decipher = createDecipheriv('aes-256-gcm', keyBytes(key), nonce);
+    decipher.setAAD(aad(envelope));
+    decipher.setAuthTag(box.subarray(-16));
+    const inner = JSON.parse(Buffer.concat([decipher.update(box.subarray(0, -16)), decipher.final()]).toString('utf8'));
+    if (!object(inner) || inner.selection?.lesson?.id !== envelope.lessonId || !Array.isArray(inner.receipts)) return null;
+    return inner;
+  } catch { return null; }
 }
-
 export function assertDraftWrite(branch, lessonId) {
-  if (branch !== DRAFT_BRANCH || branch === "main" || branch === "master") {
-    throw new Error("refusing to write outside bespoke-drafts");
-  }
-  if (!LESSON_IDS.includes(lessonId)) throw new Error("refusing an unknown lesson");
+  if (branch !== DRAFT_BRANCH) throw new Error('refusing to write outside bespoke-drafts');
+  if (!LESSON_IDS.includes(lessonId)) throw new Error('refusing an unknown lesson');
+}
+function openedDraft(existing, lessonId, key) {
+  if (!existing) return null;
+  const inner = openBox(key, existing.envelope);
+  if (!inner || existing.envelope.lessonId !== lessonId) throw new Error('Saved design cannot be decrypted');
+  return { ...existing, inner };
+}
+function view(draft) { return draft ? { revision: draft.sha, savedAt: draft.envelope.savedAt, selection: draft.inner.selection } : { revision: null, savedAt: null, selection: null }; }
+function conflict(draft) { const { revision, savedAt } = view(draft); return fail(409, 'conflict', 'A newer design is saved. Open the latest design before replacing it. Your working copy has not been changed.', { revision, savedAt }); }
+function validRevision(body) { return Object.hasOwn(body, 'expectedRevision') && (body.expectedRevision === null || (typeof body.expectedRevision === 'string' && SHA.test(body.expectedRevision))); }
+function checkSelection(selection, lessonId, forSend = true) {
+  if (!object(selection) || Buffer.byteLength(JSON.stringify(selection), 'utf8') > MAX_SELECTION_BYTES) return fail(400, 'selection', 'The design is missing or too large. Keep source files in your shared lesson folder.');
+  const errors = selectionErrors(selection, lessonId, forSend);
+  return errors.length ? fail(400, 'selection', 'Check the lesson, spokesperson and design choices before saving.', { details: errors.slice(0, 12) }) : null;
+}
+function replay(draft, mutationId, requestDigest) {
+  const receipt = draft && (draft.inner.mutationId === mutationId
+    ? { mutationId, requestDigest: draft.inner.requestDigest, revision: draft.sha, savedAt: draft.envelope.savedAt }
+    : draft.inner.receipts.find(item => item.mutationId === mutationId));
+  if (!receipt) return null;
+  if (receipt.requestDigest !== requestDigest) return fail(409, 'mutation', 'This save request was already used for different changes. Keep your work and start a new save.');
+  return ok({ revision: receipt.revision, savedAt: receipt.savedAt, replayed: true });
+}
+const runName = (lessonId, receipt) => `Bespoke receipt ${lessonId} ${receipt}`;
+async function receiptStatus(github, lessonId, receipt, runId) {
+  const proposal = await github.findProposal(lessonId, receipt);
+  if (proposal) return { submissionId: receipt, status: 'received', url: proposal.url };
+  const run = await github.findRun(lessonId, receipt, runId);
+  if (!run) return { submissionId: receipt, status: 'processing' };
+  const base = { submissionId: receipt, runId: run.id };
+  if (run.status !== 'completed') return { ...base, status: 'processing' };
+  if (run.conclusion !== 'success') return { ...base, status: 'failed', message: 'The review package could not be created. Ask Britt to check the submission run; your saved design is safe.' };
+  if (run.updatedAt && Date.now() - Date.parse(run.updatedAt) < 60000) return { ...base, status: 'processing' };
+  return { ...base, status: 'failed', message: 'The submission run finished without a review package. Ask Britt to check it; your saved design is safe.' };
 }
 
-function selectionProblem(selection, lessonId, forSend) {
-  if (!selection || typeof selection !== "object" || Array.isArray(selection)) {
-    return fail(400, "selection", "The design could not be read.");
-  }
-  let raw;
+export async function handleAction(body, { github, token, draftKey, teamKeys }) {
+  let key, keys;
+  try { if (!token || !github) throw new Error('Not configured'); key = keyBytes(draftKey); keys = accessKeys(teamKeys); }
+  catch { return fail(503, 'setup', SETUP_MESSAGE); }
+  if (!object(body)) return fail(400, 'body', 'The request could not be read.');
+  const { action, lessonId } = body;
+  if (!['save', 'open', 'history', 'openRevision', 'send', 'status'].includes(action)) return fail(400, 'action', 'Choose Save, Open, History or Send to Britt.');
+  if (!LESSON_IDS.includes(lessonId)) return fail(400, 'lesson', 'Choose one of the six lessons.');
+  const code = typeof body.editCode === 'string' ? body.editCode.trim() : '';
+  if (code.length < 20 || code.length > 128) return fail(403, 'code', WRONG_CODE);
+  const expected = keys[lessonId];
+  const actual = expected?.length === 64 ? createHash('sha256').update(code, 'utf8').digest('hex') : hashEditCode(code);
+  if (!expected || !hashesMatch(actual, expected.length === 64 ? expected.toLowerCase() : expected)) return fail(403, 'code', WRONG_CODE);
+  // Authorization has succeeded before the first repository read or write.
   try {
-    raw = JSON.stringify(selection);
-  } catch {
-    return fail(400, "selection", "The design could not be read.");
-  }
-  if (raw.length > MAX_SELECTION_CHARS) {
-    return fail(400, "size", "This design is too long to save. Shorten the sample text.");
-  }
-  if (selection.schema !== "bespoke-selection/v1" || !selection.lesson || selection.lesson.id !== lessonId) {
-    return fail(400, "lesson", "Choose one of the six lessons.");
-  }
-  if (forSend) {
-    const name = selection.team && selection.team.spokesperson ? selection.team.spokesperson.name : "";
-    if (typeof name !== "string" || !name.trim()) {
-      return fail(400, "spokesperson", "Add the spokesperson's name on Lesson & team before sending.");
+    if (action === 'history') {
+      const versions = await github.listDraftHistory(lessonId, 10);
+      const history = versions.map(item => { const draft = openedDraft(item, lessonId, key); return { revision: draft.sha, savedAt: draft.envelope.savedAt }; });
+      return ok({ history });
     }
-  }
-  return null;
-}
-
-async function storeDraft(github, token, lessonId, hash, selection) {
-  const existing = await github.readDraft(lessonId);
-  if (existing) {
-    const opened = openBox(token, existing.envelope);
-    if (!opened || !hashesMatch(opened.editCodeHash, hash)) return { denied: fail(403, "code", WRONG_CODE) };
-  }
-  const write = async (sha) => github.writeDraft(lessonId, seal(token, { editCodeHash: hash, selection }, lessonId), sha);
-  try {
-    await write(existing ? existing.sha : undefined);
+    if (action === 'openRevision') {
+      if (typeof body.revision !== 'string' || !SHA.test(body.revision)) return fail(400, 'revision', 'Choose a saved version from History.');
+      const old = openedDraft(await github.readDraftRevision(lessonId, body.revision), lessonId, key);
+      return old ? ok(view(old)) : fail(404, 'missing', 'That saved version could not be found.');
+    }
+    if (action === 'status') {
+      if (!RECEIPT.test(body.submissionId || '')) return fail(400, 'receipt', 'The submission receipt could not be read.');
+      return ok(await receiptStatus(github, lessonId, body.submissionId, body.runId));
+    }
+    const current = openedDraft(await github.readDraft(lessonId), lessonId, key);
+    if (action === 'open') return ok(view(current));
+    if (!validRevision(body)) return fail(400, 'revision', 'Open the latest design before saving or sending.');
+    const problem = checkSelection(body.selection, lessonId, action === 'send');
+    if (problem) return problem;
+    if (action === 'save') {
+      if (!UUID.test(body.mutationId || '')) return fail(400, 'mutation', 'The save request needs a new request ID. Try Save again.');
+      const requestDigest = digest({ expectedRevision: body.expectedRevision, selection: semanticDigest(body.selection) });
+      const repeated = replay(current, body.mutationId, requestDigest);
+      if (repeated) return repeated;
+      if ((current?.sha || null) !== body.expectedRevision) return conflict(current);
+      if (current && semanticDigest(current.inner.selection) === semanticDigest(body.selection)) return ok({ ...view(current), unchanged: true });
+      const receipts = current ? [...current.inner.receipts, { mutationId: current.inner.mutationId, requestDigest: current.inner.requestDigest, revision: current.sha, savedAt: current.envelope.savedAt }] : [];
+      const envelope = seal(key, { selection: body.selection, mutationId: body.mutationId, requestDigest, receipts }, lessonId);
+      let revision;
+      try { revision = await github.writeDraft(lessonId, envelope, current?.sha || null); }
+      catch (err) {
+        // A write conflict or a lost reply can mean THIS mutation succeeded.
+        // Re-read only to recognize it; never retry a write over newer content.
+        if (err.status === 409 || err.status === 422 || err.ambiguous) {
+          const latest = openedDraft(await github.readDraft(lessonId), lessonId, key);
+          const recognized = replay(latest, body.mutationId, requestDigest);
+          if (recognized) return recognized;
+          if (err.ambiguous && (latest?.sha || null) === body.expectedRevision) return fail(502, 'store', 'The save connection was interrupted. Keep this working copy and retry the same save request.');
+          return conflict(latest);
+        }
+        throw err;
+      }
+      return ok({ revision, savedAt: envelope.savedAt, selection: body.selection });
+    }
+    if (!current || current.sha !== body.expectedRevision) return conflict(current);
+    if (semanticDigest(current.inner.selection) !== semanticDigest(body.selection)) return fail(409, 'unsaved', 'Save these changes before sending them to Britt.', { revision: current.sha, savedAt: current.envelope.savedAt });
+    const receipt = submissionId(current.inner.selection);
+    const existing = await receiptStatus(github, lessonId, receipt);
+    if (existing.status === 'received' || (existing.status === 'processing' && existing.runId)) return ok(existing);
+    const run = await github.dispatchSpokeSignal(JSON.stringify(current.inner.selection), lessonId, receipt);
+    return ok({ submissionId: receipt, status: 'processing', ...(run?.id ? { runId: run.id } : {}) });
   } catch (err) {
-    if (err.status !== 409 && err.status !== 422) throw err;
-    const again = await github.readDraft(lessonId);
-    if (again) {
-      const opened = openBox(token, again.envelope);
-      if (!opened || !hashesMatch(opened.editCodeHash, hash)) return { denied: fail(403, "code", WRONG_CODE) };
-    }
-    await write(again ? again.sha : undefined);
+    return fail(502, 'store', 'The connected store could not complete this request. Keep your working copy and try again.');
   }
-  return { denied: null };
-}
-
-export async function handleAction(body, { github, token }) {
-  if (!token) return fail(503, "setup", SETUP_MESSAGE);
-  if (!body || typeof body !== "object" || Array.isArray(body)) {
-    return fail(400, "body", "The request could not be read.");
-  }
-  const action = body.action;
-  if (action !== "save" && action !== "open" && action !== "send") {
-    return fail(400, "action", "Use Save, Open, or Send to Britt.");
-  }
-  if (typeof body.lessonId !== "string" || !LESSON_IDS.includes(body.lessonId)) {
-    return fail(400, "lesson", "Choose one of the six lessons.");
-  }
-  const code = typeof body.editCode === "string" ? body.editCode.trim() : "";
-  if (code.length < EDIT_CODE_MIN || code.length > EDIT_CODE_MAX) {
-    return fail(400, "length", `Enter your edit code. It needs at least ${EDIT_CODE_MIN} characters.`);
-  }
-  const hash = hashEditCode(code);
-  const lessonId = body.lessonId;
-
-  if (action === "open") {
-    const existing = await github.readDraft(lessonId);
-    if (!existing) return fail(404, "missing", "There is no saved design for that lesson yet. Choose Save first.");
-    const opened = openBox(token, existing.envelope);
-    if (!opened || opened.selection.lesson?.id !== lessonId) {
-      return fail(502, "store", "That saved design could not be read. Ask Britt to check the connection.");
-    }
-    if (!hashesMatch(opened.editCodeHash, hash)) return fail(403, "code", WRONG_CODE);
-    return ok({ ok: true, selection: opened.selection });
-  }
-
-  const problem = selectionProblem(body.selection, lessonId, action === "send");
-  if (problem) return problem;
-  const stored = await storeDraft(github, token, lessonId, hash, body.selection);
-  if (stored.denied) return stored.denied;
-  if (action === "save") return ok({ ok: true, savedAt: new Date().toISOString() });
-
-  await github.dispatchSpokeSignal(JSON.stringify(body.selection));
-  return ok({ ok: true, sent: true });
 }
 
 export function createGitHub(token, repository = REPO, fetchImpl = globalThis.fetch) {
-  const slash = repository.indexOf("/");
-  const owner = repository.slice(0, slash);
-  const repo = repository.slice(slash + 1);
-  async function request(method, path, body) {
-    const response = await fetchImpl(`https://api.github.com${path}`, {
-      method,
-      headers: {
-        Accept: "application/vnd.github+json",
-        Authorization: `Bearer ${token}`,
-        "User-Agent": "bespoke-handoff",
-        "X-GitHub-Api-Version": "2022-11-28",
-        ...(body ? { "Content-Type": "application/json" } : {})
-      },
-      body: body ? JSON.stringify(body) : undefined
-    });
-    const text = await response.text();
+  if (!/^[\w.-]+\/[\w.-]+$/.test(repository)) throw new Error('Invalid repository');
+  const [owner, repo] = repository.split('/'), base = `/repos/${owner}/${repo}`;
+  async function request(method, route, body) {
+    let response;
+    try { response = await fetchImpl(`https://api.github.com${route}`, { method, signal: AbortSignal.timeout(15000), headers: { Accept: 'application/vnd.github+json', Authorization: `Bearer ${token}`, 'User-Agent': 'bespoke-handoff', 'X-GitHub-Api-Version': '2026-03-10', ...(body ? { 'Content-Type': 'application/json' } : {}) }, body: body ? JSON.stringify(body) : undefined }); }
+    catch { throw Object.assign(new Error('Repository connection interrupted'), { ambiguous: true }); }
+    let text;
+    try { text = await response.text(); } catch { throw Object.assign(new Error('Repository response interrupted'), { ambiguous: true }); }
     let data = null;
-    if (text) {
-      try { data = JSON.parse(text); } catch { data = null; }
-    }
+    try { data = text ? JSON.parse(text) : null; } catch { /* report only sanitized status */ }
     return { status: response.status, data };
   }
-
+  function requireStatus(res, statuses) { if (!statuses.includes(res.status)) throw Object.assign(new Error('Repository request failed'), { status: res.status }); return res.data; }
+  const filename = lessonId => `drafts/${lessonId}.json`;
+  async function readContent(lessonId, ref = DRAFT_BRANCH) {
+    assertDraftWrite(DRAFT_BRANCH, lessonId);
+    const res = await request('GET', `${base}/contents/${filename(lessonId)}?ref=${encodeURIComponent(ref)}`);
+    if (res.status === 404) return null;
+    let data = requireStatus(res, [200]);
+    if (!data.content && data.sha) data = { ...requireStatus(await request('GET', `${base}/git/blobs/${data.sha}`), [200]), sha: data.sha };
+    return { sha: data.sha, envelope: JSON.parse(Buffer.from(data.content.replace(/\n/g, ''), 'base64').toString('utf8')) };
+  }
   return {
-    async readDraft(lessonId) {
+    readDraft: lessonId => readContent(lessonId),
+    async readDraftRevision(lessonId, revision) {
       assertDraftWrite(DRAFT_BRANCH, lessonId);
-      const path = `/repos/${owner}/${repo}/contents/drafts/${encodeURIComponent(lessonId)}.json?ref=${encodeURIComponent(DRAFT_BRANCH)}`;
-      const res = await request("GET", path);
+      if (!SHA.test(revision)) return null;
+      const res = await request('GET', `${base}/git/blobs/${revision}`);
       if (res.status === 404) return null;
-      if (res.status !== 200 || !res.data || typeof res.data.content !== "string") {
-        const err = new Error("read failed");
-        err.status = res.status;
-        throw err;
-      }
-      const encoded = res.data.content.replace(/\n/g, "");
-      return {
-        sha: res.data.sha,
-        envelope: JSON.parse(Buffer.from(encoded, "base64").toString("utf8"))
-      };
+      const data = requireStatus(res, [200]);
+      const envelope = JSON.parse(Buffer.from(data.content.replace(/\n/g, ''), 'base64').toString('utf8'));
+      // Ciphertext is authenticated against the lesson; never return other blobs.
+      return envelope.lessonId === lessonId ? { sha: revision, envelope } : null;
+    },
+    async listDraftHistory(lessonId, limit = 10) {
+      assertDraftWrite(DRAFT_BRANCH, lessonId);
+      const res = await request('GET', `${base}/commits?sha=${DRAFT_BRANCH}&path=${encodeURIComponent(filename(lessonId))}&per_page=${Math.min(10, limit)}`);
+      if (res.status === 404 || res.status === 409) return [];
+      const commits = requireStatus(res, [200]);
+      const history = await Promise.all(commits.map(commit => readContent(lessonId, commit.sha)));
+      return history.filter(Boolean).filter((item, index, all) => all.findIndex(other => other.sha === item.sha) === index);
     },
     async ensureDraftBranch() {
-      const found = await request("GET", `/repos/${owner}/${repo}/git/ref/heads/${DRAFT_BRANCH}`);
+      const found = await request('GET', `${base}/git/ref/heads/${DRAFT_BRANCH}`);
       if (found.status === 200) return;
-      if (found.status !== 404) {
-        const err = new Error("branch lookup failed");
-        err.status = found.status;
-        throw err;
-      }
-      const base = await request("GET", `/repos/${owner}/${repo}/git/ref/heads/main`);
-      if (base.status !== 200 || !base.data || !base.data.object || !base.data.object.sha) {
-        const err = new Error("default branch lookup failed");
-        err.status = base.status;
-        throw err;
-      }
-      const created = await request("POST", `/repos/${owner}/${repo}/git/refs`, {
-        ref: `refs/heads/${DRAFT_BRANCH}`,
-        sha: base.data.object.sha
-      });
-      if (created.status !== 201 && created.status !== 422) {
-        const err = new Error("branch create failed");
-        err.status = created.status;
-        throw err;
-      }
+      requireStatus(found, [404]);
+      const main = requireStatus(await request('GET', `${base}/git/ref/heads/main`), [200]);
+      const created = await request('POST', `${base}/git/refs`, { ref: `refs/heads/${DRAFT_BRANCH}`, sha: main.object.sha });
+      requireStatus(created, [201, 422]);
     },
-    async writeDraft(lessonId, envelope, sha) {
+    async writeDraft(lessonId, envelope, revision) {
       assertDraftWrite(DRAFT_BRANCH, lessonId);
       await this.ensureDraftBranch();
-      const body = {
-        message: `chore(bespoke): save draft for ${lessonId}`,
-        content: Buffer.from(JSON.stringify(envelope), "utf8").toString("base64"),
-        branch: DRAFT_BRANCH
-      };
-      if (sha) body.sha = sha;
-      if (body.branch === "main" || body.branch === "master") throw new Error("refusing to write the default branch");
-      const res = await request("PUT", `/repos/${owner}/${repo}/contents/drafts/${encodeURIComponent(lessonId)}.json`, body);
-      if (res.status !== 200 && res.status !== 201) {
-        const err = new Error("write failed");
-        err.status = res.status;
-        throw err;
-      }
-      return res.data && res.data.content ? res.data.content.sha : sha;
+      const data = requireStatus(await request('PUT', `${base}/contents/${filename(lessonId)}`, { message: `chore(bespoke): save draft for ${lessonId}`, content: Buffer.from(JSON.stringify(envelope), 'utf8').toString('base64'), branch: DRAFT_BRANCH, ...(revision ? { sha: revision } : {}) }), [200, 201]);
+      if (!SHA.test(data?.content?.sha || '')) throw Object.assign(new Error('Missing write receipt'), { ambiguous: true });
+      return data.content.sha;
     },
-    async dispatchSpokeSignal(payloadJson) {
-      if (typeof payloadJson !== "string" || payloadJson.length > MAX_SELECTION_CHARS) {
-        const err = new Error("payload too large");
-        err.status = 400;
-        throw err;
+    async findProposal(lessonId, receipt) {
+      const branch = `bespoke-signal/${lessonId}/${receipt}`;
+      const data = requireStatus(await request('GET', `${base}/pulls?state=all&head=${encodeURIComponent(`${owner}:${branch}`)}&per_page=100`), [200]);
+      const proposal = data.find(pr => pr.head?.ref === branch && pr.head?.repo?.full_name?.toLowerCase() === repository.toLowerCase() && pr.base?.ref === 'main');
+      return proposal ? { url: proposal.html_url, number: proposal.number } : null;
+    },
+    async findRun(lessonId, receipt, runId) {
+      const title = runName(lessonId, receipt);
+      // Prefer the newest matching run even if a browser still holds the ID
+      // of a failed attempt. A safe retry uses the same proposal receipt.
+      const data = requireStatus(await request('GET', `${base}/actions/workflows/${WORKFLOW_FILE}/runs?event=workflow_dispatch&per_page=100`), [200]);
+      let run = data.workflow_runs.filter(item => item.display_title === title).sort((a, b) => b.id - a.id)[0];
+      if (!run && Number.isSafeInteger(Number(runId)) && Number(runId) > 0) {
+        const response = await request('GET', `${base}/actions/runs/${Number(runId)}`);
+        if (response.status !== 404) {
+          const candidate = requireStatus(response, [200]);
+          if (candidate.display_title === title && candidate.path?.split('@')[0] === `.github/workflows/${WORKFLOW_FILE}`) run = candidate;
+        }
       }
-      // ref chooses the workflow file on the default branch. It is not a commit to main.
-      const res = await request("POST", `/repos/${owner}/${repo}/actions/workflows/${WORKFLOW_FILE}/dispatches`, {
-        ref: "main",
-        inputs: { payload_json: payloadJson }
-      });
-      if (res.status !== 204) {
-        const err = new Error("dispatch failed");
-        err.status = res.status;
-        throw err;
-      }
+      return run ? { id: run.id, status: run.status, conclusion: run.conclusion, updatedAt: run.updated_at } : null;
+    },
+    async dispatchSpokeSignal(payloadJson, lessonId, receipt) {
+      if (!LESSON_IDS.includes(lessonId) || !RECEIPT.test(receipt) || Buffer.byteLength(payloadJson, 'utf8') > MAX_SELECTION_BYTES) throw new Error('Invalid dispatch');
+      const res = await request('POST', `${base}/actions/workflows/${WORKFLOW_FILE}/dispatches`, { ref: 'main', inputs: { payload_json: payloadJson, submission_id: receipt, lesson_id: lessonId } });
+      const data = requireStatus(res, [200]);
+      if (!Number.isSafeInteger(data?.workflow_run_id)) throw Object.assign(new Error('Missing dispatch receipt'), { ambiguous: true });
+      return { id: data.workflow_run_id, url: data.html_url };
     }
   };
 }
 
 function jsonResponse(body, status) {
-  return new Response(JSON.stringify(body), {
-    status,
-    headers: {
-      "Content-Type": "application/json; charset=utf-8",
-      "Cache-Control": "no-store",
-      "Access-Control-Allow-Origin": "*",
-      "Access-Control-Allow-Methods": "POST, OPTIONS",
-      "Access-Control-Allow-Headers": "Content-Type",
-      "X-Content-Type-Options": "nosniff"
-    }
-  });
+  return new Response(status === 204 ? null : JSON.stringify(body), { status, headers: { ...(status === 204 ? {} : { 'Content-Type': 'application/json; charset=utf-8' }), 'Cache-Control': 'no-store', 'Access-Control-Allow-Origin': '*', 'Access-Control-Allow-Methods': 'POST, OPTIONS', 'Access-Control-Allow-Headers': 'Content-Type', 'Access-Control-Max-Age': '600', 'X-Content-Type-Options': 'nosniff' } });
 }
-
 export async function handleRequest(req, env = process.env, deps = {}) {
-  if (req.method === "OPTIONS") return jsonResponse({ ok: true }, 204);
-  if (req.method !== "POST") return jsonResponse({ ok: false, error: "method", message: "Use Save, Open, or Send to Britt." }, 405);
-  const token = env.BESPOKE_GITHUB_TOKEN || "";
-  if (!token) return jsonResponse({ ok: false, error: "setup", message: SETUP_MESSAGE }, 503);
-  let raw = "";
+  if (req.method === 'OPTIONS') return jsonResponse(null, 204);
+  if (req.method !== 'POST') return jsonResponse({ ok: false, error: 'method', message: 'Use the Bespoke Save or Open controls.' }, 405);
   try {
-    raw = await req.text();
-  } catch {
-    return jsonResponse({ ok: false, error: "body", message: "The request could not be read." }, 400);
-  }
-  if (raw.length > MAX_BODY_CHARS) {
-    return jsonResponse({ ok: false, error: "size", message: "This design is too long to save. Shorten the sample text." }, 400);
-  }
-  let body;
-  try {
-    body = JSON.parse(raw);
-  } catch {
-    return jsonResponse({ ok: false, error: "body", message: "The request could not be read." }, 400);
-  }
-  try {
+    const raw = await req.text();
+    if (Buffer.byteLength(raw, 'utf8') > MAX_BODY_BYTES) return jsonResponse({ ok: false, error: 'size', message: 'The request is too large.' }, 400);
+    let body;
+    try { body = JSON.parse(raw); } catch { return jsonResponse({ ok: false, error: 'body', message: 'The request could not be read.' }, 400); }
+    const token = env.BESPOKE_GITHUB_TOKEN;
     const github = deps.github || createGitHub(token, env.BESPOKE_GITHUB_REPOSITORY || REPO, deps.fetchImpl);
-    const result = await handleAction(body, { github, token });
+    const result = await handleAction(body, { github, token, draftKey: env.BESPOKE_DRAFT_KEY, teamKeys: env.BESPOKE_TEAM_KEYS });
     return jsonResponse(result.body, result.status);
-  } catch (err) {
-    console.error("bespoke-handoff", err && err.status ? err.status : "failed");
-    return jsonResponse({ ok: false, error: "store", message: "Saving could not reach the connected store. Try again." }, 502);
-  }
+  } catch { return jsonResponse({ ok: false, error: 'store', message: 'The connected store could not complete this request. Keep your working copy and try again.' }, 502); }
 }
-
 export default async function handler(req) {
-  return handleRequest(req);
+  const names = ['BESPOKE_GITHUB_TOKEN', 'BESPOKE_DRAFT_KEY', 'BESPOKE_TEAM_KEYS', 'BESPOKE_GITHUB_REPOSITORY'];
+  const env = Object.fromEntries(names.map(name => [name, globalThis.Netlify?.env?.get(name) ?? process.env[name]]));
+  return handleRequest(req, env);
 }
