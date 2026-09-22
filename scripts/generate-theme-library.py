@@ -70,6 +70,8 @@ def render_section(section: dict) -> str:
     for opt in section.get("options") or []:
         marker = opt["marker"]
         lines.append(f"/* --- {marker} --- */")
+        if opt.get("blocked"):
+            lines.append(f"/* BLOCKED: {opt.get('reason') or 'Not approved for new selections.'} Do not use in new builds. */")
         lines.append(
             comment_css(
                 opt.get("css") or "",

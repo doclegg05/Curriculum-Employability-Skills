@@ -22,6 +22,9 @@ from copy import deepcopy
 from pathlib import Path
 from typing import Any
 
+sys.path.insert(0, str(Path(__file__).resolve().parent))
+from bespoke_support import require_valid_selection, selection_digest
+
 REPO_ROOT = Path(__file__).resolve().parent.parent
 
 CHAPTER_KEYS = ["W", "I", "P1", "P2", "P3", "E", "A"]
@@ -93,6 +96,7 @@ def selection_to_theme_entry(payload: dict) -> dict[str, Any]:
         "dividerStyle": theme["dividerStyle"],
         "fontPairing": theme["fontPairing"],
         "chapterStyles": derive_chapter_styles(theme),
+        "bespokeSelectionSha256": selection_digest(payload),
     }
 
 
@@ -188,11 +192,25 @@ def apply_selection(
     *,
     theme_registry: dict,
     lesson_registry: dict,
+    expected_previous: str | None = None,
 ) -> tuple[dict, dict, str]:
-    if payload.get("schema") != "bespoke-selection/v1":
-        raise SystemExit(f"Unexpected schema: {payload.get('schema')!r}")
+    require_valid_selection(payload)
+    # Work on copies so rejected updates cannot leave one registry mutated.
+    theme_registry = deepcopy(theme_registry)
+    lesson_registry = deepcopy(lesson_registry)
     lesson = payload.get("lesson") or {}
     lesson_key = normalize_lesson_id(str(lesson.get("id") or ""))
+    for existing in lesson_registry.get("lessons", []):
+        if existing.get("id") == lesson_key and (
+            existing.get("status") != BESPOKE_STATUS
+            or existing.get("slides", 0) or existing.get("videos", 0)
+        ):
+            raise ValueError(f"Refusing to replace an existing lesson release: {lesson_key}")
+    prior_theme = theme_registry.get("lessons", {}).get(lesson_key)
+    if prior_theme and prior_theme.get("bespokeSelectionSha256") != selection_digest(payload):
+        actual_previous = prior_theme.get("bespokeSelectionSha256")
+        if not actual_previous or expected_previous != actual_previous:
+            raise ValueError("Pending design changed; review the existing proposal and pass --expected-selection-sha256 with its current digest")
     entry = selection_to_theme_entry(payload)
     upsert_theme_registry(theme_registry, lesson_key, entry)
     upsert_lesson_registry(lesson_registry, payload, lesson_key)
@@ -212,6 +230,7 @@ def main(argv: list[str] | None = None) -> int:
         type=Path,
         default=REPO_ROOT / "lesson-registry.json",
     )
+    parser.add_argument("--expected-selection-sha256", help="Current pending selection digest required when replacing a different proposal")
     parser.add_argument(
         "--dry-run",
         action="store_true",
@@ -223,9 +242,14 @@ def main(argv: list[str] | None = None) -> int:
     theme_reg = load_json(args.theme_registry)
     lesson_reg = load_json(args.lesson_registry)
 
-    theme_reg, lesson_reg, lesson_key = apply_selection(
-        payload, theme_registry=theme_reg, lesson_registry=lesson_reg
-    )
+    try:
+        theme_reg, lesson_reg, lesson_key = apply_selection(
+            payload, theme_registry=theme_reg, lesson_registry=lesson_reg,
+            expected_previous=args.expected_selection_sha256
+        )
+    except ValueError as exc:
+        print(str(exc), file=sys.stderr)
+        return 1
 
     if args.dry_run:
         print(json.dumps({"lessonKey": lesson_key, "theme": theme_reg["lessons"][lesson_key]}, indent=2))

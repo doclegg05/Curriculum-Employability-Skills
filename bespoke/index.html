@@ -22,10 +22,15 @@
     <div class="header-actions">
       <p id="saveStatus" class="save-status"></p>
       <span id="saveLive" class="sr-only" aria-live="polite"></span>
+      <button type="button" class="btn btn-secondary" id="btnSaveFile">Save team file</button>
+      <button type="button" class="btn btn-secondary" id="btnOpenFile">Open team file</button>
+      <button type="button" class="btn btn-ghost" id="btnRecoverDraft" hidden>Recover previous draft</button>
+      <input id="teamFileInput" type="file" accept="application/json,.json" hidden>
       <a class="btn btn-ghost" href="../Dashboard.html">Curriculum hub</a>
       <button type="button" class="btn btn-secondary" id="btnClear">Clear draft</button>
     </div>
   </header>
+  <p id="fileStatus" class="restore-notice" role="status" hidden></p>
   <p id="accessBanner" class="access-banner" role="status" hidden>Only the team lead can change this.</p>
   <div id="leadUnlock" class="lead-unlock" hidden>
     <button type="button" class="btn btn-accent btn-lg" id="btnLeadUnlock" aria-expanded="false" aria-controls="leadCodeForm">I am the team lead</button>
@@ -88,7 +93,7 @@
   </div>
 
   <footer class="footer-bar">
-    <p>SPOKES · WV Adult Basic Education · Prototype · Every option here is already on-brand</p>
+    <p>SPOKES · WV Adult Basic Education · Prototype · Available choices use the SPOKES library · Final lessons require review</p>
   </footer>
 
   <script src="./app.js"></script>

@@ -162,6 +162,11 @@ def _css_outside_root(css: str) -> str:
     return re.sub(r':root\s*\{[^}]*\}', '', css, flags=re.DOTALL)
 
 
+def _css_without_font_faces(css: str) -> str:
+    """Return CSS without @font-face declarations used to define local fonts."""
+    return re.sub(r'@font-face\s*\{[^}]*\}', '', css, flags=re.DOTALL | re.IGNORECASE)
+
+
 def _css_outside_root_with_override(doc: Document) -> str:
     """Return all CSS (including theme-override) with :root blocks removed."""
     return _css_outside_root(_all_css_with_override(doc))
@@ -345,7 +350,9 @@ def check_typography(doc: Document) -> list[Result]:
         results.append(Result("TYP-02", "PASS", "No font overrides in :root block", 0))
 
     # TYP-03: Hardcoded heading font outside :root and theme-override
-    outside = _css_outside_root(css)
+    # Declaring a self-hosted font in @font-face necessarily names the family;
+    # TYP-03/04 are intended to catch selector usage that bypasses the tokens.
+    outside = _css_without_font_faces(_css_outside_root(css))
     if re.search(r"""['"]DM Serif Display['"]""", outside):
         results.append(Result("TYP-03", "WARN", "Hardcoded 'DM Serif Display' found outside :root — use var(--font-heading)", 0))
     else:

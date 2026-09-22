@@ -32,6 +32,13 @@ Read these before changing Round 2 modules or the Builder intake. Do not ship pr
 
 - `docs/phase-2/money-management-tanf-snap-topics-2026-09-17.md` — Money Management — Budget topic map (Britt's team)
 - `docs/briefs/instructor-to-html-intake-2026-09-17.md` — KEEP VERBATIM intake rules on top of `SPOKES Builder/content-intake-template.md`
-- `docs/briefs/instructor-lesson-studio-concept-2026-09-17.md` — Bespoke (formerly Lesson Studio) wizard concept and plan (not greenlit; do not build)
+- `docs/briefs/instructor-lesson-studio-concept-2026-09-17.md` — historical Bespoke concept. The prototype was subsequently greenlit; current locks are in `docs/bespoke/decisions.md`.
 
 This package is not VisionQuest. Do not merge SPOKES HTML hosting into the VisionQuest deploy path.
+
+## BeSpoke foundation and review
+
+- Read `docs/bespoke/builder-handoff.md` for receiving team files, approval boundaries, generated design contracts and final-output checks.
+- Teachers use `bespoke/team-guide.html` and the editable `docs/bespoke/team-lesson-intake.docx`; keep it aligned with the canonical intake template.
+- Read `docs/qa-reports/project-review-2026-09-22.md` for current evidence and unresolved lesson release issues.
+- The September 22 review authorized foundation fixes, not construction of the six new lessons. March 2027 is a soft phase target.

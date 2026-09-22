@@ -2,6 +2,18 @@
 
 SPOKES interactive employability curriculum system with standards, templates, and lesson production workflow.
 
+## Instructor collaboration
+
+Round 2 teams use Teams calls, one shared Word lesson document and a Bespoke team
+file kept in their shared OneDrive folder. No coding or GitHub account is required.
+Start with the [Bespoke team guide](bespoke/team-guide.html) and
+[editable Word lesson form](docs/bespoke/team-lesson-intake.docx).
+Britt/builders follow [the handoff and design verification procedure](docs/bespoke/builder-handoff.md).
+The six new lessons remain unbuilt; March 2027 is the soft phase target.
+
+Current evidence and remaining release blockers:
+[project review dated September 22, 2026](docs/qa-reports/project-review-2026-09-22.md).
+
 ## Quick Start (3 minutes)
 
 1. Read `SPOKES-STANDARD.md` (single source of truth for all lesson requirements)
@@ -72,7 +84,7 @@ See `SPOKES-Agent-Execution-Spec.md` for full gate criteria and severity/SLA pol
 
 ## Current Status (high level)
 
-- Existing lessons: 6 (3 release-approved/ready, 3 in QA — see `lesson-registry.json`)
+- Existing lessons: 6 (registry labels 3 ready and 3 QA; current review identifies unresolved content/accessibility issues, so labels are not a fresh release certification)
 - Program target: 18 lessons total
 - Ongoing work: QA closeout for the 2026-04 lesson batch, production batching for remaining lessons
 

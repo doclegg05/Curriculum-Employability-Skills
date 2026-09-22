@@ -1,11 +1,25 @@
 # Phase 2 Bespoke submissions
 
-Spoke Signals drops lesson-tagged packages here:
+Instructor teams work in Teams and their shared OneDrive folder. Their spokesperson
+uses Save team file and Prepare for Britt’s review. Teachers do not need GitHub.
 
-```
-docs/phase-2/submissions/<lesson-id>/<YYYY-MM-DD>/
+Britt or a builder receives the file using the procedure in
+[builder handoff](../../bespoke/builder-handoff.md). The writer and optional Spoke
+Signals workflow validate it and create a separate immutable proposal:
+
+```text
+<lesson-id>/<YYYY-MM-DD>-<selection-digest>/
   selection.json
   content-intake.md
+  design.css
+  build-contract.json
 ```
 
-Created by `.github/workflows/spoke-signals.yml` when a `[Spoke Signal]` issue is opened (or via `workflow_dispatch`). Britt merges the PR to greenlight the agent build.
+An identical retry leaves the package and any completed intake intact. Differing
+revisions use different folders. The intake preserves the canonical template;
+sample preview text is separate from the complete teacher-authored lesson.
+
+Britt confirms the current revision and full content, then merges the proposal
+PR to greenlight the separate build. No new lesson is created by saving a file,
+generating a proposal, or running the Spoke Signals workflow. After a build, the
+contract checker and browser/content review verify that approved choices survive.

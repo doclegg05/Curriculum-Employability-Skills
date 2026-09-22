@@ -17,7 +17,16 @@ from pathlib import Path
 REPO_ROOT = Path(__file__).resolve().parent.parent
 REGISTRY_PATH = REPO_ROOT / "lesson-registry.json"
 DASHBOARD_PATH = REPO_ROOT / "Dashboard.html"
-COMPARED_FIELDS = ("title", "status")
+COMPARED_FIELDS = (
+    "title",
+    "description",
+    "themeKey",
+    "path",
+    "status",
+    "slides",
+    "videos",
+    "interactions.implemented",
+)
 
 
 def fatal(message: str) -> None:
@@ -138,6 +147,15 @@ def index_by_id(lessons: list, source: str) -> dict[str, dict]:
     return indexed
 
 
+def nested_value(record: dict, dotted_field: str):
+    value = record
+    for part in dotted_field.split("."):
+        if not isinstance(value, dict):
+            return None
+        value = value.get(part)
+    return value
+
+
 def main() -> int:
     registry = load_registry_lessons()
     fallback = load_fallback_lessons()
@@ -150,8 +168,8 @@ def main() -> int:
 
     for lesson_id in sorted(registry.keys() & fallback.keys()):
         for field in COMPARED_FIELDS:
-            reg_value = registry[lesson_id].get(field)
-            fb_value = fallback[lesson_id].get(field)
+            reg_value = nested_value(registry[lesson_id], field)
+            fb_value = nested_value(fallback[lesson_id], field)
             if reg_value != fb_value:
                 problems.append(
                     f"{lesson_id}: {field} differs — "
@@ -165,7 +183,7 @@ def main() -> int:
         print("Update the FALLBACK_LESSONS block in Dashboard.html (see its sync comment).")
         return 1
 
-    print(f"registry-sync: {len(registry)} lessons match (id, title, status) — OK")
+    print(f"registry-sync: {len(registry)} lessons match all dashboard fallback fields — OK")
     return 0
 
 

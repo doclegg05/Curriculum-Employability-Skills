@@ -43,10 +43,7 @@
 
 /* --- plain --- */
 /*
-   Default background. No override needed.
-     .main {
-       background: var(--light);
-     }
+   .main { background: var(--light); }
 */
 
 /* --- dot-grid --- */
@@ -242,12 +239,7 @@
 
 /* --- royal --- */
 /*
-   .main { background-color: var(--muted); }
-     .slide h2 { color: var(--royal); }
-     .download-btn { background: var(--royal); color: var(--gold); }
-     .chapter-item.active > .chapter-header { background: rgba(0,19,63,0.3); }
-     .divider { background: linear-gradient(90deg, var(--royal), var(--gold)); }
-     .slide-section { background: linear-gradient(135deg, var(--royal), var(--dark)); }
+   .sidebar { background: var(--royal); }
 */
 
 /* ==========================================================================
@@ -482,6 +474,7 @@
 */
 
 /* --- 6. gradient-fill --- */
+/* BLOCKED: Blocked pending contrast remediation: white body text on gold gradient cards does not meet WCAG AA. Do not use in new builds. */
 /*
    SCOPE .card {
      background: linear-gradient(135deg, var(--primary), var(--dark));
@@ -1165,12 +1158,13 @@
 /*
    DIVIDER_SCOPE { background: var(--primary); }
    DIVIDER_SCOPE h2 { color: var(--light); }
-   DIVIDER_SCOPE .chapter-label { color: rgba(255,255,255,0.7); }
+   DIVIDER_SCOPE .chapter-label { color: var(--light); }
    DIVIDER_SCOPE .divider { background: var(--gold); }
    DIVIDER_SCOPE .section-circle { border-color: rgba(255,255,255,0.3); background: rgba(0,0,0,0.15); }
 */
 
 /* --- 4. split-panel --- */
+/* BLOCKED: Blocked pending brand remediation: ::after replaces the required chapter watermark. Do not use in new builds. */
 /*
    DIVIDER_SCOPE { flex-direction: row; }
    DIVIDER_SCOPE::before { content: ''; display: block; width: 40%; background: var(--dark); }

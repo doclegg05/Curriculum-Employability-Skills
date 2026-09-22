@@ -90,7 +90,9 @@
           "legacy": true,
           "cssMarker": "--- 6. gradient-fill",
           "description": "Filled primary→dark gradients with light text (high contrast).",
-          "presetAffinity": ["Outspoken", "Fun"]
+          "presetAffinity": ["Outspoken", "Fun"],
+          "blocked": true,
+          "reason": "Blocked pending contrast remediation: white body text on gold gradient cards does not meet WCAG AA."
         },
         {
           "id": "cards.pill",
@@ -215,7 +217,9 @@
           "slug": "split-panel",
           "label": "Split Panel",
           "legacy": true,
-          "cssMarker": "--- 4. split-panel"
+          "cssMarker": "--- 4. split-panel",
+          "blocked": true,
+          "reason": "Blocked pending brand remediation: ::after replaces the required chapter watermark."
         },
         {
           "id": "dividers.centered-badge",

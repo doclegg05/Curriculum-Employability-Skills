@@ -11,6 +11,9 @@ for lesson in lesson-*/index.html; do
   python3 scripts/validate-lesson.py "$lesson"
 done
 
+echo "==> SPOKES validator: canonical builder template"
+python3 scripts/validate-lesson.py "SPOKES Builder/template.html"
+
 echo "==> validator test suite"
 python3 -m unittest discover -s scripts -p 'test_validator.py' -v
 
@@ -19,13 +22,17 @@ python3 scripts/check-registry-sync.py
 
 echo "==> bespoke selection schema (generate --check + fixtures + submissions)"
 python3 scripts/generate-selection-schema.py --check
-python3 -m unittest discover -s scripts -p 'test_bespoke_selection.py' -v
-python3 -m unittest discover -s scripts -p 'test_bespoke_apply.py' -v
+python3 scripts/generate-team-intake.py --check
+python3 -m unittest discover -s scripts -p 'test_bespoke*.py' -v
 # Valid fixtures + any docs/phase-2/submissions/**/selection.json (skips *invalid*/*broken*)
 python3 scripts/validate-bespoke-selection.py \
   scripts/test-fixtures/bespoke/selection-money-management.json
 if [ -d docs/phase-2/submissions ]; then
-  mapfile -t SUBMISSION_SELECTIONS < <(find docs/phase-2/submissions -type f -name 'selection.json' | sort)
+  # macOS ships Bash 3.2, which does not provide mapfile/readarray.
+  SUBMISSION_SELECTIONS=()
+  while IFS= read -r selection; do
+    SUBMISSION_SELECTIONS+=("$selection")
+  done < <(find docs/phase-2/submissions -type f -name 'selection.json' | sort)
   if [ "${#SUBMISSION_SELECTIONS[@]}" -gt 0 ]; then
     python3 scripts/validate-bespoke-selection.py "${SUBMISSION_SELECTIONS[@]}"
   fi
@@ -33,6 +40,24 @@ fi
 # Negative fixture must fail
 python3 scripts/validate-bespoke-selection.py --expect-fail \
   scripts/test-fixtures/bespoke/selection-invalid-slug.json
+
+# Browser checks share the exact-pinned Playwright + axe harness with the
+# lesson accessibility gate. CI installs Chromium; classroom machines do not
+# need Node or browser-test dependencies to run the static lessons.
+if [ "${CI:-}" = "true" ] && { [ ! -d node_modules/playwright ] || [ ! -d node_modules/axe-core ]; }; then
+  npm ci
+  npx playwright install --with-deps chromium
+fi
+if [ -d node_modules/playwright ] && [ -d node_modules/axe-core ]; then
+  echo "==> bespoke browser workflow"
+  node scripts/test-bespoke-browser.mjs
+  if [ -f scripts/test-bespoke-design.mjs ]; then
+    echo "==> bespoke generated-design browser checks"
+    node scripts/test-bespoke-design.mjs
+  fi
+else
+  echo "bespoke browser checks SKIPPED: harness deps not installed (npm ci && npx playwright install chromium to enable)"
+fi
 
 # REPORT-ONLY: prints per-deck Flesch-Kincaid grades (grade-8 ceiling) and
 # always exits 0. Turning this into a blocking check is a later, deliberate
@@ -54,10 +79,6 @@ node scripts/readability-gate.mjs --baseline --format html \
 # nothing — so this step is skipped with a note when they are not installed.
 # CI installs them; a bare classroom machine does not need them.
 echo "==> a11y check (axe-core over lesson decks, ratchet vs committed baseline)"
-if [ "${CI:-}" = "true" ] && [ ! -d node_modules ]; then
-  npm ci
-  npx playwright install --with-deps chromium
-fi
 if [ -d node_modules/playwright ] && [ -d node_modules/axe-core ]; then
   node scripts/a11y-check.mjs
 else

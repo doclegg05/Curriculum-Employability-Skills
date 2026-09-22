@@ -39,7 +39,7 @@ def load_json(path: Path) -> dict:
 
 def family_slugs(library: dict, family: str) -> list[str]:
     options = (library.get("families") or {}).get(family, {}).get("options") or []
-    slugs = [str(opt["slug"]) for opt in options if opt.get("slug")]
+    slugs = [str(opt["slug"]) for opt in options if opt.get("slug") and not opt.get("blocked")]
     if not slugs:
         raise SystemExit(f"Library catalog family {family!r} has no option slugs")
     return slugs
@@ -110,6 +110,7 @@ def build_schema(library: dict, meta: dict) -> dict:
                         "type": "string",
                         "pattern": "^[a-z0-9]+(?:-[a-z0-9]+)*$",
                         "minLength": 1,
+                        "enum": [lesson["id"] for lesson in meta["lessons"]],
                         "description": (
                             "Lesson slug without the lesson- prefix; "
                             "FID-2 normalizes to lesson-<id> for registries."
@@ -212,7 +213,7 @@ def build_schema(library: dict, meta: dict) -> dict:
                 "lesson.id must be a kebab-case slug (no lesson- prefix required)",
                 "when theme.cards.varyByChapter is true, chapterStyles must include every chapter key",
                 "libraryCatalogVersion should match the committed library catalog version",
-                "THM-04 adjacent-chapter uniqueness is soft-warn until FID-4",
+                "when varying cards, adjacent chapters must use different styles",
             ],
         },
     }
