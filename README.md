@@ -14,8 +14,8 @@ account is required for this workflow.
 Start with the [BeSpoke visual design guide](bespoke/team-guide.html).
 Britt/builders follow [the handoff and design verification procedure](docs/bespoke/builder-handoff.md).
 Administrators follow [shared service setup and hosted acceptance](docs/bespoke/auto-handoff-setup.md).
-The hosted Save/Open/Send flow still requires recorded deployment acceptance;
-local checks alone do not establish that it is ready for teams.
+The hosted Save/Open/Send flow passed [live acceptance](docs/bespoke/verification-2026-09-22.md),
+including two browser sessions and a real review proposal.
 The six new lessons remain unbuilt; March 2027 is the soft phase target.
 
 Current evidence and remaining release blockers:
@@ -37,7 +37,7 @@ Current evidence and remaining release blockers:
 - `SPOKES-Project-Plan.md` — phased project delivery plan
 - `SPOKES-Master-Action-Plan.md` — consolidated issue register + sprint plan
 - `Dashboard.html` — curriculum launcher/dashboard (`index.html` redirects here)
-- `bespoke/` — BeSpoke instructor design wizard (GitHub Pages at `/bespoke/`; hosted shared-service acceptance pending)
+- `bespoke/` — BeSpoke instructor design wizard (GitHub Pages at `/bespoke/`; shared Save/Open and review receipts verified)
 - `netlify/` — private-team Save/Open and review handoff service; deploy the staged service package
 - `docs/bespoke/decisions.md` — greenlit Bespoke lock decisions
 - `lesson-registry.json` — per-lesson status, theme, and quality-gate registry

@@ -870,7 +870,7 @@
     panel.innerHTML = `
       <h1>${lead ? "Review &amp; submit" : "Review"}</h1>
       <p class="panel-lead">${lead
-        ? "Check your choices, then choose Send to Britt. Britt reviews the draft; approval is the go-ahead to build."
+        ? "Check your choices, then choose Send to Britt. Britt reviews the visual choices. Lesson building starts later, after the content is approved and the work is authorized."
         : "This is a shared snapshot. You can look through every step. It does not update when the lead makes changes."}</p>
       ${lead ? `
       <section class="share-card" aria-labelledby="shareTitle">
@@ -892,7 +892,7 @@
         <ol>
           <li>Choose <strong>Save shared design</strong> so the team can return to this revision.</li>
           <li>Choose <strong>Send to Britt</strong> when the team agrees. You do not sign in or pick a folder.</li>
-          <li>Britt reviews the draft. Approval is the go-ahead to build.</li>
+          <li>Britt reviews the visual choices. Lesson building starts later, after content approval and authorization.</li>
           <li>Your team checks that the approved look appears in the finished lesson.</li>
         </ol>
         <p class="next-hops-note">The builder chooses slide pieces for the content. Your card style applies wherever cards appear.</p>
@@ -2331,7 +2331,17 @@
     const session = requireTeamSession();
     if (!session || handoffBusy) return;
     const panel = byId("historyPanel");
+    const trigger = byId("btnHistory");
+    if (!panel.hidden) {
+      panel.hidden = true;
+      trigger?.setAttribute("aria-expanded", "false");
+      if (trigger) trigger.textContent = "Previous versions";
+      trigger?.focus();
+      return;
+    }
     panel.hidden = false;
+    trigger?.setAttribute("aria-expanded", "true");
+    if (trigger) trigger.textContent = "Hide previous versions";
     panel.textContent = "Loading previous versions…";
     const [result, latest] = await Promise.all([
       handoffRequest("history", { lessonId: session.lessonId, editCode: session.editCode }),
@@ -2376,8 +2386,12 @@
         ui.cloudConflict = null;
         persistTeamSession();
         state.step = stepIndex("review");
+        panel.hidden = true;
+        trigger?.setAttribute("aria-expanded", "false");
+        if (trigger) trigger.textContent = "Previous versions";
         render();
         fileNotice("Previous choices loaded into this browser draft. Review them, then Save shared design to create a new revision. Later history is preserved.");
+        window.requestAnimationFrame(() => byId("stepPanel")?.focus({ preventScroll: true }));
       });
       li.append(text, button);
       list.appendChild(li);

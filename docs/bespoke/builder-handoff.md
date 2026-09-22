@@ -25,7 +25,7 @@ The canonical content-intake artifact generated below is for that later builder
 stage, not a prerequisite or form assigned to teachers using BeSpoke.
 
 See [shared service setup](auto-handoff-setup.md) for provisioning, secrets,
-rotation, hosted acceptance checks, and the current deployment limitation. Keep
+rotation, hosted acceptance checks, and operating requirements. Keep
 private team links and credentials out of proposals and logs. Proposals contain
 only the agreed selection and its build artifacts. This repository is public, so
 proposal text and work contact details are publicly readable; team-draft access

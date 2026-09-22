@@ -62,9 +62,9 @@ Spoke Signals opens a draft proposal. A workflow dispatch alone is not a receipt
 BeSpoke reports **Britt received the review request.** only after the matching proposal is confirmed.
 Identical retries must resolve to the same proposal.
 
-**Hosted status:** the Netlify integration is reconnected; full hosted acceptance
-of the deployed Save/Open/Send flow remains pending.
-Passing local tests does not establish that teachers can save online. The service
+**Hosted status:** the deployed Save/Open/Send flow passed
+[live acceptance](../docs/bespoke/verification-2026-09-22.md), including a real
+review proposal. Passing local tests alone does not establish that teachers can save online. The service
 must show a visible failure and keep backups available whenever the endpoint or
 its configuration is unavailable. **Check review status** resumes a pending
 receipt check after a connection problem.
@@ -122,7 +122,9 @@ bash scripts/quality.sh
 
 The browser checks use synthetic designs and isolated browser contexts. They do
 not prove a real Teams call, OneDrive transfer, deployed save, or delivered review
-request. Use the setup guide's hosted acceptance checklist before inviting teams.
+request. Separate [hosted launch evidence](../docs/bespoke/verification-2026-09-22.md)
+records the real Pages, Netlify, and GitHub checks. Repeat the setup guide's relevant
+acceptance checks after operational changes.
 
 Locked decisions: [docs/bespoke/decisions.md](../docs/bespoke/decisions.md).
 Current review: [project readiness review](../docs/qa-reports/project-review-2026-09-22.md).

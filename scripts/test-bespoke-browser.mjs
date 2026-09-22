@@ -143,6 +143,64 @@ async function downloadBackup(page) {
   const download = await event;
   return { name:download.suggestedFilename(), buffer:await fs.readFile(await download.path()) };
 }
+async function editorLayout(page) {
+  return page.evaluate(() => {
+    const rect = selector => document.querySelector(selector).getBoundingClientRect();
+    const workspace = rect("#workspace");
+    const stepper = rect(".stepper");
+    const panel = rect("#stepPanel");
+    return {
+      workspace:{ top:workspace.top, bottom:workspace.bottom, height:workspace.height },
+      stepper:{ top:stepper.top, bottom:stepper.bottom, height:stepper.height },
+      panel:{ top:panel.top, bottom:panel.bottom, height:panel.height }
+    };
+  });
+}
+async function assertPanelControlReachable(page, selector, minPanelHeight) {
+  await page.locator(selector).evaluate(element => element.scrollIntoView({ block:"start", inline:"nearest" }));
+  await page.evaluate(selector => {
+    const box = document.querySelector(selector).getBoundingClientRect();
+    const scroller = document.scrollingElement;
+    if (box.bottom > innerHeight) scroller.scrollTop += box.bottom - innerHeight + 8;
+    else if (box.top < 0) scroller.scrollTop += box.top - 8;
+  }, selector);
+  await page.waitForTimeout(400);
+  const result = await page.evaluate(({ selector, minPanelHeight }) => {
+    const workspace = document.querySelector("#workspace").getBoundingClientRect();
+    const panel = document.querySelector("#stepPanel").getBoundingClientRect();
+    const target = document.querySelector(selector);
+    const box = target.getBoundingClientRect();
+    const x = Math.max(0, Math.min(innerWidth - 1, box.left + box.width / 2));
+    const y = Math.max(panel.top, Math.min(panel.bottom - 1, box.top + box.height / 2));
+    const hit = document.elementFromPoint(x, y);
+    return {
+      enoughPanel:panel.height >= minPanelHeight,
+      panelInsideWorkspace:panel.top >= workspace.top && panel.bottom <= workspace.bottom + 1,
+      targetInsidePanel:box.top >= panel.top - 1 && box.bottom <= panel.bottom + 1,
+      targetInsideViewport:box.top >= 0 && box.bottom <= innerHeight,
+      hitTarget:Boolean(hit && (hit === target || target.contains(hit))),
+      hit:hit ? { tag:hit.tagName, id:hit.id, className:hit.className } : null,
+      panelHeight:panel.height,
+      point:{ x, y, innerWidth, innerHeight },
+      scrolling:{
+        top:document.scrollingElement.scrollTop,
+        height:document.scrollingElement.scrollHeight,
+        client:document.scrollingElement.clientHeight,
+        bodyHeight:document.body.getBoundingClientRect().height,
+        htmlOverflow:getComputedStyle(document.documentElement).overflowY,
+        bodyOverflow:getComputedStyle(document.body).overflowY
+      },
+      target:{ top:box.top, bottom:box.bottom, left:box.left, right:box.right, width:box.width },
+      panel:{ top:panel.top, bottom:panel.bottom },
+      workspace:{ top:workspace.top, bottom:workspace.bottom }
+    };
+  }, { selector, minPanelHeight });
+  assert.deepEqual(
+    { enoughPanel:result.enoughPanel, panelInsideWorkspace:result.panelInsideWorkspace, targetInsidePanel:result.targetInsidePanel, targetInsideViewport:result.targetInsideViewport, hitTarget:result.hitTarget },
+    { enoughPanel:true, panelInsideWorkspace:true, targetInsidePanel:true, targetInsideViewport:true, hitTarget:true },
+    JSON.stringify(result)
+  );
+}
 
 try {
   const firstContext = await browser.newContext({
@@ -298,9 +356,27 @@ try {
   await first.locator("#btnHistory").click();
   await first.locator("#historyPanel .history-list").waitFor();
   assert.ok(await first.locator("#historyPanel button").count() >= 2);
+  assert.equal(await first.locator("#btnHistory").getAttribute("aria-expanded"), "true");
+  await first.evaluate(() => {
+    const notice = document.querySelector("#fileStatus");
+    notice.hidden = false;
+    notice.textContent = "Britt received the review request. https://github.com/doclegg05/Curriculum-Employability-Skills/pull/123?receipt=synthetic-long-received-review-address-for-responsive-testing";
+  });
+  for (const [width, height] of [[1280, 900], [1280, 720], [390, 700]]) {
+    await first.setViewportSize({ width, height });
+    await assertPanelControlReachable(first, "#btnCopyView", 80);
+  }
+  await first.setViewportSize({ width:1280, height:900 });
+  if (process.env.BESPOKE_HISTORY_SCREENSHOT) {
+    await first.screenshot({ path:process.env.BESPOKE_HISTORY_SCREENSHOT });
+  }
+  ok("expanded history keeps a selected form control reachable at desktop, short desktop, and phone sizes");
   const latestBeforeHistory = github.writes.at(-1).sha;
   await first.locator("#historyPanel button").last().click();
   await first.locator("#fileStatus").filter({ hasText:"Previous choices loaded" }).waitFor();
+  assert.equal(await first.locator("#historyPanel").isVisible(), false);
+  assert.equal(await first.locator("#btnHistory").getAttribute("aria-expanded"), "false");
+  await first.waitForFunction(() => document.activeElement?.id === "stepPanel");
   await saveShared(first);
   assert.equal(github.writes.at(-1).revision, latestBeforeHistory);
   ok("history loads old choices onto the latest revision for a deliberate new save");
@@ -351,8 +427,27 @@ try {
     assert.equal(await first.evaluate(() => document.documentElement.scrollWidth > innerWidth), false);
     assert.equal(await first.locator("#btnDownloadBackup").isVisible(), true);
     assert.equal(await first.locator("#btnOpenBackup").isVisible(), true);
+    const layout = await editorLayout(first);
+    assert.ok(layout.panel.height >= 80, `${width}: ${JSON.stringify(layout)}`);
+    assert.ok(layout.panel.top >= layout.workspace.top && layout.panel.bottom <= layout.workspace.bottom + 1, `${width}: ${JSON.stringify(layout)}`);
+    if (width === 390) {
+      await first.evaluate(() => { document.querySelector(".header-actions").scrollLeft = 0; });
+      const primaryActions = await first.evaluate(() => {
+        const element = document.querySelector(".header-actions");
+        const bar = element.getBoundingClientRect();
+        const save = document.querySelector("#btnSave").getBoundingClientRect();
+        const open = document.querySelector("#btnOpen").getBoundingClientRect();
+        return {
+          bar:{ left:bar.left, right:bar.right, scrollLeft:element.scrollLeft, justify:getComputedStyle(element).justifyContent },
+          save:{ left:save.left, right:save.right, order:getComputedStyle(document.querySelector("#btnSave")).order },
+          open:{ left:open.left, right:open.right, order:getComputedStyle(document.querySelector("#btnOpen")).order },
+          children:Array.from(element.children).map(child => ({ id:child.id, order:getComputedStyle(child).order, display:getComputedStyle(child).display, left:child.getBoundingClientRect().left, width:child.getBoundingClientRect().width }))
+        };
+      });
+      assert.ok(primaryActions.save.left >= primaryActions.bar.left && primaryActions.open.right <= primaryActions.bar.right, JSON.stringify(primaryActions));
+    }
   }
-  ok("team session controls pass tested axe and desktop, tablet, and phone widths");
+  ok("team session controls and selected form remain reachable at desktop, tablet, and phone widths");
 
   const offlineContext = await browser.newContext({ reducedMotion:"reduce" });
   const offline = await offlineContext.newPage();
