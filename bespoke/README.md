@@ -16,10 +16,11 @@ the catalogs. The existing lesson decks have a separate offline contract.
 4. At the next meeting, download that file and choose **Open team file**. Do not edit its JSON contents.
 5. **Prepare for Britt’s review** downloads a REVIEW file. Put it in the folder and tell Britt in Teams. This does not send or upload automatically.
 
-Teachers do not need GitHub, command-line tools or agent access. Write the full
-lesson together in the [Word lesson form](../docs/bespoke/team-lesson-intake.docx),
-kept alongside source files. BeSpoke stores design choices and sample text only.
-Read or print the [team meeting and file guide](team-guide.html).
+Teachers choose the UI's visual style, compare the previews together, and save or
+reopen their agreed choices. No completed lesson, separate form, GitHub account,
+command-line tools or agent access is needed to use BeSpoke or request a design
+review. Optional sample text is only for previewing appearance and fit.
+Read or print the [visual design and file guide](team-guide.html).
 
 Browser saving is a convenience copy, not the team record. Importing a file asks
 before replacing the working draft and keeps one previous browser draft for

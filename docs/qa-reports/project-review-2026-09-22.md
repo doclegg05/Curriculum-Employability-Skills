@@ -17,11 +17,16 @@ to the eventual HTML. The remaining release work includes lesson-specific conten
 corrections, accessible assessments/resources, complete runtime review, and a live
 Teams/OneDrive rehearsal with the actual instructors.
 
-The easiest near-term workflow is **one shared Word lesson document, one spokesperson
-operating BeSpoke during a Teams call, and timestamped BeSpoke team files in the
-existing shared folder**. Teachers need neither GitHub nor command-line tools.
-This design fits the team's existing skills without introducing another account
-system or asking six teams to coedit an opaque design file.
+The instructor workflow is **one spokesperson operating BeSpoke during a Teams
+call, the team agreeing on the visual style, and a saved BeSpoke design file in
+the shared OneDrive folder**. It covers colors, fonts, backgrounds, layouts,
+dividers and cards, plus saving, reopening and requesting review. Teachers need
+neither a completed lesson nor a content-authoring form to use it.
+
+Scope clarification: the user meant the workflow for using BeSpoke to choose the
+UI's look. The previously proposed Word lesson form has been removed. The broader
+project's content review remains valid; it is separate from this instructor UI
+workflow.
 
 ## Findings and priority
 
@@ -30,7 +35,7 @@ system or asking six teams to coedit an opaque design file.
 | F1 | P1 | Browser saving and snapshot links were too easy to mistake for durable shared work. Reopening a stale link could replace newer work; import lacked meaningful validation. | Fixed foundational workflow: visible Save/Open team file, timestamped downloads, confirmation and previous-draft recovery, validation, multi-tab conflict stop, explicit snapshot/download language. |
 | F2 | P1 | Same-day proposals overwrote one another; writer/apply boundaries accepted invalid data; registry apply could change released lessons. | Fixed validation before mutation, immutable proposal identity, safe retries, released-lesson protection and pending-revision preconditions. |
 | F3 | P1 | Instructor design selections did not have a deterministic artifact/check connecting them to final HTML. | Automatic selected CSS and build contract now generated. Static contract and computed browser tests added. Every finished lesson still requires rendered acceptance. |
-| F4 | P1 | Canonical intake omitted ownership/provenance/assessment controls, while generated intake silently treated preview samples as curriculum. | Canonical structure retained; KEEP VERBATIM, sources/check dates, learning evidence, revision and human approval added. Generated samples remain clearly separate. Editable Word companion added. |
+| F4 | P1 | Canonical intake omitted ownership/provenance/assessment controls, while generated intake silently treated preview samples as curriculum. | Canonical structure retained; KEEP VERBATIM, sources/check dates, learning evidence, revision and human approval added. Generated samples remain clearly separate. This builder intake is separate from the instructor visual-design workflow. |
 | F5 | P1 | Existing lessons have consequential content/assessment discrepancies: unsafe overwork example, conflicting anger guidance, broken handout instructions, inaccessible/unequal assessment routes and inconsistent scoring. | Detailed human editorial backlog in the content review. Not silently rewritten as software maintenance. |
 | F6 | P1 | Historical readiness and first-slide accessibility checks do not establish current all-slide, multi-device teaching readiness. | Dashboard says lessons “available,” not “ready to teach.” Full runtime findings are documented; release labels were not promoted. |
 | F7 | P1 | The canonical builder template failed its own critical checks; some allowed library styles violated contrast or chapter-watermark requirements. | Template foundation repaired and gated; defective styles blocked, source CSS corrected, fonts and actual choice effects regression-tested. No new lesson generated. |
@@ -62,59 +67,53 @@ for runtime and architecture evidence.
 
 ## Instructor workflow
 
-1. **Before the first meeting:** Britt supplies the hosted BeSpoke link and the team's existing shared folder. Pin both in Teams. Confirm access for all team members and name one spokesperson plus a backup.
-2. **Write together:** keep one shared [Word lesson form](../bespoke/team-lesson-intake.docx). Use Word comments for discussion, then let the content lead resolve wording. Keep source files and editable originals alongside it.
-3. **Choose the look:** the spokesperson opens the latest downloaded team file in BeSpoke and shares the browser window during the Teams call. Teammates discuss the actual preview. A preset is the quickest starting point; optional controls remain available.
-4. **End each meeting:** Save team file, move/upload the downloaded file to the shared folder, wait for syncing, and identify the latest filename in Teams. Do not keep two independently edited “latest” copies.
-5. **Request review:** Prepare for Britt’s review downloads a REVIEW file. Put it beside the completed Word intake and sources, then tell Britt in Teams. The app explicitly says it has not sent anything automatically.
-6. **Return later:** download the agreed file and use Open team file. Do not double-click/edit the JSON. Recovery can use the previous browser draft, an earlier timestamped file, or OneDrive version history.
+1. **Open:** the spokesperson opens the hosted BeSpoke link and selects the lesson, or downloads the latest design file from the shared folder and chooses Open team file.
+2. **Compare together:** share the BeSpoke browser window during the Teams call. Pick a starter theme, then compare approved colors, sidebar/background styles, title/divider layouts, card styles and fonts.
+3. **Preview:** use Title, Divider and Cards to inspect the selected look. Try sample text is optional and helps check appearance and fit; the supplied examples are enough.
+4. **Save:** choose Save team file, move/upload the download to the shared OneDrive folder, and wait for syncing. Identify the agreed version in Teams. One spokesperson saves each revision.
+5. **Return:** download the agreed design file and choose Open team file. The file restores the visual choices. Previous browser drafts and older file versions provide recovery routes.
+6. **Request design review:** choose Prepare for Britt’s review, put the REVIEW file in the shared folder, and tell Britt in Teams which design is ready. No completed lesson or separate form is required. Later, the team checks that the finished lesson displays the approved look.
 
-The [beginner guide](../../bespoke/team-guide.html) is printable and linked from
-BeSpoke. The six-page Word template is editable with ordinary paragraphs and
-tables, has no macros or special form controls, and carries a canonical-source
-fingerprint. Its six rendered pages were inspected; its document accessibility
-audit reported no findings. That is not a substitute for testing actual Word
-coauthoring or assistive technology with the team.
+The [visual design guide](../../bespoke/team-guide.html) is printable and linked
+from BeSpoke. Content writing, research and teaching-material production remain
+outside this UI workflow.
 
 Microsoft distinguishes channel files (team SharePoint storage) from files shared
 in chats (the sender's OneDrive for Business). Keep the stable folder link in the
 team channel and confirm who owns access if the lead changes.
 [Microsoft file storage guidance](https://support.microsoft.com/en-us/teams/files/file-storage-in-microsoft-teams).
-Word is appropriate for shared content authoring; BeSpoke JSON uses one spokesperson
-and explicit file revisions. OneDrive version history can restore earlier versions
-of different file types, including these design files.
-[Microsoft version history guidance](https://support.microsoft.com/en-us/onedrive/restore-a-previous-version-of-a-file-stored-in-onedrive).
+BeSpoke design files use one spokesperson and explicit revisions. OneDrive version
+history can restore earlier versions of different file types, including these
+files. [Microsoft version history guidance](https://support.microsoft.com/en-us/onedrive/restore-a-previous-version-of-a-file-stored-in-onedrive).
 
 ## Automation and approval map
 
 ```mermaid
 flowchart TD
-    A[Teacher team in Teams] --> B[Shared Word lesson and source files]
-    A --> C[BeSpoke design choices]
-    C --> D[Save team file]
-    D --> E[Spokesperson puts file in shared folder]
-    E --> F[Britt receives agreed revision]
-    B --> F
-    F --> G[Validate and generate immutable proposal]
-    G --> H[Canonical intake plus selected CSS and build contract]
-    H --> I[Britt reviews and merges proposal]
-    I --> J[Separately authorized lesson build]
-    J --> K[Design contract and lesson quality checks]
-    K --> L[Teacher review of final appearance and content]
-    L --> M[Accessibility and classroom acceptance]
-    M --> N[Approved release]
+    A[Teacher team in Teams] --> B[Spokesperson shares BeSpoke]
+    B --> C[Choose and preview visual styles]
+    C --> D[Save design file]
+    D --> E[Shared OneDrive folder]
+    E --> F[Reopen for the next meeting]
+    F --> C
+    E --> G[Send agreed design for Britt review]
+    G --> H[Validated design proposal and styling contract]
+    H --> I[Approved visual choices]
+    I --> J[Later separately authorized lesson build]
+    J --> K[Verify selected appearance in final lesson]
 ```
 
 Automation added now: input validation, immutable package creation, selected CSS,
 font/chapter mapping, exact-selection provenance, static final-output checking,
-regression tests and Word-template drift detection. The optional GitHub workflow
+and regression tests. The optional GitHub workflow
 uses the same validation, opens a draft PR and requests Britt's review. It does
 not build or publish lessons. The local ingestion command prints a package path;
 it does not silently create a PR or read the OneDrive account.
 
 **Still human-controlled:** deciding the latest team revision, placing the file
-in the cloud folder, complete source/content review, proposal approval, and final
-teacher acceptance. If direct OneDrive saving or automatic inbox receipt is later
+in the cloud folder, design approval, and teacher acceptance of the final look.
+Complete source/content review remains a separate prerequisite for an eventual
+lesson build, not for using BeSpoke or requesting design review. If direct OneDrive saving or automatic inbox receipt is later
 required, treat it as a separately designed Microsoft 365 integration with known
 folder identity, access rules, conflict handling and delivery receipts. No such
 connection was configured or claimed in this review.
@@ -151,11 +150,11 @@ matrix or performance benchmark was performed.
 - 16 BeSpoke browser scenarios pass, including empty text round-trip, fresh-browser reopening, stale snapshot recovery, multiple tabs, blocked choices, unavailable storage, malformed saved step, and review-download disclosure.
 - Generated-design browser regression passes for all six font pairs and representative visual effects on the actual canonical template.
 - BeSpoke starter preview axe checks: 18 tested views with no A/AA violations. Beginner guide axe check: no findings.
-- Schema/library regeneration and registry/dashboard synchronization checks pass. Word companion source fingerprint matches.
+- Schema/library regeneration and registry/dashboard synchronization checks pass.
 - The full quality command's final result and remaining allowed lesson accessibility findings are recorded in the project-health report. Its ratchet permits existing baseline violations; it is not a clean accessibility bill of health.
 
-Not exercised: actual Microsoft Teams meetings, tenant permissions, live Word
-coauthoring, upload/sync conflict recovery inside OneDrive, live submission-action
+Not exercised: actual Microsoft Teams meetings, tenant permissions,
+upload/sync conflict recovery inside OneDrive, live submission-action
 creation of a proposal, every caption against its audio, every PDF page visually,
 every external resource's continued availability, and every finished-style
 combination. No learning outcomes or legal/medical/financial professional approval
@@ -166,7 +165,7 @@ are inferred from this review. The content report states its exact PDF/video sco
 Use readiness milestones rather than a fixed release date. Suggested sequence:
 
 1. **Now:** address the highest-priority existing lesson content issues; establish team folder access; run a Money Management pilot of open, edit, save, reopen, and handoff with a beginner spokesperson.
-2. **After the pilot:** provide the same guide and Word form to all six teams. Complete learning objectives, source register, practice, assessment and design choices. Record unresolved decisions with an owner.
+2. **After the pilot:** provide the BeSpoke visual design guide to all six teams. Agree on visual choices, confirm save/reopen, and record unresolved design decisions with an owner. Continue curriculum research and writing through their separate process.
 3. **Before each build:** Britt confirms the agreed revision, complete approved wording/resources, source currency and permissions, then approves the proposal. Intake does not itself authorize a build.
 4. **During builds:** preserve the selected design contract and source meanings. Obtain a teacher preview early enough to correct mistakes before generating all supporting materials.
 5. **Toward March:** reconcile guides/handouts/rubrics, test all slides and supported devices, run a small teaching/accessibility pilot, resolve findings and record release approval. Move the date if a gate is not met.

@@ -4,6 +4,10 @@ Teachers use **Save team file**, put that file in their existing Teams/OneDrive
 folder, and tell Britt it is ready. Teachers do not need a GitHub account or a
 terminal. A saved file is a snapshot; Teams/OneDrive is the handoff location, not
 a live connection to Bespoke. The coordinator confirms which file is current.
+This instructor workflow concerns the visual look only. No full lesson intake or
+content-authoring form is required to submit visual choices for review. The
+canonical intake generated below is a separate builder-side artifact for a later
+authorized lesson build.
 
 ## Receive a teacher file
 

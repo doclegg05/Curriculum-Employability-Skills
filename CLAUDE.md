@@ -39,6 +39,6 @@ This package is not VisionQuest. Do not merge SPOKES HTML hosting into the Visio
 ## BeSpoke foundation and review
 
 - Read `docs/bespoke/builder-handoff.md` for receiving team files, approval boundaries, generated design contracts and final-output checks.
-- Teachers use `bespoke/team-guide.html` and the editable `docs/bespoke/team-lesson-intake.docx`; keep it aligned with the canonical intake template.
+- The instructor BeSpoke workflow covers visual choices, previews, collaboration, save/reopen, and design review only. Teachers use `bespoke/team-guide.html`; no content-authoring form or completed lesson is required.
 - Read `docs/qa-reports/project-review-2026-09-22.md` for current evidence and unresolved lesson release issues.
 - The September 22 review authorized foundation fixes, not construction of the six new lessons. March 2027 is a soft phase target.

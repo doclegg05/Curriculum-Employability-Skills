@@ -4,6 +4,11 @@ Review date: 2026-09-22
 Baseline reviewed: `d80a3f7`, branch `codex/bespoke-readiness-foundations`  
 Scope: repository architecture, six existing lesson runtimes, release-state evidence, CI and quality gates, local assets/links, accessibility, responsive behavior, offline/static-host assumptions, and canonical builder guardrails. BeSpoke application internals and curriculum fact-checking were handled by other workstreams. No lesson HTML or teaching PDF was changed in this workstream.
 
+Scope clarification: the instructor BeSpoke workflow covers visual choices and
+saving/reopening those choices. The initial Word intake companion and its drift
+check were subsequently removed from this change set; they are not needed to use
+BeSpoke. The runtime and lesson-content findings remain applicable.
+
 ## Decision
 
 **The repository foundation is usable and the full configured quality command passes, but the six existing lessons do not have fresh evidence for blanket teaching-release approval.** Three are correctly labeled QA. The three labeled ready have unresolved current runtime/accessibility evidence that conflicts with the locked release gates. The dashboard now says six lessons are “available,” which accurately describes launchability without claiming readiness.
@@ -99,7 +104,7 @@ Current template result: **68 PASS, 3 WARN, 0 CRITICAL**. The warnings are expec
 
 ### F5. Quality automation is now portable and covers the new foundation (fixed, with one remaining scope gap)
 
-The original `quality.sh` stopped on macOS Bash 3 because it used `mapfile`. It now uses a Bash-3-compatible read loop (`scripts/quality.sh:30-39`), discovers every `test_bespoke*.py` suite, verifies the Word intake fingerprint, and runs BeSpoke browser and generated-design tests when pinned browser dependencies are present (`:23-60`).
+The original `quality.sh` stopped on macOS Bash 3 because it used `mapfile`. It now uses a Bash-3-compatible read loop (`scripts/quality.sh:30-39`), discovers every `test_bespoke*.py` suite, and runs BeSpoke browser and generated-design tests when pinned browser dependencies are present (`:23-60`).
 
 The final full run passed:
 
@@ -107,7 +112,7 @@ The final full run passed:
 - canonical template: 68 pass / 3 warn / 0 critical;
 - 47 validator tests;
 - registry/dashboard sync across all fallback fields;
-- schema and Word intake drift checks;
+- schema drift checks;
 - 24 BeSpoke Python tests;
 - 16 BeSpoke browser scenarios;
 - six generated font pairs plus chapter/effect computed-style checks;
@@ -180,7 +185,7 @@ Keep core lesson delivery local. Label the external Jeopardy activity optional/o
 No lesson HTML was changed. Bounded foundation edits were made to:
 
 - `SPOKES Builder/template.html`: critical validator/a11y/navigation fixes, W divider, self-hosted tokenized fonts, local fixture assets, and preserved standard nav/theming contract.
-- `scripts/quality.sh`: Bash 3 portability, canonical template validation, complete BeSpoke test discovery, Word-intake drift check, and browser/design harness integration.
+- `scripts/quality.sh`: Bash 3 portability, canonical template validation, complete BeSpoke test discovery and browser/design harness integration.
 - `scripts/validate-lesson.py` and `scripts/test_validator.py`: prevent false font-token warnings from `@font-face` while retaining selector enforcement.
 - `scripts/check-registry-sync.py`: compare all dashboard fallback fields.
 - `Dashboard.html`: change the launchable count from “ready to teach” to “available.”

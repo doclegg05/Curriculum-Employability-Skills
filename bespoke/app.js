@@ -35,7 +35,7 @@
     { id: "layouts", label: "Title & dividers", view: "title" },
     { id: "cards", label: "Cards", view: "cards" },
     { id: "fonts", label: "Fonts", view: "cards" },
-    { id: "content", label: "Your content", view: "cards" },
+    { id: "content", label: "Try sample text", view: "cards" },
     { id: "review", label: "Review & submit", view: "title" },
     { id: "return", label: "Save and come back", view: "title" }
   ];
@@ -708,8 +708,8 @@
   function renderContent(panel) {
     const lesson = findMeta(state.meta.lessons, state.lessonId);
     panel.innerHTML = `
-      <h1>Your content</h1>
-      <p class="panel-lead">Paste a little real text so the preview looks like your lesson. This is a sample — the full lesson is built later.</p>
+      <h1>Try sample text</h1>
+      <p class="panel-lead">Optional: try a title or a few sample lines to compare the look and fit. You can keep the supplied examples. This step does not collect your lesson content.</p>
       <div class="field-grid">
         <label class="field">Lesson title
           <input id="lessonTitle" type="text" placeholder="${lesson ? lesson.title : "Lesson title"}">
@@ -771,8 +771,8 @@
         <ol>
           <li>Choose <strong>Prepare for Britt’s review</strong> to download the team file.</li>
           <li>Put that file in your lesson’s shared OneDrive folder and tell Britt in Teams that it is ready.</li>
-          <li>Britt checks the design and your separate lesson content, then approves the build.</li>
-          <li>Your team reviews the finished lesson before release. You do not need a GitHub account.</li>
+          <li>Britt reviews the visual choices for use in the later lesson build.</li>
+          <li>Your team checks that the approved look appears in the finished lesson. You do not need a GitHub account.</li>
         </ol>
         <p class="next-hops-note">The builder chooses slide pieces for the content. Your card style applies wherever cards appear.</p>
       </section>` : ""}
@@ -944,7 +944,7 @@
         <li><strong>Returning?</strong> Download the latest team file from your shared OneDrive folder. Choose <strong>Open team file</strong> at the top of this page. You do not need to open or edit the file yourself.</li>
         <li><strong>Starting?</strong> Choose Next, select your lesson and name your spokesperson. Pick a starter theme, then try the options.</li>
         <li><strong>Finishing the meeting?</strong> Choose <strong>Save team file</strong>. Move the downloaded file into your shared lesson folder and wait for OneDrive to finish syncing.</li>
-        <li><strong>Ready for Britt?</strong> Use Review &amp; submit. Your full lesson text and source files stay in your shared folder.</li>
+        <li><strong>Ready for Britt?</strong> Use Review &amp; submit to prepare your agreed visual choices for review.</li>
       </ol>
       <p>Your browser keeps one working draft as a convenience. The team file in your shared folder is what you use at the next meeting. Only the spokesperson should save a new team version.</p>
       <p><a href="./team-guide.html" target="_blank" rel="noopener">Team meeting and file guide</a></p>
@@ -1773,7 +1773,7 @@
       <ol><li>Move the downloaded file into your lesson’s shared OneDrive folder.</li>
       <li>Wait until OneDrive shows that it has finished syncing.</li>
       <li>Tell Britt in Teams which file is ready for review.</li></ol>
-      <p>Keep your source documents, lesson text and media in the same shared lesson folder. This file holds your design choices and sample text only. No GitHub account is needed.</p>`;
+      <p>This file holds your visual choices and optional preview text. You do not need a completed lesson or a separate form to request a design review. No GitHub account is needed.</p>`;
   }
 
   function render() {

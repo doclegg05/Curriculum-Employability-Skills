@@ -4,10 +4,11 @@ SPOKES interactive employability curriculum system with standards, templates, an
 
 ## Instructor collaboration
 
-Round 2 teams use Teams calls, one shared Word lesson document and a Bespoke team
-file kept in their shared OneDrive folder. No coding or GitHub account is required.
-Start with the [Bespoke team guide](bespoke/team-guide.html) and
-[editable Word lesson form](docs/bespoke/team-lesson-intake.docx).
+Round 2 teams use Bespoke during Teams calls to choose the visual style of their
+lessons: colors, fonts, backgrounds, layouts and cards. Save and reopen those
+choices using a Bespoke team file in the shared OneDrive folder. No lesson-writing
+form, coding or GitHub account is required for this workflow.
+Start with the [Bespoke visual design guide](bespoke/team-guide.html).
 Britt/builders follow [the handoff and design verification procedure](docs/bespoke/builder-handoff.md).
 The six new lessons remain unbuilt; March 2027 is the soft phase target.
 
