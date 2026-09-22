@@ -1,0 +1,11 @@
+# Function host only. The wizard stays on GitHub Pages.
+# Publish this small page so the Netlify site is not a second copy of the curriculum.
+[build]
+  publish = "netlify/site"
+
+[build.environment]
+  NODE_VERSION = "22"
+
+[functions]
+  directory = "netlify/functions"
+  node_bundler = "esbuild"

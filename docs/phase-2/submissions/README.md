@@ -1,7 +1,7 @@
 # Phase 2 Bespoke submissions
 
-Instructor teams work in Teams and their shared OneDrive folder. Their spokesperson
-uses Save team file and Prepare for Britt’s review. Teachers do not need GitHub.
+Instructor teams work in Teams. Their spokesperson uses Save, Open, and Send to Britt.
+Teachers do not need GitHub. Send opens a draft proposal; it does not build a lesson.
 
 Britt or a builder receives the file using the procedure in
 [builder handoff](../../bespoke/builder-handoff.md). The writer and optional Spoke

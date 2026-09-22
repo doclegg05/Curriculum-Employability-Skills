@@ -1,8 +1,9 @@
 # Bespoke
 
 Bespoke helps instructor teams choose the look of the six planned Round 2 lessons.
-It is a static, hosted design tool. It does not build lessons or connect directly
-to Teams or OneDrive. March 2027 is the soft phase target, subject to review.
+The wizard stays on GitHub Pages. Save, Open, and Send call a small handoff
+service that holds Britt’s token. It does not build lessons, and it does not
+connect to Teams or OneDrive. March 2027 is the soft phase target, subject to review.
 
 ## For instructor teams
 
@@ -10,22 +11,22 @@ Open the hosted curriculum hub and choose **Open Bespoke**. Use the website in a
 browser; opening its HTML file directly from OneDrive or `file://` does not load
 the catalogs. The existing lesson decks have a separate offline contract.
 
-1. The spokesperson opens the latest team file and shares the Bespoke window in a Teams call.
-2. The team chooses a starter theme and adjusts the available options.
-3. **Save team file** downloads a timestamped file. Put it in the shared lesson folder and wait for OneDrive to sync.
-4. At the next meeting, download that file and choose **Open team file**. Do not edit its JSON contents.
-5. **Prepare for Britt’s review** downloads a REVIEW file. Put it in the folder and tell Britt in Teams. This does not send or upload automatically.
+1. The spokesperson opens Bespoke, chooses **Open**, and enters the lesson plus the edit code. On the first meeting they set an edit code of at least 4 characters and write it down.
+2. The team chooses a starter theme and adjusts the available options while the spokesperson shares the window in a Teams call.
+3. **Save** stores that design so **Open** can load it later on any computer. The browser also keeps a convenience copy.
+4. **Send to Britt** asks the Spoke Signals workflow to open a draft pull request. The lead does not sign in or pick a folder. Merge remains Britt’s greenlight. This does not build a lesson.
+5. **For builders** still downloads a design file. That download is not the lead’s main step.
 
 Teachers choose the UI's visual style, compare the previews together, and save or
 reopen their agreed choices. No completed lesson, separate form, GitHub account,
 command-line tools or agent access is needed to use BeSpoke or request a design
 review. Optional sample text is only for previewing appearance and fit.
-Read or print the [visual design and file guide](team-guide.html).
+Read or print the [team meeting guide](team-guide.html).
 
-Browser saving is a convenience copy, not the team record. Importing a file asks
+Browser saving is a convenience copy, not the team record. Opening a design asks
 before replacing the working draft and keeps one previous browser draft for
 recovery. A change from another tab pauses automatic saving to avoid silently
-replacing work. Downloading a team file still works when browser storage fails.
+replacing work. The builder download still works when browser storage fails.
 
 Optional view links are snapshots, not live collaboration. Copy a new link after
 changes. They contain readable sample text/contact details. Their optional edit
@@ -38,10 +39,12 @@ validates an incoming file and writes an immutable proposal containing the full
 canonical intake, selected CSS and a final-output design contract. Identical
 retries preserve the proposal; differing revisions have separate folders.
 
-The optional **For builders** GitHub flow or Spoke Signals workflow opens a draft
-PR. Britt's reviewed merge is the approval to begin a separate build. The workflow
-does not build, publish or apply registries automatically. A review request alone
-does not enforce repository branch protection.
+The lead’s **Send to Britt** button starts the same Spoke Signals workflow with
+Britt’s server token. **For builders** can still download a design file or prepare
+a GitHub issue. Britt's reviewed merge is the approval to begin a separate build.
+The workflow does not build, publish, or apply registries automatically. A review
+request alone does not enforce repository branch protection. One-time connection
+steps are in [auto handoff setup](../docs/bespoke/auto-handoff-setup.md).
 
 After an authorized build, the design checker verifies selection identity, CSS,
 fonts, chapter mapping and required dark-theme class. This is a static check;
@@ -72,6 +75,7 @@ and final component placement remain part of the approved build.
 
 ```sh
 python3 -m unittest discover -s scripts -p 'test_bespoke*.py' -v
+node --test scripts/test-bespoke-handoff.mjs
 node scripts/test-bespoke-browser.mjs
 bash scripts/quality.sh
 ```

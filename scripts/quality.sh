@@ -23,6 +23,8 @@ python3 scripts/check-registry-sync.py
 echo "==> bespoke selection schema (generate --check + fixtures + submissions)"
 python3 scripts/generate-selection-schema.py --check
 python3 -m unittest discover -s scripts -p 'test_bespoke*.py' -v
+echo "==> bespoke handoff endpoint"
+node --test scripts/test-bespoke-handoff.mjs
 # Valid fixtures + any docs/phase-2/submissions/**/selection.json (skips *invalid*/*broken*)
 python3 scripts/validate-bespoke-selection.py \
   scripts/test-fixtures/bespoke/selection-money-management.json
