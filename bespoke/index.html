@@ -20,10 +20,12 @@
       </div>
     </a>
     <div class="header-actions">
+      <div class="header-primary-actions">
+        <button type="button" class="btn btn-primary" id="btnSave">Save shared design</button>
+        <button type="button" class="btn btn-secondary" id="btnOpen">Open team design</button>
+      </div>
       <p id="saveStatus" class="save-status"></p>
       <span id="saveLive" class="sr-only" aria-live="polite"></span>
-      <button type="button" class="btn btn-primary" id="btnSave">Save shared design</button>
-      <button type="button" class="btn btn-secondary" id="btnOpen">Open team design</button>
       <button type="button" class="btn btn-accent" id="btnSend">Send to Britt</button>
       <button type="button" class="btn btn-ghost" id="btnDownloadBackup">Download backup</button>
       <button type="button" class="btn btn-ghost" id="btnOpenBackup">Open backup</button>
@@ -39,7 +41,7 @@
     <div class="team-session-actions">
       <button type="button" class="btn btn-primary" id="btnLoadLatest" hidden>Load latest shared design</button>
       <button type="button" class="btn btn-secondary" id="btnKeepLocal" hidden>Keep this browser draft</button>
-      <button type="button" class="btn btn-ghost" id="btnHistory">Previous versions</button>
+      <button type="button" class="btn btn-ghost" id="btnHistory" aria-expanded="false" aria-controls="historyPanel">Previous versions</button>
       <button type="button" class="btn btn-ghost" id="btnCheckStatus" hidden>Check review status</button>
       <button type="button" class="btn btn-ghost" id="btnLeaveSession">Leave team session on this browser</button>
     </div>

@@ -6,6 +6,13 @@ BeSpoke, instructor intake, shared-file collaboration, branding, quality gates a
 release governance. March 2027 is the soft target for the next phase. The six new
 lessons were not built, and no existing lesson content or teaching PDFs were rewritten.
 
+**Later same-day BeSpoke update:** the file-based workflow described in this
+baseline review is superseded by private team links and verified shared
+Save/Open/Send. OneDrive backups are optional. See the
+[live verification record](../bespoke/verification-2026-09-22.md) for the deployed
+workflow, delivery receipt, and recovery tests. The lesson-content and teaching
+release findings below remain open; this update does not approve lesson content.
+
 ## Decision
 
 **Prepare a supervised instructor pilot of BeSpoke. Do not give the curriculum a blanket teaching-release approval.**

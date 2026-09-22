@@ -12,8 +12,9 @@ to lesson HTML, merges a proposal, or publishes content.
 
 ## Process map
 
-This is the target flow implemented by the service and wizard. It still requires
-the hosted acceptance checks below before it can be called live.
+This flow is implemented by the service and wizard. The initial hosted release
+passed [live acceptance on September 22, 2026](verification-2026-09-22.md). Repeat
+the relevant checks below after service, workflow, access, or hosting changes.
 
 ```mermaid
 flowchart TD
@@ -217,7 +218,8 @@ Record the deployed commit, dates, devices/browsers, revision IDs, and a synthet
 proposal receipt. Redact access links and secrets. The process is not accepted
 until the tests exercise the real Pages host, Netlify service, and GitHub workflow.
 
-The Netlify integration has been reconnected. Full hosted acceptance of the
-deployed Save/Open/Send flow has not yet been recorded. Update the release
-evidence with the deployed commit and test results before describing shared
-saving as live or ready for teams.
+The initial deployment passed the live Pages → Netlify → GitHub Save/Open/Send
+flow on September 22, 2026. See [the verification record](verification-2026-09-22.md)
+for deployed versions, test proposal, cleanup, and the boundaries of testing.
+The initial GitHub token expires December 21, 2026; renew it before that date
+without changing the draft encryption key.

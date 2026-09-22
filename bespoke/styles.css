@@ -245,6 +245,11 @@ textarea:focus-visible,
   flex-wrap: wrap;
   align-items: center;
 }
+.header-primary-actions {
+  display: flex;
+  flex: 0 0 auto;
+  gap: var(--s3);
+}
 .save-status {
   margin: 0;
   font-size: 1rem;
@@ -301,6 +306,11 @@ textarea:focus-visible,
 .restore-notice {
   margin: 0;
   padding: 0.75rem var(--s6);
+  min-height: 0;
+  max-height: min(7rem, 18dvh);
+  overflow-y: auto;
+  overflow-wrap: anywhere;
+  overscroll-behavior: contain;
   background: #fff4e5;
   color: var(--dark);
   font-weight: 600;
@@ -312,11 +322,15 @@ textarea:focus-visible,
   border-bottom: 1px solid rgba(0, 64, 113, 0.16);
   background: #ffffff;
   color: var(--royal);
+  min-height: 0;
+  max-height: min(22rem, 38dvh);
+  overflow-y: auto;
+  overscroll-behavior: contain;
 }
 .team-session-bar[hidden] { display: none; }
 .team-session-bar p { margin: 0; font-weight: 600; }
 .team-session-actions { display: flex; flex-wrap: wrap; gap: 0.5rem; margin-top: 0.55rem; }
-.history-panel { margin-top: 0.65rem; padding: 0.75rem; border: 1px solid var(--offwhite); border-radius: 10px; background: var(--muted); }
+.history-panel { margin-top: 0.65rem; padding: 0.75rem; max-height: min(15rem, 26dvh); overflow-y: auto; overscroll-behavior: contain; border: 1px solid var(--offwhite); border-radius: 10px; background: var(--muted); }
 .history-panel[hidden] { display: none; }
 .history-list { display: grid; gap: 0.5rem; margin: 0; padding: 0; list-style: none; }
 .history-list li { display: flex; align-items: center; justify-content: space-between; gap: 0.75rem; }
@@ -420,9 +434,12 @@ textarea:focus-visible,
   overflow: hidden;
 }
 
-/* Stepper: compact, never clips — every step stays visible */
+/* The step list yields height to the selected form when banners or history are open. */
 .stepper {
-  flex-shrink: 0;
+  flex: 0 1 auto;
+  max-height: min(22rem, 42%);
+  overflow-y: auto;
+  overscroll-behavior: contain;
   padding: var(--s3) var(--s4);
   background: rgba(255, 255, 255, 0.78);
   border: 1px solid rgba(0, 19, 63, 0.08);
@@ -479,6 +496,22 @@ textarea:focus-visible,
 .step-list button.is-done .step-num span { display: none; }
 /* Short viewports: two columns so the list never scrolls */
 @media (max-height: 820px) and (min-width: 900px) {
+  html {
+    height: auto;
+    min-height: 100%;
+    overflow-y: auto;
+  }
+  body.app-shell {
+    height: auto;
+    min-height: 100dvh;
+    max-height: none;
+    overflow: visible;
+  }
+  .workspace {
+    flex: 0 0 auto;
+    height: max(24rem, 58dvh);
+    min-height: 24rem;
+  }
   .step-list {
     grid-template-columns: 1fr 1fr;
     grid-auto-flow: column;
@@ -498,7 +531,7 @@ textarea:focus-visible,
 .guide-list li { padding-left: 0.15rem; }
 
 .chrome-main {
-  flex: 1;
+  flex: 1 1 0;
   min-height: 0;
   display: flex;
   flex-direction: column;
@@ -1408,12 +1441,27 @@ label.field textarea { min-height: 110px; resize: vertical; }
 }
 .footer-bar p { margin: 0; }
 
-/* Tablet / phone: one surface at a time so preview stays reachable without page scroll */
+/* Tablet / phone: one surface at a time, with page scroll for compact viewports. */
 @media (max-width: 899px) {
+  html {
+    height: auto;
+    min-height: 100%;
+    overflow-y: auto;
+  }
+  body.app-shell {
+    height: auto;
+    min-height: 100dvh;
+    max-height: none;
+    overflow: visible;
+  }
+  .team-session-bar { max-height: min(18rem, 32dvh); }
   .surface-switcher {
     display: flex;
   }
   .workspace {
+    flex: 0 0 auto;
+    height: max(28rem, 60dvh);
+    min-height: 28rem;
     grid-template-columns: 1fr;
     padding: var(--s3) var(--s4);
   }
@@ -1434,6 +1482,7 @@ label.field textarea { min-height: 110px; resize: vertical; }
   .step-list {
     grid-template-columns: repeat(auto-fill, minmax(140px, 1fr));
   }
+  .stepper { max-height: 38%; }
   /* Phones keep roomier tiles for 44px tap targets */
   .option-grid,
   .preset-grid {
@@ -1579,8 +1628,30 @@ body.is-view-only .panel textarea:disabled {
   .header-actions .btn { min-height: 44px; }
 }
 @media (max-width: 640px) {
-  .app-header { gap: 0.4rem; }
-  .header-actions { gap: 0.35rem; }
+  .app-header {
+    display: grid;
+    grid-template-columns: 1fr;
+    gap: 0.4rem;
+  }
+  .header-actions {
+    width: 100%;
+    min-width: 0;
+    justify-self: stretch;
+    justify-content: flex-start;
+    flex-wrap: nowrap;
+    gap: 0.35rem;
+    overflow-x: auto;
+    overscroll-behavior-inline: contain;
+    scrollbar-gutter: stable;
+    padding-bottom: 0.15rem;
+  }
+  .save-status,
+  .header-actions .btn {
+    flex: 0 0 auto;
+  }
+  .save-status { white-space: nowrap; }
   .header-actions .btn { padding: 0.45rem 0.6rem; font-size: 0.85rem; }
-  .stepper { max-height: 155px; overflow-y: auto; }
+  .team-session-bar { max-height: 28dvh; }
+  .history-panel { max-height: 18dvh; }
+  .stepper { min-height: 80px; max-height: 35%; overflow-y: auto; }
 }
