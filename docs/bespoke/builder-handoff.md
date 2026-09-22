@@ -1,13 +1,19 @@
 # Bespoke builder handoff
 
-Teachers use **Save team file**, put that file in their existing Teams/OneDrive
-folder, and tell Britt it is ready. Teachers do not need a GitHub account or a
-terminal. A saved file is a snapshot; Teams/OneDrive is the handoff location, not
-a live connection to Bespoke. The coordinator confirms which file is current.
-This instructor workflow concerns the visual look only. No full lesson intake or
+Teachers choose **Save**, **Open**, and **Send to Britt**. Save stores the design
+for a later Open on any computer. The edit code is the lock. Send starts the Spoke
+Signals workflow, which opens a draft pull request for Britt. Teachers do not need
+a GitHub account, a terminal, or a folder to pick. The browser still keeps a
+convenience copy, and **For builders** can still download a design file. This
+instructor workflow concerns the visual look only. No full lesson intake or
 content-authoring form is required to submit visual choices for review. The
 canonical intake generated below is a separate builder-side artifact for a later
 authorized lesson build.
+
+Send to Britt is the lead’s path. It dispatches the Spoke Signals workflow with
+the server token. The workflow writes the proposal and opens the draft pull
+request. It does not push to main and it does not apply a selection. Use the file
+command below when a builder downloads a design file instead.
 
 ## Receive a teacher file
 

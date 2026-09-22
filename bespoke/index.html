@@ -22,8 +22,9 @@
     <div class="header-actions">
       <p id="saveStatus" class="save-status"></p>
       <span id="saveLive" class="sr-only" aria-live="polite"></span>
-      <button type="button" class="btn btn-secondary" id="btnSaveFile">Save team file</button>
-      <button type="button" class="btn btn-secondary" id="btnOpenFile">Open team file</button>
+      <button type="button" class="btn btn-primary" id="btnSave">Save</button>
+      <button type="button" class="btn btn-secondary" id="btnOpen">Open</button>
+      <button type="button" class="btn btn-accent" id="btnSend">Send to Britt</button>
       <button type="button" class="btn btn-ghost" id="btnRecoverDraft" hidden>Recover previous draft</button>
       <input id="teamFileInput" type="file" accept="application/json,.json" hidden>
       <a class="btn btn-ghost" href="../Dashboard.html">Curriculum hub</a>
@@ -43,6 +44,23 @@
     </form>
   </div>
   <p id="restoreNotice" class="restore-notice" role="status" hidden></p>
+  <dialog id="openDialog" class="open-dialog" aria-labelledby="openDialogTitle">
+    <form id="openForm">
+      <h2 id="openDialogTitle">Open a saved design</h2>
+      <p>Pick the lesson and enter the edit code from the meeting where it was saved.</p>
+      <label class="field" for="openLesson">Lesson
+        <select id="openLesson" required></select>
+      </label>
+      <label class="field" for="openEditCode">Edit code
+        <input id="openEditCode" type="text" autocomplete="off" minlength="4" maxlength="40" required>
+      </label>
+      <p id="openError" class="share-status" role="status" aria-live="polite"></p>
+      <div class="share-actions">
+        <button type="submit" class="btn btn-primary" id="openConfirm">Open</button>
+        <button type="button" class="btn btn-secondary" id="openCancel">Cancel</button>
+      </div>
+    </form>
+  </dialog>
 
   <div class="surface-switcher" role="tablist" aria-label="Workspace surface" id="surfaceSwitcher">
     <button type="button" role="tab" id="surface-design" data-surface="design" aria-selected="true" aria-controls="chromeRail">Design</button>

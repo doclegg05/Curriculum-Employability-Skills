@@ -20,3 +20,6 @@ __pycache__/
 
 # Node a11y test harness (devDependencies only; decks need no node_modules)
 node_modules/
+
+# Netlify local state (the handoff token is a site secret, never a file here)
+.netlify
