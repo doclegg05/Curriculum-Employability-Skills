@@ -1,0 +1,62 @@
+{
+  "schema": "bespoke-selection/v1",
+  "submittedAt": "2026-09-21T14:30:00.000Z",
+  "date": "2026-09-21",
+  "libraryCatalogVersion": "1.0.0",
+  "lesson": {
+    "id": "money-management",
+    "title": "Money Management",
+    "displayTitle": "Money Management",
+    "subtitle": "Budget basics for everyday life"
+  },
+  "team": {
+    "name": "Dogfood team",
+    "spokesperson": {
+      "name": "Alex Instructor",
+      "email": "alex@example.org"
+    }
+  },
+  "presetId": "professional",
+  "theme": {
+    "colorLead": "blue",
+    "sidebarColor": "dark",
+    "backgroundTexture": "dot-grid",
+    "titleSlide": "centered-gradient",
+    "dividerStyle": "gradient-sweep",
+    "fontPairing": "dm-serif-display-outfit",
+    "cards": {
+      "lessonWide": "left-border",
+      "varyByChapter": true,
+      "chapterStyles": {
+        "W": "left-border",
+        "I": "shadow-float",
+        "P1": "outlined",
+        "P2": "pill",
+        "P3": "layered",
+        "E": "top-accent",
+        "A": "quiet-outline"
+      }
+    },
+    "catalogIds": {
+      "colorLead": "colorLeads.blue",
+      "sidebarColor": "sidebarColors.dark",
+      "backgroundTexture": "backgroundTextures.dot-grid",
+      "titleSlide": "titleSlides.centered-gradient",
+      "dividerStyle": "dividers.gradient-sweep",
+      "cards": {
+        "W": "cards.left-border",
+        "I": "cards.shadow-float",
+        "P1": "cards.outlined",
+        "P2": "cards.pill",
+        "P3": "cards.layered",
+        "E": "cards.top-accent",
+        "A": "cards.quiet-outline"
+      }
+    }
+  },
+  "sampleContent": {
+    "bullets": "Know your income\nList fixed costs\nSave a little first",
+    "mythReality": "Myth: budgeting means never treating yourself. Reality: a budget is a plan that includes small joys."
+  },
+  "unspoken": "Keep numbers fictional in the prototype demo."
+}
