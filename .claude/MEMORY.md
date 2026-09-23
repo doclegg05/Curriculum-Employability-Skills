@@ -7,25 +7,29 @@
 - **Repo**: origin = doclegg05/Curriculum-Employability-Skills (dev); publisher = SPOKES-Skills/Employability-Skills-Curriculum (public Pages); t9 = /Volumes/T9 backup mirror
 
 ## Current Status
-(as of 2026-09-23, `origin/main` = `3b5ea01`)
+(as of 2026-09-23 evening, `origin/main` = `c3da4c0`)
 - **Six existing lessons: OUT OF QA, READY FOR TEACHING** (Britt, 2026-09-23). This supersedes the 2026-09-22 review's "no blanket teaching release" verdict. Registry, Dashboard fallback, README and Project Plan updated to match the same day.
 - **BeSpoke: built, deployed, live-verified 2026-09-22** (`docs/bespoke/verification-2026-09-22.md`). Private per-lesson team links, encrypted shared Save/Open, History, Download/Open backup, Send to Britt → receipt-confirmed draft PR. Scope is visual design only (colors, fonts, layouts, cards); no lesson is built by it.
 - **BeSpoke design brief + UI rework live 2026-09-23** (PR #25, merged `3b5ea01`; Pages deployed; Netlify service `6ab3ebad54816f0e2b364fa9`). Teams answer four questions and get a starting design of their own. Live save of a design *with* a brief not yet exercised.
 - **Moving to Phase 2 (Round 2): the next six lessons** — Goal Setting, Money Management (Budget), Professionalism and Diversity, Knowing Your Rights in the Workplace, Communicating Assertively, Workplace Ethics. Unbuilt; March 2027 soft target. Building needs separate Britt authorization + complete approved content.
-- Quality gate (`scripts/quality.sh`) green in CI and locally on 2026-09-23 after PR #25: 36 Node (incl. 10 brief), 28 Python, 25 BeSpoke browser scenarios, axe clean on all 11 wizard steps.
+- **BeSpoke preview fidelity fixes live 2026-09-23** (PRs #27–#31): every option in every design step now visibly changes the preview (guarded by a browser sweep). Color lead and background open on the content slide; title slides use the template's real markup with library px/rem scaled to the frame; per-chapter cards have a chapter picker.
+- **Theme library fixed 2026-09-23** (PR #28): download-button AA contrast for every lead; Split Hero, Diagonal Split and the title rule repaired. Guards: `scripts/test_bespoke_theme_contrast.py`, `scripts/check-title-layouts.mjs` (both in quality.sh).
+- **Next direction: slide builder.** Britt wants teams to build slides one small decision at a time: per-role colors from the palette, title layout positions, then 4 slide types (chapter divider, video, bullet list, activity), with the similarity meter kept and made accurate. Mockup of the color step is live at `bespoke/mockups/color-roles.html` (PR #30). Britt chose: mockup first, 4 slide types, the builder replaces the wizard. Spec + Plan 1 in progress.
+- Quality gate green on `main` after PR #31: 36 Node, 30 Python, 27 BeSpoke browser scenarios, 15/15 title layouts.
 
 ## Last Session
-- **Date**: 2026-09-23 (second session)
-- **What we worked on**: BeSpoke wizard UI review and workflow change → PR #25, merged `3b5ea01`, live on Pages.
-  - Found: the six presets are the six existing lessons' exact looks, and the copy said "most teams stop here", so the default path copied a lesson. Title/divider/lead tiles were name-only. At 1280×720 a short-viewport rule capped the workspace at 58dvh and the options panel got ≈200px.
-  - Added `bespoke/brief.js` (pure; tests `scripts/test-bespoke-brief.mjs`, in quality.sh): four questions, trait scores for every library option, lesson colour cues, team-name seed + "another version", and a cap of 3–5 of 7 choices shared with any existing look.
-  - Wizard: "Describe the feel" step; "Starting point" (made-for-your-team design plus existing looks labelled "Same look as …"); "Save and come back" folded into Review (old `return` drafts map there); hover/focus try-on preview; "Fits your brief" tags and mood words; closest-lesson meter over the preview and on Review; phased stepper (disc row on short screens/phones); More menu in the header; Next names the next step; slide fade only on view change; `--gold-ink` for the NEW tag's contrast.
-  - Payload: optional `brief` object in the schema; Netlify service redeployed first (deploy `6ab3ebad…`), then merged.
+- **Date**: 2026-09-23 (second session, continued)
+- **What we worked on**: BeSpoke, in order: design brief + UI rework (PR #25, service deploy `6ab3ebad…` first); color lead preview (#27); download-button contrast + title-slide layouts in the library (#28); texture preview (#29); color-roles mockup (#30); per-chapter card picker (#31). Also memory PR #26.
+- **Pattern found**: Britt's "the preview doesn't change" reports all came from one cause. A bundled choice either rendered on a slide where it has no effect, or the preview didn't mirror the template. Fix pattern: open the step on the slide where the choice shows; mirror template markup; scale library px/rem (`--pv-px = 100cqi/1280`); lock with a browser sweep.
 - **What we decided**: see the 2026-09-23 rows in the decision log.
-- **Where we left off**: everything merged and deployed. Next step is Britt's live acceptance with a brief: open a team link → answer the brief → Use this design → save → reopen on a second computer → Send → check the "Design brief" row in the proposal.
+- **Where we left off**: writing the slide-builder spec and Plan 1 (design model: selection v2, role colors + contrast rules, CSS generation, validators, accurate meter from `theme-registry.json`). Facts gathered (template selectors per slide type, SPOKES-STANDARD CLR/TYP/THM rules, registry, every `bespoke-selection/v1` site). Plans 2 (builder UI) and 3 (migration/rollout) follow Plan 1.
 
 ## Open Items
 - [ ] **Hosted acceptance with a design brief** (PR #25): save with a brief on one computer, reopen on another, Send, confirm the "Design brief" row. Record in a verification note like `docs/bespoke/verification-2026-09-22.md`. Service redeploy (`6ab3ebad…`) and Pages are live; only this end-to-end run is missing.
+- [ ] Hosted acceptance still pending for a design that includes a brief (save → reopen elsewhere → Send → "Design brief" row).
+- [ ] Slide builder: write spec + Plan 1, then Plans 2–3. The per-role color model reopens D6 and the theming guide's "do not rewrite the colorLead model"; it changes the saved-design schema, the Netlify service (redeploy before merge), the submission writer, CSS generation, registry apply and the design checker.
+- [ ] Library textures are 3–8% opacity (Dot Grid, Diagonal nearly invisible even full-size). Britt's call whether to strengthen them.
+- [ ] Quiet Center's 64px "short rule" is stretched to 120px by the template's entrance animation; Split Hero's gold subtitle is low-contrast over the blue half (also in the released Interview Skills lesson).
 - [ ] Brief traits and lesson colour cues in `bespoke/brief.js` are Claude's judgement, not teacher-tested. Watch the Money Management pilot for suggestions that feel wrong and retune there.
 - [ ] **Publisher site is 46 commits behind** (stuck at Aug 17 `fb9e202`). Britt to decide whether BeSpoke belongs on the public site before `git push publisher main:main`. Two live Pages sites still exist; canonical URL undecided.
 - [x] **BeSpoke autosave + close warning** shipped 2026-09-23 (PR #23, merged `0212c39`, live on Pages): shared save on step change (1.5 s) and after 30 s idle; beforeunload prompt while changes are unshared; paused after opening a backup/older version until a manual Save; conflicts still stop it. 24 browser scenarios pass; quality.sh green. Live only after merge + Pages deploy.
@@ -52,6 +56,8 @@
 ## Key Decisions Log
 | Date | Decision | Rationale |
 |------|----------|-----------|
+| 2026-09-23 | Slide builder replaces the wizard: per-role colors (mockup first), title positions, 4 slide types (chapter divider, video, bullet list, activity), accurate similarity meter | Britt: small decisions, each visible in the preview, tracked and persistent |
+| 2026-09-23 | Preview must mirror the template (real markup, scaled library units) and every option must visibly change it | Britt's repeated "preview doesn't change" reports; guarded by a browser sweep |
 | 2026-09-23 | BeSpoke adds a design brief step; its answers drive a starting design capped at 3–5 of 7 choices shared with any existing lesson | Presets were the six existing lessons' looks, so the default path copied a lesson |
 | 2026-09-23 | Brief answers travel in an optional `brief` payload object; `variant` is a digit string | Answers must survive shared Save/Open; canonical JSON between Python and JS assumes no numeric fields |
 | 2026-09-23 | For schema changes, redeploy the Netlify service before merging the wizard | The service bundles the schema and rejects unknown fields; the new service accepts old and new payloads |
