@@ -7,25 +7,26 @@
 - **Repo**: origin = doclegg05/Curriculum-Employability-Skills (dev); publisher = SPOKES-Skills/Employability-Skills-Curriculum (public Pages); t9 = /Volumes/T9 backup mirror
 
 ## Current Status
-(as of 2026-09-23, `origin/main` = `efe2e8e`)
+(as of 2026-09-23, `origin/main` = `3b5ea01`)
 - **Six existing lessons: OUT OF QA, READY FOR TEACHING** (Britt, 2026-09-23). This supersedes the 2026-09-22 review's "no blanket teaching release" verdict. Registry, Dashboard fallback, README and Project Plan updated to match the same day.
 - **BeSpoke: built, deployed, live-verified 2026-09-22** (`docs/bespoke/verification-2026-09-22.md`). Private per-lesson team links, encrypted shared Save/Open, History, Download/Open backup, Send to Britt → receipt-confirmed draft PR. Scope is visual design only (colors, fonts, layouts, cards); no lesson is built by it.
+- **BeSpoke design brief + UI rework live 2026-09-23** (PR #25, merged `3b5ea01`; Pages deployed; Netlify service `6ab3ebad54816f0e2b364fa9`). Teams answer four questions and get a starting design of their own. Live save of a design *with* a brief not yet exercised.
 - **Moving to Phase 2 (Round 2): the next six lessons** — Goal Setting, Money Management (Budget), Professionalism and Diversity, Knowing Your Rights in the Workplace, Communicating Assertively, Workplace Ethics. Unbuilt; March 2027 soft target. Building needs separate Britt authorization + complete approved content.
-- Quality gate (`scripts/quality.sh`) green in CI; re-checked locally 2026-09-23 (validators, validator tests, BeSpoke Python tests, 26 Node handoff/provision tests, registry sync). Browser/a11y portions not re-run that day.
+- Quality gate (`scripts/quality.sh`) green in CI and locally on 2026-09-23 after PR #25: 36 Node (incl. 10 brief), 28 Python, 25 BeSpoke browser scenarios, axe clean on all 11 wizard steps.
 
 ## Last Session
-- **Date**: 2026-09-23 (second session, worktree `claude/bespoke-wizard-ui-review-c1971a`, uncommitted)
-- **What we worked on**: BeSpoke wizard UI review and workflow change.
-  - Found: the six presets are the six existing lessons' exact looks, and the old copy said "most teams stop here", so the default path copied a lesson. Title/divider/lead tiles were name-only. At 1280×720 a short-viewport rule capped the workspace at 58dvh (≈190px blank) and the stepper left the options panel ≈200px.
-  - Added `bespoke/brief.js` (pure): four questions (feel, class energy, closeness, light/dark), trait scores for every library option, lesson colour cues, team-name seed and "another version", and a nudge away from any existing look past 3–5 of 7 shared choices. Tests: `scripts/test-bespoke-brief.mjs` (in quality.sh).
-  - Wizard: new "Describe the feel" step; "Theme preset" became "Starting point" (made-for-your-team design plus existing looks labelled "Same look as …"); "Save and come back" folded into Review (old `return` drafts map to review); hover/focus try-on preview; "Fits your brief" tags and mood words on tiles; closest-lesson meter over the preview and on Review; phased stepper (disc row on short screens and phones); header secondary actions in a More menu; Next names the next step; slide fade only on view change; `--gold-ink` fixes the NEW tag's contrast.
-- **What we decided**: brief answers travel in an optional `brief` payload object (ids in `bespoke/catalog.json` `briefAnswers`, `variant` a digit string to keep the payload number-free). `presetId` records the closest existing look. `startingPoint` removed; "in use" is an exact match against the preset or suggestion.
-- **Deploy order (PR #25)**: stage and redeploy the Netlify service from the branch *before* merging. The old service rejects `brief` as unknown; the new one accepts payloads with or without it.
-- **Where we left off**: all checks green (brief 8, Node 34, Python 27, browser 24/24, axe clean on all 11 steps, quality.sh). Committed and opened as PR #25 with auto-fix on; `brief` added to the payload after that.
+- **Date**: 2026-09-23 (second session)
+- **What we worked on**: BeSpoke wizard UI review and workflow change → PR #25, merged `3b5ea01`, live on Pages.
+  - Found: the six presets are the six existing lessons' exact looks, and the copy said "most teams stop here", so the default path copied a lesson. Title/divider/lead tiles were name-only. At 1280×720 a short-viewport rule capped the workspace at 58dvh and the options panel got ≈200px.
+  - Added `bespoke/brief.js` (pure; tests `scripts/test-bespoke-brief.mjs`, in quality.sh): four questions, trait scores for every library option, lesson colour cues, team-name seed + "another version", and a cap of 3–5 of 7 choices shared with any existing look.
+  - Wizard: "Describe the feel" step; "Starting point" (made-for-your-team design plus existing looks labelled "Same look as …"); "Save and come back" folded into Review (old `return` drafts map there); hover/focus try-on preview; "Fits your brief" tags and mood words; closest-lesson meter over the preview and on Review; phased stepper (disc row on short screens/phones); More menu in the header; Next names the next step; slide fade only on view change; `--gold-ink` for the NEW tag's contrast.
+  - Payload: optional `brief` object in the schema; Netlify service redeployed first (deploy `6ab3ebad…`), then merged.
+- **What we decided**: see the 2026-09-23 rows in the decision log.
+- **Where we left off**: everything merged and deployed. Next step is Britt's live acceptance with a brief: open a team link → answer the brief → Use this design → save → reopen on a second computer → Send → check the "Design brief" row in the proposal.
 
 ## Open Items
-- [x] Netlify service redeployed from `b45bd65` (PR #25 schema with `brief`): deploy `6ab3ebad54816f0e2b364fa9`, 2026-09-23. Preflight 204, bad code 403, env intact. Netlify CLI now logged in on this Mac.
-- [ ] Merge PR #25, then run hosted Save/Open/Send acceptance with a design that has a brief (not yet proven live).
+- [ ] **Hosted acceptance with a design brief** (PR #25): save with a brief on one computer, reopen on another, Send, confirm the "Design brief" row. Record in a verification note like `docs/bespoke/verification-2026-09-22.md`. Service redeploy (`6ab3ebad…`) and Pages are live; only this end-to-end run is missing.
+- [ ] Brief traits and lesson colour cues in `bespoke/brief.js` are Claude's judgement, not teacher-tested. Watch the Money Management pilot for suggestions that feel wrong and retune there.
 - [ ] **Publisher site is 46 commits behind** (stuck at Aug 17 `fb9e202`). Britt to decide whether BeSpoke belongs on the public site before `git push publisher main:main`. Two live Pages sites still exist; canonical URL undecided.
 - [x] **BeSpoke autosave + close warning** shipped 2026-09-23 (PR #23, merged `0212c39`, live on Pages): shared save on step change (1.5 s) and after 30 s idle; beforeunload prompt while changes are unshared; paused after opening a backup/older version until a manual Save; conflicts still stop it. 24 browser scenarios pass; quality.sh green. Live only after merge + Pages deploy.
 - [ ] BeSpoke service PAT (`BESPOKE_GITHUB_TOKEN`) expires ~2026-12-20 (90 days from 2026-09-21). Google Calendar reminders set for 2026-12-06 and 2026-12-17 with rotation steps. After renewing: keep BESPOKE_DRAFT_KEY/TEAM_KEYS, verify Open+Save, move reminders to the new expiry.
@@ -49,6 +50,9 @@
 ## Key Decisions Log
 | Date | Decision | Rationale |
 |------|----------|-----------|
+| 2026-09-23 | BeSpoke adds a design brief step; its answers drive a starting design capped at 3–5 of 7 choices shared with any existing lesson | Presets were the six existing lessons' looks, so the default path copied a lesson |
+| 2026-09-23 | Brief answers travel in an optional `brief` payload object; `variant` is a digit string | Answers must survive shared Save/Open; canonical JSON between Python and JS assumes no numeric fields |
+| 2026-09-23 | For schema changes, redeploy the Netlify service before merging the wizard | The service bundles the schema and rejects unknown fields; the new service accepts old and new payloads |
 | 2026-09-23 | Six Phase 1 lessons declared out of QA and ready for teaching; project moves to Phase 2 (next six lessons) | Britt's call |
 | 2026-09-22 | Supervised BeSpoke pilot approved; no blanket teaching release for the 6 existing lessons | Validators pass but content/assessment findings remain; automated pass ≠ instructional approval |
 | 2026-09-22 | BeSpoke teacher workflow is visual design only; Word lesson-content form removed | Britt clarified scope; content writing stays a separate process |
@@ -68,6 +72,7 @@
 - TWO GitHub repos, one history: publisher (`SPOKES-Skills/Employability-Skills-Curriculum`) is the public home + Pages site; origin (`doclegg05/...`) is the dev repo and the one that moves. Publisher carries no unique commits — catching up is `git push publisher main:main`. Both public; dev repo ALSO serves Pages.
 - **BeSpoke**: wizard in `bespoke/` (GitHub Pages `/bespoke/`); service in `netlify/functions/bespoke-handoff.mjs` (site `spokes-bespoke`, publishes only `netlify/site`). Drafts encrypted on the `bespoke-drafts` branch; separate encryption key survives GitHub token rotation. Send → Spoke Signals Action (`.github/workflows/spoke-signals.yml`) → draft PR with selection, generated CSS, build contract. Proposals are PUBLIC (public repo); UI discloses this.
 - BeSpoke catalog/library: `SPOKES Builder/bespoke-library-catalog.json`, `theme-library.css`, `theme-options.json`; schema generated by `scripts/generate-selection-schema.py` (`--check` in CI). Builder procedure: `docs/bespoke/builder-handoff.md`; admin/provisioning: `docs/bespoke/auto-handoff-setup.md`.
+- BeSpoke service deploys are staged by Claude and run by Britt (Netlify CLI). The site ID, command and post-deploy checks live in Claude's private auto-memory (`bespoke-netlify-deploy`). The service bundles the schema, so deploy it before merging any schema change.
 - Secrets: GitHub token in macOS Keychain + Netlify env; private team links/provisioning files live outside the repo. Never commit or log them.
 - CI: `.github/workflows/quality.yml` runs `scripts/quality.sh`; gitleaks configured (`.gitleaks.toml`).
 - All fonts are self-hosted in `fonts/` (Dashboard + all six decks, latin subsets). No external origins in shipped pages. TYP-05 enforces this.
