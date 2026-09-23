@@ -24,7 +24,8 @@
 - **Where we left off**: all checks green (brief 8, Node 34, Python 27, browser 24/24, axe clean on all 11 steps, quality.sh). Committed and opened as PR #25 with auto-fix on; `brief` added to the payload after that.
 
 ## Open Items
-- [ ] PR #25 BeSpoke brief/UI rework: redeploy the Netlify service from the branch (`node scripts/bespoke-stage-service.mjs <stage>`), then merge; re-run hosted Save/Open acceptance with a brief.
+- [x] Netlify service redeployed from `b45bd65` (PR #25 schema with `brief`): deploy `6ab3ebad54816f0e2b364fa9`, 2026-09-23. Preflight 204, bad code 403, env intact. Netlify CLI now logged in on this Mac.
+- [ ] Merge PR #25, then run hosted Save/Open/Send acceptance with a design that has a brief (not yet proven live).
 - [ ] **Publisher site is 46 commits behind** (stuck at Aug 17 `fb9e202`). Britt to decide whether BeSpoke belongs on the public site before `git push publisher main:main`. Two live Pages sites still exist; canonical URL undecided.
 - [x] **BeSpoke autosave + close warning** shipped 2026-09-23 (PR #23, merged `0212c39`, live on Pages): shared save on step change (1.5 s) and after 30 s idle; beforeunload prompt while changes are unshared; paused after opening a backup/older version until a manual Save; conflicts still stop it. 24 browser scenarios pass; quality.sh green. Live only after merge + Pages deploy.
 - [ ] BeSpoke service PAT (`BESPOKE_GITHUB_TOKEN`) expires ~2026-12-20 (90 days from 2026-09-21). Google Calendar reminders set for 2026-12-06 and 2026-12-17 with rotation steps. After renewing: keep BESPOKE_DRAFT_KEY/TEAM_KEYS, verify Open+Save, move reminders to the new expiry.
