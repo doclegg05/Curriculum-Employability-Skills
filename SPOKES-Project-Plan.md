@@ -1,13 +1,18 @@
 # SPOKES Employability Skills Curriculum -- Project Plan
 
-> Historical project plan. As of September 22, 2026, six lessons exist and six
-> new instructor-team lessons are being prepared toward a soft March 2027 target.
-> Use `docs/qa-reports/project-review-2026-09-22.md` for current readiness and
-> `docs/bespoke/builder-handoff.md` for the approved intake/build boundary.
+> **Current state (September 23, 2026):** the six Phase 1 lessons are out of QA
+> and ready for teaching. The program is now in **Phase 2 (Round 2)**: six new
+> lessons built with instructor teams, soft target March 2027. See
+> `docs/phase-2/` for Round 2 planning and `docs/bespoke/builder-handoff.md` for
+> the approved intake/build boundary.
+>
+> The phase sections below are the original February 2026 build plan and are kept
+> for history. Their numbering does not match the program phases: this plan's
+> "Phase 2: Pipeline" is not the program's Phase 2 (Round 2).
 
-**Date:** 2026-02-27 (last updated: 2026-04-03)
+**Date:** 2026-02-27 (last updated: 2026-09-23)
 **Goal:** Deliver 18 interactive HTML lessons built from the SPOKES Builder system
-**Current State:** 3 of 18 lessons release-approved; 2 additional lessons built and in QA (Communicating with the Public, Controlling Anger). Phase 1 target extended to June 15, 2026.
+**Current State:** Phase 1 complete: 6 of 18 lessons ready for teaching. Phase 2 (Round 2): 6 lessons in instructor-team planning, soft target March 2027. Lessons 13–18 not yet named.
 
 ---
 
@@ -16,10 +21,10 @@
 | Metric                                   | Value                                                          |
 | ---------------------------------------- | -------------------------------------------------------------- |
 | Total lessons required                   | 18                                                             |
-| Lessons complete (release-approved)      | 3 (Employee Accountability, Time Management, Interview Skills) |
-| Lessons in QA                            | 2 (Communicating with the Public, Controlling Anger)           |
-| Lessons remaining to build               | 13                                                             |
-| Phase 1 target                           | 6 lessons by June 15, 2026 (1 more needed)                     |
+| Phase 1 lessons ready for teaching       | 6 (Time Management, Interview Skills, Employee Accountability, Communicating with the Public, Controlling Anger, Problem Solving and Decision Making) |
+| Phase 2 (Round 2) lessons in planning    | 6 (Goal Setting, Money Management - Budget, Professionalism and Diversity, Knowing Your Rights in the Workplace, Communicating Assertively, Workplace Ethics) |
+| Lessons not yet assigned                 | 6 (lessons 13–18)                                              |
+| Phase 2 target                           | Soft target March 2027; no hard deadline                       |
 | Template variants needed                 | 3-4 (documented in registry, CSS not yet formalized)           |
 | Content teams delivering source material | 6                                                              |
 | Build format                             | Single self-contained index.html per lesson                    |

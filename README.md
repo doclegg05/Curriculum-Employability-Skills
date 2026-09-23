@@ -16,9 +16,13 @@ Britt/builders follow [the handoff and design verification procedure](docs/bespo
 Administrators follow [shared service setup and hosted acceptance](docs/bespoke/auto-handoff-setup.md).
 The hosted Save/Open/Send flow passed [live acceptance](docs/bespoke/verification-2026-09-22.md),
 including two browser sessions and a real review proposal.
-The six new lessons remain unbuilt; March 2027 is the soft phase target.
+The six Phase 1 lessons are out of QA and ready for teaching (September 23, 2026).
+Phase 2 (Round 2) builds six new lessons with instructor teams: Goal Setting,
+Money Management - Budget, Professionalism and Diversity, Knowing Your Rights in
+the Workplace, Communicating Assertively and Workplace Ethics. None is built yet;
+March 2027 is the soft target. Round 2 planning lives in `docs/phase-2/`.
 
-Current evidence and remaining release blockers:
+Earlier review evidence:
 [project review dated September 22, 2026](docs/qa-reports/project-review-2026-09-22.md).
 
 ## Quick Start (3 minutes)
@@ -92,9 +96,9 @@ See `SPOKES-Agent-Execution-Spec.md` for full gate criteria and severity/SLA pol
 
 ## Current Status (high level)
 
-- Existing lessons: 6 (registry labels 3 ready and 3 QA; current review identifies unresolved content/accessibility issues, so labels are not a fresh release certification)
-- Program target: 18 lessons total
-- Ongoing work: QA closeout for the 2026-04 lesson batch, production batching for remaining lessons
+- Phase 1: 6 lessons, all out of QA and ready for teaching (September 23, 2026)
+- Phase 2 (Round 2): 6 lessons in instructor-team planning, soft target March 2027
+- Program target: 18 lessons total; lessons 13–18 not yet named
 
 ## Operational Docs in This Repo
 
