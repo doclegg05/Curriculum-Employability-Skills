@@ -1,0 +1,840 @@
+{
+  "version": "2.0.0",
+  "description": "BeSpoke v2 slide pieces, 2 to 4 samples per decision. Option CSS uses only --role-* and palette variables; every color pair an option creates is listed in its pairs; excludes names options in the same group it can't be combined with. Decisions are emitted in listed order, so later decisions (usually layout) win. Read by bespoke/design-model.mjs and scripts/bespoke_roles.py.",
+  "palette": [
+    {
+      "id": "primary",
+      "name": "Blue",
+      "hex": "#007baf"
+    },
+    {
+      "id": "dark",
+      "name": "Navy",
+      "hex": "#004071"
+    },
+    {
+      "id": "royal",
+      "name": "Royal",
+      "hex": "#00133f"
+    },
+    {
+      "id": "accent",
+      "name": "Green",
+      "hex": "#37b550"
+    },
+    {
+      "id": "gold",
+      "name": "Gold",
+      "hex": "#d3b257"
+    },
+    {
+      "id": "muted-gold",
+      "name": "Deep gold",
+      "hex": "#ad8806"
+    },
+    {
+      "id": "mauve",
+      "name": "Mauve",
+      "hex": "#a7253f"
+    },
+    {
+      "id": "gray",
+      "name": "Gray",
+      "hex": "#60636b"
+    },
+    {
+      "id": "offwhite",
+      "name": "Silver",
+      "hex": "#d1d3d4"
+    },
+    {
+      "id": "muted",
+      "name": "Mist",
+      "hex": "#edf3f7"
+    },
+    {
+      "id": "light",
+      "name": "White",
+      "hex": "#ffffff"
+    }
+  ],
+  "neutrals": [
+    "light",
+    "muted",
+    "royal",
+    "dark",
+    "gray"
+  ],
+  "notText": [
+    "gold",
+    "accent"
+  ],
+  "roles": [
+    {
+      "id": "sidebar",
+      "label": "Sidebar",
+      "note": "The chapter list on every slide. Its text color is chosen for you.",
+      "kind": "surface",
+      "ink": true
+    },
+    {
+      "id": "titleBackground",
+      "label": "Title slide background",
+      "note": "The first thing learners see.",
+      "kind": "surface"
+    },
+    {
+      "id": "titleBackgroundEnd",
+      "label": "Title slide second color",
+      "note": "The gradient's second color and the split layout's right panel.",
+      "kind": "surface"
+    },
+    {
+      "id": "titleText",
+      "label": "Title text",
+      "note": "Large lettering on the title slide.",
+      "kind": "text",
+      "pairs": [
+        {
+          "bg": "role:titleBackground",
+          "min": 3
+        },
+        {
+          "bg": "role:titleBackgroundEnd",
+          "min": 3
+        }
+      ]
+    },
+    {
+      "id": "subtitle",
+      "label": "Subtitle",
+      "note": "The line under the title, and the copyright line.",
+      "kind": "text",
+      "pairs": [
+        {
+          "bg": "role:titleBackground",
+          "min": 4.5
+        },
+        {
+          "bg": "role:titleBackgroundEnd",
+          "min": 4.5
+        }
+      ]
+    },
+    {
+      "id": "contentBackground",
+      "label": "Content slide background",
+      "note": "Behind most of the lesson.",
+      "kind": "surface",
+      "only": [
+        "light",
+        "muted"
+      ]
+    },
+    {
+      "id": "heading",
+      "label": "Slide headings",
+      "note": "Headings on content slides and cards.",
+      "kind": "text",
+      "pairs": [
+        {
+          "bg": "role:contentBackground",
+          "min": 3
+        }
+      ]
+    },
+    {
+      "id": "body",
+      "label": "Body text",
+      "note": "Paragraphs, card text and lists.",
+      "kind": "text",
+      "only": [
+        "royal",
+        "dark",
+        "gray"
+      ],
+      "pairs": [
+        {
+          "bg": "role:contentBackground",
+          "min": 4.5
+        }
+      ]
+    },
+    {
+      "id": "accent",
+      "label": "Accent",
+      "note": "Rules, card edges, list arrows and the current chapter.",
+      "kind": "shape",
+      "ink": true,
+      "pairs": [
+        {
+          "bg": "role:contentBackground",
+          "min": 3
+        }
+      ]
+    },
+    {
+      "id": "button",
+      "label": "Buttons",
+      "note": "Handout and video buttons. Their text color is chosen for you.",
+      "kind": "surface",
+      "ink": true
+    },
+    {
+      "id": "dividerBackground",
+      "label": "Chapter divider background",
+      "note": "Behind each chapter's opening slide. Its text color is chosen for you.",
+      "kind": "surface",
+      "ink": true
+    }
+  ],
+  "slides": {
+    "base": ".sidebar { background: var(--role-sidebar); color: var(--role-sidebar-ink); }\n.sidebar-toggle { background: var(--role-sidebar); color: var(--role-sidebar-ink); }\n.sidebar-collapse-btn { background: rgba(var(--role-sidebar-ink-rgb), 0.15); color: var(--role-sidebar-ink); }\n.sidebar-title, .resources-title, .chapter-header, .slide-item, .resource-link { color: var(--role-sidebar-ink); }\n.chapter-header:hover, .slide-item:hover, .resource-link:hover { background: transparent; color: var(--role-sidebar-ink); text-decoration: underline; }\n.chapter-item.active > .chapter-header { background: transparent; color: var(--role-sidebar-ink); border-left-color: var(--role-accent); font-weight: 600; }\n.slide-item.active { background: transparent; color: var(--role-sidebar-ink); box-shadow: inset 3px 0 0 var(--role-accent); font-weight: 600; }\n.main { background-color: var(--role-content-background); }\n.slide h2 { color: var(--role-heading); }\n.slide p { color: var(--role-body); }\n.divider { background: var(--role-accent); }\n.card h4 { color: var(--role-heading); }\n.card p, .content-list li { color: var(--role-body); }\n.content-list li::before { color: var(--role-accent); }\n.download-btn, .video-btn { background: var(--role-button); color: var(--role-button-ink); }\n.slide-title h1 { color: var(--role-title-text); }\n.slide-title .subtitle, .slide-title .copyright { color: var(--role-subtitle); }\n.slide-title .divider { background: var(--role-accent); }\n.slide-section, .slide-section[data-chapter-num] { background: var(--role-divider-background); }\n.slide-section h2, .slide-section .chapter-label { color: var(--role-divider-background-ink); }\n.slide-section .divider { background: var(--role-accent); }\n.slide-section .section-circle { border-color: rgba(var(--role-divider-background-ink-rgb), 0.25); }\n.slide-section::after { color: rgba(var(--role-divider-background-ink-rgb), 0.06); }\n.slide-video h2 { color: var(--role-heading); }\n.activity-box { border-color: var(--role-accent); }\n.activity-label { color: var(--role-heading); }\n.activity-box p { color: var(--role-body); }",
+    "groups": [
+      {
+        "id": "background",
+        "label": "Background",
+        "decisions": [
+          {
+            "id": "pattern",
+            "label": "Pattern",
+            "options": [
+              {
+                "id": "plain",
+                "label": "Plain",
+                "css": ".main { background-image: none; }",
+                "pairs": []
+              },
+              {
+                "id": "dot-grid",
+                "label": "Dot grid",
+                "css": ".main { background-image: radial-gradient(rgba(var(--role-accent-rgb), 0.14) 1px, transparent 1px); background-size: 16px 16px; }",
+                "pairs": []
+              },
+              {
+                "id": "diagonal",
+                "label": "Diagonal",
+                "css": ".main { background-image: repeating-linear-gradient(45deg, rgba(var(--role-accent-rgb), 0.08) 0 1px, transparent 1px 14px); }",
+                "pairs": []
+              },
+              {
+                "id": "crosshatch",
+                "label": "Crosshatch",
+                "css": ".main { background-image: linear-gradient(rgba(var(--role-accent-rgb), 0.07) 1px, transparent 1px), linear-gradient(90deg, rgba(var(--role-accent-rgb), 0.07) 1px, transparent 1px); background-size: 24px 24px; }",
+                "pairs": []
+              }
+            ]
+          }
+        ]
+      },
+      {
+        "id": "title",
+        "label": "Title slide",
+        "decisions": [
+          {
+            "id": "colors",
+            "label": "Colors",
+            "options": [
+              {
+                "id": "solid",
+                "label": "Solid",
+                "css": ".slide-title { background: var(--role-title-background); }",
+                "pairs": []
+              },
+              {
+                "id": "gradient",
+                "label": "Gradient",
+                "css": ".slide-title { background: linear-gradient(135deg, var(--role-title-background), var(--role-title-background-end)); }",
+                "pairs": []
+              },
+              {
+                "id": "light",
+                "label": "Light",
+                "css": ".slide-title { background: var(--role-content-background); }\n.slide-title h1 { color: var(--role-heading); }\n.slide-title .subtitle, .slide-title .copyright { color: var(--role-body); }",
+                "pairs": []
+              }
+            ]
+          },
+          {
+            "id": "logo",
+            "label": "Logo",
+            "options": [
+              {
+                "id": "above",
+                "label": "Above the title",
+                "css": "",
+                "pairs": []
+              },
+              {
+                "id": "corner",
+                "label": "Top corner",
+                "css": ".slide-title { position: relative; }\n.slide-title .logo { position: absolute; top: 2rem; right: 2.5rem; max-width: 160px; margin: 0; }",
+                "pairs": []
+              }
+            ]
+          },
+          {
+            "id": "layout",
+            "label": "Layout",
+            "options": [
+              {
+                "id": "center",
+                "label": "Centered",
+                "css": ".slide-title { align-items: center; text-align: center; }",
+                "pairs": []
+              },
+              {
+                "id": "left",
+                "label": "Left",
+                "css": ".slide-title { align-items: flex-start; text-align: left; padding-left: 7rem; }",
+                "pairs": []
+              },
+              {
+                "id": "bottom",
+                "label": "Bottom left",
+                "css": ".slide-title { align-items: flex-start; justify-content: flex-end; text-align: left; padding-left: 7rem; padding-bottom: 5rem; }",
+                "pairs": []
+              },
+              {
+                "id": "split",
+                "label": "Split panels",
+                "css": ".slide-title { flex-direction: column; align-items: flex-start; justify-content: center; text-align: left; background: none; position: relative; z-index: 1; }\n.slide-title::before { content: ''; position: absolute; left: 0; top: 0; bottom: 0; width: 40%; background: var(--role-title-background); z-index: -1; flex: none; display: block; }\n.slide-title::after { content: ''; position: absolute; left: 40%; top: 0; bottom: 0; right: 0; background: var(--role-title-background-end); z-index: -1; flex: none; display: block; }\n.slide-title .logo { max-width: 220px; margin: 0 0 1.5rem; }\n.slide-title h1 { max-width: 90%; margin: 0; }\n.slide-title .divider { margin: 1.5rem 0; }\n.slide-title .subtitle { max-width: 90%; margin-bottom: 0; }\n.slide-title .copyright { position: absolute; bottom: 2rem; left: 5rem; margin: 0; }",
+                "pairs": [],
+                "excludes": [
+                  {
+                    "decision": "colors",
+                    "option": "light"
+                  }
+                ]
+              }
+            ]
+          }
+        ]
+      },
+      {
+        "id": "divider",
+        "label": "Chapter divider",
+        "decisions": [
+          {
+            "id": "colors",
+            "label": "Colors",
+            "options": [
+              {
+                "id": "solid",
+                "label": "Solid",
+                "css": "",
+                "pairs": []
+              },
+              {
+                "id": "gradient",
+                "label": "Gradient",
+                "css": ".slide-section, .slide-section[data-chapter-num] { background: linear-gradient(135deg, var(--role-divider-background), var(--role-title-background-end)); }",
+                "pairs": [
+                  {
+                    "fg": "ink:dividerBackground",
+                    "bg": "role:titleBackgroundEnd",
+                    "min": 4.5
+                  }
+                ]
+              },
+              {
+                "id": "light",
+                "label": "Light",
+                "css": ".slide-section, .slide-section[data-chapter-num] { background: var(--role-content-background); }\n.slide-section h2 { color: var(--role-heading); }\n.slide-section .chapter-label { color: var(--role-body); }\n.slide-section .section-circle { border-color: rgba(var(--role-accent-rgb), 0.35); }\n.slide-section::after { color: rgba(var(--role-heading-rgb), 0.06); }",
+                "pairs": []
+              }
+            ]
+          },
+          {
+            "id": "watermark",
+            "label": "Watermark letter",
+            "options": [
+              {
+                "id": "show",
+                "label": "Show",
+                "css": "",
+                "pairs": []
+              },
+              {
+                "id": "hide",
+                "label": "Hide",
+                "css": ".slide-section::after { content: none; }",
+                "pairs": []
+              }
+            ]
+          },
+          {
+            "id": "layout",
+            "label": "Layout",
+            "options": [
+              {
+                "id": "center",
+                "label": "Centered",
+                "css": "",
+                "pairs": []
+              },
+              {
+                "id": "left",
+                "label": "Left",
+                "css": ".slide-section { align-items: flex-start; text-align: left; padding-left: 8rem; }\n.slide-section .section-circle { display: none; }",
+                "pairs": []
+              },
+              {
+                "id": "band",
+                "label": "Band",
+                "css": ".slide-section, .slide-section[data-chapter-num] { background: var(--role-content-background); }\n.slide-section::before { content: ''; position: absolute; left: 0; right: 0; top: 30%; height: 40%; background: var(--role-divider-background); flex: none; display: block; z-index: 0; }\n.slide-section > * { position: relative; z-index: 1; }\n.slide-section .section-circle { display: none; }",
+                "pairs": [],
+                "excludes": [
+                  {
+                    "decision": "colors",
+                    "option": "light"
+                  }
+                ]
+              },
+              {
+                "id": "number",
+                "label": "Big number",
+                "css": ".slide-section { align-items: flex-start; justify-content: flex-end; text-align: left; padding: 0 8rem 6rem; }\n.slide-section .section-circle { display: none; }\n.slide-section::after { left: 6%; right: auto; top: 4%; bottom: auto; transform: none; font-size: 18rem; }",
+                "pairs": []
+              }
+            ]
+          }
+        ]
+      },
+      {
+        "id": "video",
+        "label": "Video slide",
+        "decisions": [
+          {
+            "id": "colors",
+            "label": "Colors",
+            "options": [
+              {
+                "id": "light",
+                "label": "Light",
+                "css": ".slide-video { background: var(--role-content-background); }",
+                "pairs": []
+              },
+              {
+                "id": "tinted",
+                "label": "Tinted",
+                "css": ".slide-video { background: linear-gradient(170deg, rgba(var(--role-accent-rgb), 0.12), var(--role-content-background) 60%); }",
+                "pairs": [
+                  {
+                    "fg": "role:heading",
+                    "bg": {
+                      "tint": "role:accent",
+                      "alpha": 0.12,
+                      "over": "role:contentBackground"
+                    },
+                    "min": 3
+                  }
+                ]
+              },
+              {
+                "id": "dark",
+                "label": "Dark",
+                "css": ".slide-video { background: var(--role-divider-background); }\n.slide-video h2 { color: var(--role-divider-background-ink); }",
+                "pairs": []
+              }
+            ]
+          },
+          {
+            "id": "frame",
+            "label": "Frame",
+            "options": [
+              {
+                "id": "plain",
+                "label": "Plain",
+                "css": "",
+                "pairs": []
+              },
+              {
+                "id": "accent",
+                "label": "Accent frame",
+                "css": ".video-container { border: 4px solid var(--role-accent); }",
+                "pairs": []
+              }
+            ]
+          },
+          {
+            "id": "titleStyle",
+            "label": "Title style",
+            "options": [
+              {
+                "id": "regular",
+                "label": "Regular",
+                "css": "",
+                "pairs": []
+              },
+              {
+                "id": "large",
+                "label": "Large",
+                "css": ".slide-video h2 { font-size: 2.8rem; }",
+                "pairs": []
+              },
+              {
+                "id": "caps",
+                "label": "Small caps",
+                "css": ".slide-video h2 { font-size: 1.4rem; text-transform: uppercase; letter-spacing: 0.12em; }",
+                "pairs": []
+              }
+            ]
+          },
+          {
+            "id": "layout",
+            "label": "Layout",
+            "options": [
+              {
+                "id": "stacked",
+                "label": "Title above",
+                "css": "",
+                "pairs": []
+              },
+              {
+                "id": "side",
+                "label": "Side by side",
+                "css": ".slide-video.active { display: grid; grid-template-columns: minmax(0, 1fr) minmax(0, 2fr); align-content: center; align-items: center; gap: 3rem; text-align: left; }\n.slide-video.active::before, .slide-video.active::after { display: none; }\n.slide-video h2 { margin: 0; }",
+                "pairs": []
+              },
+              {
+                "id": "banner",
+                "label": "Title banner",
+                "css": ".slide-video h2 { align-self: stretch; margin: 0 0 2rem; padding: 1rem 2rem; background: var(--role-button); color: var(--role-button-ink); border-radius: 8px; }",
+                "pairs": []
+              }
+            ]
+          }
+        ]
+      },
+      {
+        "id": "list",
+        "label": "Bullet list",
+        "decisions": [
+          {
+            "id": "look",
+            "label": "Card look",
+            "options": [
+              {
+                "id": "rail",
+                "label": "Left rail",
+                "css": ".card, .card.gold-border { background: var(--role-content-background); border: 0; border-left: 6px solid var(--role-accent); box-shadow: 0 4px 14px rgba(0, 19, 63, 0.08); }",
+                "pairs": []
+              },
+              {
+                "id": "outline",
+                "label": "Outline",
+                "css": ".card, .card.gold-border { background: var(--role-content-background); border: 2px solid var(--role-accent); }",
+                "pairs": []
+              },
+              {
+                "id": "filled",
+                "label": "Filled",
+                "css": ".card, .card.gold-border { background: var(--muted); border: 0; }",
+                "pairs": [
+                  {
+                    "fg": "role:heading",
+                    "bg": "palette:muted",
+                    "min": 3
+                  },
+                  {
+                    "fg": "role:body",
+                    "bg": "palette:muted",
+                    "min": 4.5
+                  }
+                ]
+              },
+              {
+                "id": "band",
+                "label": "Top band",
+                "css": ".card, .card.gold-border { background: var(--role-content-background); border: 0; border-top: 6px solid var(--role-accent); border-radius: 4px 4px 12px 12px; box-shadow: 0 4px 14px rgba(0, 19, 63, 0.08); }",
+                "pairs": []
+              }
+            ]
+          },
+          {
+            "id": "layout",
+            "label": "Layout",
+            "options": [
+              {
+                "id": "two",
+                "label": "Two columns",
+                "css": "",
+                "pairs": []
+              },
+              {
+                "id": "three",
+                "label": "Three across",
+                "css": ".cards-grid { grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 1.25rem; }\n.card { padding: 1.25rem 1.5rem; }\n.card h4 { font-size: 1.45rem; }\n.card p { font-size: 1.2rem; }",
+                "pairs": []
+              },
+              {
+                "id": "rows",
+                "label": "Rows",
+                "css": ".cards-grid { grid-template-columns: 1fr; gap: 0.75rem; }\n.card { flex-direction: row; align-items: baseline; gap: 2rem; padding: 1rem 2rem; text-align: left; }\n.card h4 { flex: 0 0 32%; margin: 0; text-align: left; }\n.card p { margin: 0; text-align: left; }",
+                "pairs": []
+              },
+              {
+                "id": "numbered",
+                "label": "Numbered",
+                "css": ".cards-grid { counter-reset: spokes-card; }\n.card { position: relative; padding: 1.5rem 2rem 1.5rem 4.75rem; }\n.card::before { counter-increment: spokes-card; content: counter(spokes-card); position: absolute; left: 1.5rem; top: 1.4rem; font-family: var(--font-heading); font-size: 2.2rem; line-height: 1; color: var(--role-heading); }",
+                "pairs": []
+              }
+            ]
+          },
+          {
+            "id": "titleStyle",
+            "label": "Title style",
+            "options": [
+              {
+                "id": "regular",
+                "label": "Regular",
+                "css": "",
+                "pairs": []
+              },
+              {
+                "id": "large",
+                "label": "Large",
+                "css": ".card h4 { font-size: 2rem; line-height: 1.15; }\n.card { padding-top: 1.5rem; padding-bottom: 1.5rem; }",
+                "pairs": []
+              },
+              {
+                "id": "caps",
+                "label": "Small caps",
+                "css": ".card h4 { font-size: 1.15rem; text-transform: uppercase; letter-spacing: 0.12em; }",
+                "pairs": []
+              }
+            ]
+          },
+          {
+            "id": "colors",
+            "label": "Colors",
+            "options": [
+              {
+                "id": "light",
+                "label": "Light",
+                "css": "",
+                "pairs": []
+              },
+              {
+                "id": "tinted",
+                "label": "Tinted",
+                "css": ".card, .card.gold-border { background: rgba(var(--role-accent-rgb), 0.1); }",
+                "pairs": [
+                  {
+                    "fg": "role:heading",
+                    "bg": {
+                      "tint": "role:accent",
+                      "alpha": 0.1,
+                      "over": "role:contentBackground"
+                    },
+                    "min": 3
+                  },
+                  {
+                    "fg": "role:body",
+                    "bg": {
+                      "tint": "role:accent",
+                      "alpha": 0.1,
+                      "over": "role:contentBackground"
+                    },
+                    "min": 4.5
+                  }
+                ]
+              },
+              {
+                "id": "bold",
+                "label": "Bold",
+                "css": ".card, .card.gold-border { background: var(--role-button); }\n.card h4, .card p, .card::before { color: var(--role-button-ink); }",
+                "pairs": []
+              }
+            ]
+          }
+        ]
+      },
+      {
+        "id": "activity",
+        "label": "Activity",
+        "decisions": [
+          {
+            "id": "colors",
+            "label": "Colors",
+            "options": [
+              {
+                "id": "light",
+                "label": "Light",
+                "css": ".activity-box { background: var(--role-content-background); }\n.activity-label { color: var(--role-heading); }\n.activity-box p { color: var(--role-body); }",
+                "pairs": []
+              },
+              {
+                "id": "tinted",
+                "label": "Tinted",
+                "css": ".activity-box { background: rgba(var(--role-accent-rgb), 0.1); }\n.activity-label { color: var(--role-heading); }\n.activity-box p { color: var(--role-body); }",
+                "pairs": [
+                  {
+                    "fg": "role:heading",
+                    "bg": {
+                      "tint": "role:accent",
+                      "alpha": 0.1,
+                      "over": "role:contentBackground"
+                    },
+                    "min": 3
+                  },
+                  {
+                    "fg": "role:body",
+                    "bg": {
+                      "tint": "role:accent",
+                      "alpha": 0.1,
+                      "over": "role:contentBackground"
+                    },
+                    "min": 4.5
+                  }
+                ]
+              },
+              {
+                "id": "solid",
+                "label": "Solid",
+                "css": ".activity-box { background: var(--role-accent); }\n.activity-label, .activity-box p { color: var(--role-accent-ink); }",
+                "pairs": [
+                  {
+                    "fg": "ink:accent",
+                    "bg": "role:accent",
+                    "min": 4.5
+                  }
+                ]
+              }
+            ]
+          },
+          {
+            "id": "label",
+            "label": "Label style",
+            "options": [
+              {
+                "id": "caps",
+                "label": "Small caps",
+                "css": "",
+                "pairs": []
+              },
+              {
+                "id": "heading",
+                "label": "Heading font",
+                "css": ".activity-label { font-family: var(--font-heading); font-size: 1.6rem; font-weight: 400; text-transform: none; letter-spacing: 0; }",
+                "pairs": []
+              },
+              {
+                "id": "pill",
+                "label": "Pill",
+                "css": ".activity-label { display: inline-block; padding: 0.25rem 0.85rem; border-radius: 999px; background: var(--role-accent); color: var(--role-accent-ink); }",
+                "pairs": [
+                  {
+                    "fg": "ink:accent",
+                    "bg": "role:accent",
+                    "min": 4.5
+                  }
+                ]
+              }
+            ]
+          },
+          {
+            "id": "layout",
+            "label": "Layout",
+            "options": [
+              {
+                "id": "box",
+                "label": "Box",
+                "css": ".activity-box { border: 2px solid var(--role-accent); border-radius: 12px; }",
+                "pairs": []
+              },
+              {
+                "id": "callout",
+                "label": "Callout",
+                "css": ".activity-box { border: 0; border-left: 6px solid var(--role-accent); border-radius: 0 12px 12px 0; }",
+                "pairs": []
+              },
+              {
+                "id": "banner",
+                "label": "Label banner",
+                "css": ".activity-box { border: 2px solid var(--role-accent); border-radius: 12px; padding-top: 0; overflow: hidden; }\n.activity-label { display: block; margin: 0 -2rem 1rem; padding: 0.6rem 2rem; border-radius: 0; background: var(--role-accent); color: var(--role-accent-ink); }",
+                "pairs": [
+                  {
+                    "fg": "ink:accent",
+                    "bg": "role:accent",
+                    "min": 4.5
+                  }
+                ],
+                "excludes": [
+                  {
+                    "decision": "label",
+                    "option": "pill"
+                  }
+                ]
+              },
+              {
+                "id": "side",
+                "label": "Side label",
+                "css": ".activity-box { display: grid; grid-template-columns: minmax(0, 12rem) minmax(0, 1fr); gap: 0 2rem; align-items: baseline; border: 2px solid var(--role-accent); border-radius: 12px; }\n.activity-label { margin: 0; }\n.activity-box > :not(.activity-label) { grid-column: 2; }",
+                "pairs": []
+              }
+            ]
+          }
+        ]
+      }
+    ]
+  },
+  "defaults": {
+    "palette": {
+      "primary": [
+        "dark",
+        "mauve"
+      ],
+      "secondary": [
+        "gold"
+      ]
+    },
+    "roles": {
+      "sidebar": "dark",
+      "titleBackground": "dark",
+      "titleBackgroundEnd": "mauve",
+      "titleText": "light",
+      "subtitle": "light",
+      "contentBackground": "light",
+      "heading": "mauve",
+      "body": "royal",
+      "accent": "mauve",
+      "button": "mauve",
+      "dividerBackground": "mauve"
+    },
+    "fontPairing": "dm-serif-display-outfit",
+    "slides": {
+      "background": {
+        "pattern": "dot-grid"
+      },
+      "title": {
+        "colors": "gradient",
+        "logo": "above",
+        "layout": "center"
+      },
+      "divider": {
+        "colors": "solid",
+        "watermark": "show",
+        "layout": "center"
+      },
+      "video": {
+        "colors": "light",
+        "frame": "accent",
+        "titleStyle": "regular",
+        "layout": "stacked"
+      },
+      "list": {
+        "look": "rail",
+        "layout": "two",
+        "titleStyle": "regular",
+        "colors": "light"
+      },
+      "activity": {
+        "colors": "tinted",
+        "label": "caps",
+        "layout": "box"
+      }
+    }
+  }
+}
