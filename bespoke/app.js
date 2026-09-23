@@ -100,6 +100,9 @@
     lastChange: null,
     /** Label of an option being previewed on hover/focus; never saved. */
     tryingOn: null,
+    /** Chapter the Cards step edits and previews while "Vary by chapter" is on. */
+    cardChapter: "P1",
+    cardNote: "",
     /** Preview view last drawn, so the slide fades only when the view changes. */
     renderedView: null,
     pulseTimer: null,
@@ -476,11 +479,6 @@
     return null;
   }
 
-  function neighborKeys(key) {
-    const keys = state.meta.chapterKeys;
-    const idx = keys.indexOf(key);
-    return [keys[idx - 1], keys[idx + 1]].filter(Boolean);
-  }
 
   function seedChapterCards() {
     const cards = familyOptions("cards").filter((o) => !o.blocked);
@@ -671,8 +669,8 @@
     updatePreview();
   }
 
-  function renderLibraryOptions(grid, family, selectedSlug, onPick, { field, view, swatchFor, swatchClassFor, showNew } = {}) {
-    const fits = field ? briefFits(field, family) : new Set();
+  function renderLibraryOptions(grid, family, selectedSlug, onPick, { field, view, tryValue, swatchFor, swatchClassFor, showNew } = {}) {
+    const fits = field === "chapterCards" ? briefFits("cardStyle", family) : field ? briefFits(field, family) : new Set();
     familyOptions(family).forEach((opt) => {
       grid.appendChild(
         optionButton({
@@ -684,7 +682,7 @@
           pressed: selectedSlug === opt.slug,
           badge: showNew && opt.legacy === false ? "New" : null,
           fits: fits.has(opt.slug),
-          tryOn: field ? { field, value: opt.slug, view: view || state.previewView } : null,
+          tryOn: field ? { field, value: tryValue ? tryValue(opt) : opt.slug, view: view || state.previewView } : null,
           blocked: Boolean(opt.blocked),
           reason: opt.reason || "",
           onSelect: () => onPick(opt)
@@ -1014,28 +1012,54 @@
     }, { field: "dividerStyle", view: "divider", showNew: true });
   }
 
+  /**
+   * Cards: the grid always edits what the preview shows. Lesson-wide normally;
+   * with "Vary by chapter" on, the chapter picked in the chapter row.
+   */
   function renderCards(panel) {
+    const vary = state.varyCardsByChapter;
+    const keys = state.meta.chapterKeys;
+    if (!keys.includes(ui.cardChapter)) ui.cardChapter = "P1";
+    const chapterName = (key) => (CHAPTERS.find(([k]) => k === key) || [key, key])[1];
+    const editing = ui.cardChapter;
     panel.innerHTML = `
       <h1>Cards</h1>
-      <p class="panel-lead">The card style for content slides. Turn on <em>Vary by chapter</em> to give each WIPPEA stage its own look — neighbouring chapters always differ.</p>
-      <div class="option-grid" id="cardGrid" role="group" aria-label="Card styles"></div>
+      <p class="panel-lead">The card style for content slides. Turn on <em>Vary by chapter</em> to give each WIPPEA stage its own look; neighbouring chapters always differ.</p>
       <div class="toggle-row">
-        <input type="checkbox" id="varyCards" ${state.varyCardsByChapter ? "checked" : ""}>
+        <input type="checkbox" id="varyCards" ${vary ? "checked" : ""}>
         <label for="varyCards">
           <strong>Vary by chapter</strong><br>
-          <span style="font-weight:400;color:var(--gray)">A different card style for each WIPPEA stage.</span>
+          <span class="toggle-hint">A different card style for each WIPPEA stage.</span>
         </label>
       </div>
-      <p id="thmNote" class="panel-lead" style="margin-top:0"></p>
-      <div class="chapter-vary ${state.varyCardsByChapter ? "is-open" : ""}" id="chapterVary"></div>
+      ${vary ? `
+      <p class="group-label" id="chapterPickLabel">Chapter to style</p>
+      <div class="chapter-picks" id="chapterPicks" role="group" aria-labelledby="chapterPickLabel"></div>
+      <p id="thmNote" class="card-note" role="status">${escapeHtml(ui.cardNote)}</p>` : ""}
+      <p class="group-label" id="cardGridLabel">${vary ? `Card style for ${escapeHtml(editing)} · ${escapeHtml(chapterName(editing))}` : "Card style for every chapter"}</p>
+      <div class="option-grid" id="cardGrid" role="group" aria-labelledby="cardGridLabel"></div>
     `;
-    renderLibraryOptions(byId("cardGrid"), "cards", state.cardStyle, (opt) => {
-      state.cardStyle = opt.slug;
+    ui.cardNote = "";
+
+    const selected = vary ? state.chapterCards[editing] || state.cardStyle : state.cardStyle;
+    renderLibraryOptions(byId("cardGrid"), "cards", selected, (opt) => {
+      if (vary) {
+        state.chapterCards = { ...state.chapterCards, [editing]: opt.slug };
+        const adjusted = enforceAdjacentCardUniqueness(editing);
+        if (adjusted && adjusted !== opt.slug) {
+          ui.cardNote = `${opt.label} matches a neighbouring chapter, so ${editing} uses ${findOption("cards", adjusted)?.label || adjusted} instead.`;
+        }
+        noteChange(`Chapter ${editing} cards`, findOption("cards", state.chapterCards[editing])?.label || state.chapterCards[editing]);
+      } else {
+        state.cardStyle = opt.slug;
+        noteChange("Card style", opt.label);
+      }
       showView("cards");
-      noteChange("Card style", opt.label);
       saveDraft();
       render();
-    }, { field: "cardStyle", view: "cards", showNew: true });
+    }, vary
+      ? { field: "chapterCards", view: "cards", showNew: true, tryValue: (opt) => ({ ...state.chapterCards, [editing]: opt.slug }) }
+      : { field: "cardStyle", view: "cards", showNew: true });
 
     byId("varyCards").addEventListener("change", (e) => {
       state.varyCardsByChapter = e.target.checked;
@@ -1046,39 +1070,23 @@
       render();
     });
 
-    const chapterVary = byId("chapterVary");
-    const thmNote = byId("thmNote");
-    if (state.varyCardsByChapter) {
-      thmNote.textContent = "Neighbouring chapters always get different card styles — if two would match, the second is switched for you.";
-      state.meta.chapterKeys.forEach((key) => {
-        const label = document.createElement("label");
-        label.textContent = key;
-        const select = document.createElement("select");
-        select.setAttribute("aria-label", `Card style for chapter ${key}`);
-        familyOptions("cards").forEach((style) => {
-          const opt = document.createElement("option");
-          opt.value = style.slug;
-          opt.textContent = style.blocked ? `${style.label} — unavailable: ${style.reason}` : style.legacy === false ? `${style.label} (new)` : style.label;
-          opt.disabled = Boolean(style.blocked);
-          if ((state.chapterCards[key] || state.cardStyle) === style.slug) opt.selected = true;
-          select.appendChild(opt);
-        });
-        select.addEventListener("change", () => {
-          state.chapterCards[key] = select.value;
-          const adjusted = enforceAdjacentCardUniqueness(key);
-          if (adjusted && adjusted !== select.value) {
-            select.value = adjusted;
-            const neighbors = neighborKeys(key).join(" and ");
-            thmNote.textContent = `Changed ${key} to ${findOption("cards", adjusted)?.label || adjusted} so it differs from ${neighbors}.`;
-          }
-          noteChange(`Chapter ${key} cards`, findOption("cards", state.chapterCards[key])?.label || state.chapterCards[key]);
-          saveDraft();
-          updatePreview();
-        });
-        label.appendChild(select);
-        chapterVary.appendChild(label);
+    const picks = byId("chapterPicks");
+    if (!picks) return;
+    keys.forEach((key) => {
+      const btn = document.createElement("button");
+      btn.type = "button";
+      btn.className = "chapter-pick";
+      btn.setAttribute("aria-pressed", key === editing ? "true" : "false");
+      const label = findOption("cards", state.chapterCards[key] || state.cardStyle)?.label || state.chapterCards[key];
+      btn.setAttribute("aria-label", `Chapter ${key}, ${chapterName(key)}: ${label}`);
+      btn.innerHTML = `<strong>${escapeHtml(key)}</strong><small>${escapeHtml(label)}</small>`;
+      btn.addEventListener("click", () => {
+        ui.cardChapter = key;
+        showView("cards");
+        render();
       });
-    }
+      picks.appendChild(btn);
+    });
   }
 
   function renderFonts(panel) {
@@ -1502,7 +1510,8 @@
     cards: { chapter: "P1", slide: 10 }
   };
   function renderModelSidebar(title) {
-    const chrome = VIEW_CHROME[state.previewView] || VIEW_CHROME.title;
+    const base = VIEW_CHROME[state.previewView] || VIEW_CHROME.title;
+    const chrome = state.previewView === "cards" ? { ...base, chapter: contentChapter().key } : base;
     const rows = CHAPTERS.map(
       ([key, name]) =>
         `<li${key === chrome.chapter ? ' class="is-current"' : ""}><span class="ms-letter">${key}</span><span class="ms-name">${name}</span></li>`
@@ -1513,6 +1522,13 @@
 
   const PREVIEW_CHAPTER = "3";
   const PREVIEW_CHAPTER_NUM = "P1";
+
+  /** The chapter the content preview shows: the one being edited when cards vary, else P1. */
+  function contentChapter() {
+    const keys = state.meta.chapterKeys;
+    const key = state.varyCardsByChapter && keys.includes(ui.cardChapter) ? ui.cardChapter : "P1";
+    return { key, num: String(keys.indexOf(key) + 1), slug: state.varyCardsByChapter ? state.chapterCards[key] || state.cardStyle : state.cardStyle };
+  }
 
   function themeOption(family, slug) {
     const sections = state.themeOptions?.sections || [];
@@ -1559,7 +1575,7 @@
 
   function buildInjectedThemeCss() {
     const main = ".spokes-model .model-main";
-    const chapterScope = `${main} [data-chapter="${PREVIEW_CHAPTER}"]`;
+    const chapterScope = `${main} [data-chapter="${contentChapter().num}"]`;
     const dividerScope = `${main} .slide-section[data-chapter="${PREVIEW_CHAPTER}"]`;
     const chunks = [];
 
@@ -1583,10 +1599,7 @@
       chunks.push(scopeCss(divider.css, dividerScope));
     }
 
-    const cardSlug = state.varyCardsByChapter
-      ? state.chapterCards.P1 || state.cardStyle
-      : state.cardStyle;
-    const card = themeOption("cards", cardSlug);
+    const card = themeOption("cards", contentChapter().slug);
     if (card && card.css) {
       chunks.push(scopeCss(card.css, chapterScope));
     }
@@ -1761,7 +1774,7 @@
   }
 
   function renderContentSlide(bullets, mythLines, subtitle) {
-    const previewCard = state.varyCardsByChapter ? state.chapterCards.P1 || state.cardStyle : state.cardStyle;
+    const chapter = contentChapter();
     const cards = (bullets.length ? bullets : ["Sample point one", "Sample point two", "Sample point three"])
       .slice(0, 3)
       .map((b, i) => {
@@ -1770,11 +1783,11 @@
       })
       .join("");
     const chip = state.varyCardsByChapter
-      ? `<span class="slide-chip">Chapter P1 · ${escapeHtml(findOption("cards", previewCard)?.label || previewCard)}</span>`
+      ? `<span class="slide-chip">Chapter ${chapter.key} · ${escapeHtml(findOption("cards", chapter.slug)?.label || chapter.slug)}</span>`
       : "";
     const reality = mythLines.find((l) => /^reality/i.test(l)) || subtitle;
     return `
-      <div class="model-content" data-chapter="${PREVIEW_CHAPTER}">
+      <div class="model-content" data-chapter="${chapter.num}">
         <div class="slide-head"><h3>Key points</h3>${chip}</div>
         <div class="divider" aria-hidden="true"></div>
         <div class="cards-grid">${cards}</div>

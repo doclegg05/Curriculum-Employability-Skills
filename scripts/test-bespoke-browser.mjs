@@ -599,6 +599,42 @@ try {
   await leadContext.close();
   ok("choosing a color lead visibly changes the preview it opens on");
 
+  const sweepContext = await newContext({ reducedMotion:"reduce" });
+  const sweep = await ready(await sweepContext.newPage());
+  const previewPrint = () => sweep.evaluate(() => {
+    const style = (el) => { if (!el) return ""; const c = getComputedStyle(el); return [c.color, c.backgroundImage, c.backgroundColor, c.borderLeftWidth, c.borderTopWidth, c.borderRadius, c.boxShadow, c.fontFamily].join("|"); };
+    const stage = (s) => style(document.querySelector(`#modelStage ${s}`));
+    return [style(document.querySelector("#modelMain")), style(document.querySelector("#modelSidebar")),
+      ...["h1", "h2", "h3", ".slide-title", ".slide-section", ".card", ".card h4", ".divider", ".download-btn"].map(stage),
+      document.querySelector(".model-content .slide-chip")?.textContent || ""].join("#");
+  });
+  const unchangedOptions = async (grid) => {
+    const dead = [];
+    for (const id of await sweep.locator(`${grid} .option:not([disabled])`).evaluateAll(els => els.map(e => e.dataset.id))) {
+      const option = sweep.locator(`${grid} [data-id="${id}"]`);
+      if (await option.getAttribute("aria-pressed") === "true") continue;
+      // Park the pointer: a tile left under it would be hover-previewed and skew "before".
+      await sweep.mouse.move(0, 0);
+      const before = await previewPrint();
+      await option.click();
+      // Let the frame settle: a reduced-motion transition still holds the old color for one frame.
+      await sweep.evaluate(() => new Promise(resolve => requestAnimationFrame(() => requestAnimationFrame(resolve))));
+      if (await previewPrint() === before) dead.push(id);
+    }
+    return dead;
+  };
+  for (const [step, grids] of [["Color lead", ["#colorGrid"]], ["Sidebar & background", ["#sidebarGrid", "#textureGrid"]], ["Title & dividers", ["#titleGrid", "#dividerGrid"]], ["Cards", ["#cardGrid"]], ["Fonts", ["#fontGrid"]]]) {
+    await sweep.getByRole("button", { name: new RegExp(`Step \\d+ of .*${step.replace("&", "&")}`) }).click();
+    for (const grid of grids) assert.deepEqual(await unchangedOptions(grid), [], `${grid}: options that did not change the preview`);
+  }
+  await sweep.getByRole("button", { name:/Step \d+ of .*Cards/ }).click();
+  await sweep.locator("#varyCards").check();
+  await sweep.getByRole("button", { name:/^Chapter E, Evaluation/ }).click();
+  assert.match(await sweep.locator(".model-content .slide-chip").textContent(), /^Chapter E ·/);
+  assert.deepEqual(await unchangedOptions("#cardGrid"), [], "vary by chapter: options that did not change the preview");
+  await sweepContext.close();
+  ok("every option in every design step changes the preview, including per-chapter cards");
+
   assert.deepEqual(errors, []);
   await secondContext.close();
   await firstContext.close();
