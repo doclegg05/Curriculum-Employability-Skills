@@ -873,25 +873,38 @@ label.field textarea { min-height: 110px; resize: vertical; }
   margin-top: 0.15rem;
   accent-color: var(--royal);
 }
-.chapter-vary {
-  display: none;
-  grid-template-columns: repeat(auto-fill, minmax(140px, 1fr));
-  gap: var(--s3);
-  margin-top: var(--s4);
+.toggle-hint { font-weight: 400; color: var(--gray); }
+/* Vary by chapter: one button per WIPPEA chapter, showing its current card style */
+.chapter-picks {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(4.6rem, 1fr));
+  gap: 0.35rem;
+  margin-bottom: var(--s3);
 }
-.chapter-vary.is-open { display: grid; }
-.chapter-vary label {
-  display: flex;
-  flex-direction: column;
-  gap: 0.3rem;
-  font-size: 0.85rem;
-  font-weight: 600;
-}
-.chapter-vary select {
-  padding: 0.45rem;
-  border-radius: 6px;
+.chapter-pick {
+  appearance: none;
+  min-height: 44px;
+  padding: 0.3rem 0.4rem;
   border: 1.5px solid rgba(0, 64, 113, 0.22);
+  border-radius: 8px;
+  background: var(--light);
+  color: var(--dark);
+  text-align: left;
+  cursor: pointer;
 }
+.chapter-pick strong { display: block; font-size: var(--fs-sm); }
+.chapter-pick small {
+  display: block;
+  font-size: 0.7rem;
+  color: var(--gray);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+.chapter-pick[aria-pressed="true"] { background: var(--royal); border-color: var(--royal); color: var(--light); }
+.chapter-pick[aria-pressed="true"] small { color: rgba(255, 255, 255, 0.85); }
+.card-note { margin: 0 0 var(--s3); min-height: 1em; font-size: var(--fs-sm); font-weight: 600; color: var(--dark); }
+.card-note:empty { display: none; }
 
 .panel-nav {
   display: flex;
