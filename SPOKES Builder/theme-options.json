@@ -573,7 +573,7 @@
           "marker": "2. split-hero",
           "label": "Split Hero",
           "notes": [],
-          "css": ".slide-title { flex-direction: row; align-items: stretch; text-align: left; background: none; }\n.slide-title::before { content: ''; width: 45%; background: var(--royal); display: block; }\n.slide-title::after { content: ''; flex: 1; background: linear-gradient(135deg, var(--primary), var(--dark)); display: block; }\n.slide-title h1, .slide-title .subtitle, .slide-title .logo, .slide-title .copyright { position: absolute; left: 3rem; z-index: 1; }\n.slide-title .logo { top: 2rem; }\n.slide-title h1 { top: 50%; transform: translateY(-50%); font-size: 3.5rem; }\n.slide-title .subtitle { top: calc(50% + 3rem); }\n.slide-title .copyright { bottom: 2rem; }\n.slide-title .divider { position: absolute; left: 3rem; top: calc(50% + 1.5rem); z-index: 1; }",
+          "css": ".slide-title { flex-direction: column; align-items: flex-start; justify-content: center; text-align: left; background: none; position: relative; z-index: 1; }\n.slide-title::before { content: ''; position: absolute; left: 0; top: 0; bottom: 0; width: 40%; background: var(--royal); z-index: -1; flex: none; display: block; }\n.slide-title::after { content: ''; position: absolute; left: 40%; top: 0; bottom: 0; right: 0; background: linear-gradient(135deg, var(--primary), var(--dark)); z-index: -1; flex: none; display: block; }\n.slide-title .logo { max-width: 220px; margin: 0 0 1.5rem; }\n.slide-title h1 { max-width: 90%; margin: 0; }\n.slide-title .divider { margin: 1.5rem 0; }\n.slide-title .subtitle { max-width: 90%; margin-bottom: 0; }\n.slide-title .copyright { position: absolute; bottom: 2rem; left: 5rem; margin: 0; }",
           "empty": false,
           "blocked": false,
           "reason": ""
@@ -617,7 +617,7 @@
           "marker": "6. diagonal-split",
           "label": "Diagonal Split",
           "notes": [],
-          "css": ".slide-title { position: relative; overflow: hidden; background: var(--dark); }\n.slide-title::after { content: ''; position: absolute; top: 0; right: 0; width: 60%; height: 100%; background: var(--primary); clip-path: polygon(20% 0, 100% 0, 100% 100%, 0% 100%); }\n.slide-title h1, .slide-title .subtitle, .slide-title .logo { position: relative; z-index: 1; }",
+          "css": ".slide-title { position: relative; overflow: hidden; background: var(--dark); }\n.slide-title::after { content: ''; position: absolute; top: 0; right: 0; width: 60%; height: 100%; background: var(--primary); clip-path: polygon(20% 0, 100% 0, 100% 100%, 0% 100%); }\n.slide-title h1, .slide-title .divider, .slide-title .subtitle, .slide-title .logo, .slide-title .copyright { position: relative; z-index: 1; }",
           "empty": false,
           "blocked": false,
           "reason": ""

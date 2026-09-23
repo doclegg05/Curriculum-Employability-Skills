@@ -700,6 +700,7 @@
       .slide-title .divider {
         width: 120px;
         height: 5px;
+        flex-shrink: 0; /* a long title must not squeeze the rule to nothing */
         background: var(--gold);
         margin-bottom: 2rem;
       }
