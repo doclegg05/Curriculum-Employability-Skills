@@ -365,7 +365,7 @@ try {
   ok("reload preserves a dirty browser draft instead of silently replacing it");
 
   await saveShared(first);
-  await first.getByRole("button", { name:/Step 10 of .*Review/ }).click();
+  await first.getByRole("button", { name:/Step \d+ of .*Review/ }).click();
   await first.locator("#btnSend").click();
   await first.locator("#fileStatus").filter({ hasText:"processing" }).waitFor();
   await first.locator("#fileStatus").filter({ hasText:"Britt received the review request" }).waitFor({ timeout:25000 });
@@ -401,7 +401,7 @@ try {
   ok("history loads old choices onto the latest revision for a deliberate new save");
 
   await setTeamName(first, "Snapshot stays local");
-  await first.getByRole("button", { name:/Step 10 of .*Review/ }).click();
+  await first.getByRole("button", { name:/Step \d+ of .*Review/ }).click();
   await first.evaluate(() => {
     navigator.clipboard.writeText = async value => { window.__bespokeCopiedSnapshot = value; };
     document.querySelector("#btnCopyView").click();
@@ -558,6 +558,28 @@ try {
   assert.equal(unloadPrompts.length, 1);
   ok("closing warns while changes are not shared, and not after they are saved");
   await closeContext.close();
+
+  const briefContext = await newContext({ reducedMotion:"reduce" });
+  const briefPage = await ready(await briefContext.newPage(), teamUrl);
+  await briefPage.locator("#fileStatus").filter({ hasText:"Opened the latest shared design" }).waitFor();
+  await briefPage.getByRole("button", { name:/Step \d+ of .*Describe the feel/ }).click();
+  await briefPage.getByRole("button", { name:/Bold and empowered/ }).click();
+  await briefPage.getByRole("button", { name:"Dark" }).click();
+  await briefPage.getByRole("button", { name:/Step \d+ of .*Starting point/ }).click();
+  await briefPage.locator("#btnBriefUse").click();
+  await briefPage.locator(".brief-in-use").waitFor();
+  await saveShared(briefPage);
+  await briefContext.close();
+  const reopenContext = await newContext({ reducedMotion:"reduce" });
+  const reopened = await ready(await reopenContext.newPage(), teamUrl);
+  await reopened.locator("#fileStatus").filter({ hasText:"Opened the latest shared design" }).waitFor();
+  await reopened.getByRole("button", { name:/Step \d+ of .*Describe the feel/ }).click();
+  assert.equal(await reopened.getByRole("button", { name:/Bold and empowered/ }).getAttribute("aria-pressed"), "true");
+  assert.equal(await reopened.getByRole("button", { name:"Dark" }).getAttribute("aria-pressed"), "true");
+  await reopened.getByRole("button", { name:/Step \d+ of .*Starting point/ }).click();
+  await reopened.locator(".brief-in-use").waitFor();
+  await reopenContext.close();
+  ok("design brief answers travel with the shared design to another browser");
 
   assert.deepEqual(errors, []);
   await secondContext.close();

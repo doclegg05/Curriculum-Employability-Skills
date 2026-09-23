@@ -14,17 +14,18 @@
 - Quality gate (`scripts/quality.sh`) green in CI; re-checked locally 2026-09-23 (validators, validator tests, BeSpoke Python tests, 26 Node handoff/provision tests, registry sync). Browser/a11y portions not re-run that day.
 
 ## Last Session
-- **Date**: 2026-09-23
-- **What we worked on**: Full folder review/orientation (read-only) and this memory refresh. Memory had not been updated since 2026-08-17; work between then and now happened in Codex/Cursor sessions and PRs #4–#21:
-  - 2026-08-31: CI quality gate (`.github/workflows/quality.yml`), self-contained quality script, gitleaks (PRs #4–#6)
-  - 2026-09-17: conference briefs captured (Money Management topics, instructor intake, lesson-studio concept)
-  - 2026-09-18: Britt greenlit the BeSpoke prototype (`docs/bespoke/decisions.md`)
-  - 2026-09-19 → 09-21: wizard prototype, UI polish, card/layout library, selection schema, theme library, apply-selection, edit-code view links (PRs #7–#16)
-  - 2026-09-22: readiness foundations + project review (#17), Netlify auto-handoff (#18), durable team sessions (#19), live verification (#21)
-- **What we decided**: Britt declared all six Phase 1 lessons out of QA and ready for teaching; project moves to Phase 2 (Round 2). Registry/README/Project Plan updated to match.
-- **Where we left off**: Review delivered to Britt. Next candidates: publisher catch-up decision, Money Management pilot, teacher editorial pass.
+- **Date**: 2026-09-23 (second session, worktree `claude/bespoke-wizard-ui-review-c1971a`, uncommitted)
+- **What we worked on**: BeSpoke wizard UI review and workflow change.
+  - Found: the six presets are the six existing lessons' exact looks, and the old copy said "most teams stop here", so the default path copied a lesson. Title/divider/lead tiles were name-only. At 1280×720 a short-viewport rule capped the workspace at 58dvh (≈190px blank) and the stepper left the options panel ≈200px.
+  - Added `bespoke/brief.js` (pure): four questions (feel, class energy, closeness, light/dark), trait scores for every library option, lesson colour cues, team-name seed and "another version", and a nudge away from any existing look past 3–5 of 7 shared choices. Tests: `scripts/test-bespoke-brief.mjs` (in quality.sh).
+  - Wizard: new "Describe the feel" step; "Theme preset" became "Starting point" (made-for-your-team design plus existing looks labelled "Same look as …"); "Save and come back" folded into Review (old `return` drafts map to review); hover/focus try-on preview; "Fits your brief" tags and mood words on tiles; closest-lesson meter over the preview and on Review; phased stepper (disc row on short screens and phones); header secondary actions in a More menu; Next names the next step; slide fade only on view change; `--gold-ink` fixes the NEW tag's contrast.
+- **What we decided**: brief answers travel in an optional `brief` payload object (ids in `bespoke/catalog.json` `briefAnswers`, `variant` a digit string to keep the payload number-free). `presetId` records the closest existing look. `startingPoint` removed; "in use" is an exact match against the preset or suggestion.
+- **Deploy order (PR #25)**: stage and redeploy the Netlify service from the branch *before* merging. The old service rejects `brief` as unknown; the new one accepts payloads with or without it.
+- **Where we left off**: all checks green (brief 8, Node 34, Python 27, browser 24/24, axe clean on all 11 steps, quality.sh). Committed and opened as PR #25 with auto-fix on; `brief` added to the payload after that.
 
 ## Open Items
+- [x] Netlify service redeployed from `b45bd65` (PR #25 schema with `brief`): deploy `6ab3ebad54816f0e2b364fa9`, 2026-09-23. Preflight 204, bad code 403, env intact. Netlify CLI now logged in on this Mac.
+- [ ] Merge PR #25, then run hosted Save/Open/Send acceptance with a design that has a brief (not yet proven live).
 - [ ] **Publisher site is 46 commits behind** (stuck at Aug 17 `fb9e202`). Britt to decide whether BeSpoke belongs on the public site before `git push publisher main:main`. Two live Pages sites still exist; canonical URL undecided.
 - [x] **BeSpoke autosave + close warning** shipped 2026-09-23 (PR #23, merged `0212c39`, live on Pages): shared save on step change (1.5 s) and after 30 s idle; beforeunload prompt while changes are unshared; paused after opening a backup/older version until a manual Save; conflicts still stop it. 24 browser scenarios pass; quality.sh green. Live only after merge + Pages deploy.
 - [ ] BeSpoke service PAT (`BESPOKE_GITHUB_TOKEN`) expires ~2026-12-20 (90 days from 2026-09-21). Google Calendar reminders set for 2026-12-06 and 2026-12-17 with rotation steps. After renewing: keep BESPOKE_DRAFT_KEY/TEAM_KEYS, verify Open+Save, move reminders to the new expiry.

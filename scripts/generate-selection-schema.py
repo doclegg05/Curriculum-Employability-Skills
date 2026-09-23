@@ -53,6 +53,10 @@ def build_schema(library: dict, meta: dict) -> dict:
         raise SystemExit("bespoke/catalog.json has no preset ids")
     if not font_ids:
         raise SystemExit("bespoke/catalog.json has no font pairing ids")
+    brief_answers = meta.get("briefAnswers") or {}
+    for key in ("feel", "room", "fresh", "light"):
+        if not brief_answers.get(key):
+            raise SystemExit(f"bespoke/catalog.json briefAnswers has no {key!r} ids")
 
     enums = {field: family_slugs(library, family) for family, field in FAMILY_TO_THEME_FIELD.items()}
     card_slugs = enums["cardsLessonWide"]
@@ -200,6 +204,22 @@ def build_schema(library: dict, meta: dict) -> dict:
                 },
             },
             "unspoken": {"type": "string"},
+            "brief": {
+                "type": "object",
+                "description": (
+                    "Design brief answers that produced the starting design. "
+                    "variant is a digit string so the payload keeps no numeric fields."
+                ),
+                "additionalProperties": False,
+                "required": ["feel", "room", "fresh", "light", "variant"],
+                "properties": {
+                    **{
+                        key: {"type": "string", "enum": [str(v) for v in brief_answers[key]]}
+                        for key in ("feel", "room", "fresh", "light")
+                    },
+                    "variant": {"type": "string", "pattern": "^[0-9]{1,4}$"},
+                },
+            },
         },
         "x-bespoke": {
             "schemaId": "bespoke-selection/v1",

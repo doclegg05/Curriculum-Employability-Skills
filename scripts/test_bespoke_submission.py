@@ -59,6 +59,19 @@ class SubmissionTests(unittest.TestCase):
             with self.assertRaises(ValueError):
                 require_valid_selection(payload)
 
+    def test_design_brief_is_validated_and_shown_in_the_proposal(self):
+        payload = deepcopy(self.payload)
+        payload["brief"] = {"feel": "welcoming", "room": "active", "fresh": "fresh", "light": "dark", "variant": "2"}
+        require_valid_selection(payload)
+        text = writer.build_intake_markdown(payload, payload["date"])
+        self.assertIn("| Design brief | feel welcoming, class active, closeness fresh, slides dark, version 2 |", text)
+        self.assertNotIn("Design brief", writer.build_intake_markdown(self.payload, self.payload["date"]))
+        for key, value in (("feel", "cheerful"), ("variant", 2), ("variant", "12345"), ("extra", "x")):
+            bad = deepcopy(payload)
+            bad["brief"][key] = value
+            with self.subTest(key=key, value=value), self.assertRaises(ValueError):
+                require_valid_selection(bad)
+
     def test_all_six_presets_produce_accepted_design_contracts(self):
         catalog = json.loads((ROOT / "bespoke/catalog.json").read_text())
         for preset in catalog["presets"]:

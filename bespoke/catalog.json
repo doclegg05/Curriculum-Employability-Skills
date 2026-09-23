@@ -36,6 +36,12 @@
     { "id": "bitter-raleway", "label": "Bitter + Raleway", "heading": "Bitter", "body": "Raleway", "mood": "Bold, outspoken" }
   ],
   "chapterKeys": ["W", "I", "P1", "P2", "P3", "E", "A"],
+  "briefAnswers": {
+    "feel": ["calm", "welcoming", "professional", "upbeat", "serious", "bold"],
+    "room": ["quiet", "discussion", "active"],
+    "fresh": ["familiar", "balanced", "fresh"],
+    "light": ["light", "dark", "either"]
+  },
   "presets": [
     {
       "id": "professional",
