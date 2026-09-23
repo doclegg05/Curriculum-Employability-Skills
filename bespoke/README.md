@@ -20,9 +20,12 @@ Read or print the [team meeting guide](team-guide.html).
    there is no unsaved browser draft to protect.
 2. Choose one spokesperson to share the browser window and operate the design
    during the call. Compare themes, colors, fonts, titles, dividers, and cards.
-3. Choose **Save shared design** and wait for confirmation. Return through the
-   same original team link on this or another computer; **Open team design** also
-   loads the shared record.
+3. BeSpoke saves the shared design automatically on each step change and after
+   30 seconds without a change. **Save shared design** saves immediately. Closing
+   the page with unshared changes asks for confirmation. Opened backups and
+   restored versions wait for **Save shared design** before autosave resumes.
+   Return through the same original team link on this or another computer;
+   **Open team design** also loads the shared record.
 4. Add the spokesperson’s name, save the agreed look, then choose **Send to Britt**. Processing means the
    request is still underway. **Britt received the review request.** and its review receipt confirm delivery.
 5. Use **Download backup** if a save fails or you want a local copy. Use **Open

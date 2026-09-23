@@ -99,8 +99,17 @@
     teamSession: null,
     cloudConflict: null,
     cloudBusy: false,
-    skipNextLocalSave: false
+    skipNextLocalSave: false,
+    /** Set after opening a backup or an older version: those wait for a deliberate Save. */
+    autosavePaused: false,
+    /** Set just before this page reloads itself, so the close warning stays quiet. */
+    allowUnload: false
   };
+
+  /** Shared autosave timings. Browser tests replace them through window.__bespokeAutosave. */
+  const AUTOSAVE = Object.freeze({ enabled: true, idleMs: 30000, stepMs: 1500, ...(window.__bespokeAutosave || {}) });
+  let autosaveTimer = null;
+  let autosaveReady = false;
 
   let saveAnnounceTimer = null;
   let saveAnnounceReady = false;
@@ -264,6 +273,36 @@
     return Boolean(key && key !== (ui.teamSession.baseSelectionKey || ""));
   }
 
+  function canAutosave() {
+    return AUTOSAVE.enabled && autosaveReady && isLeadSession() && Boolean(ui.teamSession) &&
+      Boolean(handoffApiBase) && !ui.cloudConflict && !ui.autosavePaused && !storageConflict;
+  }
+
+  function scheduleAutosave(delay) {
+    clearTimeout(autosaveTimer);
+    autosaveTimer = null;
+    if (!canAutosave() || !hasUnsavedTeamWork()) return;
+    autosaveTimer = window.setTimeout(runAutosave, delay);
+  }
+
+  function runAutosave() {
+    clearTimeout(autosaveTimer);
+    autosaveTimer = null;
+    if (!canAutosave() || !hasUnsavedTeamWork()) return;
+    if (handoffBusy) {
+      scheduleAutosave(AUTOSAVE.idleMs);
+      return;
+    }
+    cloudSave({ auto: true });
+  }
+
+  function draftStatusText() {
+    if (!ui.teamSession) return "Browser draft saved";
+    if (!hasUnsavedTeamWork()) return "Shared design up to date";
+    if (ui.autosavePaused) return "Choose Save shared design to share";
+    return canAutosave() ? "Sharing changes automatically" : "Browser draft saved";
+  }
+
   function updateCloudChrome() {
     const session = ui.teamSession;
     const panel = byId("teamSessionBar");
@@ -313,9 +352,10 @@
       const nextRaw = JSON.stringify(rest);
       localStorage.setItem(STORAGE_KEY, nextRaw);
       lastSavedRaw = nextRaw;
-      setSaveStatus(ui.teamSession && !hasUnsavedTeamWork() ? "Shared design up to date" : "Browser draft saved");
+      setSaveStatus(draftStatusText());
       updateCloudChrome();
       queueSaveAnnouncement();
+      scheduleAutosave(AUTOSAVE.idleMs);
       return true;
     } catch {
       setSaveStatus("Could not save on this computer");
@@ -1527,6 +1567,7 @@
       }
       if (!prepareDraftReplacement()) return;
       applySelectionPayload(payload);
+      ui.autosavePaused = Boolean(ui.teamSession);
       if (!ui.teamSession) {
         ui.mode = "edit";
         state.editCode = "";
@@ -2036,6 +2077,7 @@
       session.pendingSave = null;
       session.baseSelectionKey = currentSelectionKey();
       ui.cloudConflict = null;
+      ui.autosavePaused = false;
       persistTeamSession();
       storageConflict = false;
       try {
@@ -2057,20 +2099,25 @@
     }
   }
 
-  async function cloudSave() {
+  /** Manual Save reports every outcome. Autosave stays quiet except for a newer shared version. */
+  async function cloudSave({ auto = false } = {}) {
     if (!isLeadSession() || handoffBusy) return;
-    const session = requireTeamSession();
+    const session = auto ? ui.teamSession : requireTeamSession();
     if (!session) return;
     if (ui.cloudConflict) {
+      if (auto) return;
       fileNotice("A newer shared version exists. Download a backup and load the latest shared design before saving.");
       updateCloudChrome();
       return;
     }
     let payload;
     try { payload = currentSelection(); }
-    catch (err) { fileNotice("Could not save. " + err.message); return; }
+    catch (err) {
+      if (!auto) fileNotice("Could not save. " + err.message);
+      return;
+    }
     if (payload.lesson.id !== session.lessonId) {
-      fileNotice("This team access is locked to a different lesson. Your draft was not saved.");
+      if (!auto) fileNotice("This team access is locked to a different lesson. Your draft was not saved.");
       return;
     }
     const requestKey = selectionKey(payload);
@@ -2084,8 +2131,11 @@
       session.pendingSave = pending;
       persistTeamSession();
     }
+    clearTimeout(autosaveTimer);
+    autosaveTimer = null;
     handoffBusy = true;
-    fileNotice("Saving the shared design…");
+    if (auto) setSaveStatus("Saving to the shared design…");
+    else fileNotice("Saving the shared design…");
     try {
       const result = await handoffRequest("save", {
         lessonId: session.lessonId,
@@ -2103,7 +2153,8 @@
           updateCloudChrome();
           return;
         }
-        fileNotice(result.message || "Shared Save did not finish. Your browser draft is safe; try Save again.");
+        if (auto) setSaveStatus("Automatic save will retry");
+        else fileNotice(result.message || "Shared Save did not finish. Your browser draft is safe; try Save again.");
         return;
       }
       session.revision = result.revision;
@@ -2111,15 +2162,21 @@
       session.baseSelectionKey = requestKey;
       session.pendingSave = null;
       ui.cloudConflict = null;
+      ui.autosavePaused = false;
       persistTeamSession();
       const changedDuringSave = currentSelectionKey() !== requestKey;
-      setSaveStatus(changedDuringSave ? "Newer browser changes not shared yet" : "Shared design up to date");
-      fileNotice(changedDuringSave
-        ? "The version that started saving is shared. You made newer changes while it saved; choose Save shared design again."
-        : (result.unchanged ? "The shared design was already up to date." : "Shared design saved."));
+      setSaveStatus(changedDuringSave
+        ? "Newer browser changes not shared yet"
+        : (auto ? "Saved to the shared design automatically" : "Shared design up to date"));
+      if (!auto) {
+        fileNotice(changedDuringSave
+          ? "The version that started saving is shared. You made newer changes while it saved; choose Save shared design again."
+          : (result.unchanged ? "The shared design was already up to date." : "Shared design saved."));
+      }
     } finally {
       handoffBusy = false;
       updateCloudChrome();
+      scheduleAutosave(AUTOSAVE.idleMs);
     }
   }
 
@@ -2384,6 +2441,7 @@
         session.baseSelectionKey = latestKey;
         session.pendingSave = null;
         ui.cloudConflict = null;
+        ui.autosavePaused = true;
         persistTeamSession();
         state.step = stepIndex("review");
         panel.hidden = true;
@@ -2412,7 +2470,8 @@
         ? { start: active.selectionStart, end: active.selectionEnd }
         : null;
 
-    if (ui.renderedStep !== state.step) {
+    const stepChanged = ui.renderedStep !== state.step;
+    if (stepChanged) {
       ui.renderedStep = state.step;
       state.previewView = STEPS[state.step].view;
       ui.previewPinned = false;
@@ -2426,6 +2485,7 @@
     if (isLeadSession()) {
       if (ui.skipNextLocalSave) ui.skipNextLocalSave = false;
       else saveDraft();
+      if (stepChanged) scheduleAutosave(AUTOSAVE.stepMs);
     }
 
     if (keepFocusId) {
@@ -2494,6 +2554,7 @@
         localStorage.removeItem(BACKUP_KEY);
         sessionStorage.setItem("bespoke-left-session", "1");
       } catch { /* reload still drops the in-memory credential */ }
+      ui.allowUnload = true;
       location.reload();
     });
     byId("openCancel").addEventListener("click", () => byId("openDialog").close());
@@ -2514,8 +2575,15 @@
         localStorage.setItem(STORAGE_KEY, previous);
         if (current) localStorage.setItem(BACKUP_KEY, current);
         history.replaceState(null, "", location.pathname + location.search);
+        ui.allowUnload = true;
         location.reload();
       } catch { fileNotice("Could not recover the browser draft. Open the private team access or an exported backup."); }
+    });
+    window.addEventListener("beforeunload", (event) => {
+      if (ui.allowUnload || !isLeadSession() || !hasUnsavedTeamWork()) return;
+      runAutosave();
+      event.preventDefault();
+      event.returnValue = "";
     });
     window.addEventListener("storage", (event) => {
       if ((event.key === STORAGE_KEY || event.key === null) && isLeadSession()) {
@@ -2556,6 +2624,7 @@
           /* private mode */
         }
         location.hash = "";
+        ui.allowUnload = true;
         location.reload();
       }
     });
@@ -2597,6 +2666,8 @@
       await fetchSharedDesign({ replace: mayReplaceFromCloud, announce: true });
       await resumePendingSubmission();
     }
+    autosaveReady = true;
+    scheduleAutosave(AUTOSAVE.idleMs);
     if (isLeadSession() && ui.restoredFromLink) {
       const live = byId("saveLive");
       if (live) live.textContent = "Browser draft saved";

@@ -137,6 +137,25 @@ async function saveShared(page) {
   await page.locator("#btnSave").click();
   await page.locator("#fileStatus").filter({ hasText:/Shared design saved|already up to date|version that started saving/ }).waitFor({ timeout:10000 });
 }
+async function newContext(options = {}, autosave = { enabled:false }) {
+  const context = await browser.newContext(options);
+  await context.addInitScript(settings => { window.__bespokeAutosave = settings; }, autosave);
+  return context;
+}
+async function waitForWrites(count, timeout = 5000) {
+  const deadline = Date.now() + timeout;
+  while (github.writes.length < count && Date.now() < deadline) await new Promise(resolve => setTimeout(resolve, 25));
+  assert.equal(github.writes.length, count);
+}
+async function sharedTeamName() {
+  const context = await newContext({ reducedMotion:"reduce" });
+  const page = await ready(await context.newPage(), teamUrl);
+  await page.locator("#fileStatus").filter({ hasText:"Opened the latest shared design" }).waitFor();
+  await gotoTeam(page);
+  const name = await page.locator("#teamName").inputValue();
+  await context.close();
+  return name;
+}
 async function downloadBackup(page) {
   const event = page.waitForEvent("download");
   await page.locator("#btnDownloadBackup").click();
@@ -203,7 +222,7 @@ async function assertPanelControlReachable(page, selector, minPanelHeight) {
 }
 
 try {
-  const firstContext = await browser.newContext({
+  const firstContext = await newContext({
     viewport:{width:1280,height:900},
     reducedMotion:"reduce",
     permissions:["clipboard-read", "clipboard-write"]
@@ -275,13 +294,13 @@ try {
   assert.equal(await returned.locator("#teamName").inputValue(), "First shared version");
   ok("save, reload, and remembered return restore the latest shared design");
 
-  const secondContext = await browser.newContext({ viewport:{width:1280,height:900}, reducedMotion:"reduce" });
+  const secondContext = await newContext({ viewport:{width:1280,height:900}, reducedMotion:"reduce" });
   const second = await ready(await secondContext.newPage(), teamUrl);
   await gotoTeam(second);
   assert.equal(await second.locator("#teamName").inputValue(), "First shared version");
   ok("fresh team access opens the latest shared revision automatically");
 
-  const manualContext = await browser.newContext({ reducedMotion:"reduce" });
+  const manualContext = await newContext({ reducedMotion:"reduce" });
   const manual = await ready(await manualContext.newPage());
   await manual.locator("#btnOpen").click();
   await manual.locator("#openLesson").selectOption("money-management");
@@ -400,7 +419,7 @@ try {
   await snapshot.close();
   ok("a view snapshot is not replaced by the remembered team session at startup");
 
-  const timeoutContext = await browser.newContext({ reducedMotion:"reduce" });
+  const timeoutContext = await newContext({ reducedMotion:"reduce" });
   await timeoutContext.addInitScript(() => {
     const nativeSetTimeout = window.setTimeout.bind(window);
     window.setTimeout = (callback, delay, ...args) => nativeSetTimeout(callback, delay === 20000 ? 80 : delay, ...args);
@@ -449,7 +468,7 @@ try {
   }
   ok("team session controls and selected form remain reachable at desktop, tablet, and phone widths");
 
-  const offlineContext = await browser.newContext({ reducedMotion:"reduce" });
+  const offlineContext = await newContext({ reducedMotion:"reduce" });
   const offline = await offlineContext.newPage();
   await offline.route("**/handoff-config.json", route => route.fulfill({ status:404, body:"" }));
   await ready(offline);
@@ -461,6 +480,84 @@ try {
   await offline.locator("#openDialog").waitFor({ state:"visible" });
   ok("backup download and open remain usable when shared setup is unavailable");
   await offlineContext.close();
+
+  const idleContext = await newContext({ reducedMotion:"reduce" }, { idleMs:300, stepMs:60000 });
+  const idle = await ready(await idleContext.newPage(), teamUrl);
+  await idle.locator("#fileStatus").filter({ hasText:"Opened the latest shared design" }).waitFor();
+  const writesBeforeIdle = github.writes.length;
+  await setTeamName(idle, "Autosaved after a pause");
+  await idle.locator("#saveStatus").filter({ hasText:/saved to the shared design automatically/i }).waitFor({ timeout:5000 });
+  await waitForWrites(writesBeforeIdle + 1);
+  assert.equal(await sharedTeamName(), "Autosaved after a pause");
+  ok("autosave shares a change after the team pauses, and a new browser opens it");
+
+  const stepContext = await newContext({ reducedMotion:"reduce" }, { idleMs:60000, stepMs:100 });
+  const stepPage = await ready(await stepContext.newPage(), teamUrl);
+  await stepPage.locator("#fileStatus").filter({ hasText:"Opened the latest shared design" }).waitFor();
+  await setTeamName(stepPage, "Saved on step change");
+  const writesBeforeStep = github.writes.length;
+  await stepPage.waitForTimeout(300);
+  assert.equal(github.writes.length, writesBeforeStep);
+  await stepPage.getByRole("button", { name:/Step 3 of / }).click();
+  await waitForWrites(writesBeforeStep + 1);
+  assert.equal(await sharedTeamName(), "Saved on step change");
+  ok("moving to another step shares changes without waiting for the pause");
+
+  const writesBeforeStale = github.writes.length;
+  await idle.locator("#teamName").fill("Stale autosave attempt");
+  await idle.locator("#fileStatus").filter({ hasText:"newer shared version" }).waitFor({ timeout:5000 });
+  await idle.waitForTimeout(500);
+  assert.equal(github.writes.length, writesBeforeStale);
+  assert.equal(await sharedTeamName(), "Saved on step change");
+  ok("autosave never replaces a newer shared version");
+  await idleContext.close();
+
+  await gotoTeam(stepPage);
+  await stepPage.locator("#teamName").fill("Restored from backup");
+  const restoreBackup = await downloadBackup(stepPage);
+  await stepPage.locator("#teamName").fill("Saved on step change");
+  await stepPage.locator("#btnOpenBackup").click();
+  await stepPage.locator("#teamFileInput").setInputFiles({ name:restoreBackup.name, mimeType:"application/json", buffer:restoreBackup.buffer });
+  await stepPage.locator("#fileStatus").filter({ hasText:"browser draft" }).waitFor();
+  const writesBeforeRestore = github.writes.length;
+  await stepPage.getByRole("button", { name:/Step 3 of / }).click();
+  await stepPage.waitForTimeout(400);
+  assert.equal(github.writes.length, writesBeforeRestore);
+  assert.match(await stepPage.locator("#saveStatus").textContent(), /choose Save shared design/i);
+  await saveShared(stepPage);
+  assert.equal(github.writes.length, writesBeforeRestore + 1);
+  await setTeamName(stepPage, "Autosave resumes after Save");
+  await stepPage.getByRole("button", { name:/Step 3 of / }).click();
+  await waitForWrites(writesBeforeRestore + 2);
+  ok("an opened backup waits for a deliberate Save, then autosave resumes");
+  await stepContext.close();
+
+  const defaultContext = await newContext({ reducedMotion:"reduce" }, {});
+  const defaults = await ready(await defaultContext.newPage(), teamUrl);
+  await defaults.locator("#fileStatus").filter({ hasText:"Opened the latest shared design" }).waitFor();
+  await setTeamName(defaults, "Shipped autosave timings");
+  const writesBeforeDefaults = github.writes.length;
+  await defaults.getByRole("button", { name:/Step 3 of / }).click();
+  await waitForWrites(writesBeforeDefaults + 1, 3000);
+  assert.equal(await sharedTeamName(), "Shipped autosave timings");
+  ok("the shipped timings share a change within seconds of moving to another step");
+  await defaultContext.close();
+
+  const closeContext = await newContext({ reducedMotion:"reduce" });
+  const closing = await ready(await closeContext.newPage(), teamUrl);
+  await closing.locator("#fileStatus").filter({ hasText:"Opened the latest shared design" }).waitFor();
+  const unloadPrompts = [];
+  closing.on("dialog", dialog => { if (dialog.type() === "beforeunload") unloadPrompts.push(dialog.message()); });
+  await setTeamName(closing, "Unsaved when closing");
+  await closing.reload();
+  await closing.locator("#fileStatus").filter({ hasText:"unsaved changes" }).waitFor();
+  assert.equal(unloadPrompts.length, 1);
+  await saveShared(closing);
+  await closing.reload();
+  await closing.locator("#stepList button").first().waitFor();
+  assert.equal(unloadPrompts.length, 1);
+  ok("closing warns while changes are not shared, and not after they are saved");
+  await closeContext.close();
 
   assert.deepEqual(errors, []);
   await secondContext.close();
