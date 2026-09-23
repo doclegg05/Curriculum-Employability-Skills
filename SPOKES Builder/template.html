@@ -356,7 +356,8 @@
         align-items: center;
         gap: 0.5rem;
         padding: 0.75rem 1.5rem;
-        background: var(--accent);
+        /* Each color lead sets its own background (and ink where white fails AA). */
+        background: var(--primary);
         color: var(--light);
         text-decoration: none;
         border-radius: 8px;
@@ -368,7 +369,6 @@
       }
 
       .download-btn:hover {
-        background: var(--accent);
         filter: brightness(0.88);
         transform: translateY(-2px);
         box-shadow: 0 5px 20px rgba(0, 0, 0, 0.22);

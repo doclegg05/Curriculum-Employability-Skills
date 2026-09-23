@@ -157,7 +157,7 @@
           "marker": "gold",
           "label": "Gold",
           "notes": [],
-          "css": ".slide h2 { color: var(--muted-gold); }\n  .download-btn { background: var(--muted-gold); }\n  .download-btn:hover { background: #8a6d04; }\n  .chapter-item.active > .chapter-header { background: rgba(211,178,87,0.2); }\n  .divider { background: linear-gradient(90deg, var(--gold), var(--primary)); }\n  .slide-section { background: linear-gradient(135deg, var(--muted-gold), var(--dark)); }",
+          "css": ".slide h2 { color: var(--muted-gold); }\n  .download-btn { background: var(--muted-gold); color: var(--royal); }\n  .download-btn:hover { background: var(--gold); }\n  .chapter-item.active > .chapter-header { background: rgba(211,178,87,0.2); }\n  .divider { background: linear-gradient(90deg, var(--gold), var(--primary)); }\n  .slide-section { background: linear-gradient(135deg, var(--muted-gold), var(--dark)); }",
           "empty": false,
           "blocked": false,
           "reason": ""
@@ -168,7 +168,7 @@
           "marker": "green",
           "label": "Green",
           "notes": [],
-          "css": ".slide h2 { color: var(--primary); }\n  .download-btn { background: var(--accent); }\n  .chapter-item.active > .chapter-header { background: rgba(55,181,80,0.2); }\n  .sidebar .sidebar-title { color: var(--accent); }\n  .divider { background: linear-gradient(90deg, var(--accent), var(--gold)); }\n  .slide-section { background: linear-gradient(135deg, var(--accent), var(--dark)); }",
+          "css": ".slide h2 { color: var(--primary); }\n  .download-btn { background: var(--accent); color: var(--royal); }\n  .chapter-item.active > .chapter-header { background: rgba(55,181,80,0.2); }\n  .sidebar .sidebar-title { color: var(--accent); }\n  .divider { background: linear-gradient(90deg, var(--accent), var(--gold)); }\n  .slide-section { background: linear-gradient(135deg, var(--accent), var(--dark)); }",
           "empty": false,
           "blocked": false,
           "reason": ""
@@ -201,7 +201,7 @@
           "marker": "dual-gold-green",
           "label": "Dual Gold–Green",
           "notes": [],
-          "css": ".slide h2 { color: var(--muted-gold); }\n  .slide h3 { color: var(--primary); }\n  .download-btn { background: var(--accent); }\n  .divider { background: linear-gradient(90deg, var(--gold), var(--accent)); }\n  .slide-section { background: linear-gradient(135deg, var(--gold), var(--accent)); }",
+          "css": ".slide h2 { color: var(--muted-gold); }\n  .slide h3 { color: var(--primary); }\n  .download-btn { background: var(--accent); color: var(--royal); }\n  .divider { background: linear-gradient(90deg, var(--gold), var(--accent)); }\n  .slide-section { background: linear-gradient(135deg, var(--gold), var(--accent)); }",
           "empty": false,
           "blocked": false,
           "reason": ""
@@ -223,7 +223,7 @@
           "marker": "dual-blue-green",
           "label": "Dual Blue–Green",
           "notes": [],
-          "css": ".slide h2 { color: var(--primary); }\n  .slide h3 { color: var(--primary); }\n  .download-btn { background: var(--accent); }\n  .divider { background: linear-gradient(90deg, var(--primary), var(--accent)); }\n  .slide-section { background: linear-gradient(135deg, var(--primary), var(--accent)); }",
+          "css": ".slide h2 { color: var(--primary); }\n  .slide h3 { color: var(--primary); }\n  .download-btn { background: var(--accent); color: var(--royal); }\n  .divider { background: linear-gradient(90deg, var(--primary), var(--accent)); }\n  .slide-section { background: linear-gradient(135deg, var(--primary), var(--accent)); }",
           "empty": false,
           "blocked": false,
           "reason": ""

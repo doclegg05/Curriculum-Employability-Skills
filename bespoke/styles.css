@@ -1450,18 +1450,18 @@ label.field textarea { min-height: 110px; resize: vertical; }
   gap: 3cqi;
   margin-top: auto;
 }
-/* Icon only: the library's white-on-gold/green button text is below AA, so the sample shows the color, not text. */
+/* Mirrors template.html's default; each lead's library CSS sets the background and, where needed, royal ink. */
 .model-main .download-btn {
   flex-shrink: 0;
-  display: inline-grid;
-  place-items: center;
-  width: 8cqi;
-  height: 4.4cqi;
+  padding: 1cqi 2.4cqi;
   border-radius: 1cqi;
-  background: var(--accent);
+  background: var(--primary);
   color: var(--light);
+  font-family: var(--model-body);
+  font-size: 1.9cqi;
+  font-weight: 600;
+  white-space: nowrap;
 }
-.model-main .download-btn svg { width: 2.6cqi; height: 2.6cqi; }
 
 .option.is-blocked {
   opacity: 0.55;

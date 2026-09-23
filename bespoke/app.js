@@ -1764,7 +1764,7 @@
         <div class="cards-grid">${cards}</div>
         <div class="content-foot">
           <p class="takeaway"><strong>Takeaway:</strong> ${escapeHtml(String(reality).replace(/^reality:\s*/i, ""))}</p>
-          <span class="download-btn" aria-hidden="true" title="Handout button"><svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="M12 4v11M7 10l5 5 5-5M5 20h14"/></svg></span>
+          <span class="download-btn" aria-hidden="true">Download handout</span>
         </div>
       </div>`;
   }

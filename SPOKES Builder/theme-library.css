@@ -161,8 +161,8 @@
 /* --- gold --- */
 /*
    .slide h2 { color: var(--muted-gold); }
-     .download-btn { background: var(--muted-gold); }
-     .download-btn:hover { background: #8a6d04; }
+     .download-btn { background: var(--muted-gold); color: var(--royal); }
+     .download-btn:hover { background: var(--gold); }
      .chapter-item.active > .chapter-header { background: rgba(211,178,87,0.2); }
      .divider { background: linear-gradient(90deg, var(--gold), var(--primary)); }
      .slide-section { background: linear-gradient(135deg, var(--muted-gold), var(--dark)); }
@@ -171,7 +171,7 @@
 /* --- green --- */
 /*
    .slide h2 { color: var(--primary); }
-     .download-btn { background: var(--accent); }
+     .download-btn { background: var(--accent); color: var(--royal); }
      .chapter-item.active > .chapter-header { background: rgba(55,181,80,0.2); }
      .sidebar .sidebar-title { color: var(--accent); }
      .divider { background: linear-gradient(90deg, var(--accent), var(--gold)); }
@@ -201,7 +201,7 @@
 /*
    .slide h2 { color: var(--muted-gold); }
      .slide h3 { color: var(--primary); }
-     .download-btn { background: var(--accent); }
+     .download-btn { background: var(--accent); color: var(--royal); }
      .divider { background: linear-gradient(90deg, var(--gold), var(--accent)); }
      .slide-section { background: linear-gradient(135deg, var(--gold), var(--accent)); }
 */
@@ -219,7 +219,7 @@
 /*
    .slide h2 { color: var(--primary); }
      .slide h3 { color: var(--primary); }
-     .download-btn { background: var(--accent); }
+     .download-btn { background: var(--accent); color: var(--royal); }
      .divider { background: linear-gradient(90deg, var(--primary), var(--accent)); }
      .slide-section { background: linear-gradient(135deg, var(--primary), var(--accent)); }
 */
