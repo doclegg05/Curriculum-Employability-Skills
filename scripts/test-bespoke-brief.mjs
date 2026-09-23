@@ -4,6 +4,7 @@ import path from "node:path";
 import test from "node:test";
 import vm from "node:vm";
 import { fileURLToPath } from "node:url";
+import { selectionErrors } from "../netlify/functions/_shared/selection.mjs";
 
 const root = path.resolve(path.dirname(fileURLToPath(import.meta.url)), "..");
 const read = (file) => fs.readFileSync(path.join(root, file), "utf8");
@@ -96,4 +97,21 @@ test("mood words read as plain language", () => {
   assert.equal(Brief.moodWords("cards", "quiet-outline"), "Calm");
   assert.equal(Brief.moodWords("titleSlides", "diagonal-split"), "Lively · Relaxed");
   assert.equal(Brief.moodWords("cards", "no-such-card"), "");
+});
+
+test("brief answer ids match the catalog the schema is generated from", () => {
+  const keys = { briefFeel: "feel", briefRoom: "room", briefFresh: "fresh", briefLight: "light" };
+  for (const q of Brief.QUESTIONS) {
+    assert.deepEqual(Array.from(q.options, (o) => o.id), meta.briefAnswers[keys[q.id]], q.id);
+  }
+});
+
+test("the shared-save validator accepts a valid brief and rejects a bad one", () => {
+  const fixture = JSON.parse(read("scripts/test-fixtures/bespoke/selection-money-management.json"));
+  const brief = { feel: "welcoming", room: "active", fresh: "fresh", light: "dark", variant: "2" };
+  assert.deepEqual(selectionErrors({ ...fixture, brief }, "money-management"), []);
+  assert.deepEqual(selectionErrors(fixture, "money-management"), [], "a design without a brief stays valid");
+  for (const bad of [{ ...brief, feel: "cheerful" }, { ...brief, variant: 2 }, { ...brief, extra: "x" }, { feel: "calm" }]) {
+    assert.notDeepEqual(selectionErrors({ ...fixture, brief: bad }, "money-management"), [], JSON.stringify(bad));
+  }
 });

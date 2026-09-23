@@ -108,9 +108,11 @@ final browser inspection, content review, and teacher acceptance remain required
 | `bespoke/brief.js` | Design brief: turns the four answers into a starting design drawn only from the library, and measures overlap with the six existing looks |
 | `SPOKES Builder/content-intake-template.md` | Canonical content intake and instructor ownership for a later authorized build |
 
-The brief answers stay in the browser draft only. The shared selection records the
-resulting library choices, and `presetId` records the existing look the design is
-closest to. No arbitrary palette, font, or CSS entry is exposed to instructors. Imported
+The shared selection carries the brief answers in an optional `brief` object
+(allowed ids in `bespoke/catalog.json` `briefAnswers`), the resulting library
+choices, and in `presetId` the existing look the design is closest to. The
+Netlify service bundles the schema: after a schema change, redeploy the service
+before the wizard change reaches Pages. No arbitrary palette, font, or CSS entry is exposed to instructors. Imported
 backups and service writes validate choices. Known defective `gradient-fill` cards
 and `split-panel` dividers remain blocked pending remediation. Other combinations
 still require computed contrast and visual review in the finished lesson.

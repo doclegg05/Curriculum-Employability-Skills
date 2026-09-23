@@ -88,8 +88,6 @@
     unspoken: "",
     /** Design brief answers. Browser draft only; the shared payload keeps the resulting choices. */
     ...Brief.DEFAULT_BRIEF,
-    /** "brief" once the team used its generated design, "preset" once it picked an existing look. */
-    startingPoint: "",
     /** Administrator-provisioned team access code. Saved on this computer only. */
     editCode: "",
     previewView: "title"
@@ -442,7 +440,6 @@
     if (!preset) return;
     const changed = Object.entries(preset.defaults).filter(([k, v]) => state[k] !== v).length;
     state.presetId = presetId;
-    state.startingPoint = "preset";
     Object.assign(state, preset.defaults);
     if (!state.varyCardsByChapter) state.chapterCards = {};
     noteChange(
@@ -823,7 +820,6 @@
     if (!isLeadSession() || !suggestion) return;
     Object.assign(state, suggestion.picks);
     state.presetId = suggestion.basePreset;
-    state.startingPoint = "brief";
     if (!state.varyCardsByChapter) state.chapterCards = {};
     const feel = Brief.answer("briefFeel", state.briefFeel);
     noteChange("Made from your brief", `${feel ? feel.label : "Your answers"} — everything stays editable.`, true);
@@ -849,7 +845,7 @@
       return;
     }
     const feel = Brief.answer("briefFeel", state.briefFeel);
-    const inUse = state.startingPoint === "brief" && designMatches(suggestion.picks);
+    const inUse = designMatches(suggestion.picks);
     const near = suggestion.closest;
     card.innerHTML = `
       <div class="brief-card-head">
@@ -909,7 +905,8 @@
     renderSuggestionCard(byId("briefCardHost"));
     const grid = byId("presetGrid");
     state.meta.presets.forEach((preset) => {
-      const pressed = preset.id === state.presetId && state.startingPoint !== "brief";
+      // Selected only while the design is still exactly this lesson's look.
+      const pressed = designMatches(preset.defaults);
       const btn = document.createElement("button");
       btn.type = "button";
       btn.className = "preset";
@@ -1800,6 +1797,14 @@
       if (value !== undefined && typeof value !== "string") throw new Error("This file has invalid text fields. Your current draft has not changed.");
     }
     if (payload.sampleContent !== undefined && !object(payload.sampleContent)) throw new Error("The sample text is invalid.");
+    if (payload.brief !== undefined) {
+      const brief = payload.brief;
+      const answers = state.meta.briefAnswers || {};
+      const valid = object(brief) &&
+        ["feel", "room", "fresh", "light"].every((key) => (answers[key] || []).includes(brief[key])) &&
+        typeof brief.variant === "string" && /^[0-9]{1,4}$/.test(brief.variant);
+      if (!valid) throw new Error("The design brief in this file is not valid. Your current draft has not changed.");
+    }
     if (JSON.stringify(payload).length > MAX_FILE_BYTES) throw new Error("This file is too large. Keep source documents and media in the shared folder.");
   }
 
@@ -1886,7 +1891,8 @@
       chapterCards: cards.varyByChapter && cards.chapterStyles ? { ...cards.chapterStyles } : {},
       sampleBullets: payload.sampleContent?.bullets ?? "",
       sampleMyth: payload.sampleContent?.mythReality ?? "",
-      unspoken: payload.unspoken || ""
+      unspoken: payload.unspoken || "",
+      ...briefFieldsFromSelection(payload)
     };
   }
 
@@ -2171,7 +2177,35 @@
         bullets: state.sampleBullets,
         mythReality: state.sampleMyth
       },
-      unspoken: state.unspoken.trim()
+      unspoken: state.unspoken.trim(),
+      ...briefPayload()
+    };
+  }
+
+  /** The brief travels with the shared design once the feel question is answered. */
+  function briefPayload() {
+    if (!Brief.isComplete(briefAnswers())) return {};
+    return {
+      brief: {
+        feel: state.briefFeel,
+        room: state.briefRoom,
+        fresh: state.briefFresh,
+        light: state.briefLight,
+        variant: String(Math.max(0, Math.min(9999, Math.trunc(state.briefVariant) || 0)))
+      }
+    };
+  }
+
+  /** Brief fields for the draft; a design saved without a brief gets the defaults. */
+  function briefFieldsFromSelection(payload) {
+    const brief = payload.brief;
+    if (!brief || typeof brief !== "object") return { ...Brief.DEFAULT_BRIEF };
+    return {
+      briefFeel: brief.feel,
+      briefRoom: brief.room,
+      briefFresh: brief.fresh,
+      briefLight: brief.light,
+      briefVariant: Number(brief.variant) || 0
     };
   }
 
@@ -2302,8 +2336,7 @@
       sampleBullets: "",
       sampleMyth: "",
       unspoken: "",
-      ...Brief.DEFAULT_BRIEF,
-      startingPoint: ""
+      ...Brief.DEFAULT_BRIEF
     });
   }
 

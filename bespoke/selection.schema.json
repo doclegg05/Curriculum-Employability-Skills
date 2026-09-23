@@ -398,6 +398,59 @@
     },
     "unspoken": {
       "type": "string"
+    },
+    "brief": {
+      "type": "object",
+      "description": "Design brief answers that produced the starting design. variant is a digit string so the payload keeps no numeric fields.",
+      "additionalProperties": false,
+      "required": [
+        "feel",
+        "room",
+        "fresh",
+        "light",
+        "variant"
+      ],
+      "properties": {
+        "feel": {
+          "type": "string",
+          "enum": [
+            "calm",
+            "welcoming",
+            "professional",
+            "upbeat",
+            "serious",
+            "bold"
+          ]
+        },
+        "room": {
+          "type": "string",
+          "enum": [
+            "quiet",
+            "discussion",
+            "active"
+          ]
+        },
+        "fresh": {
+          "type": "string",
+          "enum": [
+            "familiar",
+            "balanced",
+            "fresh"
+          ]
+        },
+        "light": {
+          "type": "string",
+          "enum": [
+            "light",
+            "dark",
+            "either"
+          ]
+        },
+        "variant": {
+          "type": "string",
+          "pattern": "^[0-9]{1,4}$"
+        }
+      }
     }
   },
   "x-bespoke": {

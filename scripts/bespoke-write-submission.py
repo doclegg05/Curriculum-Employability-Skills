@@ -53,6 +53,12 @@ def build_intake_markdown(payload: dict, date: str) -> str:
         "Cards": json.dumps(theme["cards"], ensure_ascii=False),
         "Team notes (Unspoken)": payload.get("unspoken", ""),
     }
+    brief = payload.get("brief")
+    if brief:
+        rows["Design brief"] = (
+            f"feel {brief['feel']}, class {brief['room']}, closeness {brief['fresh']}, "
+            f"slides {brief['light']}, version {brief['variant']}"
+        )
     table = "\n".join(f"| {key} | {esc(value)} |" for key, value in rows.items())
     sample = payload.get("sampleContent") or {}
     return template.rstrip() + f"""

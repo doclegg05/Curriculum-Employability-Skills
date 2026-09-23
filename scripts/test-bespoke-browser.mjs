@@ -559,6 +559,28 @@ try {
   ok("closing warns while changes are not shared, and not after they are saved");
   await closeContext.close();
 
+  const briefContext = await newContext({ reducedMotion:"reduce" });
+  const briefPage = await ready(await briefContext.newPage(), teamUrl);
+  await briefPage.locator("#fileStatus").filter({ hasText:"Opened the latest shared design" }).waitFor();
+  await briefPage.getByRole("button", { name:/Step \d+ of .*Describe the feel/ }).click();
+  await briefPage.getByRole("button", { name:/Bold and empowered/ }).click();
+  await briefPage.getByRole("button", { name:"Dark" }).click();
+  await briefPage.getByRole("button", { name:/Step \d+ of .*Starting point/ }).click();
+  await briefPage.locator("#btnBriefUse").click();
+  await briefPage.locator(".brief-in-use").waitFor();
+  await saveShared(briefPage);
+  await briefContext.close();
+  const reopenContext = await newContext({ reducedMotion:"reduce" });
+  const reopened = await ready(await reopenContext.newPage(), teamUrl);
+  await reopened.locator("#fileStatus").filter({ hasText:"Opened the latest shared design" }).waitFor();
+  await reopened.getByRole("button", { name:/Step \d+ of .*Describe the feel/ }).click();
+  assert.equal(await reopened.getByRole("button", { name:/Bold and empowered/ }).getAttribute("aria-pressed"), "true");
+  assert.equal(await reopened.getByRole("button", { name:"Dark" }).getAttribute("aria-pressed"), "true");
+  await reopened.getByRole("button", { name:/Step \d+ of .*Starting point/ }).click();
+  await reopened.locator(".brief-in-use").waitFor();
+  await reopenContext.close();
+  ok("design brief answers travel with the shared design to another browser");
+
   assert.deepEqual(errors, []);
   await secondContext.close();
   await firstContext.close();
