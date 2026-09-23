@@ -42,7 +42,7 @@
     { id: "team", label: "Lesson & team", view: "title", phase: "start" },
     { id: "brief", label: "Describe the feel", view: "title", phase: "design" },
     { id: "preset", label: "Starting point", view: "title", phase: "design" },
-    { id: "color", label: "Color lead", view: "title", phase: "design" },
+    { id: "color", label: "Color lead", view: "cards", phase: "design" },
     { id: "surface", label: "Sidebar & background", view: "title", phase: "design" },
     { id: "layouts", label: "Title & dividers", view: "title", phase: "design" },
     { id: "cards", label: "Cards", view: "cards", phase: "design" },
@@ -934,7 +934,7 @@
   function renderColor(panel) {
     panel.innerHTML = `
       <h1>Color lead</h1>
-      <p class="panel-lead">The main color for headings and buttons. Every option is already on-brand; leads used by earlier lessons are marked.</p>
+      <p class="panel-lead">The lead colors slide headings, the rule under titles, buttons, and Gradient Sweep dividers. The preview opens on a content slide, where it shows most. The title slide background comes from your <em>Title slide</em> choice, so it may not change here. Leads used by earlier lessons are marked.</p>
       <div class="option-grid" id="colorGrid" role="group" aria-label="Color leads"></div>
     `;
     const grid = byId("colorGrid");
@@ -1760,8 +1760,12 @@
     return `
       <div class="model-content" data-chapter="${PREVIEW_CHAPTER}">
         <div class="slide-head"><h3>Key points</h3>${chip}</div>
+        <div class="divider" aria-hidden="true"></div>
         <div class="cards-grid">${cards}</div>
-        <p class="takeaway"><strong>Takeaway:</strong> ${escapeHtml(String(reality).replace(/^reality:\s*/i, ""))}</p>
+        <div class="content-foot">
+          <p class="takeaway"><strong>Takeaway:</strong> ${escapeHtml(String(reality).replace(/^reality:\s*/i, ""))}</p>
+          <span class="download-btn" aria-hidden="true" title="Handout button"><svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="M12 4v11M7 10l5 5 5-5M5 20h14"/></svg></span>
+        </div>
       </div>`;
   }
 

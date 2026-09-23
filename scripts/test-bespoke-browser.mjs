@@ -581,6 +581,24 @@ try {
   await reopenContext.close();
   ok("design brief answers travel with the shared design to another browser");
 
+  const leadContext = await newContext({ reducedMotion:"reduce" });
+  const leadPage = await ready(await leadContext.newPage());
+  await leadPage.getByRole("button", { name:/Step \d+ of .*Color lead/ }).click();
+  assert.equal(await leadPage.locator("#tab-cards").getAttribute("aria-selected"), "true");
+  const leadLook = () => leadPage.evaluate(() => ["h3", ".divider", ".download-btn"].map(s => {
+    const style = getComputedStyle(document.querySelector(`.model-content ${s}`));
+    return style.color + style.backgroundImage + style.backgroundColor;
+  }).join("|"));
+  await leadPage.locator('#colorGrid [data-id="colorLeads.mauve"]').click();
+  const mauve = await leadLook();
+  await leadPage.locator('#colorGrid [data-id="colorLeads.dual-gold-green"]').click();
+  const goldGreen = await leadLook();
+  assert.notEqual(mauve.split("|")[0], goldGreen.split("|")[0], "heading color follows the lead");
+  assert.notEqual(mauve.split("|")[1], goldGreen.split("|")[1], "rule follows the lead");
+  assert.notEqual(mauve.split("|")[2], goldGreen.split("|")[2], "button follows the lead");
+  await leadContext.close();
+  ok("choosing a color lead visibly changes the preview it opens on");
+
   assert.deepEqual(errors, []);
   await secondContext.close();
   await firstContext.close();
