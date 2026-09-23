@@ -800,10 +800,9 @@ label.field textarea { min-height: 110px; resize: vertical; }
   border: 1px solid rgba(0, 19, 63, 0.08);
 }
 .option .swatch-texture {
-  height: 32px;
+  height: 44px;
   background-color: var(--light);
 }
-.option .swatch-texture.is-texture-dot-grid { background-size: 8px 8px; }
 .preset-swatch {
   display: grid;
   grid-template-columns: 1fr 1fr;

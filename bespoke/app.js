@@ -43,7 +43,7 @@
     { id: "brief", label: "Describe the feel", view: "title", phase: "design" },
     { id: "preset", label: "Starting point", view: "title", phase: "design" },
     { id: "color", label: "Color lead", view: "cards", phase: "design" },
-    { id: "surface", label: "Sidebar & background", view: "title", phase: "design" },
+    { id: "surface", label: "Sidebar & background", view: "cards", phase: "design" },
     { id: "layouts", label: "Title & dividers", view: "title", phase: "design" },
     { id: "cards", label: "Cards", view: "cards", phase: "design" },
     { id: "fonts", label: "Fonts", view: "cards", phase: "design" },
@@ -968,7 +968,7 @@
   function renderSurface(panel) {
     panel.innerHTML = `
       <h1>Sidebar &amp; background</h1>
-      <p class="panel-lead">The chapter sidebar tone and the slide background. Dark Royal flips the whole lesson to a dark theme.</p>
+      <p class="panel-lead">The chapter sidebar tone and the background behind content slides. The preview opens on a content slide because the title slide covers the background. The patterns are subtle by design and show more on a projector. Dark Royal flips the whole lesson to a dark theme.</p>
       <p class="group-label" id="sidebarLabel">Sidebar</p>
       <div class="option-grid" id="sidebarGrid" role="group" aria-labelledby="sidebarLabel"></div>
       <p class="group-label" id="textureLabel">Background</p>
@@ -1600,6 +1600,17 @@
     }
 
     return chunks.filter(Boolean).join("\n\n");
+  }
+
+  /** Texture tiles draw each option's own library CSS, so a tile shows the real pattern. */
+  function injectTextureSwatches() {
+    const section = (state.themeOptions?.sections || []).find((s) => (s.family || s.id) === "backgroundTextures");
+    const style = document.createElement("style");
+    style.id = "bespoke-texture-swatches";
+    style.textContent = (section?.options || [])
+      .map((o) => String(o.css || "").replace(/\.main\b/g, `.option .swatch-texture.is-texture-${o.slug}`))
+      .join("\n");
+    document.head.appendChild(style);
   }
 
   /**
@@ -2840,6 +2851,7 @@
     state.meta = await metaRes.json();
     state.library = await libRes.json();
     state.themeOptions = await themeRes.json();
+    injectTextureSwatches();
     await loadHandoffConfig();
     const startup = await openShareLink();
     try {
