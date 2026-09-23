@@ -161,8 +161,8 @@
 /* --- gold --- */
 /*
    .slide h2 { color: var(--muted-gold); }
-     .download-btn { background: var(--muted-gold); }
-     .download-btn:hover { background: #8a6d04; }
+     .download-btn { background: var(--muted-gold); color: var(--royal); }
+     .download-btn:hover { background: var(--gold); }
      .chapter-item.active > .chapter-header { background: rgba(211,178,87,0.2); }
      .divider { background: linear-gradient(90deg, var(--gold), var(--primary)); }
      .slide-section { background: linear-gradient(135deg, var(--muted-gold), var(--dark)); }
@@ -171,7 +171,7 @@
 /* --- green --- */
 /*
    .slide h2 { color: var(--primary); }
-     .download-btn { background: var(--accent); }
+     .download-btn { background: var(--accent); color: var(--royal); }
      .chapter-item.active > .chapter-header { background: rgba(55,181,80,0.2); }
      .sidebar .sidebar-title { color: var(--accent); }
      .divider { background: linear-gradient(90deg, var(--accent), var(--gold)); }
@@ -201,7 +201,7 @@
 /*
    .slide h2 { color: var(--muted-gold); }
      .slide h3 { color: var(--primary); }
-     .download-btn { background: var(--accent); }
+     .download-btn { background: var(--accent); color: var(--royal); }
      .divider { background: linear-gradient(90deg, var(--gold), var(--accent)); }
      .slide-section { background: linear-gradient(135deg, var(--gold), var(--accent)); }
 */
@@ -219,7 +219,7 @@
 /*
    .slide h2 { color: var(--primary); }
      .slide h3 { color: var(--primary); }
-     .download-btn { background: var(--accent); }
+     .download-btn { background: var(--accent); color: var(--royal); }
      .divider { background: linear-gradient(90deg, var(--primary), var(--accent)); }
      .slide-section { background: linear-gradient(135deg, var(--primary), var(--accent)); }
 */
@@ -1233,15 +1233,14 @@
 
 /* --- 2. split-hero --- */
 /*
-   .slide-title { flex-direction: row; align-items: stretch; text-align: left; background: none; }
-   .slide-title::before { content: ''; width: 45%; background: var(--royal); display: block; }
-   .slide-title::after { content: ''; flex: 1; background: linear-gradient(135deg, var(--primary), var(--dark)); display: block; }
-   .slide-title h1, .slide-title .subtitle, .slide-title .logo, .slide-title .copyright { position: absolute; left: 3rem; z-index: 1; }
-   .slide-title .logo { top: 2rem; }
-   .slide-title h1 { top: 50%; transform: translateY(-50%); font-size: 3.5rem; }
-   .slide-title .subtitle { top: calc(50% + 3rem); }
-   .slide-title .copyright { bottom: 2rem; }
-   .slide-title .divider { position: absolute; left: 3rem; top: calc(50% + 1.5rem); z-index: 1; }
+   .slide-title { flex-direction: column; align-items: flex-start; justify-content: center; text-align: left; background: none; position: relative; z-index: 1; }
+   .slide-title::before { content: ''; position: absolute; left: 0; top: 0; bottom: 0; width: 40%; background: var(--royal); z-index: -1; flex: none; display: block; }
+   .slide-title::after { content: ''; position: absolute; left: 40%; top: 0; bottom: 0; right: 0; background: linear-gradient(135deg, var(--primary), var(--dark)); z-index: -1; flex: none; display: block; }
+   .slide-title .logo { max-width: 220px; margin: 0 0 1.5rem; }
+   .slide-title h1 { max-width: 90%; margin: 0; }
+   .slide-title .divider { margin: 1.5rem 0; }
+   .slide-title .subtitle { max-width: 90%; margin-bottom: 0; }
+   .slide-title .copyright { position: absolute; bottom: 2rem; left: 5rem; margin: 0; }
 */
 
 /* --- 3. full-bleed --- */
@@ -1272,7 +1271,7 @@
 /*
    .slide-title { position: relative; overflow: hidden; background: var(--dark); }
    .slide-title::after { content: ''; position: absolute; top: 0; right: 0; width: 60%; height: 100%; background: var(--primary); clip-path: polygon(20% 0, 100% 0, 100% 100%, 0% 100%); }
-   .slide-title h1, .slide-title .subtitle, .slide-title .logo { position: relative; z-index: 1; }
+   .slide-title h1, .slide-title .divider, .slide-title .subtitle, .slide-title .logo, .slide-title .copyright { position: relative; z-index: 1; }
 */
 
 /* --- 7. framed-center --- */

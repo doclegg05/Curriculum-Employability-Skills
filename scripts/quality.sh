@@ -52,6 +52,8 @@ fi
 if [ -d node_modules/playwright ] && [ -d node_modules/axe-core ]; then
   echo "==> bespoke browser workflow"
   node scripts/test-bespoke-browser.mjs
+  echo "==> theme library title-slide layouts"
+  node scripts/check-title-layouts.mjs
   if [ -f scripts/test-bespoke-design.mjs ]; then
     echo "==> bespoke generated-design browser checks"
     node scripts/test-bespoke-design.mjs

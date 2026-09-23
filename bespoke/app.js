@@ -1510,10 +1510,6 @@
     return `<div class="ms-title">${escapeHtml(title)}</div><ol class="ms-chapters">${rows}</ol><div class="ms-counter">Slide ${chrome.slide} of 30</div>`;
   }
 
-  function lessonChipText() {
-    const team = state.teamName.trim();
-    return team || "Round 2 · SPOKES lesson";
-  }
 
   const PREVIEW_CHAPTER = "3";
   const PREVIEW_CHAPTER_NUM = "P1";
@@ -1606,8 +1602,17 @@
     return chunks.filter(Boolean).join("\n\n");
   }
 
+  /**
+   * Library snippets are written for a full-size lesson (px and rem). Express each
+   * length as a multiple of the frame's --pv-px / --pv-rem so the preview is that
+   * lesson scaled down, not a full-size layout squeezed into a small box.
+   */
+  function scaleLibraryUnits(css) {
+    return css.replace(/(^|[^\w.#-])(-?\d*\.?\d+)(px|rem)\b/g, (match, lead, value, unit) => `${lead}calc(${value} * var(--pv-${unit}))`);
+  }
+
   function injectPreviewTheme() {
-    ensureInjectStyle().textContent = buildInjectedThemeCss();
+    ensureInjectStyle().textContent = scaleLibraryUnits(buildInjectedThemeCss());
   }
 
   function updatePreview() {
@@ -1722,15 +1727,15 @@
     ui.pulseTimer = setTimeout(() => frame.classList.remove("is-updated"), 260);
   }
 
+  /** Same pieces, in the same order, as template.html's title slide, so library title CSS lands as it will in the lesson. */
   function renderTitleSlide(title, subtitle) {
-    const chip = `<span class="slide-chip">${escapeHtml(lessonChipText())}</span>`;
     return `
       <div class="slide-title" data-preview="title">
-        ${chip}
+        <img class="logo" src="../SPOKES-Logo.png" alt="" width="280" height="186">
         <h1>${escapeHtml(title)}</h1>
         <div class="divider" aria-hidden="true"></div>
         <p class="subtitle">${escapeHtml(subtitle)}</p>
-        <span class="copyright" aria-hidden="true">SPOKES · Skills for Life</span>
+        <p class="copyright" aria-hidden="true">Copyright © 2026 WV Adult Basic Education</p>
       </div>`;
   }
 
@@ -1764,7 +1769,7 @@
         <div class="cards-grid">${cards}</div>
         <div class="content-foot">
           <p class="takeaway"><strong>Takeaway:</strong> ${escapeHtml(String(reality).replace(/^reality:\s*/i, ""))}</p>
-          <span class="download-btn" aria-hidden="true" title="Handout button"><svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="M12 4v11M7 10l5 5 5-5M5 20h14"/></svg></span>
+          <span class="download-btn" aria-hidden="true">Download handout</span>
         </div>
       </div>`;
   }

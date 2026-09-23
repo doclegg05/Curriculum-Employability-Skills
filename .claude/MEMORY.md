@@ -36,7 +36,8 @@
 - [x] Project `CLAUDE.md` reworded: 09-22 review is earlier evidence, not open release blockers.
 - [ ] Britt-only approval is not enforced: `main` requires `quality` check but `required_pull_request_reviews` is null. Settings change is Britt's call.
 - [ ] BeSpoke library: `gradient-fill` cards and `split-panel` dividers blocked pending contrast/watermark repairs.
-- [ ] Library contrast: the `gold` and `dual-gold-green` leads' `.download-btn` is white text on #ad8806 / #37b550, below AA in real lessons (found 2026-09-23, PR #27). The template default (green accent) has the same problem. Fix in `theme-options.json`, not per lesson.
+- [x] Library download-button contrast fixed 2026-09-23 (PR #28): royal ink on the green and gold leads; the gold hover now lightens to `--gold`; the template default is white on `--primary`; the template hover no longer forces green. Guarded by `scripts/test_bespoke_theme_contrast.py` (every lead, rest + hover, ≥4.5:1).
+- [ ] Released lessons keep their own button CSS (white on `--accent`, hover forced to accent), so the library fix does not reach them. Affected at minimum: Employee Accountability, Problem Solving, Communicating with the Public, and Time Management's default. Britt's call whether to patch released decks.
 - [ ] Expected WARNs to eventually fix: interview-skills CMP-01/02 + NAV-11/12 (qa-* classes), employee-accountability NAV-11 (showTab signature); EA announcer omits "Slide X of Y" (NAV-04 divergence).
 - [ ] Dashboard (kept original design 2026-08-05; **do not re-propose unifying card art** — Britt values the six distinct images). Still open: (a) grouping/wayfinding for 18 modules needs a `group`/`track` registry field — Britt's product call; (b) ragged 4+2 last row above 1501px.
 - [ ] Six rejected `Dashboard-*.html` prototypes + 3 fonts only they use (archivo, public-sans, schibsted-grotesk) still committed. Britt asked once, no answer — ask again before deleting.
