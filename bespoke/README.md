@@ -19,7 +19,10 @@ Read or print the [team meeting guide](team-guide.html).
    Teams channel. It identifies the team and opens the latest shared design when
    there is no unsaved browser draft to protect.
 2. Choose one spokesperson to share the browser window and operate the design
-   during the call. Compare themes, colors, fonts, titles, dividers, and cards.
+   during the call. Answer the four **Describe the feel** questions, then start
+   from the design BeSpoke makes from those answers or from an existing lesson’s
+   look. Fine-tune colors, fonts, titles, dividers, and cards; pointing at an
+   option previews it before anyone chooses it.
 3. BeSpoke saves the shared design automatically on each step change and after
    30 seconds without a change. **Save shared design** saves immediately. Closing
    the page with unshared changes asks for confirmation. Opened backups and
@@ -102,9 +105,12 @@ final browser inspection, content review, and teacher acceptance remain required
 | `bespoke/catalog.json` | Six upcoming lessons, presets, font pairings, and preview cues |
 | `SPOKES Builder/theme-library.css` | Generated agent-facing library |
 | `bespoke/selection.schema.json` | Generated payload schema with the six allowed lesson IDs and theme values |
+| `bespoke/brief.js` | Design brief: turns the four answers into a starting design drawn only from the library, and measures overlap with the six existing looks |
 | `SPOKES Builder/content-intake-template.md` | Canonical content intake and instructor ownership for a later authorized build |
 
-No arbitrary palette, font, or CSS entry is exposed to instructors. Imported
+The brief answers stay in the browser draft only. The shared selection records the
+resulting library choices, and `presetId` records the existing look the design is
+closest to. No arbitrary palette, font, or CSS entry is exposed to instructors. Imported
 backups and service writes validate choices. Known defective `gradient-fill` cards
 and `split-panel` dividers remain blocked pending remediation. Other combinations
 still require computed contrast and visual review in the finished lesson.
@@ -118,6 +124,7 @@ component placement belong to the separately authorized lesson build.
 
 ```sh
 python3 -m unittest discover -s scripts -p 'test_bespoke*.py' -v
+node --test scripts/test-bespoke-brief.mjs
 node --test scripts/test-bespoke-handoff.mjs
 node scripts/test-bespoke-browser.mjs
 bash scripts/quality.sh

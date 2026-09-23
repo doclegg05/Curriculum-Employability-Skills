@@ -38,20 +38,28 @@
 
   /** `view` = the preview the step lands on; a manual tab pick sticks until the step changes. */
   const STEPS = [
-    { id: "welcome", label: "How to use Bespoke", view: "title" },
-    { id: "team", label: "Lesson & team", view: "title" },
-    { id: "preset", label: "Theme preset", view: "title" },
-    { id: "color", label: "Color lead", view: "title" },
-    { id: "surface", label: "Sidebar & background", view: "title" },
-    { id: "layouts", label: "Title & dividers", view: "title" },
-    { id: "cards", label: "Cards", view: "cards" },
-    { id: "fonts", label: "Fonts", view: "cards" },
-    { id: "content", label: "Try sample text", view: "cards" },
-    { id: "review", label: "Review & submit", view: "title" },
-    { id: "return", label: "Save and come back", view: "title" }
+    { id: "welcome", label: "How to use Bespoke", view: "title", phase: "start" },
+    { id: "team", label: "Lesson & team", view: "title", phase: "start" },
+    { id: "brief", label: "Describe the feel", view: "title", phase: "design" },
+    { id: "preset", label: "Starting point", view: "title", phase: "design" },
+    { id: "color", label: "Color lead", view: "title", phase: "design" },
+    { id: "surface", label: "Sidebar & background", view: "title", phase: "design" },
+    { id: "layouts", label: "Title & dividers", view: "title", phase: "design" },
+    { id: "cards", label: "Cards", view: "cards", phase: "design" },
+    { id: "fonts", label: "Fonts", view: "cards", phase: "design" },
+    { id: "content", label: "Try sample text", view: "cards", phase: "finish" },
+    { id: "review", label: "Review & submit", view: "title", phase: "finish" }
+  ];
+  const PHASES = [
+    ["start", "Get started"],
+    ["design", "Shape the look"],
+    ["finish", "Check and send"]
   ];
   /** Step ids from before the instruction steps, so an older saved draft still opens the right screen. */
   const LEGACY_STEP_IDS = ["team", "preset", "color", "surface", "layouts", "cards", "fonts", "content", "review"];
+  /** Retired step ids and the step that now holds their content. */
+  const STEP_ALIASES = { return: "review" };
+  const Brief = window.BespokeBrief;
 
   const VIEW_NAMES = { title: "Title slide", divider: "Section divider", cards: "Content slide" };
 
@@ -78,6 +86,10 @@
     sampleBullets: "1. Name one money goal for this month\n2. List your fixed costs\n3. Find one place to trim spending",
     sampleMyth: "Myth: Budgets are only for people in debt.\nReality: A budget is a plan that works for any income.",
     unspoken: "",
+    /** Design brief answers. Browser draft only; the shared payload keeps the resulting choices. */
+    ...Brief.DEFAULT_BRIEF,
+    /** "brief" once the team used its generated design, "preset" once it picked an existing look. */
+    startingPoint: "",
     /** Administrator-provisioned team access code. Saved on this computer only. */
     editCode: "",
     previewView: "title"
@@ -88,6 +100,10 @@
     renderedStep: null,
     previewPinned: false,
     lastChange: null,
+    /** Label of an option being previewed on hover/focus; never saved. */
+    tryingOn: null,
+    /** Preview view last drawn, so the slide fades only when the view changes. */
+    renderedView: null,
     pulseTimer: null,
     restoredFromLink: false,
     restoreNote: "",
@@ -143,8 +159,9 @@
   }
 
   function restoreStep(saved) {
-    if (saved.stepId && STEPS.some((step) => step.id === saved.stepId)) {
-      state.step = stepIndex(saved.stepId);
+    const stepId = STEP_ALIASES[saved.stepId] || saved.stepId;
+    if (stepId && STEPS.some((step) => step.id === stepId)) {
+      state.step = stepIndex(stepId);
       return;
     }
     if (Number.isInteger(saved.step) && LEGACY_STEP_IDS[saved.step]) {
@@ -425,6 +442,7 @@
     if (!preset) return;
     const changed = Object.entries(preset.defaults).filter(([k, v]) => state[k] !== v).length;
     state.presetId = presetId;
+    state.startingPoint = "preset";
     Object.assign(state, preset.defaults);
     if (!state.varyCardsByChapter) state.chapterCards = {};
     noteChange(
@@ -483,25 +501,47 @@
     });
   }
 
+  function stepLabel(step) {
+    return step.id === "review" && !isLeadSession() ? "Review" : step.label;
+  }
+
+  /** Steps grouped by phase; the current phase is marked so the team always knows where it is. */
   function buildStepper() {
     const list = byId("stepList");
     list.innerHTML = "";
-    STEPS.forEach((step, index) => {
-      const li = document.createElement("li");
-      const btn = document.createElement("button");
-      btn.type = "button";
-      const label = step.id === "review" && !isLeadSession() ? "Review" : step.label;
-      btn.innerHTML = `<span class="step-num" aria-hidden="true"><span>${String(index + 1).padStart(2, "0")}</span></span><span>${label}</span>`;
-      btn.setAttribute("aria-label", `Step ${index + 1} of ${STEPS.length}: ${label}`);
-      if (index === state.step) btn.setAttribute("aria-current", "step");
-      if (index < state.step) btn.classList.add("is-done");
-      btn.addEventListener("click", () => {
-        state.step = index;
-        render();
+    const current = STEPS[state.step];
+    PHASES.forEach(([phaseId, phaseLabel]) => {
+      const group = document.createElement("li");
+      group.className = "step-phase" + (current.phase === phaseId ? " is-current" : "");
+      const heading = document.createElement("span");
+      heading.className = "step-phase-label";
+      heading.id = `phase-${phaseId}`;
+      heading.textContent = phaseLabel;
+      const steps = document.createElement("ol");
+      steps.setAttribute("aria-labelledby", heading.id);
+      STEPS.forEach((step, index) => {
+        if (step.phase !== phaseId) return;
+        const li = document.createElement("li");
+        const btn = document.createElement("button");
+        btn.type = "button";
+        const label = stepLabel(step);
+        btn.innerHTML = `<span class="step-num" aria-hidden="true">${index + 1}</span><span>${label}</span>`;
+        btn.setAttribute("aria-label", `Step ${index + 1} of ${STEPS.length}: ${label}`);
+        btn.title = label;
+        if (index === state.step) btn.setAttribute("aria-current", "step");
+        if (index < state.step) btn.classList.add("is-done");
+        btn.addEventListener("click", () => {
+          state.step = index;
+          render();
+        });
+        li.appendChild(btn);
+        steps.appendChild(li);
       });
-      li.appendChild(btn);
-      list.appendChild(li);
+      group.append(heading, steps);
+      list.appendChild(group);
     });
+    const meter = byId("stepProgress");
+    if (meter) meter.style.setProperty("--progress", `${(state.step / (STEPS.length - 1)) * 100}%`);
   }
 
   /**
@@ -523,7 +563,7 @@
     return frag;
   }
 
-  function optionButton({ id, label, detail, usedBy, swatch, swatchClass, pressed, badge, onSelect, blocked, reason }) {
+  function optionButton({ id, label, detail, usedBy, swatch, swatchClass, pressed, badge, fits, tryOn, onSelect, blocked, reason }) {
     const btn = document.createElement("button");
     btn.type = "button";
     btn.className = "option" + (blocked ? " is-blocked" : "");
@@ -549,11 +589,22 @@
       small.textContent = detail;
       btn.appendChild(small);
     }
-    if (badge) {
-      const tag = document.createElement("span");
-      tag.className = "new-tag";
-      tag.textContent = badge;
-      btn.appendChild(tag);
+    if (fits || badge) {
+      const tags = document.createElement("span");
+      tags.className = "option-tags";
+      if (fits) {
+        const tag = document.createElement("span");
+        tag.className = "fit-tag";
+        tag.textContent = "Fits your brief";
+        tags.appendChild(tag);
+      }
+      if (badge) {
+        const tag = document.createElement("span");
+        tag.className = "new-tag";
+        tag.textContent = badge;
+        tags.appendChild(tag);
+      }
+      btn.appendChild(tags);
     }
     if (usedBy && usedBy.length) {
       const tag = document.createElement("span");
@@ -567,21 +618,76 @@
       tag.textContent = reason;
       btn.appendChild(tag);
     }
-    if (!blocked) btn.addEventListener("click", onSelect);
+    if (!blocked) {
+      btn.addEventListener("click", onSelect);
+      if (tryOn && !pressed) {
+        const start = () => tryOnPreview(tryOn.field, tryOn.value, tryOn.view, label);
+        btn.addEventListener("pointerenter", start);
+        btn.addEventListener("focus", start);
+        btn.addEventListener("pointerleave", endTryOn);
+        btn.addEventListener("blur", endTryOn);
+      }
+    }
     return btn;
   }
 
-  function renderLibraryOptions(grid, family, selectedSlug, onPick, { swatchFor, swatchClassFor, showNew } = {}) {
+  function briefContext() {
+    const lesson = findMeta(state.meta.lessons, state.lessonId);
+    return {
+      meta: state.meta,
+      library: state.library,
+      lessonId: state.lessonId,
+      lessonTitle: lesson ? lesson.title : state.lessonId,
+      teamName: state.teamName
+    };
+  }
+
+  function briefAnswers() {
+    return Object.fromEntries(Object.keys(Brief.DEFAULT_BRIEF).map((key) => [key, state[key]]));
+  }
+
+  /** Slugs the brief ranks highest in one family; empty until the feel question is answered. */
+  function briefFits(field, family) {
+    return new Set(Brief.topPicks(briefContext(), briefAnswers(), field, family));
+  }
+
+  /**
+   * Show an option on the Spokes Model without choosing it. State is swapped
+   * and restored inside one synchronous call, so no save or autosave can see it.
+   */
+  function tryOnPreview(field, value, view, label) {
+    tryOnDesign({ [field]: value }, view, label);
+  }
+
+  function tryOnDesign(values, view, label) {
+    const previous = { ...Object.fromEntries(Object.keys(values).map((key) => [key, state[key]])), previewView: state.previewView };
+    Object.assign(state, values, { previewView: view });
+    ui.tryingOn = label;
+    try { updatePreview(); }
+    finally {
+      Object.assign(state, previous);
+      ui.tryingOn = null;
+    }
+  }
+
+  function endTryOn() {
+    updatePreview();
+  }
+
+  function renderLibraryOptions(grid, family, selectedSlug, onPick, { field, view, swatchFor, swatchClassFor, showNew } = {}) {
+    const fits = field ? briefFits(field, family) : new Set();
     familyOptions(family).forEach((opt) => {
       grid.appendChild(
         optionButton({
           id: opt.id,
           label: opt.label,
-          detail: opt.description || null,
+          detail: opt.description || Brief.moodWords(family, opt.slug) || null,
           swatch: swatchFor ? swatchFor(opt) : null,
           swatchClass: swatchClassFor ? swatchClassFor(opt) : null,
           pressed: selectedSlug === opt.slug,
           badge: showNew && opt.legacy === false ? "New" : null,
+          fits: fits.has(opt.slug),
+          tryOn: field ? { field, value: opt.slug, view: view || state.previewView } : null,
           blocked: Boolean(opt.blocked),
           reason: opt.reason || "",
           onSelect: () => onPick(opt)
@@ -663,17 +769,147 @@
     bind("spokespersonEmail", "spokespersonEmail");
   }
 
+  function renderBrief(panel) {
+    panel.innerHTML = `
+      <h1>Describe the feel</h1>
+      <p class="panel-lead">Four quick questions. Bespoke uses the answers, your lesson topic and your team name to put together a starting design that no other lesson has.</p>
+      <div id="briefQuestions" class="brief-questions"></div>
+    `;
+    const host = byId("briefQuestions");
+    Brief.QUESTIONS.forEach((q, qi) => {
+      const block = document.createElement("section");
+      block.className = "brief-question" + (qi === 0 ? " is-primary" : "");
+      block.setAttribute("aria-labelledby", `${q.id}Label`);
+      block.innerHTML = `<p class="group-label" id="${q.id}Label">${escapeHtml(q.prompt)}</p>`;
+      const grid = document.createElement("div");
+      grid.className = qi === 0 ? "option-grid brief-feel-grid" : "chip-row";
+      grid.setAttribute("role", "group");
+      grid.setAttribute("aria-labelledby", `${q.id}Label`);
+      q.options.forEach((opt) => {
+        const pressed = state[q.id] === opt.id;
+        const choose = () => {
+          state[q.id] = opt.id;
+          state.briefVariant = 0;
+          saveDraft();
+          render();
+        };
+        if (qi === 0) {
+          grid.appendChild(optionButton({ id: opt.id, label: opt.label, detail: opt.detail, pressed, onSelect: choose }));
+          return;
+        }
+        const chip = document.createElement("button");
+        chip.type = "button";
+        chip.className = "chip";
+        chip.setAttribute("aria-pressed", pressed ? "true" : "false");
+        chip.textContent = opt.label;
+        chip.addEventListener("click", choose);
+        grid.appendChild(chip);
+      });
+      block.appendChild(grid);
+      host.appendChild(block);
+    });
+  }
+
+  /** The brief's suggested design, or null until the feel question is answered. */
+  function currentSuggestion() {
+    return Brief.suggestDesign(briefContext(), briefAnswers());
+  }
+
+  function designMatches(picks) {
+    return Brief.FIELDS.every(([field]) => state[field] === picks[field]);
+  }
+
+  function applySuggestion(suggestion) {
+    if (!isLeadSession() || !suggestion) return;
+    Object.assign(state, suggestion.picks);
+    state.presetId = suggestion.basePreset;
+    state.startingPoint = "brief";
+    if (!state.varyCardsByChapter) state.chapterCards = {};
+    const feel = Brief.answer("briefFeel", state.briefFeel);
+    noteChange("Made from your brief", `${feel ? feel.label : "Your answers"} — everything stays editable.`, true);
+  }
+
+  function suggestionSwatch(picks) {
+    return presetSwatch({ defaults: { colorLead: picks.colorLead, sidebarColor: picks.sidebarColor } });
+  }
+
+  function renderSuggestionCard(host) {
+    const suggestion = currentSuggestion();
+    const card = document.createElement("section");
+    card.className = "brief-card";
+    card.setAttribute("aria-labelledby", "briefCardTitle");
+    if (!suggestion) {
+      card.classList.add("is-empty");
+      card.innerHTML = `
+        <h2 id="briefCardTitle">Get a design made for your team</h2>
+        <p>Answer the four questions in <strong>Describe the feel</strong> and Bespoke builds a starting design from them.</p>
+        <button type="button" class="btn btn-secondary" id="btnGoBrief">Describe the feel</button>`;
+      host.appendChild(card);
+      byId("btnGoBrief").addEventListener("click", () => { state.step = stepIndex("brief"); render(); });
+      return;
+    }
+    const feel = Brief.answer("briefFeel", state.briefFeel);
+    const inUse = state.startingPoint === "brief" && designMatches(suggestion.picks);
+    const near = suggestion.closest;
+    card.innerHTML = `
+      <div class="brief-card-head">
+        <div>
+          <h2 id="briefCardTitle">Made for your team</h2>
+          <p>Built for a <strong>${escapeHtml(feel.label.toLowerCase())}</strong> lesson. Shares ${near.shared} of ${near.total} choices with ${escapeHtml(near.lesson)}, its closest existing lesson.</p>
+        </div>
+      </div>
+      <div class="brief-card-actions">
+        ${inUse
+          ? `<p class="brief-in-use"><span class="option-check" aria-hidden="true"></span>In use. Fine-tune it on the next steps.</p>
+             <button type="button" class="btn btn-secondary" id="btnBriefAnother">Try another version</button>`
+          : `<button type="button" class="btn btn-primary" id="btnBriefUse">Use this design</button>
+             <button type="button" class="btn btn-ghost" id="btnBriefAnother">Show another version</button>`}
+      </div>
+      <ul class="brief-picks" id="briefPicks"></ul>`;
+    card.querySelector(".brief-card-head").prepend(suggestionSwatch(suggestion.picks));
+    const list = card.querySelector("#briefPicks");
+    suggestion.explained.forEach((item) => {
+      const li = document.createElement("li");
+      li.innerHTML = `<span>${escapeHtml(item.name)}</span><strong>${escapeHtml(item.label)}</strong>${item.why ? `<small>${escapeHtml(item.why)}</small>` : ""}`;
+      list.appendChild(li);
+    });
+    host.appendChild(card);
+    const useBtn = byId("btnBriefUse");
+    if (useBtn) {
+      const start = () => tryOnDesign(suggestion.picks, state.previewView, "the design made for your team");
+      useBtn.addEventListener("pointerenter", start);
+      useBtn.addEventListener("focus", start);
+      useBtn.addEventListener("pointerleave", endTryOn);
+      useBtn.addEventListener("blur", endTryOn);
+    }
+    byId("btnBriefUse")?.addEventListener("click", () => {
+      applySuggestion(suggestion);
+      saveDraft();
+      render();
+    });
+    byId("btnBriefAnother")?.addEventListener("click", () => {
+      state.briefVariant = (state.briefVariant || 0) + 1;
+      // Already using the brief design: move straight to the next version so the preview changes.
+      if (inUse) applySuggestion(currentSuggestion());
+      saveDraft();
+      render();
+    });
+  }
+
   function renderPreset(panel) {
     panel.innerHTML = `
-      <h1>Theme preset</h1>
+      <h1>Starting point</h1>
       <p class="panel-lead">${isLeadSession()
-        ? "Pick the closest starting point. Every choice stays editable on the next steps — most teams stop here."
+        ? "Start from the design made for your team, or from an existing lesson’s look. Every choice stays editable on the next steps."
         : "This is the starting point in the shared design."}</p>
-      <div class="preset-grid" id="presetGrid" role="group" aria-label="Theme presets"></div>
+      <div id="briefCardHost"></div>
+      <p class="group-label" id="presetLabel">Or start from an existing lesson’s look</p>
+      <div class="preset-grid" id="presetGrid" role="group" aria-labelledby="presetLabel"></div>
     `;
+    renderSuggestionCard(byId("briefCardHost"));
     const grid = byId("presetGrid");
     state.meta.presets.forEach((preset) => {
-      const pressed = preset.id === state.presetId;
+      const pressed = preset.id === state.presetId && state.startingPoint !== "brief";
       const btn = document.createElement("button");
       btn.type = "button";
       btn.className = "preset";
@@ -685,7 +921,10 @@
       strong.textContent = preset.label;
       const small = document.createElement("small");
       small.textContent = preset.blurb;
-      btn.append(strong, small);
+      const lesson = document.createElement("span");
+      lesson.className = "used-tag";
+      lesson.textContent = `Same look as ${Brief.PRESET_LESSONS[preset.id] || "an existing lesson"}`;
+      btn.append(strong, small, lesson);
       btn.addEventListener("click", () => {
         applyPreset(preset.id);
         saveDraft();
@@ -703,13 +942,17 @@
     `;
     const grid = byId("colorGrid");
     const cues = state.meta.colorLeadPreview || {};
+    const fits = briefFits("colorLead", "colorLeads");
     familyOptions("colorLeads").forEach((opt) => {
       const cue = cues[opt.slug] || {};
       grid.appendChild(
         optionButton({
           id: opt.id,
           label: opt.label,
+          detail: Brief.moodWords("colorLeads", opt.slug) || null,
           usedBy: cue.usedBy,
+          fits: fits.has(opt.slug),
+          tryOn: { field: "colorLead", value: opt.slug, view: state.previewView },
           swatch: `linear-gradient(135deg, ${cue.gradientFrom || "var(--primary)"}, ${cue.gradientTo || "var(--dark)"})`,
           pressed: state.colorLead === opt.slug,
           blocked: Boolean(opt.blocked),
@@ -740,13 +983,13 @@
       noteChange("Sidebar", opt.label);
       saveDraft();
       render();
-    }, { swatchFor: (opt) => sidePreview[opt.slug] || "var(--dark)" });
+    }, { field: "sidebarColor", view: "title", swatchFor: (opt) => sidePreview[opt.slug] || "var(--dark)" });
     renderLibraryOptions(byId("textureGrid"), "backgroundTextures", state.backgroundTexture, (opt) => {
       state.backgroundTexture = opt.slug;
       noteChange("Background", opt.label);
       saveDraft();
       render();
-    }, { swatchClassFor: (opt) => `swatch-texture is-texture-${opt.slug}` });
+    }, { field: "backgroundTexture", view: "title", swatchClassFor: (opt) => `swatch-texture is-texture-${opt.slug}` });
   }
 
   function renderLayouts(panel) {
@@ -764,14 +1007,14 @@
       noteChange("Title slide", opt.label);
       saveDraft();
       render();
-    }, { showNew: true });
+    }, { field: "titleSlide", view: "title", showNew: true });
     renderLibraryOptions(byId("dividerGrid"), "dividers", state.dividerStyle, (opt) => {
       state.dividerStyle = opt.slug;
       showView("divider");
       noteChange("Divider", opt.label);
       saveDraft();
       render();
-    }, { showNew: true });
+    }, { field: "dividerStyle", view: "divider", showNew: true });
   }
 
   function renderCards(panel) {
@@ -795,7 +1038,7 @@
       noteChange("Card style", opt.label);
       saveDraft();
       render();
-    }, { showNew: true });
+    }, { field: "cardStyle", view: "cards", showNew: true });
 
     byId("varyCards").addEventListener("change", (e) => {
       state.varyCardsByChapter = e.target.checked;
@@ -848,6 +1091,7 @@
       <div class="option-grid" id="fontGrid" role="group" aria-label="Font pairings"></div>
     `;
     const grid = byId("fontGrid");
+    const fits = briefFits("fontPairing", "fonts");
     state.meta.fontPairings.forEach((item) => {
       grid.appendChild(
         optionButton({
@@ -855,6 +1099,8 @@
           label: item.label,
           detail: item.mood,
           pressed: state.fontPairing === item.id,
+          fits: fits.has(item.id),
+          tryOn: { field: "fontPairing", value: item.id, view: state.previewView },
           onSelect: () => {
             state.fontPairing = item.id;
             noteChange("Fonts", item.label);
@@ -912,6 +1158,7 @@
       <p class="panel-lead">${lead
         ? "Check your choices, then choose Send to Britt. Britt reviews the visual choices. Lesson building starts later, after the content is approved and the work is authorized."
         : "This is a shared snapshot. You can look through every step. It does not update when the lead makes changes."}</p>
+      <div class="review-distinct" id="reviewDistinct"></div>
       ${lead ? `
       <section class="share-card" aria-labelledby="shareTitle">
         <h2 id="shareTitle">Share this design</h2>
@@ -935,6 +1182,7 @@
           <li>Britt reviews the visual choices. Lesson building starts later, after content approval and authorization.</li>
           <li>Your team checks that the approved look appears in the finished lesson.</li>
         </ol>
+        <p class="next-hops-note">Coming back later? Open the same private team link; this browser also remembers the last team. Download backup is always available.</p>
         <p class="next-hops-note">The builder chooses slide pieces for the content. Your card style applies wherever cards appear.</p>
       </section>` : ""}
       <label class="field unspoken-field">Unspoken — something we wish existed in the library
@@ -954,6 +1202,7 @@
         <p>Options load from <code>SPOKES Builder/bespoke-library-catalog.json</code> (UI key <code>{family}.{slug}</code>); the selection payload stores <strong>slugs only</strong>. <code>bespoke-apply-selection.py</code> upserts <code>theme-registry.json</code> with derived Layer 2 fields below. Card styles may vary by WIPPEA chapter (D12); adjacent chapters never share a style (THM-04). A view link (<code>#v=</code>) is a read-only compressed snapshot and is separate from the private team access link. View URLs longer than ${SHARE_URL_MAX} characters are not copied. Visual reference: <a href="../SPOKES%20Builder/library-preview.html" target="_blank" rel="noopener">library preview</a>.</p>
       </details>
     `;
+    renderDistinctSummary(byId("reviewDistinct"));
     const list = byId("summaryList");
     Object.entries(labels).forEach(([k, v]) => {
       const li = document.createElement("li");
@@ -999,6 +1248,25 @@
         if (status) status.textContent = "Could not copy. Download the design file instead.";
       }
     });
+  }
+
+  /** Plain statement of how this design relates to the six existing lessons. */
+  function renderDistinctSummary(host) {
+    if (!host) return;
+    const near = Brief.distinctness(state.meta, state);
+    const feel = Brief.answer("briefFeel", state.briefFeel);
+    const verdict = near.shared === near.total
+      ? `This is the same look as ${near.lesson}. Change a few choices if the team wants its own look.`
+      : `Closest existing lesson: ${near.lesson}, sharing ${near.shared} of ${near.total} choices.`;
+    host.innerHTML = `
+      ${distinctPips(near)}
+      <p><strong>${escapeHtml(verdict)}</strong>${feel ? ` Brief: ${escapeHtml(feel.label.toLowerCase())}.` : ""}</p>`;
+  }
+
+  /** Seven marks, filled for each choice shared with the closest existing lesson. */
+  function distinctPips(near) {
+    const pips = Array.from({ length: near.total }, (_, i) => `<span${i < near.shared ? ' class="is-shared"' : ""}></span>`).join("");
+    return `<span class="distinct-pips" aria-hidden="true">${pips}</span>`;
   }
 
   async function copyLink() {
@@ -1110,18 +1378,6 @@
       <p><a href="./team-guide.html" target="_blank" rel="noopener">Team meeting guide</a></p>`;
   }
 
-  function renderReturn(panel) {
-    panel.innerHTML = `
-      <h1>Save for the next meeting</h1>
-      <p class="panel-lead">Save shared design keeps this team’s latest choices available from its private access.</p>
-      <ol class="guide-list">
-        <li>Choose <strong>Save shared design</strong>.</li>
-        <li>Next time, open the same private team link. This browser also remembers the last team.</li>
-        <li>When the team agrees, choose <strong>Send to Britt</strong>. You do not sign in or pick a folder.</li>
-      </ol>
-      <p>Download backup is always available. A view link is a read-only snapshot and does not update itself.</p>`;
-  }
-
   function renderPanel() {
     const panel = byId("stepPanel");
     const id = STEPS[state.step].id;
@@ -1136,18 +1392,19 @@
       fonts: renderFonts,
       content: renderContent,
       review: renderReview,
-      return: renderReturn
+      brief: renderBrief
     };
     renderers[id](panel);
 
+    const next = STEPS[state.step + 1];
     const nav = document.createElement("div");
     nav.className = "panel-nav";
     nav.innerHTML = `
       <button type="button" class="btn btn-secondary" id="btnBack"${state.step === 0 ? " disabled" : ""}>Back</button>
-      <div style="display:flex;gap:0.5rem;flex-wrap:wrap">
-        ${id === "return" ? "" : `<button type="button" class="btn btn-primary" id="btnNext">Next</button>`}
+      <div class="panel-nav-forward">
+        ${next ? `<button type="button" class="btn btn-primary" id="btnNext">Next<span class="next-label">: ${escapeHtml(stepLabel(next))}</span></button>` : ""}
         ${
-          (id === "review" || id === "return") && isLeadSession()
+          id === "review" && isLeadSession()
             ? `<button type="button" class="btn btn-accent btn-lg" id="btnSubmit">Send to Britt</button>`
             : ""
         }
@@ -1364,6 +1621,10 @@
     const stage = byId("modelStage");
 
     main.className = "model-main";
+    if (ui.renderedView !== state.previewView) {
+      ui.renderedView = state.previewView;
+      main.classList.add("is-entering");
+    }
     if (state.backgroundTexture === "dark-royal") {
       main.classList.add("is-dark");
       main.classList.add("theme-dark");
@@ -1378,6 +1639,7 @@
       .filter(Boolean);
 
     sidebar.innerHTML = renderModelSidebar(title);
+    updateDistinctMeter();
 
     if (state.previewView === "title") {
       stage.innerHTML = renderTitleSlide(title, subtitle);
@@ -1393,6 +1655,18 @@
     });
 
     announcePreview(title);
+  }
+
+  function updateDistinctMeter() {
+    const meter = byId("distinctMeter");
+    if (!meter) return;
+    const near = Brief.distinctness(state.meta, state);
+    const text = near.shared === near.total
+      ? `Same look as ${near.lesson}`
+      : `Closest lesson: ${near.lesson} · ${near.shared} of ${near.total} shared`;
+    meter.innerHTML = `${distinctPips(near)}<span>${escapeHtml(text)}</span>`;
+    meter.classList.toggle("is-copy", near.shared === near.total);
+    meter.title = "How many of the seven main choices match the closest existing SPOKES lesson.";
   }
 
   /** Pin a view chosen by an option/tab click until the next step change. */
@@ -1417,6 +1691,11 @@
     const live = byId("liveRegion");
     const viewName = VIEW_NAMES[state.previewView] || "Preview";
     const honesty = HONESTY[state.previewView] || HONESTY.title;
+    byId("spokesModel").classList.toggle("is-trying", Boolean(ui.tryingOn));
+    if (ui.tryingOn) {
+      caption.innerHTML = `<strong>Previewing ${escapeHtml(ui.tryingOn)}</strong> · click it to choose it<br><span class="honesty-caption">Not chosen yet. Move away to return to the current design.</span>`;
+      return;
+    }
     const change = ui.lastChange;
     ui.lastChange = null;
     const honestyHtml = `<span class="honesty-caption"><strong>${escapeHtml(honesty.label)}</strong> — ${escapeHtml(honesty.detail)}</span>`;
@@ -2022,7 +2301,9 @@
       lessonSubtitle: "",
       sampleBullets: "",
       sampleMyth: "",
-      unspoken: ""
+      unspoken: "",
+      ...Brief.DEFAULT_BRIEF,
+      startingPoint: ""
     });
   }
 

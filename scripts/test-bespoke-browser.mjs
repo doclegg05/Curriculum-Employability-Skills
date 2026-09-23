@@ -365,7 +365,7 @@ try {
   ok("reload preserves a dirty browser draft instead of silently replacing it");
 
   await saveShared(first);
-  await first.getByRole("button", { name:/Step 10 of .*Review/ }).click();
+  await first.getByRole("button", { name:/Step \d+ of .*Review/ }).click();
   await first.locator("#btnSend").click();
   await first.locator("#fileStatus").filter({ hasText:"processing" }).waitFor();
   await first.locator("#fileStatus").filter({ hasText:"Britt received the review request" }).waitFor({ timeout:25000 });
@@ -401,7 +401,7 @@ try {
   ok("history loads old choices onto the latest revision for a deliberate new save");
 
   await setTeamName(first, "Snapshot stays local");
-  await first.getByRole("button", { name:/Step 10 of .*Review/ }).click();
+  await first.getByRole("button", { name:/Step \d+ of .*Review/ }).click();
   await first.evaluate(() => {
     navigator.clipboard.writeText = async value => { window.__bespokeCopiedSnapshot = value; };
     document.querySelector("#btnCopyView").click();

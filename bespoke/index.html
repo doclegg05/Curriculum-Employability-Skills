@@ -24,15 +24,22 @@
         <button type="button" class="btn btn-primary" id="btnSave">Save shared design</button>
         <button type="button" class="btn btn-secondary" id="btnOpen">Open team design</button>
       </div>
+      <button type="button" class="btn btn-accent" id="btnSend">Send to Britt</button>
       <p id="saveStatus" class="save-status"></p>
       <span id="saveLive" class="sr-only" aria-live="polite"></span>
-      <button type="button" class="btn btn-accent" id="btnSend">Send to Britt</button>
-      <button type="button" class="btn btn-ghost" id="btnDownloadBackup">Download backup</button>
-      <button type="button" class="btn btn-ghost" id="btnOpenBackup">Open backup</button>
-      <button type="button" class="btn btn-ghost" id="btnRecoverDraft" hidden>Recover previous draft</button>
+      <div class="header-backup" role="group" aria-label="Backup file">
+        <button type="button" class="btn btn-ghost btn-sm" id="btnDownloadBackup">Download backup</button>
+        <button type="button" class="btn btn-ghost btn-sm" id="btnOpenBackup">Open backup</button>
+      </div>
       <input id="teamFileInput" type="file" accept="application/json,.json" hidden>
-      <a class="btn btn-ghost" href="../Dashboard.html">Curriculum hub</a>
-      <button type="button" class="btn btn-secondary" id="btnClear">Clear draft</button>
+      <details class="more-menu">
+        <summary class="btn btn-ghost btn-sm">More</summary>
+        <div class="more-menu-list">
+          <button type="button" class="btn btn-ghost btn-sm" id="btnRecoverDraft" hidden>Recover previous draft</button>
+          <a class="btn btn-ghost btn-sm" href="../Dashboard.html">Curriculum hub</a>
+          <button type="button" class="btn btn-ghost btn-sm" id="btnClear">Clear draft</button>
+        </div>
+      </details>
     </div>
   </header>
   <p id="fileStatus" class="restore-notice" role="status" hidden></p>
@@ -75,7 +82,10 @@
   <div class="workspace" id="workspace" data-active-surface="design">
     <div class="chrome-rail" id="chromeRail" data-surface-panel="design">
       <nav class="stepper" aria-label="Wizard steps">
-        <h2>Steps</h2>
+        <div class="stepper-head">
+          <h2>Steps</h2>
+          <span class="step-progress" id="stepProgress" aria-hidden="true"></span>
+        </div>
         <ol class="step-list" id="stepList"></ol>
       </nav>
 
@@ -88,8 +98,9 @@
       <div class="preview-header">
         <div>
           <h2>Spokes Model</h2>
-          <p class="preview-note">Live preview — updates as you choose.</p>
+          <p class="preview-note">Live preview. Point at an option to try it.</p>
         </div>
+        <p class="distinct-meter" id="distinctMeter"></p>
         <div class="preview-tabs" role="tablist" aria-label="Preview surface" id="previewTabs">
           <button type="button" role="tab" id="tab-title" data-view="title" aria-selected="true" aria-controls="modelStage">Title</button>
           <button type="button" role="tab" id="tab-divider" data-view="divider" aria-selected="false" aria-controls="modelStage">Divider</button>
@@ -119,6 +130,7 @@
     <p>SPOKES · WV Adult Basic Education · Prototype · Available choices use the SPOKES library · Final lessons require review</p>
   </footer>
 
+  <script src="./brief.js"></script>
   <script src="./app.js"></script>
 </body>
 </html>
