@@ -1436,6 +1436,32 @@ label.field textarea { min-height: 110px; resize: vertical; }
   color: var(--dark);
 }
 .model-main.is-dark .takeaway { color: var(--light); }
+/* Lead-colored pieces a real content slide carries; the lead's library CSS repaints them. */
+.model-content .divider {
+  width: 10cqi;
+  height: 0.5cqi;
+  margin: -1cqi 0 0;
+  background: var(--gold);
+}
+.content-foot {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 3cqi;
+  margin-top: auto;
+}
+/* Icon only: the library's white-on-gold/green button text is below AA, so the sample shows the color, not text. */
+.model-main .download-btn {
+  flex-shrink: 0;
+  display: inline-grid;
+  place-items: center;
+  width: 8cqi;
+  height: 4.4cqi;
+  border-radius: 1cqi;
+  background: var(--accent);
+  color: var(--light);
+}
+.model-main .download-btn svg { width: 2.6cqi; height: 2.6cqi; }
 
 .option.is-blocked {
   opacity: 0.55;
