@@ -40,6 +40,7 @@
 | `scripts/bespoke-check-design.py` | Modify | Accept v2 contracts |
 | `scripts/bespoke-write-submission.py` | Modify | v2 intake rows |
 | `scripts/bespoke-apply-selection.py` | Modify | v2 registry entries |
+| `scripts/check-v2-layouts.mjs` | Create | Render every v2 option on the template; fail on collisions, overflow or a layout that isn't where its name says |
 | `scripts/generate-lesson-fingerprints.mjs` | Create | Measure the six decks; write or check `bespoke/lesson-fingerprints.json` |
 | `bespoke/lesson-fingerprints.json` | Generated | Measured role colors, font pairing and pattern per released lesson |
 | `scripts/test-fixtures/bespoke/selection-v2-money-management.json` | Create | Valid v2 fixture |
@@ -57,7 +58,9 @@ Color references used in `pairs`: `"role:<roleId>"` (the role's palette color), 
 - Test: `scripts/test_bespoke_roles.py` (data-file sanity tests only in this task)
 
 **Interfaces:**
-- Produces: the JSON shape every later task reads. Top-level keys `version`, `palette[] {id,name,hex}`, `neutrals[]`, `notText[]`, `roles[] {id,label,note,kind,ink?,only?,pairs?}`, `slides {base, groups[] {id,label,decisions[] {id,label,options[] {id,label,css,pairs[]}}}}`, `defaults {palette, roles, fontPairing, slides}`.
+- Produces: the JSON shape every later task reads. Top-level keys `version`, `palette[] {id,name,hex}`, `neutrals[]`, `notText[]`, `roles[] {id,label,note,kind,ink?,only?,pairs?}`, `slides {base, groups[] {id,label,decisions[] {id,label,options[] {id,label,css,pairs[],excludes?[] {decision,option}}}}}`, `defaults {palette, roles, fontPairing, slides}`.
+- Six groups, 18 decisions, 57 options: 2 to 4 samples per decision, like a PowerPoint master slide's layouts. Decisions are emitted in listed order, so a later decision (usually layout) wins. `excludes` names options in the same group that an option can't be combined with.
+- Every option in this file was rendered on the template and passed `scripts/check-v2-layouts.mjs` (Task 6) while the plan was written.
 
 - [ ] **Step 1: Write the failing sanity tests**
 
@@ -123,6 +126,20 @@ class DataFileTests(unittest.TestCase):
                 if kind in ("role", "ink"):
                     self.assertIn(name, roles, ref)
 
+    def test_excludes_name_real_options_in_the_same_group(self) -> None:
+        for group in COMPONENTS["slides"]["groups"]:
+            decisions = {d["id"]: {o["id"] for o in d["options"]} for d in group["decisions"]}
+            for decision in group["decisions"]:
+                for option in decision["options"]:
+                    for rule in option.get("excludes", []):
+                        self.assertIn(rule["option"], decisions.get(rule["decision"], set()), f"{group['id']}.{option['id']}")
+                        self.assertNotEqual(rule["decision"], decision["id"])
+
+    def test_every_decision_offers_two_to_four_samples(self) -> None:
+        for group in COMPONENTS["slides"]["groups"]:
+            for decision in group["decisions"]:
+                self.assertTrue(2 <= len(decision["options"]) <= 4, f"{group['id']}.{decision['id']}")
+
     def test_defaults_name_every_role_and_decision(self) -> None:
         defaults = COMPONENTS["defaults"]
         self.assertEqual(set(defaults["roles"]), {r["id"] for r in COMPONENTS["roles"]})
@@ -148,124 +165,841 @@ Create `SPOKES Builder/role-components.json`:
 ```json
 {
   "version": "2.0.0",
-  "description": "BeSpoke v2 slide pieces. Option CSS uses only --role-* and palette variables; every color pair an option creates is listed in its pairs. Read by bespoke/design-model.mjs and scripts/bespoke_roles.py.",
+  "description": "BeSpoke v2 slide pieces, 2 to 4 samples per decision. Option CSS uses only --role-* and palette variables; every color pair an option creates is listed in its pairs; excludes names options in the same group it can't be combined with. Decisions are emitted in listed order, so later decisions (usually layout) win. Read by bespoke/design-model.mjs and scripts/bespoke_roles.py.",
   "palette": [
-    { "id": "primary", "name": "Blue", "hex": "#007baf" },
-    { "id": "dark", "name": "Navy", "hex": "#004071" },
-    { "id": "royal", "name": "Royal", "hex": "#00133f" },
-    { "id": "accent", "name": "Green", "hex": "#37b550" },
-    { "id": "gold", "name": "Gold", "hex": "#d3b257" },
-    { "id": "muted-gold", "name": "Deep gold", "hex": "#ad8806" },
-    { "id": "mauve", "name": "Mauve", "hex": "#a7253f" },
-    { "id": "gray", "name": "Gray", "hex": "#60636b" },
-    { "id": "offwhite", "name": "Silver", "hex": "#d1d3d4" },
-    { "id": "muted", "name": "Mist", "hex": "#edf3f7" },
-    { "id": "light", "name": "White", "hex": "#ffffff" }
+    {
+      "id": "primary",
+      "name": "Blue",
+      "hex": "#007baf"
+    },
+    {
+      "id": "dark",
+      "name": "Navy",
+      "hex": "#004071"
+    },
+    {
+      "id": "royal",
+      "name": "Royal",
+      "hex": "#00133f"
+    },
+    {
+      "id": "accent",
+      "name": "Green",
+      "hex": "#37b550"
+    },
+    {
+      "id": "gold",
+      "name": "Gold",
+      "hex": "#d3b257"
+    },
+    {
+      "id": "muted-gold",
+      "name": "Deep gold",
+      "hex": "#ad8806"
+    },
+    {
+      "id": "mauve",
+      "name": "Mauve",
+      "hex": "#a7253f"
+    },
+    {
+      "id": "gray",
+      "name": "Gray",
+      "hex": "#60636b"
+    },
+    {
+      "id": "offwhite",
+      "name": "Silver",
+      "hex": "#d1d3d4"
+    },
+    {
+      "id": "muted",
+      "name": "Mist",
+      "hex": "#edf3f7"
+    },
+    {
+      "id": "light",
+      "name": "White",
+      "hex": "#ffffff"
+    }
   ],
-  "neutrals": ["light", "muted", "royal", "dark", "gray"],
-  "notText": ["gold", "accent"],
+  "neutrals": [
+    "light",
+    "muted",
+    "royal",
+    "dark",
+    "gray"
+  ],
+  "notText": [
+    "gold",
+    "accent"
+  ],
   "roles": [
-    { "id": "sidebar", "label": "Sidebar", "note": "The chapter list on every slide. Its text color is chosen for you.", "kind": "surface", "ink": true },
-    { "id": "titleBackground", "label": "Title slide background", "note": "The first thing learners see.", "kind": "surface" },
-    { "id": "titleBackgroundEnd", "label": "Title slide second color", "note": "The gradient's second color and the split layout's right panel.", "kind": "surface" },
-    { "id": "titleText", "label": "Title text", "note": "Large lettering on the title slide.", "kind": "text",
-      "pairs": [{ "bg": "role:titleBackground", "min": 3 }, { "bg": "role:titleBackgroundEnd", "min": 3 }] },
-    { "id": "subtitle", "label": "Subtitle", "note": "The line under the title, and the copyright line.", "kind": "text",
-      "pairs": [{ "bg": "role:titleBackground", "min": 4.5 }, { "bg": "role:titleBackgroundEnd", "min": 4.5 }] },
-    { "id": "contentBackground", "label": "Content slide background", "note": "Behind most of the lesson.", "kind": "surface", "only": ["light", "muted"] },
-    { "id": "heading", "label": "Slide headings", "note": "Headings on content slides and cards.", "kind": "text",
-      "pairs": [{ "bg": "role:contentBackground", "min": 3 }] },
-    { "id": "body", "label": "Body text", "note": "Paragraphs, card text and lists.", "kind": "text", "only": ["royal", "dark", "gray"],
-      "pairs": [{ "bg": "role:contentBackground", "min": 4.5 }] },
-    { "id": "accent", "label": "Accent", "note": "Rules, card edges, list arrows and the current chapter.", "kind": "shape", "ink": true,
-      "pairs": [{ "bg": "role:contentBackground", "min": 3 }] },
-    { "id": "button", "label": "Buttons", "note": "Handout and video buttons. Their text color is chosen for you.", "kind": "surface", "ink": true },
-    { "id": "dividerBackground", "label": "Chapter divider background", "note": "Behind each chapter's opening slide. Its text color is chosen for you.", "kind": "surface", "ink": true }
+    {
+      "id": "sidebar",
+      "label": "Sidebar",
+      "note": "The chapter list on every slide. Its text color is chosen for you.",
+      "kind": "surface",
+      "ink": true
+    },
+    {
+      "id": "titleBackground",
+      "label": "Title slide background",
+      "note": "The first thing learners see.",
+      "kind": "surface"
+    },
+    {
+      "id": "titleBackgroundEnd",
+      "label": "Title slide second color",
+      "note": "The gradient's second color and the split layout's right panel.",
+      "kind": "surface"
+    },
+    {
+      "id": "titleText",
+      "label": "Title text",
+      "note": "Large lettering on the title slide.",
+      "kind": "text",
+      "pairs": [
+        {
+          "bg": "role:titleBackground",
+          "min": 3
+        },
+        {
+          "bg": "role:titleBackgroundEnd",
+          "min": 3
+        }
+      ]
+    },
+    {
+      "id": "subtitle",
+      "label": "Subtitle",
+      "note": "The line under the title, and the copyright line.",
+      "kind": "text",
+      "pairs": [
+        {
+          "bg": "role:titleBackground",
+          "min": 4.5
+        },
+        {
+          "bg": "role:titleBackgroundEnd",
+          "min": 4.5
+        }
+      ]
+    },
+    {
+      "id": "contentBackground",
+      "label": "Content slide background",
+      "note": "Behind most of the lesson.",
+      "kind": "surface",
+      "only": [
+        "light",
+        "muted"
+      ]
+    },
+    {
+      "id": "heading",
+      "label": "Slide headings",
+      "note": "Headings on content slides and cards.",
+      "kind": "text",
+      "pairs": [
+        {
+          "bg": "role:contentBackground",
+          "min": 3
+        }
+      ]
+    },
+    {
+      "id": "body",
+      "label": "Body text",
+      "note": "Paragraphs, card text and lists.",
+      "kind": "text",
+      "only": [
+        "royal",
+        "dark",
+        "gray"
+      ],
+      "pairs": [
+        {
+          "bg": "role:contentBackground",
+          "min": 4.5
+        }
+      ]
+    },
+    {
+      "id": "accent",
+      "label": "Accent",
+      "note": "Rules, card edges, list arrows and the current chapter.",
+      "kind": "shape",
+      "ink": true,
+      "pairs": [
+        {
+          "bg": "role:contentBackground",
+          "min": 3
+        }
+      ]
+    },
+    {
+      "id": "button",
+      "label": "Buttons",
+      "note": "Handout and video buttons. Their text color is chosen for you.",
+      "kind": "surface",
+      "ink": true
+    },
+    {
+      "id": "dividerBackground",
+      "label": "Chapter divider background",
+      "note": "Behind each chapter's opening slide. Its text color is chosen for you.",
+      "kind": "surface",
+      "ink": true
+    }
   ],
   "slides": {
-    "base": ".sidebar { background: var(--role-sidebar); color: var(--role-sidebar-ink); }\n.sidebar-toggle { background: var(--role-sidebar); color: var(--role-sidebar-ink); }\n.sidebar-collapse-btn { background: rgba(var(--role-sidebar-ink-rgb), 0.15); color: var(--role-sidebar-ink); }\n.sidebar-title, .resources-title, .chapter-header, .slide-item, .resource-link { color: var(--role-sidebar-ink); }\n.chapter-header:hover, .slide-item:hover, .resource-link:hover { background: transparent; color: var(--role-sidebar-ink); text-decoration: underline; }\n.chapter-item.active > .chapter-header { background: transparent; color: var(--role-sidebar-ink); border-left-color: var(--role-accent); font-weight: 600; }\n.slide-item.active { background: transparent; color: var(--role-sidebar-ink); box-shadow: inset 3px 0 0 var(--role-accent); font-weight: 600; }\n.main { background-color: var(--role-content-background); }\n.slide h2 { color: var(--role-heading); }\n.slide p { color: var(--role-body); }\n.divider { background: var(--role-accent); }\n.card h4 { color: var(--role-heading); }\n.card p, .content-list li { color: var(--role-body); }\n.content-list li::before { color: var(--role-accent); }\n.download-btn, .video-btn { background: var(--role-button); color: var(--role-button-ink); }\n.slide-title h1 { color: var(--role-title-text); }\n.slide-title .subtitle, .slide-title .copyright { color: var(--role-subtitle); }\n.slide-title .divider { background: var(--role-accent); }\n.slide-section, .slide-section[data-chapter-num] { background: var(--role-divider-background); }\n.slide-section h2, .slide-section .chapter-label { color: var(--role-divider-background-ink); }\n.slide-section .divider { background: var(--role-accent); }\n.slide-section .section-circle { border-color: rgba(var(--role-divider-background-ink-rgb), 0.25); }\n.slide-section::after { color: rgba(var(--role-divider-background-ink-rgb), 0.06); }\n.slide-video h2 { color: var(--role-heading); }",
+    "base": ".sidebar { background: var(--role-sidebar); color: var(--role-sidebar-ink); }\n.sidebar-toggle { background: var(--role-sidebar); color: var(--role-sidebar-ink); }\n.sidebar-collapse-btn { background: rgba(var(--role-sidebar-ink-rgb), 0.15); color: var(--role-sidebar-ink); }\n.sidebar-title, .resources-title, .chapter-header, .slide-item, .resource-link { color: var(--role-sidebar-ink); }\n.chapter-header:hover, .slide-item:hover, .resource-link:hover { background: transparent; color: var(--role-sidebar-ink); text-decoration: underline; }\n.chapter-item.active > .chapter-header { background: transparent; color: var(--role-sidebar-ink); border-left-color: var(--role-accent); font-weight: 600; }\n.slide-item.active { background: transparent; color: var(--role-sidebar-ink); box-shadow: inset 3px 0 0 var(--role-accent); font-weight: 600; }\n.main { background-color: var(--role-content-background); }\n.slide h2 { color: var(--role-heading); }\n.slide p { color: var(--role-body); }\n.divider { background: var(--role-accent); }\n.card h4 { color: var(--role-heading); }\n.card p, .content-list li { color: var(--role-body); }\n.content-list li::before { color: var(--role-accent); }\n.download-btn, .video-btn { background: var(--role-button); color: var(--role-button-ink); }\n.slide-title h1 { color: var(--role-title-text); }\n.slide-title .subtitle, .slide-title .copyright { color: var(--role-subtitle); }\n.slide-title .divider { background: var(--role-accent); }\n.slide-section, .slide-section[data-chapter-num] { background: var(--role-divider-background); }\n.slide-section h2, .slide-section .chapter-label { color: var(--role-divider-background-ink); }\n.slide-section .divider { background: var(--role-accent); }\n.slide-section .section-circle { border-color: rgba(var(--role-divider-background-ink-rgb), 0.25); }\n.slide-section::after { color: rgba(var(--role-divider-background-ink-rgb), 0.06); }\n.slide-video h2 { color: var(--role-heading); }\n.activity-box { border-color: var(--role-accent); }\n.activity-label { color: var(--role-heading); }\n.activity-box p { color: var(--role-body); }",
     "groups": [
-      { "id": "background", "label": "Background", "decisions": [
-        { "id": "pattern", "label": "Pattern", "options": [
-          { "id": "plain", "label": "Plain", "css": ".main { background-image: none; }", "pairs": [] },
-          { "id": "dot-grid", "label": "Dot grid", "css": ".main { background-image: radial-gradient(rgba(var(--role-accent-rgb), 0.14) 1px, transparent 1px); background-size: 16px 16px; }", "pairs": [] },
-          { "id": "diagonal", "label": "Diagonal", "css": ".main { background-image: repeating-linear-gradient(45deg, rgba(var(--role-accent-rgb), 0.08) 0 1px, transparent 1px 14px); }", "pairs": [] },
-          { "id": "crosshatch", "label": "Crosshatch", "css": ".main { background-image: linear-gradient(rgba(var(--role-accent-rgb), 0.07) 1px, transparent 1px), linear-gradient(90deg, rgba(var(--role-accent-rgb), 0.07) 1px, transparent 1px); background-size: 24px 24px; }", "pairs": [] }
-        ] }
-      ] },
-      { "id": "title", "label": "Title slide", "decisions": [
-        { "id": "background", "label": "Background", "options": [
-          { "id": "solid", "label": "Solid", "css": ".slide-title { background: var(--role-title-background); }", "pairs": [] },
-          { "id": "gradient", "label": "Gradient", "css": ".slide-title { background: linear-gradient(135deg, var(--role-title-background), var(--role-title-background-end)); }", "pairs": [] }
-        ] },
-        { "id": "logo", "label": "Logo", "options": [
-          { "id": "above", "label": "Above the title", "css": "", "pairs": [] },
-          { "id": "corner", "label": "Top corner", "css": ".slide-title { position: relative; }\n.slide-title .logo { position: absolute; top: 2rem; right: 2.5rem; max-width: 160px; margin: 0; }", "pairs": [] }
-        ] },
-        { "id": "layout", "label": "Text position", "options": [
-          { "id": "center", "label": "Center", "css": ".slide-title { align-items: center; text-align: center; }", "pairs": [] },
-          { "id": "left", "label": "Left", "css": ".slide-title { align-items: flex-start; text-align: left; padding-left: 7rem; }", "pairs": [] },
-          { "id": "bottom", "label": "Bottom left", "css": ".slide-title { align-items: flex-start; justify-content: flex-end; text-align: left; padding-left: 7rem; padding-bottom: 5rem; }", "pairs": [] },
-          { "id": "split", "label": "Split panels", "css": ".slide-title { flex-direction: column; align-items: flex-start; justify-content: center; text-align: left; background: none; position: relative; z-index: 1; }\n.slide-title::before { content: ''; position: absolute; left: 0; top: 0; bottom: 0; width: 40%; background: var(--role-title-background); z-index: -1; flex: none; display: block; }\n.slide-title::after { content: ''; position: absolute; left: 40%; top: 0; bottom: 0; right: 0; background: var(--role-title-background-end); z-index: -1; flex: none; display: block; }\n.slide-title .logo { max-width: 220px; margin: 0 0 1.5rem; }\n.slide-title h1 { max-width: 90%; margin: 0; }\n.slide-title .divider { margin: 1.5rem 0; }\n.slide-title .subtitle { max-width: 90%; margin-bottom: 0; }\n.slide-title .copyright { position: absolute; bottom: 2rem; left: 5rem; margin: 0; }", "pairs": [] }
-        ] }
-      ] },
-      { "id": "divider", "label": "Chapter divider", "decisions": [
-        { "id": "layout", "label": "Text position", "options": [
-          { "id": "center", "label": "Center", "css": "", "pairs": [] },
-          { "id": "left", "label": "Left", "css": ".slide-section { align-items: flex-start; text-align: left; padding-left: 8rem; }\n.slide-section .section-circle { display: none; }", "pairs": [] }
-        ] },
-        { "id": "watermark", "label": "Watermark letter", "options": [
-          { "id": "show", "label": "Show", "css": "", "pairs": [] },
-          { "id": "hide", "label": "Hide", "css": ".slide-section::after { content: none; }", "pairs": [] }
-        ] }
-      ] },
-      { "id": "video", "label": "Video slide", "decisions": [
-        { "id": "frame", "label": "Frame", "options": [
-          { "id": "plain", "label": "Plain", "css": "", "pairs": [] },
-          { "id": "accent", "label": "Accent frame", "css": ".video-container { border: 4px solid var(--role-accent); }", "pairs": [] }
-        ] },
-        { "id": "background", "label": "Background", "options": [
-          { "id": "content", "label": "Content color", "css": ".slide-video { background: var(--role-content-background); }", "pairs": [] },
-          { "id": "tinted", "label": "Accent tint", "css": ".slide-video { background: linear-gradient(170deg, rgba(var(--role-accent-rgb), 0.12), var(--role-content-background) 60%); }",
-            "pairs": [{ "fg": "role:heading", "bg": { "tint": "role:accent", "alpha": 0.12, "over": "role:contentBackground" }, "min": 3 }] }
-        ] }
-      ] },
-      { "id": "list", "label": "Bullet list", "decisions": [
-        { "id": "look", "label": "Card look", "options": [
-          { "id": "rail", "label": "Left rail", "css": ".card, .card.gold-border { background: var(--role-content-background); border-left: 6px solid var(--role-accent); box-shadow: 0 4px 14px rgba(0, 19, 63, 0.08); }", "pairs": [] },
-          { "id": "outline", "label": "Outline", "css": ".card, .card.gold-border { background: var(--role-content-background); border: 2px solid var(--role-accent); }", "pairs": [] },
-          { "id": "filled", "label": "Filled", "css": ".card, .card.gold-border { background: var(--muted); border: 0; }",
-            "pairs": [{ "fg": "role:heading", "bg": "palette:muted", "min": 3 }, { "fg": "role:body", "bg": "palette:muted", "min": 4.5 }] }
-        ] }
-      ] },
-      { "id": "activity", "label": "Activity", "decisions": [
-        { "id": "look", "label": "Box look", "options": [
-          { "id": "tinted", "label": "Tinted", "css": ".activity-box { background: rgba(var(--role-accent-rgb), 0.1); border: 2px solid var(--role-accent); }\n.activity-label { color: var(--role-heading); }\n.activity-box p { color: var(--role-body); }",
-            "pairs": [
-              { "fg": "role:heading", "bg": { "tint": "role:accent", "alpha": 0.1, "over": "role:contentBackground" }, "min": 3 },
-              { "fg": "role:body", "bg": { "tint": "role:accent", "alpha": 0.1, "over": "role:contentBackground" }, "min": 4.5 }
-            ] },
-          { "id": "outline", "label": "Outline", "css": ".activity-box { background: var(--role-content-background); border: 2px solid var(--role-accent); }\n.activity-label { color: var(--role-heading); }\n.activity-box p { color: var(--role-body); }", "pairs": [] },
-          { "id": "solid", "label": "Solid", "css": ".activity-box { background: var(--role-accent); border: 0; }\n.activity-label, .activity-box p { color: var(--role-accent-ink); }",
-            "pairs": [{ "fg": "ink:accent", "bg": "role:accent", "min": 4.5 }] }
-        ] }
-      ] }
+      {
+        "id": "background",
+        "label": "Background",
+        "decisions": [
+          {
+            "id": "pattern",
+            "label": "Pattern",
+            "options": [
+              {
+                "id": "plain",
+                "label": "Plain",
+                "css": ".main { background-image: none; }",
+                "pairs": []
+              },
+              {
+                "id": "dot-grid",
+                "label": "Dot grid",
+                "css": ".main { background-image: radial-gradient(rgba(var(--role-accent-rgb), 0.14) 1px, transparent 1px); background-size: 16px 16px; }",
+                "pairs": []
+              },
+              {
+                "id": "diagonal",
+                "label": "Diagonal",
+                "css": ".main { background-image: repeating-linear-gradient(45deg, rgba(var(--role-accent-rgb), 0.08) 0 1px, transparent 1px 14px); }",
+                "pairs": []
+              },
+              {
+                "id": "crosshatch",
+                "label": "Crosshatch",
+                "css": ".main { background-image: linear-gradient(rgba(var(--role-accent-rgb), 0.07) 1px, transparent 1px), linear-gradient(90deg, rgba(var(--role-accent-rgb), 0.07) 1px, transparent 1px); background-size: 24px 24px; }",
+                "pairs": []
+              }
+            ]
+          }
+        ]
+      },
+      {
+        "id": "title",
+        "label": "Title slide",
+        "decisions": [
+          {
+            "id": "colors",
+            "label": "Colors",
+            "options": [
+              {
+                "id": "solid",
+                "label": "Solid",
+                "css": ".slide-title { background: var(--role-title-background); }",
+                "pairs": []
+              },
+              {
+                "id": "gradient",
+                "label": "Gradient",
+                "css": ".slide-title { background: linear-gradient(135deg, var(--role-title-background), var(--role-title-background-end)); }",
+                "pairs": []
+              },
+              {
+                "id": "light",
+                "label": "Light",
+                "css": ".slide-title { background: var(--role-content-background); }\n.slide-title h1 { color: var(--role-heading); }\n.slide-title .subtitle, .slide-title .copyright { color: var(--role-body); }",
+                "pairs": []
+              }
+            ]
+          },
+          {
+            "id": "logo",
+            "label": "Logo",
+            "options": [
+              {
+                "id": "above",
+                "label": "Above the title",
+                "css": "",
+                "pairs": []
+              },
+              {
+                "id": "corner",
+                "label": "Top corner",
+                "css": ".slide-title { position: relative; }\n.slide-title .logo { position: absolute; top: 2rem; right: 2.5rem; max-width: 160px; margin: 0; }",
+                "pairs": []
+              }
+            ]
+          },
+          {
+            "id": "layout",
+            "label": "Layout",
+            "options": [
+              {
+                "id": "center",
+                "label": "Centered",
+                "css": ".slide-title { align-items: center; text-align: center; }",
+                "pairs": []
+              },
+              {
+                "id": "left",
+                "label": "Left",
+                "css": ".slide-title { align-items: flex-start; text-align: left; padding-left: 7rem; }",
+                "pairs": []
+              },
+              {
+                "id": "bottom",
+                "label": "Bottom left",
+                "css": ".slide-title { align-items: flex-start; justify-content: flex-end; text-align: left; padding-left: 7rem; padding-bottom: 5rem; }",
+                "pairs": []
+              },
+              {
+                "id": "split",
+                "label": "Split panels",
+                "css": ".slide-title { flex-direction: column; align-items: flex-start; justify-content: center; text-align: left; background: none; position: relative; z-index: 1; }\n.slide-title::before { content: ''; position: absolute; left: 0; top: 0; bottom: 0; width: 40%; background: var(--role-title-background); z-index: -1; flex: none; display: block; }\n.slide-title::after { content: ''; position: absolute; left: 40%; top: 0; bottom: 0; right: 0; background: var(--role-title-background-end); z-index: -1; flex: none; display: block; }\n.slide-title .logo { max-width: 220px; margin: 0 0 1.5rem; }\n.slide-title h1 { max-width: 90%; margin: 0; }\n.slide-title .divider { margin: 1.5rem 0; }\n.slide-title .subtitle { max-width: 90%; margin-bottom: 0; }\n.slide-title .copyright { position: absolute; bottom: 2rem; left: 5rem; margin: 0; }",
+                "pairs": [],
+                "excludes": [
+                  {
+                    "decision": "colors",
+                    "option": "light"
+                  }
+                ]
+              }
+            ]
+          }
+        ]
+      },
+      {
+        "id": "divider",
+        "label": "Chapter divider",
+        "decisions": [
+          {
+            "id": "colors",
+            "label": "Colors",
+            "options": [
+              {
+                "id": "solid",
+                "label": "Solid",
+                "css": "",
+                "pairs": []
+              },
+              {
+                "id": "gradient",
+                "label": "Gradient",
+                "css": ".slide-section, .slide-section[data-chapter-num] { background: linear-gradient(135deg, var(--role-divider-background), var(--role-title-background-end)); }",
+                "pairs": [
+                  {
+                    "fg": "ink:dividerBackground",
+                    "bg": "role:titleBackgroundEnd",
+                    "min": 4.5
+                  }
+                ]
+              },
+              {
+                "id": "light",
+                "label": "Light",
+                "css": ".slide-section, .slide-section[data-chapter-num] { background: var(--role-content-background); }\n.slide-section h2 { color: var(--role-heading); }\n.slide-section .chapter-label { color: var(--role-body); }\n.slide-section .section-circle { border-color: rgba(var(--role-accent-rgb), 0.35); }\n.slide-section::after { color: rgba(var(--role-heading-rgb), 0.06); }",
+                "pairs": []
+              }
+            ]
+          },
+          {
+            "id": "watermark",
+            "label": "Watermark letter",
+            "options": [
+              {
+                "id": "show",
+                "label": "Show",
+                "css": "",
+                "pairs": []
+              },
+              {
+                "id": "hide",
+                "label": "Hide",
+                "css": ".slide-section::after { content: none; }",
+                "pairs": []
+              }
+            ]
+          },
+          {
+            "id": "layout",
+            "label": "Layout",
+            "options": [
+              {
+                "id": "center",
+                "label": "Centered",
+                "css": "",
+                "pairs": []
+              },
+              {
+                "id": "left",
+                "label": "Left",
+                "css": ".slide-section { align-items: flex-start; text-align: left; padding-left: 8rem; }\n.slide-section .section-circle { display: none; }",
+                "pairs": []
+              },
+              {
+                "id": "band",
+                "label": "Band",
+                "css": ".slide-section, .slide-section[data-chapter-num] { background: var(--role-content-background); }\n.slide-section::before { content: ''; position: absolute; left: 0; right: 0; top: 30%; height: 40%; background: var(--role-divider-background); flex: none; display: block; z-index: 0; }\n.slide-section > * { position: relative; z-index: 1; }\n.slide-section .section-circle { display: none; }",
+                "pairs": [],
+                "excludes": [
+                  {
+                    "decision": "colors",
+                    "option": "light"
+                  }
+                ]
+              },
+              {
+                "id": "number",
+                "label": "Big number",
+                "css": ".slide-section { align-items: flex-start; justify-content: flex-end; text-align: left; padding: 0 8rem 6rem; }\n.slide-section .section-circle { display: none; }\n.slide-section::after { left: 6%; right: auto; top: 4%; bottom: auto; transform: none; font-size: 18rem; }",
+                "pairs": []
+              }
+            ]
+          }
+        ]
+      },
+      {
+        "id": "video",
+        "label": "Video slide",
+        "decisions": [
+          {
+            "id": "colors",
+            "label": "Colors",
+            "options": [
+              {
+                "id": "light",
+                "label": "Light",
+                "css": ".slide-video { background: var(--role-content-background); }",
+                "pairs": []
+              },
+              {
+                "id": "tinted",
+                "label": "Tinted",
+                "css": ".slide-video { background: linear-gradient(170deg, rgba(var(--role-accent-rgb), 0.12), var(--role-content-background) 60%); }",
+                "pairs": [
+                  {
+                    "fg": "role:heading",
+                    "bg": {
+                      "tint": "role:accent",
+                      "alpha": 0.12,
+                      "over": "role:contentBackground"
+                    },
+                    "min": 3
+                  }
+                ]
+              },
+              {
+                "id": "dark",
+                "label": "Dark",
+                "css": ".slide-video { background: var(--role-divider-background); }\n.slide-video h2 { color: var(--role-divider-background-ink); }",
+                "pairs": []
+              }
+            ]
+          },
+          {
+            "id": "frame",
+            "label": "Frame",
+            "options": [
+              {
+                "id": "plain",
+                "label": "Plain",
+                "css": "",
+                "pairs": []
+              },
+              {
+                "id": "accent",
+                "label": "Accent frame",
+                "css": ".video-container { border: 4px solid var(--role-accent); }",
+                "pairs": []
+              }
+            ]
+          },
+          {
+            "id": "titleStyle",
+            "label": "Title style",
+            "options": [
+              {
+                "id": "regular",
+                "label": "Regular",
+                "css": "",
+                "pairs": []
+              },
+              {
+                "id": "large",
+                "label": "Large",
+                "css": ".slide-video h2 { font-size: 2.8rem; }",
+                "pairs": []
+              },
+              {
+                "id": "caps",
+                "label": "Small caps",
+                "css": ".slide-video h2 { font-size: 1.4rem; text-transform: uppercase; letter-spacing: 0.12em; }",
+                "pairs": []
+              }
+            ]
+          },
+          {
+            "id": "layout",
+            "label": "Layout",
+            "options": [
+              {
+                "id": "stacked",
+                "label": "Title above",
+                "css": "",
+                "pairs": []
+              },
+              {
+                "id": "side",
+                "label": "Side by side",
+                "css": ".slide-video.active { display: grid; grid-template-columns: minmax(0, 1fr) minmax(0, 2fr); align-content: center; align-items: center; gap: 3rem; text-align: left; }\n.slide-video.active::before, .slide-video.active::after { display: none; }\n.slide-video h2 { margin: 0; }",
+                "pairs": []
+              },
+              {
+                "id": "banner",
+                "label": "Title banner",
+                "css": ".slide-video h2 { align-self: stretch; margin: 0 0 2rem; padding: 1rem 2rem; background: var(--role-button); color: var(--role-button-ink); border-radius: 8px; }",
+                "pairs": []
+              }
+            ]
+          }
+        ]
+      },
+      {
+        "id": "list",
+        "label": "Bullet list",
+        "decisions": [
+          {
+            "id": "look",
+            "label": "Card look",
+            "options": [
+              {
+                "id": "rail",
+                "label": "Left rail",
+                "css": ".card, .card.gold-border { background: var(--role-content-background); border: 0; border-left: 6px solid var(--role-accent); box-shadow: 0 4px 14px rgba(0, 19, 63, 0.08); }",
+                "pairs": []
+              },
+              {
+                "id": "outline",
+                "label": "Outline",
+                "css": ".card, .card.gold-border { background: var(--role-content-background); border: 2px solid var(--role-accent); }",
+                "pairs": []
+              },
+              {
+                "id": "filled",
+                "label": "Filled",
+                "css": ".card, .card.gold-border { background: var(--muted); border: 0; }",
+                "pairs": [
+                  {
+                    "fg": "role:heading",
+                    "bg": "palette:muted",
+                    "min": 3
+                  },
+                  {
+                    "fg": "role:body",
+                    "bg": "palette:muted",
+                    "min": 4.5
+                  }
+                ]
+              },
+              {
+                "id": "band",
+                "label": "Top band",
+                "css": ".card, .card.gold-border { background: var(--role-content-background); border: 0; border-top: 6px solid var(--role-accent); border-radius: 4px 4px 12px 12px; box-shadow: 0 4px 14px rgba(0, 19, 63, 0.08); }",
+                "pairs": []
+              }
+            ]
+          },
+          {
+            "id": "layout",
+            "label": "Layout",
+            "options": [
+              {
+                "id": "two",
+                "label": "Two columns",
+                "css": "",
+                "pairs": []
+              },
+              {
+                "id": "three",
+                "label": "Three across",
+                "css": ".cards-grid { grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 1.25rem; }\n.card { padding: 1.25rem 1.5rem; }\n.card h4 { font-size: 1.45rem; }\n.card p { font-size: 1.2rem; }",
+                "pairs": []
+              },
+              {
+                "id": "rows",
+                "label": "Rows",
+                "css": ".cards-grid { grid-template-columns: 1fr; gap: 0.75rem; }\n.card { flex-direction: row; align-items: baseline; gap: 2rem; padding: 1rem 2rem; text-align: left; }\n.card h4 { flex: 0 0 32%; margin: 0; text-align: left; }\n.card p { margin: 0; text-align: left; }",
+                "pairs": []
+              },
+              {
+                "id": "numbered",
+                "label": "Numbered",
+                "css": ".cards-grid { counter-reset: spokes-card; }\n.card { position: relative; padding: 1.5rem 2rem 1.5rem 4.75rem; }\n.card::before { counter-increment: spokes-card; content: counter(spokes-card); position: absolute; left: 1.5rem; top: 1.4rem; font-family: var(--font-heading); font-size: 2.2rem; line-height: 1; color: var(--role-heading); }",
+                "pairs": []
+              }
+            ]
+          },
+          {
+            "id": "titleStyle",
+            "label": "Title style",
+            "options": [
+              {
+                "id": "regular",
+                "label": "Regular",
+                "css": "",
+                "pairs": []
+              },
+              {
+                "id": "large",
+                "label": "Large",
+                "css": ".card h4 { font-size: 2rem; line-height: 1.15; }\n.card { padding-top: 1.5rem; padding-bottom: 1.5rem; }",
+                "pairs": []
+              },
+              {
+                "id": "caps",
+                "label": "Small caps",
+                "css": ".card h4 { font-size: 1.15rem; text-transform: uppercase; letter-spacing: 0.12em; }",
+                "pairs": []
+              }
+            ]
+          },
+          {
+            "id": "colors",
+            "label": "Colors",
+            "options": [
+              {
+                "id": "light",
+                "label": "Light",
+                "css": "",
+                "pairs": []
+              },
+              {
+                "id": "tinted",
+                "label": "Tinted",
+                "css": ".card, .card.gold-border { background: rgba(var(--role-accent-rgb), 0.1); }",
+                "pairs": [
+                  {
+                    "fg": "role:heading",
+                    "bg": {
+                      "tint": "role:accent",
+                      "alpha": 0.1,
+                      "over": "role:contentBackground"
+                    },
+                    "min": 3
+                  },
+                  {
+                    "fg": "role:body",
+                    "bg": {
+                      "tint": "role:accent",
+                      "alpha": 0.1,
+                      "over": "role:contentBackground"
+                    },
+                    "min": 4.5
+                  }
+                ]
+              },
+              {
+                "id": "bold",
+                "label": "Bold",
+                "css": ".card, .card.gold-border { background: var(--role-button); }\n.card h4, .card p, .card::before { color: var(--role-button-ink); }",
+                "pairs": []
+              }
+            ]
+          }
+        ]
+      },
+      {
+        "id": "activity",
+        "label": "Activity",
+        "decisions": [
+          {
+            "id": "colors",
+            "label": "Colors",
+            "options": [
+              {
+                "id": "light",
+                "label": "Light",
+                "css": ".activity-box { background: var(--role-content-background); }\n.activity-label { color: var(--role-heading); }\n.activity-box p { color: var(--role-body); }",
+                "pairs": []
+              },
+              {
+                "id": "tinted",
+                "label": "Tinted",
+                "css": ".activity-box { background: rgba(var(--role-accent-rgb), 0.1); }\n.activity-label { color: var(--role-heading); }\n.activity-box p { color: var(--role-body); }",
+                "pairs": [
+                  {
+                    "fg": "role:heading",
+                    "bg": {
+                      "tint": "role:accent",
+                      "alpha": 0.1,
+                      "over": "role:contentBackground"
+                    },
+                    "min": 3
+                  },
+                  {
+                    "fg": "role:body",
+                    "bg": {
+                      "tint": "role:accent",
+                      "alpha": 0.1,
+                      "over": "role:contentBackground"
+                    },
+                    "min": 4.5
+                  }
+                ]
+              },
+              {
+                "id": "solid",
+                "label": "Solid",
+                "css": ".activity-box { background: var(--role-accent); }\n.activity-label, .activity-box p { color: var(--role-accent-ink); }",
+                "pairs": [
+                  {
+                    "fg": "ink:accent",
+                    "bg": "role:accent",
+                    "min": 4.5
+                  }
+                ]
+              }
+            ]
+          },
+          {
+            "id": "label",
+            "label": "Label style",
+            "options": [
+              {
+                "id": "caps",
+                "label": "Small caps",
+                "css": "",
+                "pairs": []
+              },
+              {
+                "id": "heading",
+                "label": "Heading font",
+                "css": ".activity-label { font-family: var(--font-heading); font-size: 1.6rem; font-weight: 400; text-transform: none; letter-spacing: 0; }",
+                "pairs": []
+              },
+              {
+                "id": "pill",
+                "label": "Pill",
+                "css": ".activity-label { display: inline-block; padding: 0.25rem 0.85rem; border-radius: 999px; background: var(--role-accent); color: var(--role-accent-ink); }",
+                "pairs": [
+                  {
+                    "fg": "ink:accent",
+                    "bg": "role:accent",
+                    "min": 4.5
+                  }
+                ]
+              }
+            ]
+          },
+          {
+            "id": "layout",
+            "label": "Layout",
+            "options": [
+              {
+                "id": "box",
+                "label": "Box",
+                "css": ".activity-box { border: 2px solid var(--role-accent); border-radius: 12px; }",
+                "pairs": []
+              },
+              {
+                "id": "callout",
+                "label": "Callout",
+                "css": ".activity-box { border: 0; border-left: 6px solid var(--role-accent); border-radius: 0 12px 12px 0; }",
+                "pairs": []
+              },
+              {
+                "id": "banner",
+                "label": "Label banner",
+                "css": ".activity-box { border: 2px solid var(--role-accent); border-radius: 12px; padding-top: 0; overflow: hidden; }\n.activity-label { display: block; margin: 0 -2rem 1rem; padding: 0.6rem 2rem; border-radius: 0; background: var(--role-accent); color: var(--role-accent-ink); }",
+                "pairs": [
+                  {
+                    "fg": "ink:accent",
+                    "bg": "role:accent",
+                    "min": 4.5
+                  }
+                ],
+                "excludes": [
+                  {
+                    "decision": "label",
+                    "option": "pill"
+                  }
+                ]
+              },
+              {
+                "id": "side",
+                "label": "Side label",
+                "css": ".activity-box { display: grid; grid-template-columns: minmax(0, 12rem) minmax(0, 1fr); gap: 0 2rem; align-items: baseline; border: 2px solid var(--role-accent); border-radius: 12px; }\n.activity-label { margin: 0; }\n.activity-box > :not(.activity-label) { grid-column: 2; }",
+                "pairs": []
+              }
+            ]
+          }
+        ]
+      }
     ]
   },
   "defaults": {
-    "palette": { "primary": ["dark", "mauve"], "secondary": ["gold"] },
+    "palette": {
+      "primary": [
+        "dark",
+        "mauve"
+      ],
+      "secondary": [
+        "gold"
+      ]
+    },
     "roles": {
-      "sidebar": "dark", "titleBackground": "dark", "titleBackgroundEnd": "mauve", "titleText": "light", "subtitle": "light",
-      "contentBackground": "light", "heading": "mauve", "body": "royal", "accent": "mauve", "button": "mauve", "dividerBackground": "mauve"
+      "sidebar": "dark",
+      "titleBackground": "dark",
+      "titleBackgroundEnd": "mauve",
+      "titleText": "light",
+      "subtitle": "light",
+      "contentBackground": "light",
+      "heading": "mauve",
+      "body": "royal",
+      "accent": "mauve",
+      "button": "mauve",
+      "dividerBackground": "mauve"
     },
     "fontPairing": "dm-serif-display-outfit",
     "slides": {
-      "background": { "pattern": "dot-grid" },
-      "title": { "background": "gradient", "logo": "above", "layout": "center" },
-      "divider": { "layout": "center", "watermark": "show" },
-      "video": { "frame": "accent", "background": "content" },
-      "list": { "look": "rail" },
-      "activity": { "look": "tinted" }
+      "background": {
+        "pattern": "dot-grid"
+      },
+      "title": {
+        "colors": "gradient",
+        "logo": "above",
+        "layout": "center"
+      },
+      "divider": {
+        "colors": "solid",
+        "watermark": "show",
+        "layout": "center"
+      },
+      "video": {
+        "colors": "light",
+        "frame": "accent",
+        "titleStyle": "regular",
+        "layout": "stacked"
+      },
+      "list": {
+        "look": "rail",
+        "layout": "two",
+        "titleStyle": "regular",
+        "colors": "light"
+      },
+      "activity": {
+        "colors": "tinted",
+        "label": "caps",
+        "layout": "box"
+      }
     }
   }
 }
@@ -274,7 +1008,7 @@ Create `SPOKES Builder/role-components.json`:
 - [ ] **Step 4: Run the tests and watch them pass**
 
 Run: `python3 -m unittest scripts/test_bespoke_roles.py -v`
-Expected: 5 tests, `OK`.
+Expected: 7 tests, `OK`.
 
 - [ ] **Step 5: Commit**
 
@@ -364,8 +1098,18 @@ test("option pairs are checked, including tinted surfaces", () => {
   d.roles.heading = "gray";
   assert.deepEqual(M.checkDesign(components, d), []);
   const solid = design();
-  solid.slides.activity.look = "solid";
+  solid.slides.activity.colors = "solid";
   assert.deepEqual(M.checkDesign(components, solid), []);
+});
+
+test("options that can't be combined are rejected with both names", () => {
+  const d = design();
+  d.slides.title.layout = "split";
+  d.slides.title.colors = "light";
+  assert.match(M.checkDesign(components, d).join("\n"), /Title slide: Split panels can't be combined with Light\./);
+  const ok = design();
+  ok.slides.title.layout = "split";
+  assert.deepEqual(M.checkDesign(components, ok), []);
 });
 
 test("an unknown option is reported by group and decision", () => {
@@ -557,6 +1301,11 @@ export function checkDesign(components, design) {
         const problem = pairProblem(components, design, pair, `${group.label}, ${option.label}`);
         if (problem) errors.push(problem);
       }
+      for (const rule of option.excludes || []) {
+        if (design.slides[group.id][rule.decision] !== rule.option) continue;
+        const other = group.decisions.find((d) => d.id === rule.decision).options.find((o) => o.id === rule.option);
+        errors.push(`${group.label}: ${option.label} can't be combined with ${other.label}.`);
+      }
     }
   }
   return errors;
@@ -624,7 +1373,7 @@ export function similarity(fingerprints, design) {
 - [ ] **Step 4: Run the tests and watch them pass**
 
 Run: `node --test scripts/test-bespoke-design-model.mjs`
-Expected: `ℹ pass 10`, `ℹ fail 0`. If "the default design is valid" fails, the failure message names the rule; fix the value in `defaults`, not the rule.
+Expected: `ℹ pass 11`, `ℹ fail 0`. If "the default design is valid" fails, the failure message names the rule; fix the value in `defaults`, not the rule.
 
 - [ ] **Step 5: Wire into the quality gate and commit**
 
@@ -702,10 +1451,16 @@ class ParityTests(unittest.TestCase):
             design["palette"]["secondary"] = ["offwhite"]
             yield design
         solid = copy.deepcopy(self.base)
-        solid["slides"]["activity"]["look"] = "solid"
+        solid["slides"]["activity"]["colors"] = "solid"
         solid["slides"]["title"]["layout"] = "split"
         solid["slides"]["list"]["look"] = "filled"
         yield solid
+        clash = copy.deepcopy(self.base)
+        clash["slides"]["title"]["layout"] = "split"
+        clash["slides"]["title"]["colors"] = "light"
+        clash["slides"]["activity"]["layout"] = "banner"
+        clash["slides"]["activity"]["label"] = "pill"
+        yield clash
 
     def test_contrast_matches_js_for_every_palette_pair(self) -> None:
         hexes = [c["hex"] for c in COMPONENTS["palette"]]
@@ -909,6 +1664,12 @@ def check_design(components: dict, design: dict) -> list[str]:
                 problem = _pair_problem(components, design, pair, f"{group['label']}, {option['label']}")
                 if problem:
                     errors.append(problem)
+            for rule in option.get("excludes", []):
+                if design["slides"][group["id"]].get(rule["decision"]) != rule["option"]:
+                    continue
+                decision_other = next(d for d in group["decisions"] if d["id"] == rule["decision"])
+                other = next(o for o in decision_other["options"] if o["id"] == rule["option"])
+                errors.append(f"{group['label']}: {option['label']} can't be combined with {other['label']}.")
     return errors
 
 
@@ -942,7 +1703,7 @@ JS `toFixed(2)` and Python `f"{x:.2f}"` round differently on exact halves. `_for
 - [ ] **Step 4: Run the tests and watch them pass**
 
 Run: `python3 -m unittest scripts/test_bespoke_roles.py -v`
-Expected: 12 tests, `OK`. If `test_check_design_matches_js` fails on a ratio string, compare the two messages. The fix belongs in `_format_ratio` or `_format_min`, never in the JS.
+Expected: 14 tests, `OK`. If `test_check_design_matches_js` fails on a ratio string, compare the two messages. The fix belongs in `_format_ratio` or `_format_min`, never in the JS.
 
 - [ ] **Step 5: Commit**
 
@@ -990,11 +1751,11 @@ Create `scripts/test-fixtures/bespoke/selection-v2-money-management.json`:
     "fontPairing": "dm-serif-display-outfit",
     "slides": {
       "background": { "pattern": "dot-grid" },
-      "title": { "background": "gradient", "logo": "above", "layout": "center" },
-      "divider": { "layout": "center", "watermark": "show" },
-      "video": { "frame": "accent", "background": "content" },
-      "list": { "look": "rail" },
-      "activity": { "look": "tinted" }
+      "title": { "colors": "gradient", "logo": "above", "layout": "center" },
+      "divider": { "colors": "solid", "watermark": "show", "layout": "center" },
+      "video": { "colors": "light", "frame": "accent", "titleStyle": "regular", "layout": "stacked" },
+      "list": { "look": "rail", "layout": "two", "titleStyle": "regular", "colors": "light" },
+      "activity": { "colors": "tinted", "label": "caps", "layout": "box" }
     }
   },
   "sampleContent": { "bullets": "1. Name one money goal", "mythReality": "Myth: Budgets are only for people in debt." },
@@ -1388,7 +2149,7 @@ The service must be redeployed from this branch before any change that sends v2 
 **Files:**
 - Modify: `scripts/bespoke_design.py` (`build_design` dispatches; v2 path)
 - Modify: `scripts/bespoke-check-design.py` (accept `bespoke-build-contract/v2`)
-- Modify: `scripts/check-title-layouts.mjs` (also check v2 title layouts)
+- Create: `scripts/check-v2-layouts.mjs` (every v2 option rendered on the template)
 - Test: `scripts/test_bespoke_submission.py` (append), `scripts/test-bespoke-design.mjs` (append a v2 scenario)
 
 **Interfaces:**
@@ -1558,32 +2319,224 @@ In the JS part, after the `PASS generated title, divider, card, sidebar, texture
 Run: `node scripts/test-bespoke-design.mjs`
 Expected: passes.
 
-- [ ] **Step 7: Check v2 title layouts render cleanly**
+- [ ] **Step 7: Check that every v2 option lays out cleanly**
 
-In `scripts/check-title-layouts.mjs`, after building `titles` from `theme-options.json`, append one probe per v2 title layout. Each probe's CSS is `design_css` for the fixture design with that layout:
+Create `scripts/check-v2-layouts.mjs`. It renders the template with the v2 CSS at 1280×720, changes one decision at a time from the defaults, and shows each slide type the way deck navigation does. It fails when parts collide, spill out of the visible stage, overflow, or when a layout isn't where its name says (side by side must put the title left of the player, and so on). The skeleton has no activity box or bullet list, so it adds both from `components.md` markup.
 
 ```js
-import { designCss } from "../bespoke/design-model.mjs";
+#!/usr/bin/env node
+// Render SPOKES Builder/template.html with v2 slide-piece CSS at 1280x720 and
+// check every option of every decision: the slide's parts sit inside the slide,
+// don't overlap each other, and don't overflow. One decision changes at a time;
+// everything else stays at the data file's defaults. The template skeleton has
+// no activity box or bullet list, so both are added from components.md markup.
+// Usage: node scripts/check-v2-layouts.mjs [--shots <dir>] [group.decision.option ...]
+import fs from "node:fs";
+import http from "node:http";
+import path from "node:path";
+import { fileURLToPath } from "node:url";
+import { chromium } from "playwright";
+import { checkDesign, designCss } from "../bespoke/design-model.mjs";
+
+const root = path.resolve(path.dirname(fileURLToPath(import.meta.url)), "..");
+const args = process.argv.slice(2);
+const shotsAt = args.indexOf("--shots");
+const shots = shotsAt >= 0 ? args.splice(shotsAt, 2)[1] : null;
+const only = new Set(args);
 const components = JSON.parse(fs.readFileSync(path.join(root, "SPOKES Builder/role-components.json"), "utf8"));
-const v2Base = JSON.parse(fs.readFileSync(path.join(root, "scripts/test-fixtures/bespoke/selection-v2-money-management.json"), "utf8")).design;
-const layouts = components.slides.groups.find((g) => g.id === "title").decisions.find((d) => d.id === "layout").options;
-for (const layout of layouts) {
-  if (only.size && !only.has(`v2-${layout.id}`)) continue;
-  const design = structuredClone(v2Base);
-  design.slides.title.layout = layout.id;
-  titles.push({ slug: `v2-${layout.id}`, css: designCss(components, design) });
+const template = fs.readFileSync(path.join(root, "SPOKES Builder/template.html"), "utf8")
+  .replaceAll("{{LESSON_TITLE}}", "Money Management")
+  .replace("{{SUBTITLE}}", "Skills for Life, planning every dollar");
+
+/** Which slide shows each group, and which parts of it must not collide. */
+const TARGETS = {
+  title: { slide: ".slide-title", parts: ["img.logo", "h1", ".divider", ".subtitle", ".copyright"] },
+  divider: { slide: '.slide-section[data-chapter="3"]', parts: [".chapter-label", "h2", ".divider"] },
+  video: { slide: ".slide-video", parts: ["h2", ".video-container"] },
+  list: { slide: "#v2-list", parts: [":scope > h2", ".card"], inner: [".card h4", ".card p"] },
+  activity: { slide: "#v2-activity", parts: [".activity-label", ".activity-box p"], box: ".activity-box" },
+};
+
+// Canonical component markup (SPOKES Builder/components.md) for pieces the skeleton lacks.
+const EXTRA = `
+<section class="slide" id="v2-list" data-chapter="3"><h2>Key points</h2>
+  <div class="cards-grid">
+    <div class="card"><h4>Name one money goal</h4><p>Pick something you can reach this month.</p></div>
+    <div class="card gold-border"><h4>List your fixed costs</h4><p>Rent, phone and bus fare come first.</p></div>
+    <div class="card"><h4>Trim one expense</h4><p>Small cuts add up over a month.</p></div>
+    <div class="card gold-border"><h4>Check in weekly</h4><p>Compare the plan with what you spent.</p></div>
+  </div>
+</section>
+<section class="slide" id="v2-bullets" data-chapter="3"><h2>Before next class</h2>
+  <ul class="content-list"><li>Write the budget down</li><li>Keep receipts for a week</li><li>Mark one cost to cut</li></ul>
+</section>
+<section class="slide" id="v2-activity" data-chapter="3"><h2>Try it</h2>
+  <div class="activity-box"><div class="activity-label">Group activity</div><p>With a partner, list three costs you could cut and one goal the savings would fund.</p></div>
+</section>`;
+
+const cases = [];
+for (const group of components.slides.groups) {
+  if (!TARGETS[group.id]) continue;
+  for (const decision of group.decisions) {
+    for (const option of decision.options) {
+      const key = `${group.id}.${decision.id}.${option.id}`;
+      if (only.size && !only.has(key)) continue;
+      const design = structuredClone(components.defaults);
+      design.slides[group.id][decision.id] = option.id;
+      // A clash with a default is reported by the model, not by layout; move the default aside.
+      for (const rule of option.excludes || []) {
+        if (design.slides[group.id][rule.decision] === rule.option) {
+          const other = group.decisions.find((d) => d.id === rule.decision).options.find((o) => o.id !== rule.option);
+          design.slides[group.id][rule.decision] = other.id;
+        }
+      }
+      const problems = checkDesign(components, design);
+      if (problems.length) throw new Error(`${key}: default design becomes invalid: ${problems.join("; ")}`);
+      cases.push({ key, group: group.id, css: designCss(components, design) });
+    }
+  }
 }
+
+const pages = new Map(cases.map((c) => [`/probe/${c.key}.html`,
+  template.replace("</head>", `<style id="theme-override">\n${c.css}\n</style>\n</head>`).replace("</main>", `${EXTRA}</main>`)]));
+const types = { ".png": "image/png", ".woff2": "font/woff2", ".css": "text/css", ".js": "text/javascript" };
+const server = http.createServer((req, res) => {
+  const url = decodeURIComponent(req.url.split("?")[0]);
+  if (pages.has(url)) { res.writeHead(200, { "content-type": "text/html" }); res.end(pages.get(url)); return; }
+  const file = path.join(root, url.startsWith("/probe/") ? path.join("SPOKES Builder", url.slice(7)) : url);
+  if (!file.startsWith(root) || !fs.existsSync(file)) { res.writeHead(404); res.end(); return; }
+  res.writeHead(200, { "content-type": types[path.extname(file)] || "application/octet-stream" });
+  fs.createReadStream(file).pipe(res);
+});
+await new Promise((resolve) => server.listen(0, resolve));
+
+const browser = await chromium.launch();
+const failures = [];
+try {
+  const page = await browser.newPage({ viewport: { width: 1280, height: 720 }, reducedMotion: "reduce" });
+  for (const c of cases) {
+    await page.goto(`http://localhost:${server.address().port}/probe/${c.key}.html`);
+    if (!(await page.locator("#v2-list").count())) throw new Error("Template has no </main>; the extra slides were not added");
+    const target = TARGETS[c.group];
+    const found = await page.evaluate(async ({ t, key }) => {
+      // Show only the slide under test, the way the deck's navigation does.
+      document.querySelectorAll(".slide.active").forEach((s) => s.classList.remove("active"));
+      const slide = document.querySelector(t.slide);
+      slide.classList.add("active");
+      await new Promise((r) => requestAnimationFrame(() => requestAnimationFrame(r)));
+      await Promise.all(document.getAnimations().filter((a) => a.effect?.getTiming().iterations !== Infinity).map((a) => a.finished.catch(() => null)));
+      // The visible frame: the slide clipped to the stage and the window. A slide that grows
+      // wider than the stage would otherwise "contain" content that is off screen.
+      const problems = [];
+      const own = slide.getBoundingClientRect();
+      const stage = document.querySelector(".main").getBoundingClientRect();
+      const frame = {
+        left: Math.max(own.left, stage.left, 0), top: Math.max(own.top, stage.top, 0),
+        right: Math.min(own.right, stage.right, innerWidth), bottom: Math.min(own.bottom, stage.bottom, innerHeight),
+      };
+      if (own.width > stage.width + 1) problems.push("slide is wider than the stage");
+      if (slide.scrollHeight > slide.clientHeight + 1) problems.push("content is taller than the slide");
+      const boxes = t.parts.flatMap((selector) => [...slide.querySelectorAll(selector)].map((el) => ({ selector, el, box: el.getBoundingClientRect() })));
+      for (const { selector, el, box } of boxes) {
+        if (!box.width || !box.height) { problems.push(`${selector} has no size`); continue; }
+        if (box.left < frame.left - 1 || box.right > frame.right + 1 || box.top < frame.top - 1 || box.bottom > frame.bottom + 1) problems.push(`${selector} outside the slide`);
+        if (el.scrollWidth > el.clientWidth + 1) problems.push(`${selector} overflows`);
+      }
+      for (let i = 0; i < boxes.length; i += 1) {
+        for (let j = i + 1; j < boxes.length; j += 1) {
+          const a = boxes[i].box, b = boxes[j].box;
+          if (Math.min(a.right, b.right) - Math.max(a.left, b.left) > 2 && Math.min(a.bottom, b.bottom) - Math.max(a.top, b.top) > 2) {
+            problems.push(`${boxes[i].selector} overlaps ${boxes[j].selector}`);
+          }
+        }
+      }
+      for (const selector of t.inner || []) {
+        for (const el of slide.querySelectorAll(selector)) {
+          const card = el.closest(".card").getBoundingClientRect();
+          const box = el.getBoundingClientRect();
+          if (box.left < card.left - 1 || box.right > card.right + 1 || box.bottom > card.bottom + 1) problems.push(`${selector} spills out of its card`);
+          if (el.scrollWidth > el.clientWidth + 1) problems.push(`${selector} overflows`);
+        }
+      }
+      if (t.box) {
+        const box = slide.querySelector(t.box).getBoundingClientRect();
+        for (const selector of t.parts) {
+          const part = slide.querySelector(selector).getBoundingClientRect();
+          if (part.left < box.left - 1 || part.right > box.right + 1 || part.top < box.top - 1 || part.bottom > box.bottom + 1) problems.push(`${selector} spills out of ${t.box}`);
+        }
+      }
+      // Each layout must actually be where its name says.
+      const at = (selector) => slide.querySelector(selector)?.getBoundingClientRect();
+      const mid = (own.left + own.right) / 2;
+      const cards = [...slide.querySelectorAll(".card")].map((el) => el.getBoundingClientRect());
+      const expect = {
+        "title.layout.left": () => at("h1").left < mid - 50,
+        "title.layout.bottom": () => at("h1").left < mid - 50 && Math.max(...boxes.map((b) => b.box.bottom)) > own.bottom - 140,
+        "title.layout.split": () => at("h1").left < mid - 50,
+        "divider.layout.left": () => at("h2").left < mid - 50,
+        "divider.layout.number": () => at("h2").left < mid - 50,
+        "video.layout.side": () => at("h2").right <= at(".video-container").left + 1,
+        "video.layout.banner": () => at("h2").width >= at(".video-container").width * 0.9,
+        "list.layout.three": () => cards.length >= 3 && Math.abs(cards[0].top - cards[2].top) < 2,
+        "list.layout.rows": () => cards.every((c) => Math.abs(c.left - cards[0].left) < 2 && Math.abs(c.width - cards[0].width) < 2),
+        "list.layout.two": () => cards.length >= 2 && Math.abs(cards[0].top - cards[1].top) < 2 && Math.abs(cards[0].top - cards[2].top) > 2,
+        "activity.layout.side": () => at(".activity-label").right <= at(".activity-box p").left + 1,
+        "activity.layout.banner": () => at(".activity-label").width >= at(".activity-box").width * 0.95,
+      }[key];
+      if (expect && !expect()) problems.push(`layout is not where "${key.split(".").pop()}" says`);
+      return [...new Set(problems)];
+    }, { t: target, key: c.key });
+    if (shots) {
+      fs.mkdirSync(shots, { recursive: true });
+      await page.screenshot({ path: path.join(shots, `${c.key}.png`) });
+    }
+    console.log(`${found.length ? "FAIL" : "PASS"} ${c.key}${found.length ? ": " + found.join("; ") : ""}`);
+    if (found.length) failures.push(c.key);
+  }
+} finally {
+  await browser.close();
+  server.close();
+}
+console.log(`v2 layouts: ${cases.length - failures.length}/${cases.length} pass`);
+process.exitCode = failures.length ? 1 : 0;
 ```
 
-`titles` must be declared with `let`, or built as a new array, before this push. Adjust the declaration.
+Prove the checker can fail before trusting a pass. While writing this plan, a checker that only compared parts with the slide's own box passed deliberately broken CSS, because the slide itself grew wider than the stage. Break three options on purpose and confirm all three fail, then restore the file:
 
-Run: `node scripts/check-title-layouts.mjs`
-Expected: `title layouts: 19/19 pass` (15 library plus 4 v2).
+```bash
+cp "SPOKES Builder/role-components.json" /tmp/rc.bak
+python3 - <<'PY'
+import json; p = "SPOKES Builder/role-components.json"; d = json.load(open(p))
+for g in d["slides"]["groups"]:
+    for dd in g["decisions"]:
+        for o in dd["options"]:
+            if g["id"] == "title" and o["id"] == "left": o["css"] = ".slide-title { padding-left: 60rem; }"
+            if g["id"] == "list" and o["id"] == "three": o["css"] = ".cards-grid { grid-template-columns: repeat(3, 40rem); }"
+            if g["id"] == "activity" and o["id"] == "side": o["css"] = ".activity-label { position: absolute; top: 0; left: 0; }"
+json.dump(d, open(p, "w"), indent=2)
+PY
+node scripts/check-v2-layouts.mjs title.layout.left list.layout.three activity.layout.side
+cp /tmp/rc.bak "SPOKES Builder/role-components.json"
+```
+
+Expected: `v2 layouts: 0/3 pass`.
+
+Run: `node scripts/check-v2-layouts.mjs`
+Expected: `v2 layouts: 53/53 pass` (57 options minus the 4 background patterns, which have no layout).
+
+Look at the screenshots too (`--shots <dir>`). The checker proves nothing collides, not that a sample looks good.
+
+In `scripts/quality.sh`, after `node scripts/check-title-layouts.mjs`, add:
+
+```bash
+  echo "==> v2 slide-piece layouts"
+  node scripts/check-v2-layouts.mjs
+```
 
 - [ ] **Step 8: Commit**
 
 ```bash
-git add scripts/bespoke_design.py scripts/bespoke-check-design.py scripts/check-title-layouts.mjs scripts/test_bespoke_submission.py scripts/test-bespoke-design.mjs
+git add scripts/bespoke_design.py scripts/bespoke-check-design.py scripts/check-v2-layouts.mjs scripts/quality.sh scripts/test_bespoke_submission.py scripts/test-bespoke-design.mjs
 git commit -m "feat(bespoke): generate v2 lesson CSS and build contracts from roles"
 ```
 

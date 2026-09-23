@@ -2,7 +2,7 @@
 
 Status: draft for Britt's review, 2026-09-23. Nothing here is built yet.
 
-Britt's direction (2026-09-23): teams build a lesson's look one small decision at a time. Each decision changes the preview at once, is listed in a change history, and persists. Choices already made: see the color step as a mockup first (`bespoke/mockups/color-roles.html`), design four slide types, and make the builder the wizard rather than a side path. The similarity meter stays and must measure real lessons.
+Britt's direction (2026-09-23): teams build a lesson's look one small decision at a time, the way a PowerPoint user builds a master slide from a choice of layouts. Each decision offers 3 or 4 samples, changes the preview at once, is listed in a change history, and persists. Choices already made: see the color step as a mockup first (`bespoke/mockups/color-roles.html`), design four slide types, give teams a say in each card's layout, colors and type, and make the builder the wizard rather than a side path. The similarity meter stays and must measure real lessons. Teams won't start from a released lesson's look; most will want theirs to differ.
 
 Implementation is split into three plans, each shippable on its own:
 
@@ -17,14 +17,14 @@ Implementation is split into three plans, each shippable on its own:
 | 1. Lesson and team | Unchanged from today | Title slide |
 | 2. Colors | Two primary and up to three secondary palette colors, then a color for each role | Title and content slides |
 | 3. Fonts and background | Font pairing, background pattern | Content slide |
-| 4. Title slide | Text position, logo position, background (solid or gradient) | Title slide |
-| 5. Chapter divider | Text position, watermark letter on or off | Divider slide |
-| 6. Video slide | Frame, background | Video slide |
-| 7. Bullet list | Card look | Content slide with cards and a list |
-| 8. Activity | Box look | Activity slide |
+| 4. Title slide | Colors, logo position, layout | Title slide |
+| 5. Chapter divider | Colors, watermark letter, layout | Divider slide |
+| 6. Video slide | Colors, frame, title style, layout | Video slide |
+| 7. Bullet list | Card look, layout, title style, colors | Content slide with cards |
+| 8. Activity | Colors, label style, layout | Activity slide |
 | 9. Review and send | Unchanged: save, send to Britt, receipt | Every slide type in turn |
 
-Each step holds two or three decisions with two to four options each. Every option changes the preview. The existing browser sweep (`scripts/test-bespoke-browser.mjs`, "every option in every design step changes the preview") extends to the new steps.
+Each step holds two to four decisions with two to four samples each. Plan 2 shows the samples as thumbnails drawn from the real CSS, the way PowerPoint shows a master slide's layouts. Every option changes the preview. The existing browser sweep (`scripts/test-bespoke-browser.mjs`, "every option in every design step changes the preview") extends to the new steps.
 
 Pointing at an option previews it without choosing it, as the current wizard does. Every choice goes into a change history with undo. Choices save to the browser draft at once, and to the shared team design through the existing autosave and Save.
 
@@ -58,18 +58,32 @@ The rules:
 
 The pieces live in one data file, `SPOKES Builder/role-components.json`. It also holds the palette and the role table above. Each option's CSS may use only role variables (`--role-*`), palette variables and plain values. It may not contain hex colors. Each option lists the color pairs it creates.
 
-| Slide type | Decision | Options |
+| Slide type | Decision | Samples |
 |---|---|---|
-| Title | Text position | Center, left, bottom-left, split (two panels) |
-| Title | Background | Solid, gradient |
+| Title | Colors | Solid, gradient, light |
 | Title | Logo | Above the title, top corner |
-| Chapter divider | Text position | Center, left |
+| Title | Layout | Centered, left, bottom left, split panels |
+| Chapter divider | Colors | Solid, gradient, light |
 | Chapter divider | Watermark letter | Show, hide |
+| Chapter divider | Layout | Centered, left, band, big number |
+| Video | Colors | Light, tinted, dark |
 | Video | Frame | Plain, accent frame |
-| Video | Background | Content color, accent tint |
-| Bullet list | Card look | Left rail, outline, filled |
-| Activity | Box look | Tinted, outline, solid |
+| Video | Title style | Regular, large, small caps |
+| Video | Layout | Title above, side by side, title banner |
+| Bullet list | Card look | Left rail, outline, filled, top band |
+| Bullet list | Layout | Two columns, three across, rows, numbered |
+| Bullet list | Title style | Regular, large, small caps |
+| Bullet list | Colors | Light, tinted, bold |
+| Activity | Colors | Light, tinted, solid |
+| Activity | Label style | Small caps, heading font, pill |
+| Activity | Layout | Box, callout, label banner, side label |
 | Background | Pattern | Plain, dot grid, diagonal, crosshatch |
+
+That is 57 samples across 18 decisions. A few combinations don't work together (split panels with light title colors, a band divider with light colors, a label banner with a pill label). The data file lists them, and the builder switches them off with the reason, the same way it handles an unreadable color.
+
+**Fonts.** SPOKES-STANDARD keeps one font pairing across a lesson (THM-02) and has headings use the heading font (TYP-03). So teams choose the pairing once, in step 3, and each card type gets a title style (regular, large or small caps) within the heading font. A per-card font choice would break both rules. The validator only warns on hard-coded font names, so it would not catch the break.
+
+**Checked while writing the plan.** `scripts/check-v2-layouts.mjs` renders every sample on the template at 1280×720, one decision at a time, and fails on collisions, clipping, overflow, or a layout that isn't where its name says. All 53 layout-bearing samples pass. Its first versions passed broken CSS and missed real faults: rows and three-across overflowing four cards, and side-by-side video stacking because of the template's flex spacers. The final version catches deliberately broken CSS.
 
 The split title reuses the layout repaired in PR #28, which came from the released Interview Skills lesson. `scripts/check-title-layouts.mjs` gains the v2 title options.
 
@@ -108,14 +122,28 @@ Private team links, the Netlify service, encryption, revisions and conflicts, hi
 
 - **D6 and `AGENT_THEMING_GUIDELINES.md` line 60** ("Do not rewrite the colorLead/registry color model"). Roles replace the color lead for v2 designs. The six released lessons keep their v1 entries.
 - **D7** (the wizard shows the library catalog). v2 uses its own slide-piece file. The v1 library stays for released lessons and v1 designs.
-- **D12 and THM-04** (vary card styles by chapter). v2 starts with one bullet-list look per lesson. Per-chapter variation would return as a later option if Britt wants it.
-- **The six presets** stop being starting points. A team could still start from a released lesson's measured colors.
+- **D12 and THM-04** (vary card styles by chapter). v2 gives each card type its own look, chosen once per lesson. Per-chapter variation isn't planned; Britt deferred card design to this spec.
+- **The six presets** stop being starting points, and released lessons aren't offered as starting points either (Britt, 2026-09-23).
 - **Dark lessons** (the Dark Royal pattern, THM-05) are left out of v2 at first. A dark theme needs full color inversion and its own role rules.
 - **The design brief** (`bespoke/brief.js`) suggests v1 library choices. Plan 2 decides whether it seeds v2 palette picks or retires.
 
+## The design brief: recommendation
+
+Britt asked for a recommendation before deciding.
+
+The brief (`bespoke/brief.js`) asks four questions and picks a whole v1 design. It works by scoring every v1 library option on energy, warmth and formality. To keep it for v2 it would need new scores for 57 samples and 11 roles, and it would pick most choices for the team.
+
+| | Keep the brief for v2 | Retire it |
+|---|---|---|
+| Team experience | A ready-made start after four questions | Teams start from sensible defaults and make each choice |
+| Fits the master-slide approach | Partly. It chooses for the team, then they edit | Yes. Every choice is the team's own |
+| Differentiation | Built in: it steers away from released lessons | Comes from the meter, which shows the closest lesson live |
+| Work | Score 57 samples and 11 roles; retune after pilots | Delete `brief.js`, its tests and the Describe the feel step |
+| Risk | Suggestions that feel wrong to teachers (the scores are untested with teams) | Some teams may stall on a blank start |
+
+**Recommendation: retire it.** The builder's whole point is small decisions the team makes itself, and the meter already does the brief's one unique job, keeping lessons distinct. If the Money Management pilot shows teams stalling on the color step, add a single "Suggest two colors" button there, which picks two palette colors far from every released lesson using the fingerprints. That is a few lines on top of Plan 1, not a second design engine. v1 designs saved with a brief keep it; Plan 3 drops it when converting them to v2.
+
 ## Open questions for Britt
 
-1. Should the six released lessons be offered as starting points ("start from Interview Skills' colors")?
-2. Is one bullet-list look per lesson enough, or should chapters vary as in v1?
-3. Should teams choose video and activity looks per chapter, or once per lesson?
-4. Should the brief stay as a way to seed the color picks?
+1. The brief: retire it as recommended above, or keep it?
+2. Should the similarity meter warn when a design shares more than a set number of dimensions with a released lesson, or only show the number?
