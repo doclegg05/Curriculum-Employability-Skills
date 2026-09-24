@@ -1,0 +1,267 @@
+---
+name: BeSpoke guided builder
+description: SPOKES controls around an editable, cumulative lesson design preview.
+colors:
+  navy: "#00133f"
+  blue: "#004071"
+  action: "#007baf"
+  mist: "#edf3f7"
+  muted: "#526273"
+  line: "#cad5df"
+  paper: "#fff"
+  focus: "#a7253f"
+  canvas: "#f4f6f8"
+  rail: "#f7f9fa"
+  selected: "#edf5fa"
+  input-line: "#8f9eaf"
+  preview-mat: "#dfe7ed"
+  notice: "#fff5d7"
+  readability: "#fff4f0"
+  readability-ink: "#6d2434"
+  lesson-green: "#37b550"
+  lesson-gold: "#d3b257"
+  lesson-deep-gold: "#ad8806"
+  lesson-gray: "#60636b"
+  lesson-silver: "#d1d3d4"
+typography:
+  headline:
+    fontFamily: "Outfit, system-ui, sans-serif"
+    fontSize: "1.8rem"
+    fontWeight: 600
+    lineHeight: 1.15
+    letterSpacing: "-0.04em"
+  title:
+    fontFamily: "Outfit, system-ui, sans-serif"
+    fontSize: "1.2rem"
+    lineHeight: 1.2
+  preview-title:
+    fontFamily: "Outfit, system-ui, sans-serif"
+    fontSize: "1.35rem"
+    letterSpacing: "-0.02em"
+  body:
+    fontFamily: "Outfit, system-ui, sans-serif"
+    fontSize: "0.94rem"
+    lineHeight: 1.5
+  label:
+    fontFamily: "Outfit, system-ui, sans-serif"
+    fontSize: "0.87rem"
+    fontWeight: 500
+  helper:
+    fontFamily: "Outfit, system-ui, sans-serif"
+    fontSize: "0.8rem"
+    lineHeight: 1.5
+rounded:
+  field: "5px"
+  control: "6px"
+  feature: "8px"
+  dialog: "10px"
+spacing:
+  tight: "4px"
+  compact: "8px"
+  control: "10px"
+  small: "12px"
+  medium: "16px"
+  group: "20px"
+  section: "24px"
+  frame: "28px"
+  panel: "30px"
+components:
+  button-primary:
+    backgroundColor: "{colors.blue}"
+    textColor: "{colors.paper}"
+    rounded: "{rounded.control}"
+    padding: "9px 14px"
+  button-primary-hover:
+    backgroundColor: "{colors.navy}"
+    textColor: "{colors.paper}"
+  button-secondary:
+    backgroundColor: "{colors.paper}"
+    textColor: "{colors.navy}"
+    rounded: "{rounded.control}"
+    padding: "9px 14px"
+  button-secondary-hover:
+    backgroundColor: "{colors.mist}"
+  text-link:
+    textColor: "{colors.blue}"
+    padding: "0"
+  field:
+    backgroundColor: "{colors.paper}"
+    textColor: "{colors.navy}"
+    rounded: "{rounded.field}"
+    padding: "10px"
+  step-current:
+    backgroundColor: "{colors.blue}"
+    textColor: "{colors.paper}"
+    rounded: "{rounded.field}"
+    padding: "10px 8px"
+  choice-selected:
+    backgroundColor: "{colors.selected}"
+    textColor: "{colors.navy}"
+    rounded: "{rounded.control}"
+    padding: "10px 8px"
+  paint-chip-selected:
+    backgroundColor: "{colors.mist}"
+    rounded: "{rounded.field}"
+    padding: "4px 2px"
+  preset:
+    backgroundColor: "{colors.paper}"
+    textColor: "{colors.navy}"
+    rounded: "{rounded.control}"
+    padding: "0 0 12px"
+  preview-tab-selected:
+    textColor: "{colors.blue}"
+    padding: "11px 12px"
+---
+
+# Design System: BeSpoke guided builder
+
+## Overview
+
+**Creative North Star: "The guided design workbench"**
+
+This is the code-defined design system for the guided builder at `bespoke/index.html`. Its working surfaces use the existing SPOKES navy, blue, white, bridge logo, and locally hosted Outfit type. Controls are compact, explicit, and steady while the lesson preview carries the user's expressive choices.
+
+The interface and the authored lesson design are separate layers. `builder.css` governs the builder chrome; `builder-catalog.json` supplies the editable choices; `builder-model.mjs` renders the shared lesson model. This document applies to the guided builder only. It does not restyle the dashboard, the original wizard, or any released lesson. Root `PRODUCT.md` describes the dashboard and is not a surface brief for this builder.
+
+**Key Characteristics:**
+
+- Stable SPOKES controls surround a visibly changing lesson artifact.
+- Labels and sample previews explain choices before specialist vocabulary is needed.
+- Color roles and heading/body fonts remain independently editable.
+- State, recovery, readability, and comparison information sit near the task they explain.
+
+## Colors
+
+The chrome uses cool neutral surfaces, dark blue text, blue actions, and a mauve focus outline. Lesson colors are data inside the preview, not a theme for the controls.
+
+### Primary
+
+- **Navy** (`navy`) anchors chrome text and primary-button hover.
+- **Blue** (`blue`) identifies primary actions, current navigation, selected outlines, and text links.
+- **Action blue** (`action`) identifies choice hover and fine instructional rules.
+
+### Secondary
+
+- **Mauve focus** (`focus`) makes keyboard location visible. The same approved color is available as lesson Mauve; its chrome function remains focus.
+
+### Neutral
+
+- **Paper**, **canvas**, and **rail** distinguish controls, the page, and step navigation.
+- **Mist** and **selected** distinguish secondary hover and chosen controls.
+- **Muted** carries helper text; **line** divides regions; **input-line** delineates editable fields.
+- **Preview mat** separates the editable slide artifact from application chrome.
+- **Notice**, **readability**, and **readability ink** support explanatory status and repair messages. The notice edge uses lesson Gold.
+
+### Editable lesson palette
+
+All 11 approved colors stay visible in every role's palette. The catalog's display names and IDs remain authoritative; the mappings below deliberately distinguish lesson names from similarly named chrome variables.
+
+| Catalog ID | Display name | Frontmatter token |
+| --- | --- | --- |
+| `primary` | Blue | `action` |
+| `dark` | Navy | `blue` |
+| `royal` | Royal | `navy` |
+| `accent` | Green | `lesson-green` |
+| `gold` | Gold | `lesson-gold` |
+| `muted-gold` | Deep gold | `lesson-deep-gold` |
+| `mauve` | Mauve | `focus` |
+| `gray` | Gray | `lesson-gray` |
+| `offwhite` | Silver | `lesson-silver` |
+| `muted` | Mist | `mist` |
+| `light` | White | `paper` |
+
+The 11 editable roles are sidebar, title background, title second color, title text, subtitle, content background, heading, body, accent, button, and divider background. Sidebar, accent, button, and divider surfaces receive automatic readable ink. Green and Gold are unavailable for direct text roles under the brand rules. Other unavailable text choices remain visible and explain the contrast failure when activated. A surface change preserves other selections and exposes repair notes instead of silently repainting them.
+
+**The Two Layers Rule.** Lesson choices change the shared preview model; they never repaint the builder's navigation, fields, or status surfaces.
+
+**The Visible Choice Rule.** Keep every approved color visible. Explain an unavailable text choice in place, and preserve the rest of the draft while the user repairs a contrast conflict.
+
+## Typography
+
+**UI font:** locally hosted Outfit (`system-ui, sans-serif` fallback), with font synthesis disabled. The chrome hierarchy in frontmatter records the current panel heading, section heading, preview label, explanatory body, field label, and helper roles. The brand name is larger than control text (1.6rem desktop, 1.4rem mobile); most control labels stay near 0.8–0.94rem.
+
+**Lesson fonts:** either heading or body can use any of the 12 existing local families: DM Serif Display, Outfit, Playfair Display, Inter, Merriweather, Source Sans 3, Vollkorn, Fira Sans, Crimson Pro, Work Sans, Bitter, or Raleway. There is no required pairing and no serif/sans role restriction. Presets populate the two independent selectors; they do not constrain later choices.
+
+The model gives lesson title text a fluid scale (`clamp(2rem, 4vw, 3.7rem)`), a short measure (18ch), and tight line-height (1.12). Content headings use `clamp(1.55rem, 3vw, 2.25rem)` and line-height 1.2. Lesson body text uses line-height 1.55; text inside boxes uses 0.92rem. These are authored-slide styles, separate from the UI hierarchy.
+
+**The Independent Type Rule.** Preserve both 12-family selectors. Never reintroduce the original wizard's fixed font-pair restrictions.
+
+## Layout
+
+Desktop uses a two-region workspace: a control rail and a larger preview region. The control rail itself has a step-navigation column (172px) and the current panel. The base workspace columns are `minmax(465px, .95fr)` and `minmax(450px, 1.3fr)`. The preview stays at the top of the viewport while the current controls scroll.
+
+Panel padding is 26px 22px 36px; preview padding is 26px 28px. Related fields and choices use small gaps (7–12px), while decision groups and major regions separate by roughly 20–30px. Choices and presets use two columns. Color choices use four columns, growing to six on wide screens.
+
+| Viewport | Implemented composition |
+| --- | --- |
+| At least 1500px | Control region is 530–640px, preview has at least 650px, step navigation is 190px, and preview padding grows to 30px 40px. |
+| 761–1100px | Step navigation becomes a horizontal scrolling strip above the control panel; the preview remains beside it. |
+| At most 760px | A sticky Design / Preview switch shows one workspace region at a time. Step navigation scrolls horizontally, the preview loses sticky positioning, and swatches grow from 38px to 44px. |
+| At most 600px | Generated slide styles reduce padding and collapse video/activity side layouts. Text boxes use one or two columns according to the model. This is a viewport media query, not a container query. |
+
+The preview stage declares an inline-size container, but the current model's responsive rules use viewport media queries. Preserve that distinction when describing or changing responsive behavior.
+
+## Elevation & Depth
+
+The chrome is mostly flat, separated by cool surface tones and thin borders. Shadows are structural: the file/recovery menu floats above the workspace, and the slide receives a light lift above its mat. There is no shared entrance animation or transition-duration system in the current builder. Reduced-motion preferences disable animation, transitions, and smooth scrolling.
+
+- **Recovery menu:** `0 10px 24px #00133f20`.
+- **Slide artifact:** `0 6px 18px #00133f1f`.
+- **Dialog backdrop:** navy at half opacity (`#00133f80`). The dialog uses a border rather than an authored shadow.
+
+## Shapes
+
+Controls have modest corners: fields, swatches' button containers, and step controls use the field radius; buttons, choices, presets, and the preview mat use the control radius. The guided-start action and floating file menu use the feature radius. The access dialog uses the dialog radius. Swatches and small step numbers are circular.
+
+These chrome shapes do not constrain slide content. Lesson boxes support accent rails, outlines, filled treatments, and top bands; activities support boxes, callouts, banners, and side labels. Those catalog-backed variations belong to the artifact model and are preserved even where the chrome uses a quieter form language.
+
+## Components
+
+### Actions and recovery
+
+Primary buttons use Blue with white text and become Navy on hover. Secondary buttons use Paper with a thin Line border and Mist hover. Base buttons have a 40px minimum height; mobile header actions currently use 38px. Disabled buttons use half opacity. Text links remain underlined with a 3px underline offset. All focusable controls use the Mauve outline (3px, 3px offset); the programmatically focused panel suppresses its own outline.
+
+The header keeps save, open, and review actions visible. Files & recovery uses native disclosure for backup, restore, and original-wizard access. The team-opening dialog is a focused access task, with labeled lesson and private-code fields and explicit Open / Cancel actions. Saving a reusable visual design and authorizing a lesson build are distinct tasks.
+
+### Fields and decisions
+
+Field labels sit above full-width inputs, selects, and text areas with a 7px gap. Fields use a 1px Input line, 10px padding, and a 43px minimum height. Text areas resize vertically. Decision groups are semantic fieldsets with visible legends; chosen buttons carry `aria-pressed`, a stronger border, a selected surface, and a check mark.
+
+The color-role selector precedes the 11-color palette. A selected circular swatch has both a visible mark and an accessible selected label. Unavailable text colors carry a strike-through and `aria-disabled`; they remain activatable to disclose the reason. Do not replace this explanation with an inert, unnamed disabled square.
+
+### Navigation and continuity
+
+Ten named steps run from starting point through team, colors, fonts/background, title, divider, text boxes, video, activity, and review. Current navigation uses `aria-current="step"`; Back and Next controls name the next step. Undo, Redo, and Recent choices remain adjacent to navigation.
+
+Five preview tabs expose Title, Divider, Text boxes, Video, and Activity. The selected tab has a blue underline and text; tablists support arrows, Home, End, Enter, and Space. Mobile Design / Preview tabs switch the visible region. Step changes move focus to the current panel. Dynamic choices, palettes, fonts, and preset controls have stable IDs so the rendering pass can restore focus after a same-step change; open inline disclosures remain open.
+
+### Editable presets
+
+Professional, Modern, Serious, Light-hearted, Fun, and Outspoken are starting looks in the same model as the guided path. Each preset button includes a small palette/type sample, name, short description, and a reference comparison. The selected preset has a blue outline. Choosing a preset is not a lock: every following color, font, arrangement, and sample remains editable.
+
+### Cumulative preview and comparison
+
+The preview is a rendered reusable slide design with explicitly labeled sample content. It takes colors, fonts, arrangements, text, and backgrounds from the same model used by the reusable artifact and template override. It supports the five slide types, including one to four text boxes with paragraph, bullet, or numbered treatment. Hidden box samples remain in the draft.
+
+Readability notes name the problematic text/background pair and provide a path back to colors. The model checks title/heading pairs at 3:1 and subtitle/body pairs at 4.5:1, including sampled gradient surfaces; this is a modeled check, not a claim of whole-page accessibility certification.
+
+Comparison is advisory: it shows exact matching comparable choices against six released references, with matches, differences, and unknowns disclosed. It is not a perceptual percentage, a passing score, or a reservation of private team designs. Save/recovery and preview updates use status/live regions, including an explicit local-test label when that mode is active.
+
+## Do's and Don'ts
+
+### Do:
+
+- Do preserve the SPOKES logo, Outfit chrome, and existing navy-blue-white identity.
+- Do render previews from the shared model so guided controls, editable presets, and saved designs describe the same artifact.
+- Do keep all 11 palette choices visible and all 12 font families available independently for headings and body.
+- Do retain focus, open disclosures, undo history, and recoverable sample text when a choice changes.
+- Do label sample content, local-test states, contrast repairs, and advisory comparison honestly.
+
+### Don't:
+
+- Don't apply the selected lesson palette or fonts to application chrome.
+- Don't treat presets as locked themes or restore fixed font-pair restrictions.
+- Don't hide unsafe text colors without explaining why they are unavailable.
+- Don't describe the comparison as a perceptual score or a requirement to pass.
+- Don't treat a saved design or review request as authorization to build or publish a lesson.
+- Don't extend this document's authority to the dashboard, original wizard, or released lessons.

@@ -1,0 +1,1486 @@
+{
+  "version": 2,
+  "generatedBy": "scripts/generate-lesson-fingerprints.mjs",
+  "method": "Exact catalog choices from rendered computed styles and geometry at 1280 x 720. Standard text-box measurements require agreement across every .cards-grid > .card group. Mixed, custom, translucent, photo-backed and off-palette values remain unknown. No nearest-color or pixel-similarity approximation.",
+  "ranking": "Most shared measured characteristics; comparable counts vary by reference. Advisory only.",
+  "limits": "This library contains six released local lessons, not other teams' private designs. Custom remix cards, video/activity variants, and operating-system font fallbacks are not mapped. A shared content heading means a heading above the boxes, not an identical decorated title bar.",
+  "viewport": {
+    "width": 1280,
+    "height": 720
+  },
+  "lessons": [
+    {
+      "id": "communicating-with-the-public",
+      "title": "Communicating with the Public",
+      "source": {
+        "path": "lesson-communicating-with-the-public/index.html",
+        "sha256": "a60ac45baf8f0db1b80f2d86f0904c61f8113ee740a68aef7bc352c1a03c24eb",
+        "status": "ready"
+      },
+      "roles": {
+        "titleText": "dark",
+        "subtitle": "primary",
+        "heading": "primary",
+        "body": null,
+        "sidebar": "dark",
+        "button": "dark",
+        "contentBackground": "light",
+        "titleBackground": null,
+        "titleBackgroundEnd": null,
+        "dividerBackground": null,
+        "accent": null
+      },
+      "fonts": {
+        "heading": null,
+        "body": "work-sans"
+      },
+      "background": "crosshatch",
+      "slides": {
+        "title": {
+          "layout": "left",
+          "logo": "above",
+          "colors": null
+        },
+        "divider": {
+          "layout": null,
+          "watermark": "hide",
+          "colors": null
+        },
+        "cards": {
+          "count": null,
+          "titleBar": true,
+          "treatment": "paragraph",
+          "look": "band",
+          "layout": null
+        },
+        "video": {
+          "layout": null,
+          "frame": null,
+          "titleStyle": null
+        },
+        "activity": {
+          "layout": null,
+          "labelStyle": null
+        }
+      },
+      "evidence": {
+        "roles.titleText": {
+          "selector": ".slide-title h1",
+          "observed": [
+            "rgb(0, 64, 113)"
+          ]
+        },
+        "roles.subtitle": {
+          "selector": ".slide-title .subtitle",
+          "observed": [
+            "rgb(0, 123, 175)"
+          ]
+        },
+        "roles.heading": {
+          "selector": ".slide:not(.slide-title):not(.slide-section):not(.slide-closing):not(.slide-video):not(.big-statement) h2",
+          "observed": [
+            "rgb(0, 123, 175)"
+          ]
+        },
+        "roles.body": {
+          "selector": ".slide:not(.slide-title):not(.slide-section):not(.slide-closing):not(.slide-video):not(.big-statement) p, .slide:not(.slide-title):not(.slide-section):not(.slide-closing):not(.slide-video):not(.big-statement) li",
+          "observed": [
+            "rgb(96, 99, 107)",
+            "rgb(0, 64, 113)",
+            "rgb(255, 255, 255)",
+            "rgb(0, 19, 63)",
+            "rgba(255, 255, 255, 0.85)"
+          ],
+          "reason": "The colors vary, use transparency, or are outside the eleven exact brand swatches."
+        },
+        "roles.sidebar": {
+          "selector": ".sidebar",
+          "observed": [
+            "rgb(0, 64, 113); none"
+          ]
+        },
+        "roles.button": {
+          "selector": ".slide .download-btn",
+          "observed": [
+            "rgb(0, 64, 113); none"
+          ]
+        },
+        "fonts.heading": {
+          "selector": ".slide-title h1",
+          "observed": [
+            "\"Bookman Old Style\", \"Crimson Pro\", serif"
+          ],
+          "reason": "Font declarations differ or begin with a family outside the catalog. Platform fallback is not treated as a known catalog font."
+        },
+        "fonts.body": {
+          "selector": ".slide:not(.slide-title):not(.slide-section):not(.slide-closing):not(.slide-video):not(.big-statement) p, .slide:not(.slide-title):not(.slide-section):not(.slide-closing):not(.slide-video):not(.big-statement) li",
+          "observed": [
+            "\"Work Sans\", sans-serif"
+          ]
+        },
+        "roles.contentBackground": {
+          "selector": ".main background-color",
+          "observed": [
+            "rgb(255, 255, 255)"
+          ]
+        },
+        "background": {
+          "selector": ".main background-image",
+          "observed": [
+            "linear-gradient(rgba(0, 64, 113, 0.035) 1px, rgba(0, 0, 0, 0) 1px), linear-gradient(90deg, rgba(55, 181, 80, 0.035) 1px, rgba(0, 0, 0, 0) 1px)"
+          ]
+        },
+        "slides.title.layout": {
+          "selector": ".slide-title h1 and ::before/::after geometry",
+          "observed": [
+            "text-align:left; split-panels:false; title-in-lower-half:false"
+          ]
+        },
+        "slides.title.logo": {
+          "selector": ".slide-title .logo geometry relative to h1",
+          "observed": [
+            "position:static; above-title:true"
+          ]
+        },
+        "slides.title.colors": {
+          "selector": ".slide-title background and split panels",
+          "observed": [
+            "linear-gradient(90deg, rgba(255, 255, 255, 0.96) 0%, rgba(255, 255, 255, 0.82) 42%, rgba(255, 255, 255, 0.22) 100%), url(\"lesson-communicating-with-the-public/images/ppt-inspiration/image1.png\")"
+          ],
+          "reason": "Photo/composite title has no equivalent one-color or two-color finish."
+        },
+        "roles.titleBackground": {
+          "selector": ".slide-title background / first gradient stop / left split panel",
+          "observed": [
+            "linear-gradient(90deg, rgba(255, 255, 255, 0.96) 0%, rgba(255, 255, 255, 0.82) 42%, rgba(255, 255, 255, 0.22) 100%), url(\"lesson-communicating-with-the-public/images/ppt-inspiration/image1.png\")"
+          ],
+          "reason": "No single exact first color when null (photo, transparency or more than two stops)."
+        },
+        "roles.titleBackgroundEnd": {
+          "selector": ".slide-title last gradient stop",
+          "observed": [
+            "linear-gradient(90deg, rgba(255, 255, 255, 0.96) 0%, rgba(255, 255, 255, 0.82) 42%, rgba(255, 255, 255, 0.22) 100%), url(\"lesson-communicating-with-the-public/images/ppt-inspiration/image1.png\")"
+          ],
+          "reason": "No comparable second color: solid, photo, multi-color split panel, or unsupported gradient."
+        },
+        "slides.divider.layout": {
+          "selector": ".slide-section (every chapter)",
+          "observed": [
+            "linear-gradient(110deg, rgba(55, 181, 80, 0.96) 0%, rgba(0, 123, 175, 0.94) 45%, rgba(0, 64, 113, 0.96) 100%), url(\"lesson-communicating-with-the-public/images/ppt-inspiration/image24.png\"); rgba(0, 0, 0, 0); text-align:center; custom-side-panel:true; watermark:false; frame:1000x720"
+          ],
+          "reason": "The reference uses mixed or unsupported values for this characteristic."
+        },
+        "slides.divider.watermark": {
+          "selector": ".slide-section (every chapter)",
+          "observed": [
+            "linear-gradient(110deg, rgba(55, 181, 80, 0.96) 0%, rgba(0, 123, 175, 0.94) 45%, rgba(0, 64, 113, 0.96) 100%), url(\"lesson-communicating-with-the-public/images/ppt-inspiration/image24.png\"); rgba(0, 0, 0, 0); text-align:center; custom-side-panel:true; watermark:false; frame:1000x720"
+          ]
+        },
+        "slides.divider.colors": {
+          "selector": ".slide-section (every chapter)",
+          "observed": [
+            "linear-gradient(110deg, rgba(55, 181, 80, 0.96) 0%, rgba(0, 123, 175, 0.94) 45%, rgba(0, 64, 113, 0.96) 100%), url(\"lesson-communicating-with-the-public/images/ppt-inspiration/image24.png\"); rgba(0, 0, 0, 0); text-align:center; custom-side-panel:true; watermark:false; frame:1000x720"
+          ],
+          "reason": "The reference uses mixed or unsupported values for this characteristic."
+        },
+        "roles.dividerBackground": {
+          "selector": ".slide-section background (every chapter)",
+          "observed": [
+            "linear-gradient(110deg, rgba(55, 181, 80, 0.96) 0%, rgba(0, 123, 175, 0.94) 45%, rgba(0, 64, 113, 0.96) 100%), url(\"lesson-communicating-with-the-public/images/ppt-inspiration/image24.png\"); rgba(0, 0, 0, 0); text-align:center; custom-side-panel:true; watermark:false; frame:1000x720"
+          ],
+          "reason": "Chapter backgrounds vary or are gradients, photos, overlays or off-palette colors."
+        },
+        "slides.cards.count": {
+          "selector": ".cards-grid > .card (every standard group)",
+          "observed": [
+            "slide 5: count=4, arrangement=grid, shared-heading=true, edges=band/band/band/band, text=paragraph/paragraph/paragraph/paragraph, accents=accent/gold/gold/accent",
+            "slide 9: count=2, arrangement=columns, shared-heading=true, edges=band/band, text=paragraph/paragraph, accents=primary/gold",
+            "slide 12: count=2, arrangement=columns, shared-heading=true, edges=band/band, text=paragraph/paragraph, accents=primary/gold"
+          ],
+          "reason": "Standard text-box groups vary across the lesson or use an unsupported style. Custom remix components are not counted."
+        },
+        "slides.cards.titleBar": {
+          "selector": ".cards-grid > .card (every standard group)",
+          "observed": [
+            "slide 5: count=4, arrangement=grid, shared-heading=true, edges=band/band/band/band, text=paragraph/paragraph/paragraph/paragraph, accents=accent/gold/gold/accent",
+            "slide 9: count=2, arrangement=columns, shared-heading=true, edges=band/band, text=paragraph/paragraph, accents=primary/gold",
+            "slide 12: count=2, arrangement=columns, shared-heading=true, edges=band/band, text=paragraph/paragraph, accents=primary/gold"
+          ]
+        },
+        "slides.cards.treatment": {
+          "selector": ".cards-grid > .card (every standard group)",
+          "observed": [
+            "slide 5: count=4, arrangement=grid, shared-heading=true, edges=band/band/band/band, text=paragraph/paragraph/paragraph/paragraph, accents=accent/gold/gold/accent",
+            "slide 9: count=2, arrangement=columns, shared-heading=true, edges=band/band, text=paragraph/paragraph, accents=primary/gold",
+            "slide 12: count=2, arrangement=columns, shared-heading=true, edges=band/band, text=paragraph/paragraph, accents=primary/gold"
+          ]
+        },
+        "slides.cards.look": {
+          "selector": ".cards-grid > .card (every standard group)",
+          "observed": [
+            "slide 5: count=4, arrangement=grid, shared-heading=true, edges=band/band/band/band, text=paragraph/paragraph/paragraph/paragraph, accents=accent/gold/gold/accent",
+            "slide 9: count=2, arrangement=columns, shared-heading=true, edges=band/band, text=paragraph/paragraph, accents=primary/gold",
+            "slide 12: count=2, arrangement=columns, shared-heading=true, edges=band/band, text=paragraph/paragraph, accents=primary/gold"
+          ]
+        },
+        "slides.cards.layout": {
+          "selector": ".cards-grid > .card (every standard group)",
+          "observed": [
+            "slide 5: count=4, arrangement=grid, shared-heading=true, edges=band/band/band/band, text=paragraph/paragraph/paragraph/paragraph, accents=accent/gold/gold/accent",
+            "slide 9: count=2, arrangement=columns, shared-heading=true, edges=band/band, text=paragraph/paragraph, accents=primary/gold",
+            "slide 12: count=2, arrangement=columns, shared-heading=true, edges=band/band, text=paragraph/paragraph, accents=primary/gold"
+          ],
+          "reason": "Standard text-box groups vary across the lesson or use an unsupported style. Custom remix components are not counted."
+        },
+        "roles.accent": {
+          "selector": ".cards-grid > .card dominant left/top border",
+          "observed": [
+            "slide 5: count=4, arrangement=grid, shared-heading=true, edges=band/band/band/band, text=paragraph/paragraph/paragraph/paragraph, accents=accent/gold/gold/accent",
+            "slide 9: count=2, arrangement=columns, shared-heading=true, edges=band/band, text=paragraph/paragraph, accents=primary/gold",
+            "slide 12: count=2, arrangement=columns, shared-heading=true, edges=band/band, text=paragraph/paragraph, accents=primary/gold"
+          ],
+          "reason": "Card accents vary or have no single comparable exact accent color."
+        },
+        "slides.video.layout": {
+          "selector": "Not mapped",
+          "observed": [],
+          "reason": "This slide role uses custom reference markup; no reliable mapping to the builder option has been measured."
+        },
+        "slides.video.frame": {
+          "selector": "Not mapped",
+          "observed": [],
+          "reason": "This slide role uses custom reference markup; no reliable mapping to the builder option has been measured."
+        },
+        "slides.video.titleStyle": {
+          "selector": "Not mapped",
+          "observed": [],
+          "reason": "This slide role uses custom reference markup; no reliable mapping to the builder option has been measured."
+        },
+        "slides.activity.layout": {
+          "selector": "Not mapped",
+          "observed": [],
+          "reason": "This slide role uses custom reference markup; no reliable mapping to the builder option has been measured."
+        },
+        "slides.activity.labelStyle": {
+          "selector": "Not mapped",
+          "observed": [],
+          "reason": "This slide role uses custom reference markup; no reliable mapping to the builder option has been measured."
+        }
+      }
+    },
+    {
+      "id": "controlling-anger",
+      "title": "Controlling Anger",
+      "source": {
+        "path": "lesson-controlling-anger/index.html",
+        "sha256": "50412c6ac20481d9e6a789f061df62d0b869451408b384e84f9d83db4eb0eae9",
+        "status": "ready"
+      },
+      "roles": {
+        "titleText": "light",
+        "subtitle": "light",
+        "heading": "light",
+        "body": null,
+        "sidebar": "dark",
+        "button": null,
+        "contentBackground": "royal",
+        "titleBackground": "royal",
+        "titleBackgroundEnd": null,
+        "dividerBackground": "royal",
+        "accent": null
+      },
+      "fonts": {
+        "heading": "vollkorn",
+        "body": "fira-sans"
+      },
+      "background": "diagonal",
+      "slides": {
+        "title": {
+          "layout": "center",
+          "logo": "above",
+          "colors": "solid"
+        },
+        "divider": {
+          "layout": "center",
+          "watermark": "hide",
+          "colors": "solid"
+        },
+        "cards": {
+          "count": "4",
+          "titleBar": true,
+          "treatment": "paragraph",
+          "look": null,
+          "layout": "grid"
+        },
+        "video": {
+          "layout": null,
+          "frame": null,
+          "titleStyle": null
+        },
+        "activity": {
+          "layout": null,
+          "labelStyle": null
+        }
+      },
+      "evidence": {
+        "roles.titleText": {
+          "selector": ".slide-title h1",
+          "observed": [
+            "rgb(255, 255, 255)"
+          ]
+        },
+        "roles.subtitle": {
+          "selector": ".slide-title .subtitle",
+          "observed": [
+            "rgb(255, 255, 255)"
+          ]
+        },
+        "roles.heading": {
+          "selector": ".slide:not(.slide-title):not(.slide-section):not(.slide-closing):not(.slide-video):not(.big-statement) h2",
+          "observed": [
+            "rgb(255, 255, 255)"
+          ]
+        },
+        "roles.body": {
+          "selector": ".slide:not(.slide-title):not(.slide-section):not(.slide-closing):not(.slide-video):not(.big-statement) p, .slide:not(.slide-title):not(.slide-section):not(.slide-closing):not(.slide-video):not(.big-statement) li",
+          "observed": [
+            "rgba(255, 255, 255, 0.7)",
+            "rgb(255, 255, 255)",
+            "rgba(255, 255, 255, 0.9)",
+            "rgba(255, 255, 255, 0.65)",
+            "rgb(0, 64, 113)",
+            "rgb(96, 99, 107)",
+            "rgba(255, 255, 255, 0.85)"
+          ],
+          "reason": "The colors vary, use transparency, or are outside the eleven exact brand swatches."
+        },
+        "roles.sidebar": {
+          "selector": ".sidebar",
+          "observed": [
+            "rgb(0, 64, 113); none"
+          ]
+        },
+        "roles.button": {
+          "selector": ".slide .download-btn",
+          "observed": [
+            "rgb(211, 178, 87); none",
+            "rgb(167, 37, 63); none"
+          ],
+          "reason": "A gradient, photo, overlay, transparent surface, off-palette color, or mixed surfaces has no single exact swatch."
+        },
+        "fonts.heading": {
+          "selector": ".slide-title h1",
+          "observed": [
+            "Vollkorn, serif"
+          ]
+        },
+        "fonts.body": {
+          "selector": ".slide:not(.slide-title):not(.slide-section):not(.slide-closing):not(.slide-video):not(.big-statement) p, .slide:not(.slide-title):not(.slide-section):not(.slide-closing):not(.slide-video):not(.big-statement) li",
+          "observed": [
+            "\"Fira Sans\", sans-serif"
+          ]
+        },
+        "roles.contentBackground": {
+          "selector": ".main background-color",
+          "observed": [
+            "rgb(0, 19, 63)"
+          ]
+        },
+        "background": {
+          "selector": ".main background-image",
+          "observed": [
+            "repeating-linear-gradient(45deg, rgba(211, 178, 87, 0.03), rgba(211, 178, 87, 0.03) 1px, rgba(0, 0, 0, 0) 1px, rgba(0, 0, 0, 0) 20px)"
+          ]
+        },
+        "slides.title.layout": {
+          "selector": ".slide-title h1 and ::before/::after geometry",
+          "observed": [
+            "text-align:center; split-panels:false; title-in-lower-half:false"
+          ]
+        },
+        "slides.title.logo": {
+          "selector": ".slide-title .logo geometry relative to h1",
+          "observed": [
+            "position:static; above-title:true"
+          ]
+        },
+        "slides.title.colors": {
+          "selector": ".slide-title background and split panels",
+          "observed": [
+            "none"
+          ]
+        },
+        "roles.titleBackground": {
+          "selector": ".slide-title background / first gradient stop / left split panel",
+          "observed": [
+            "rgb(0, 19, 63)"
+          ]
+        },
+        "roles.titleBackgroundEnd": {
+          "selector": ".slide-title last gradient stop",
+          "observed": [
+            "none"
+          ],
+          "reason": "No comparable second color: solid, photo, multi-color split panel, or unsupported gradient."
+        },
+        "slides.divider.layout": {
+          "selector": ".slide-section (every chapter)",
+          "observed": [
+            "none; rgb(0, 19, 63); text-align:center; custom-side-panel:false; watermark:false; frame:1000x720"
+          ]
+        },
+        "slides.divider.watermark": {
+          "selector": ".slide-section (every chapter)",
+          "observed": [
+            "none; rgb(0, 19, 63); text-align:center; custom-side-panel:false; watermark:false; frame:1000x720"
+          ]
+        },
+        "slides.divider.colors": {
+          "selector": ".slide-section (every chapter)",
+          "observed": [
+            "none; rgb(0, 19, 63); text-align:center; custom-side-panel:false; watermark:false; frame:1000x720"
+          ]
+        },
+        "roles.dividerBackground": {
+          "selector": ".slide-section background (every chapter)",
+          "observed": [
+            "none; rgb(0, 19, 63); text-align:center; custom-side-panel:false; watermark:false; frame:1000x720"
+          ]
+        },
+        "slides.cards.count": {
+          "selector": ".cards-grid > .card (every standard group)",
+          "observed": [
+            "slide 5: count=4, arrangement=grid, shared-heading=true, edges=///, text=paragraph/paragraph/paragraph/paragraph, accents=///"
+          ]
+        },
+        "slides.cards.titleBar": {
+          "selector": ".cards-grid > .card (every standard group)",
+          "observed": [
+            "slide 5: count=4, arrangement=grid, shared-heading=true, edges=///, text=paragraph/paragraph/paragraph/paragraph, accents=///"
+          ]
+        },
+        "slides.cards.treatment": {
+          "selector": ".cards-grid > .card (every standard group)",
+          "observed": [
+            "slide 5: count=4, arrangement=grid, shared-heading=true, edges=///, text=paragraph/paragraph/paragraph/paragraph, accents=///"
+          ]
+        },
+        "slides.cards.look": {
+          "selector": ".cards-grid > .card (every standard group)",
+          "observed": [
+            "slide 5: count=4, arrangement=grid, shared-heading=true, edges=///, text=paragraph/paragraph/paragraph/paragraph, accents=///"
+          ],
+          "reason": "Standard text-box groups vary across the lesson or use an unsupported style. Custom remix components are not counted."
+        },
+        "slides.cards.layout": {
+          "selector": ".cards-grid > .card (every standard group)",
+          "observed": [
+            "slide 5: count=4, arrangement=grid, shared-heading=true, edges=///, text=paragraph/paragraph/paragraph/paragraph, accents=///"
+          ]
+        },
+        "roles.accent": {
+          "selector": ".cards-grid > .card dominant left/top border",
+          "observed": [
+            "slide 5: count=4, arrangement=grid, shared-heading=true, edges=///, text=paragraph/paragraph/paragraph/paragraph, accents=///"
+          ],
+          "reason": "Card accents vary or have no single comparable exact accent color."
+        },
+        "slides.video.layout": {
+          "selector": "Not mapped",
+          "observed": [],
+          "reason": "This slide role uses custom reference markup; no reliable mapping to the builder option has been measured."
+        },
+        "slides.video.frame": {
+          "selector": "Not mapped",
+          "observed": [],
+          "reason": "This slide role uses custom reference markup; no reliable mapping to the builder option has been measured."
+        },
+        "slides.video.titleStyle": {
+          "selector": "Not mapped",
+          "observed": [],
+          "reason": "This slide role uses custom reference markup; no reliable mapping to the builder option has been measured."
+        },
+        "slides.activity.layout": {
+          "selector": "Not mapped",
+          "observed": [],
+          "reason": "This slide role uses custom reference markup; no reliable mapping to the builder option has been measured."
+        },
+        "slides.activity.labelStyle": {
+          "selector": "Not mapped",
+          "observed": [],
+          "reason": "This slide role uses custom reference markup; no reliable mapping to the builder option has been measured."
+        }
+      }
+    },
+    {
+      "id": "employee-accountability",
+      "title": "Employee Accountability",
+      "source": {
+        "path": "lesson-employee-accountability/index.html",
+        "sha256": "29cef823a2d5b2b2937cba6770236d0710d66b52a47e266728819c1ae105328b",
+        "status": "ready"
+      },
+      "roles": {
+        "titleText": "dark",
+        "subtitle": "gray",
+        "heading": "primary",
+        "body": null,
+        "sidebar": "dark",
+        "button": null,
+        "contentBackground": null,
+        "titleBackground": "muted",
+        "titleBackgroundEnd": "light",
+        "dividerBackground": null,
+        "accent": null
+      },
+      "fonts": {
+        "heading": "merriweather",
+        "body": "source-sans-3"
+      },
+      "background": "soft-gradient",
+      "slides": {
+        "title": {
+          "layout": "center",
+          "logo": "above",
+          "colors": "gradient"
+        },
+        "divider": {
+          "layout": "center",
+          "watermark": "hide",
+          "colors": "gradient"
+        },
+        "cards": {
+          "count": "4",
+          "titleBar": true,
+          "treatment": "paragraph",
+          "look": "outline",
+          "layout": "grid"
+        },
+        "video": {
+          "layout": null,
+          "frame": null,
+          "titleStyle": null
+        },
+        "activity": {
+          "layout": null,
+          "labelStyle": null
+        }
+      },
+      "evidence": {
+        "roles.titleText": {
+          "selector": ".slide-title h1",
+          "observed": [
+            "rgb(0, 64, 113)"
+          ]
+        },
+        "roles.subtitle": {
+          "selector": ".slide-title .subtitle",
+          "observed": [
+            "rgb(96, 99, 107)"
+          ]
+        },
+        "roles.heading": {
+          "selector": ".slide:not(.slide-title):not(.slide-section):not(.slide-closing):not(.slide-video):not(.big-statement) h2",
+          "observed": [
+            "rgb(0, 123, 175)"
+          ]
+        },
+        "roles.body": {
+          "selector": ".slide:not(.slide-title):not(.slide-section):not(.slide-closing):not(.slide-video):not(.big-statement) p, .slide:not(.slide-title):not(.slide-section):not(.slide-closing):not(.slide-video):not(.big-statement) li",
+          "observed": [
+            "rgb(0, 64, 113)",
+            "rgb(96, 99, 107)",
+            "rgb(255, 255, 255)"
+          ],
+          "reason": "The colors vary, use transparency, or are outside the eleven exact brand swatches."
+        },
+        "roles.sidebar": {
+          "selector": ".sidebar",
+          "observed": [
+            "rgb(0, 64, 113); none"
+          ]
+        },
+        "roles.button": {
+          "selector": ".slide .download-btn",
+          "observed": [
+            "rgb(0, 64, 113); none",
+            "rgb(211, 178, 87); none"
+          ],
+          "reason": "A gradient, photo, overlay, transparent surface, off-palette color, or mixed surfaces has no single exact swatch."
+        },
+        "fonts.heading": {
+          "selector": ".slide-title h1",
+          "observed": [
+            "Merriweather, serif"
+          ]
+        },
+        "fonts.body": {
+          "selector": ".slide:not(.slide-title):not(.slide-section):not(.slide-closing):not(.slide-video):not(.big-statement) p, .slide:not(.slide-title):not(.slide-section):not(.slide-closing):not(.slide-video):not(.big-statement) li",
+          "observed": [
+            "\"Source Sans 3\", sans-serif"
+          ]
+        },
+        "roles.contentBackground": {
+          "selector": ".main background-color",
+          "observed": [
+            "rgba(0, 0, 0, 0)"
+          ],
+          "reason": "No exact opaque brand base color when null."
+        },
+        "background": {
+          "selector": ".main background-image",
+          "observed": [
+            "linear-gradient(rgb(255, 255, 255) 0%, rgb(237, 243, 247) 100%)"
+          ]
+        },
+        "slides.title.layout": {
+          "selector": ".slide-title h1 and ::before/::after geometry",
+          "observed": [
+            "text-align:center; split-panels:false; title-in-lower-half:false"
+          ]
+        },
+        "slides.title.logo": {
+          "selector": ".slide-title .logo geometry relative to h1",
+          "observed": [
+            "position:static; above-title:true"
+          ]
+        },
+        "slides.title.colors": {
+          "selector": ".slide-title background and split panels",
+          "observed": [
+            "linear-gradient(rgb(237, 243, 247) 0%, rgb(255, 255, 255) 60%, rgb(255, 255, 255) 60%)"
+          ]
+        },
+        "roles.titleBackground": {
+          "selector": ".slide-title background / first gradient stop / left split panel",
+          "observed": [
+            "linear-gradient(rgb(237, 243, 247) 0%, rgb(255, 255, 255) 60%, rgb(255, 255, 255) 60%)"
+          ]
+        },
+        "roles.titleBackgroundEnd": {
+          "selector": ".slide-title last gradient stop",
+          "observed": [
+            "linear-gradient(rgb(237, 243, 247) 0%, rgb(255, 255, 255) 60%, rgb(255, 255, 255) 60%)"
+          ]
+        },
+        "slides.divider.layout": {
+          "selector": ".slide-section (every chapter)",
+          "observed": [
+            "linear-gradient(135deg, rgb(0, 123, 175) 0%, rgb(0, 64, 113) 100%); rgba(0, 0, 0, 0); text-align:center; custom-side-panel:false; watermark:false; frame:1000x720"
+          ]
+        },
+        "slides.divider.watermark": {
+          "selector": ".slide-section (every chapter)",
+          "observed": [
+            "linear-gradient(135deg, rgb(0, 123, 175) 0%, rgb(0, 64, 113) 100%); rgba(0, 0, 0, 0); text-align:center; custom-side-panel:false; watermark:false; frame:1000x720"
+          ]
+        },
+        "slides.divider.colors": {
+          "selector": ".slide-section (every chapter)",
+          "observed": [
+            "linear-gradient(135deg, rgb(0, 123, 175) 0%, rgb(0, 64, 113) 100%); rgba(0, 0, 0, 0); text-align:center; custom-side-panel:false; watermark:false; frame:1000x720"
+          ]
+        },
+        "roles.dividerBackground": {
+          "selector": ".slide-section background (every chapter)",
+          "observed": [
+            "linear-gradient(135deg, rgb(0, 123, 175) 0%, rgb(0, 64, 113) 100%); rgba(0, 0, 0, 0); text-align:center; custom-side-panel:false; watermark:false; frame:1000x720"
+          ],
+          "reason": "Chapter backgrounds vary or are gradients, photos, overlays or off-palette colors."
+        },
+        "slides.cards.count": {
+          "selector": ".cards-grid > .card (every standard group)",
+          "observed": [
+            "slide 3: count=4, arrangement=grid, shared-heading=true, edges=outline/outline/outline/outline, text=paragraph/paragraph/paragraph/paragraph, accents=///",
+            "slide 30: count=4, arrangement=grid, shared-heading=true, edges=outline/outline/outline/outline, text=paragraph/paragraph/paragraph/paragraph, accents=///"
+          ]
+        },
+        "slides.cards.titleBar": {
+          "selector": ".cards-grid > .card (every standard group)",
+          "observed": [
+            "slide 3: count=4, arrangement=grid, shared-heading=true, edges=outline/outline/outline/outline, text=paragraph/paragraph/paragraph/paragraph, accents=///",
+            "slide 30: count=4, arrangement=grid, shared-heading=true, edges=outline/outline/outline/outline, text=paragraph/paragraph/paragraph/paragraph, accents=///"
+          ]
+        },
+        "slides.cards.treatment": {
+          "selector": ".cards-grid > .card (every standard group)",
+          "observed": [
+            "slide 3: count=4, arrangement=grid, shared-heading=true, edges=outline/outline/outline/outline, text=paragraph/paragraph/paragraph/paragraph, accents=///",
+            "slide 30: count=4, arrangement=grid, shared-heading=true, edges=outline/outline/outline/outline, text=paragraph/paragraph/paragraph/paragraph, accents=///"
+          ]
+        },
+        "slides.cards.look": {
+          "selector": ".cards-grid > .card (every standard group)",
+          "observed": [
+            "slide 3: count=4, arrangement=grid, shared-heading=true, edges=outline/outline/outline/outline, text=paragraph/paragraph/paragraph/paragraph, accents=///",
+            "slide 30: count=4, arrangement=grid, shared-heading=true, edges=outline/outline/outline/outline, text=paragraph/paragraph/paragraph/paragraph, accents=///"
+          ]
+        },
+        "slides.cards.layout": {
+          "selector": ".cards-grid > .card (every standard group)",
+          "observed": [
+            "slide 3: count=4, arrangement=grid, shared-heading=true, edges=outline/outline/outline/outline, text=paragraph/paragraph/paragraph/paragraph, accents=///",
+            "slide 30: count=4, arrangement=grid, shared-heading=true, edges=outline/outline/outline/outline, text=paragraph/paragraph/paragraph/paragraph, accents=///"
+          ]
+        },
+        "roles.accent": {
+          "selector": ".cards-grid > .card dominant left/top border",
+          "observed": [
+            "slide 3: count=4, arrangement=grid, shared-heading=true, edges=outline/outline/outline/outline, text=paragraph/paragraph/paragraph/paragraph, accents=///",
+            "slide 30: count=4, arrangement=grid, shared-heading=true, edges=outline/outline/outline/outline, text=paragraph/paragraph/paragraph/paragraph, accents=///"
+          ],
+          "reason": "Card accents vary or have no single comparable exact accent color."
+        },
+        "slides.video.layout": {
+          "selector": "Not mapped",
+          "observed": [],
+          "reason": "This slide role uses custom reference markup; no reliable mapping to the builder option has been measured."
+        },
+        "slides.video.frame": {
+          "selector": "Not mapped",
+          "observed": [],
+          "reason": "This slide role uses custom reference markup; no reliable mapping to the builder option has been measured."
+        },
+        "slides.video.titleStyle": {
+          "selector": "Not mapped",
+          "observed": [],
+          "reason": "This slide role uses custom reference markup; no reliable mapping to the builder option has been measured."
+        },
+        "slides.activity.layout": {
+          "selector": "Not mapped",
+          "observed": [],
+          "reason": "This slide role uses custom reference markup; no reliable mapping to the builder option has been measured."
+        },
+        "slides.activity.labelStyle": {
+          "selector": "Not mapped",
+          "observed": [],
+          "reason": "This slide role uses custom reference markup; no reliable mapping to the builder option has been measured."
+        }
+      }
+    },
+    {
+      "id": "interview-skills",
+      "title": "Interview Skills",
+      "source": {
+        "path": "lesson-interview-skills/index.html",
+        "sha256": "bc4b8d4a610c4986216d4be7f2e765dfca057b8d048c21837e492aab00149a4b",
+        "status": "ready"
+      },
+      "roles": {
+        "titleText": "light",
+        "subtitle": "gold",
+        "heading": "royal",
+        "body": null,
+        "sidebar": "royal",
+        "button": null,
+        "contentBackground": "muted",
+        "titleBackground": "royal",
+        "titleBackgroundEnd": null,
+        "dividerBackground": "royal",
+        "accent": null
+      },
+      "fonts": {
+        "heading": "playfair-display",
+        "body": "inter"
+      },
+      "background": "diagonal",
+      "slides": {
+        "title": {
+          "layout": "split",
+          "logo": "corner",
+          "colors": "gradient"
+        },
+        "divider": {
+          "layout": "center",
+          "watermark": "hide",
+          "colors": "solid"
+        },
+        "cards": {
+          "count": null,
+          "titleBar": null,
+          "treatment": null,
+          "look": null,
+          "layout": null
+        },
+        "video": {
+          "layout": null,
+          "frame": null,
+          "titleStyle": null
+        },
+        "activity": {
+          "layout": null,
+          "labelStyle": null
+        }
+      },
+      "evidence": {
+        "roles.titleText": {
+          "selector": ".slide-title h1",
+          "observed": [
+            "rgb(255, 255, 255)"
+          ]
+        },
+        "roles.subtitle": {
+          "selector": ".slide-title .subtitle",
+          "observed": [
+            "rgb(211, 178, 87)"
+          ]
+        },
+        "roles.heading": {
+          "selector": ".slide:not(.slide-title):not(.slide-section):not(.slide-closing):not(.slide-video):not(.big-statement) h2",
+          "observed": [
+            "rgb(0, 19, 63)"
+          ]
+        },
+        "roles.body": {
+          "selector": ".slide:not(.slide-title):not(.slide-section):not(.slide-closing):not(.slide-video):not(.big-statement) p, .slide:not(.slide-title):not(.slide-section):not(.slide-closing):not(.slide-video):not(.big-statement) li",
+          "observed": [
+            "rgb(96, 99, 107)",
+            "rgba(255, 255, 255, 0.82)",
+            "rgb(0, 64, 113)",
+            "rgba(255, 255, 255, 0.84)",
+            "rgb(255, 255, 255)",
+            "rgb(0, 19, 63)",
+            "rgb(167, 37, 63)"
+          ],
+          "reason": "The colors vary, use transparency, or are outside the eleven exact brand swatches."
+        },
+        "roles.sidebar": {
+          "selector": ".sidebar",
+          "observed": [
+            "rgb(0, 19, 63); none"
+          ]
+        },
+        "roles.button": {
+          "selector": ".slide .download-btn",
+          "observed": [
+            "rgb(211, 178, 87); none",
+            "rgb(0, 19, 63); none"
+          ],
+          "reason": "A gradient, photo, overlay, transparent surface, off-palette color, or mixed surfaces has no single exact swatch."
+        },
+        "fonts.heading": {
+          "selector": ".slide-title h1",
+          "observed": [
+            "\"Playfair Display\", serif"
+          ]
+        },
+        "fonts.body": {
+          "selector": ".slide:not(.slide-title):not(.slide-section):not(.slide-closing):not(.slide-video):not(.big-statement) p, .slide:not(.slide-title):not(.slide-section):not(.slide-closing):not(.slide-video):not(.big-statement) li",
+          "observed": [
+            "Inter, sans-serif"
+          ]
+        },
+        "roles.contentBackground": {
+          "selector": ".main background-color",
+          "observed": [
+            "rgb(237, 243, 247)"
+          ]
+        },
+        "background": {
+          "selector": ".main background-image",
+          "observed": [
+            "repeating-linear-gradient(45deg, rgba(211, 178, 87, 0.05), rgba(211, 178, 87, 0.05) 1px, rgba(0, 0, 0, 0) 1px, rgba(0, 0, 0, 0) 14px)"
+          ]
+        },
+        "slides.title.layout": {
+          "selector": ".slide-title h1 and ::before/::after geometry",
+          "observed": [
+            "text-align:left; split-panels:true; title-in-lower-half:false"
+          ]
+        },
+        "slides.title.logo": {
+          "selector": ".slide-title .logo geometry relative to h1",
+          "observed": [
+            "position:absolute; above-title:false"
+          ]
+        },
+        "slides.title.colors": {
+          "selector": ".slide-title background and split panels",
+          "observed": [
+            "none, linear-gradient(135deg, rgb(0, 123, 175), rgb(0, 64, 113))"
+          ]
+        },
+        "roles.titleBackground": {
+          "selector": ".slide-title background / first gradient stop / left split panel",
+          "observed": [
+            "rgb(0, 19, 63)"
+          ]
+        },
+        "roles.titleBackgroundEnd": {
+          "selector": ".slide-title last gradient stop",
+          "observed": [
+            "none, linear-gradient(135deg, rgb(0, 123, 175), rgb(0, 64, 113))"
+          ],
+          "reason": "No comparable second color: solid, photo, multi-color split panel, or unsupported gradient."
+        },
+        "slides.divider.layout": {
+          "selector": ".slide-section (every chapter)",
+          "observed": [
+            "none; rgb(0, 19, 63); text-align:center; custom-side-panel:false; watermark:false; frame:1000x720"
+          ]
+        },
+        "slides.divider.watermark": {
+          "selector": ".slide-section (every chapter)",
+          "observed": [
+            "none; rgb(0, 19, 63); text-align:center; custom-side-panel:false; watermark:false; frame:1000x720"
+          ]
+        },
+        "slides.divider.colors": {
+          "selector": ".slide-section (every chapter)",
+          "observed": [
+            "none; rgb(0, 19, 63); text-align:center; custom-side-panel:false; watermark:false; frame:1000x720"
+          ]
+        },
+        "roles.dividerBackground": {
+          "selector": ".slide-section background (every chapter)",
+          "observed": [
+            "none; rgb(0, 19, 63); text-align:center; custom-side-panel:false; watermark:false; frame:1000x720"
+          ]
+        },
+        "slides.cards.count": {
+          "selector": ".cards-grid > .card (every standard group)",
+          "observed": [],
+          "reason": "No comparable element exists in this reference lesson."
+        },
+        "slides.cards.titleBar": {
+          "selector": ".cards-grid > .card (every standard group)",
+          "observed": [],
+          "reason": "No comparable element exists in this reference lesson."
+        },
+        "slides.cards.treatment": {
+          "selector": ".cards-grid > .card (every standard group)",
+          "observed": [],
+          "reason": "No comparable element exists in this reference lesson."
+        },
+        "slides.cards.look": {
+          "selector": ".cards-grid > .card (every standard group)",
+          "observed": [],
+          "reason": "No comparable element exists in this reference lesson."
+        },
+        "slides.cards.layout": {
+          "selector": ".cards-grid > .card (every standard group)",
+          "observed": [],
+          "reason": "No comparable element exists in this reference lesson."
+        },
+        "roles.accent": {
+          "selector": ".cards-grid > .card dominant left/top border",
+          "observed": [],
+          "reason": "No comparable element exists in this reference lesson."
+        },
+        "slides.video.layout": {
+          "selector": "Not mapped",
+          "observed": [],
+          "reason": "This slide role uses custom reference markup; no reliable mapping to the builder option has been measured."
+        },
+        "slides.video.frame": {
+          "selector": "Not mapped",
+          "observed": [],
+          "reason": "This slide role uses custom reference markup; no reliable mapping to the builder option has been measured."
+        },
+        "slides.video.titleStyle": {
+          "selector": "Not mapped",
+          "observed": [],
+          "reason": "This slide role uses custom reference markup; no reliable mapping to the builder option has been measured."
+        },
+        "slides.activity.layout": {
+          "selector": "Not mapped",
+          "observed": [],
+          "reason": "This slide role uses custom reference markup; no reliable mapping to the builder option has been measured."
+        },
+        "slides.activity.labelStyle": {
+          "selector": "Not mapped",
+          "observed": [],
+          "reason": "This slide role uses custom reference markup; no reliable mapping to the builder option has been measured."
+        }
+      }
+    },
+    {
+      "id": "problem-solving-and-decision-making",
+      "title": "Problem Solving & Decision Making",
+      "source": {
+        "path": "lesson-problem-solving-and-decision-making/index.html",
+        "sha256": "58df13f9d2ba9c4c9930a4e94c28b74c602e2f3edcd243fe248dfeabb962e7c4",
+        "status": "ready"
+      },
+      "roles": {
+        "titleText": "light",
+        "subtitle": null,
+        "heading": null,
+        "body": null,
+        "sidebar": null,
+        "button": null,
+        "contentBackground": "light",
+        "titleBackground": null,
+        "titleBackgroundEnd": null,
+        "dividerBackground": null,
+        "accent": null
+      },
+      "fonts": {
+        "heading": "bitter",
+        "body": "raleway"
+      },
+      "background": "plain",
+      "slides": {
+        "title": {
+          "layout": "left",
+          "logo": null,
+          "colors": null
+        },
+        "divider": {
+          "layout": null,
+          "watermark": "hide",
+          "colors": "gradient"
+        },
+        "cards": {
+          "count": null,
+          "titleBar": null,
+          "treatment": null,
+          "look": null,
+          "layout": null
+        },
+        "video": {
+          "layout": null,
+          "frame": null,
+          "titleStyle": null
+        },
+        "activity": {
+          "layout": null,
+          "labelStyle": null
+        }
+      },
+      "evidence": {
+        "roles.titleText": {
+          "selector": ".slide-title h1",
+          "observed": [
+            "rgb(255, 255, 255)"
+          ]
+        },
+        "roles.subtitle": {
+          "selector": ".slide-title .subtitle",
+          "observed": [
+            "rgba(255, 250, 240, 0.92)"
+          ],
+          "reason": "The colors vary, use transparency, or are outside the eleven exact brand swatches."
+        },
+        "roles.heading": {
+          "selector": ".slide:not(.slide-title):not(.slide-section):not(.slide-closing):not(.slide-video):not(.big-statement) h2",
+          "observed": [
+            "rgb(6, 23, 53)"
+          ],
+          "reason": "The colors vary, use transparency, or are outside the eleven exact brand swatches."
+        },
+        "roles.body": {
+          "selector": ".slide:not(.slide-title):not(.slide-section):not(.slide-closing):not(.slide-video):not(.big-statement) p, .slide:not(.slide-title):not(.slide-section):not(.slide-closing):not(.slide-video):not(.big-statement) li",
+          "observed": [
+            "rgb(96, 99, 107)",
+            "rgb(11, 49, 87)",
+            "rgb(0, 106, 144)",
+            "rgb(6, 23, 53)"
+          ],
+          "reason": "The colors vary, use transparency, or are outside the eleven exact brand swatches."
+        },
+        "roles.sidebar": {
+          "selector": ".sidebar",
+          "observed": [
+            "rgb(6, 23, 53); linear-gradient(rgba(15, 155, 154, 0.14), rgba(0, 0, 0, 0) 288px), none"
+          ],
+          "reason": "A gradient, photo, overlay, transparent surface, off-palette color, or mixed surfaces has no single exact swatch."
+        },
+        "roles.button": {
+          "selector": ".slide .download-btn",
+          "observed": [
+            "rgb(6, 23, 53); none"
+          ],
+          "reason": "A gradient, photo, overlay, transparent surface, off-palette color, or mixed surfaces has no single exact swatch."
+        },
+        "fonts.heading": {
+          "selector": ".slide-title h1",
+          "observed": [
+            "Bitter, serif"
+          ]
+        },
+        "fonts.body": {
+          "selector": ".slide:not(.slide-title):not(.slide-section):not(.slide-closing):not(.slide-video):not(.big-statement) p, .slide:not(.slide-title):not(.slide-section):not(.slide-closing):not(.slide-video):not(.big-statement) li",
+          "observed": [
+            "Raleway, sans-serif"
+          ]
+        },
+        "roles.contentBackground": {
+          "selector": ".main background-color",
+          "observed": [
+            "rgb(255, 255, 255)"
+          ]
+        },
+        "background": {
+          "selector": ".main background-image",
+          "observed": [
+            "none"
+          ]
+        },
+        "slides.title.layout": {
+          "selector": ".slide-title h1 and ::before/::after geometry",
+          "observed": [
+            "text-align:left; split-panels:false; title-in-lower-half:false"
+          ]
+        },
+        "slides.title.logo": {
+          "selector": ".slide-title .logo geometry relative to h1",
+          "observed": [
+            "position:absolute; above-title:false"
+          ],
+          "reason": "Logo placement is absent or has no equivalent supported position."
+        },
+        "slides.title.colors": {
+          "selector": ".slide-title background and split panels",
+          "observed": [
+            "linear-gradient(130deg, rgba(6, 23, 53, 0.94) 0%, rgba(6, 23, 53, 0.9) 48%, rgba(0, 106, 144, 0.86) 100%), url(\"lesson-problem-solving-and-decision-making/images/ppt-inspired/you-decide.jpg\")"
+          ],
+          "reason": "Photo/composite title has no equivalent one-color or two-color finish."
+        },
+        "roles.titleBackground": {
+          "selector": ".slide-title background / first gradient stop / left split panel",
+          "observed": [
+            "linear-gradient(130deg, rgba(6, 23, 53, 0.94) 0%, rgba(6, 23, 53, 0.9) 48%, rgba(0, 106, 144, 0.86) 100%), url(\"lesson-problem-solving-and-decision-making/images/ppt-inspired/you-decide.jpg\")"
+          ],
+          "reason": "No single exact first color when null (photo, transparency or more than two stops)."
+        },
+        "roles.titleBackgroundEnd": {
+          "selector": ".slide-title last gradient stop",
+          "observed": [
+            "linear-gradient(130deg, rgba(6, 23, 53, 0.94) 0%, rgba(6, 23, 53, 0.9) 48%, rgba(0, 106, 144, 0.86) 100%), url(\"lesson-problem-solving-and-decision-making/images/ppt-inspired/you-decide.jpg\")"
+          ],
+          "reason": "No comparable second color: solid, photo, multi-color split panel, or unsupported gradient."
+        },
+        "slides.divider.layout": {
+          "selector": ".slide-section (every chapter)",
+          "observed": [
+            "linear-gradient(115deg, rgba(6, 23, 53, 0.98) 0%, rgba(6, 23, 53, 0.96) 39%, rgba(247, 251, 251, 0.94) 39.2%, rgba(255, 250, 240, 0.98) 100%), radial-gradient(circle at 18% 50%, rgba(232, 180, 63, 0.28), rgba(0, 0, 0, 0) 288px); rgba(0, 0, 0, 0); text-align:center; custom-side-panel:true; watermark:false; frame:1000x720",
+            "linear-gradient(115deg, rgba(8, 49, 87, 0.98) 0%, rgba(8, 49, 87, 0.96) 39%, rgba(255, 250, 240, 0.98) 39.2%, rgba(234, 244, 242, 0.98) 100%); rgba(0, 0, 0, 0); text-align:center; custom-side-panel:true; watermark:false; frame:1000x720"
+          ],
+          "reason": "The reference uses mixed or unsupported values for this characteristic."
+        },
+        "slides.divider.watermark": {
+          "selector": ".slide-section (every chapter)",
+          "observed": [
+            "linear-gradient(115deg, rgba(6, 23, 53, 0.98) 0%, rgba(6, 23, 53, 0.96) 39%, rgba(247, 251, 251, 0.94) 39.2%, rgba(255, 250, 240, 0.98) 100%), radial-gradient(circle at 18% 50%, rgba(232, 180, 63, 0.28), rgba(0, 0, 0, 0) 288px); rgba(0, 0, 0, 0); text-align:center; custom-side-panel:true; watermark:false; frame:1000x720",
+            "linear-gradient(115deg, rgba(8, 49, 87, 0.98) 0%, rgba(8, 49, 87, 0.96) 39%, rgba(255, 250, 240, 0.98) 39.2%, rgba(234, 244, 242, 0.98) 100%); rgba(0, 0, 0, 0); text-align:center; custom-side-panel:true; watermark:false; frame:1000x720"
+          ]
+        },
+        "slides.divider.colors": {
+          "selector": ".slide-section (every chapter)",
+          "observed": [
+            "linear-gradient(115deg, rgba(6, 23, 53, 0.98) 0%, rgba(6, 23, 53, 0.96) 39%, rgba(247, 251, 251, 0.94) 39.2%, rgba(255, 250, 240, 0.98) 100%), radial-gradient(circle at 18% 50%, rgba(232, 180, 63, 0.28), rgba(0, 0, 0, 0) 288px); rgba(0, 0, 0, 0); text-align:center; custom-side-panel:true; watermark:false; frame:1000x720",
+            "linear-gradient(115deg, rgba(8, 49, 87, 0.98) 0%, rgba(8, 49, 87, 0.96) 39%, rgba(255, 250, 240, 0.98) 39.2%, rgba(234, 244, 242, 0.98) 100%); rgba(0, 0, 0, 0); text-align:center; custom-side-panel:true; watermark:false; frame:1000x720"
+          ]
+        },
+        "roles.dividerBackground": {
+          "selector": ".slide-section background (every chapter)",
+          "observed": [
+            "linear-gradient(115deg, rgba(6, 23, 53, 0.98) 0%, rgba(6, 23, 53, 0.96) 39%, rgba(247, 251, 251, 0.94) 39.2%, rgba(255, 250, 240, 0.98) 100%), radial-gradient(circle at 18% 50%, rgba(232, 180, 63, 0.28), rgba(0, 0, 0, 0) 288px); rgba(0, 0, 0, 0); text-align:center; custom-side-panel:true; watermark:false; frame:1000x720",
+            "linear-gradient(115deg, rgba(8, 49, 87, 0.98) 0%, rgba(8, 49, 87, 0.96) 39%, rgba(255, 250, 240, 0.98) 39.2%, rgba(234, 244, 242, 0.98) 100%); rgba(0, 0, 0, 0); text-align:center; custom-side-panel:true; watermark:false; frame:1000x720"
+          ],
+          "reason": "Chapter backgrounds vary or are gradients, photos, overlays or off-palette colors."
+        },
+        "slides.cards.count": {
+          "selector": ".cards-grid > .card (every standard group)",
+          "observed": [],
+          "reason": "No comparable element exists in this reference lesson."
+        },
+        "slides.cards.titleBar": {
+          "selector": ".cards-grid > .card (every standard group)",
+          "observed": [],
+          "reason": "No comparable element exists in this reference lesson."
+        },
+        "slides.cards.treatment": {
+          "selector": ".cards-grid > .card (every standard group)",
+          "observed": [],
+          "reason": "No comparable element exists in this reference lesson."
+        },
+        "slides.cards.look": {
+          "selector": ".cards-grid > .card (every standard group)",
+          "observed": [],
+          "reason": "No comparable element exists in this reference lesson."
+        },
+        "slides.cards.layout": {
+          "selector": ".cards-grid > .card (every standard group)",
+          "observed": [],
+          "reason": "No comparable element exists in this reference lesson."
+        },
+        "roles.accent": {
+          "selector": ".cards-grid > .card dominant left/top border",
+          "observed": [],
+          "reason": "No comparable element exists in this reference lesson."
+        },
+        "slides.video.layout": {
+          "selector": "Not mapped",
+          "observed": [],
+          "reason": "This slide role uses custom reference markup; no reliable mapping to the builder option has been measured."
+        },
+        "slides.video.frame": {
+          "selector": "Not mapped",
+          "observed": [],
+          "reason": "This slide role uses custom reference markup; no reliable mapping to the builder option has been measured."
+        },
+        "slides.video.titleStyle": {
+          "selector": "Not mapped",
+          "observed": [],
+          "reason": "This slide role uses custom reference markup; no reliable mapping to the builder option has been measured."
+        },
+        "slides.activity.layout": {
+          "selector": "Not mapped",
+          "observed": [],
+          "reason": "This slide role uses custom reference markup; no reliable mapping to the builder option has been measured."
+        },
+        "slides.activity.labelStyle": {
+          "selector": "Not mapped",
+          "observed": [],
+          "reason": "This slide role uses custom reference markup; no reliable mapping to the builder option has been measured."
+        }
+      }
+    },
+    {
+      "id": "time-management",
+      "title": "Time Management",
+      "source": {
+        "path": "lesson-time-management/index.html",
+        "sha256": "d1c8340b3c49008273add4f6ce549aa027add49361e0b1f5ce514861ceee9e9a",
+        "status": "ready"
+      },
+      "roles": {
+        "titleText": null,
+        "subtitle": null,
+        "heading": null,
+        "body": null,
+        "sidebar": null,
+        "button": null,
+        "contentBackground": null,
+        "titleBackground": null,
+        "titleBackgroundEnd": null,
+        "dividerBackground": null,
+        "accent": null
+      },
+      "fonts": {
+        "heading": "dm-serif-display",
+        "body": "outfit"
+      },
+      "background": null,
+      "slides": {
+        "title": {
+          "layout": "left",
+          "logo": null,
+          "colors": null
+        },
+        "divider": {
+          "layout": null,
+          "watermark": "hide",
+          "colors": "gradient"
+        },
+        "cards": {
+          "count": null,
+          "titleBar": null,
+          "treatment": null,
+          "look": null,
+          "layout": null
+        },
+        "video": {
+          "layout": null,
+          "frame": null,
+          "titleStyle": null
+        },
+        "activity": {
+          "layout": null,
+          "labelStyle": null
+        }
+      },
+      "evidence": {
+        "roles.titleText": {
+          "selector": ".slide-title h1",
+          "observed": [
+            "rgb(255, 248, 234)"
+          ],
+          "reason": "The colors vary, use transparency, or are outside the eleven exact brand swatches."
+        },
+        "roles.subtitle": {
+          "selector": ".slide-title .subtitle",
+          "observed": [
+            "rgba(255, 248, 234, 0.92)"
+          ],
+          "reason": "The colors vary, use transparency, or are outside the eleven exact brand swatches."
+        },
+        "roles.heading": {
+          "selector": ".slide:not(.slide-title):not(.slide-section):not(.slide-closing):not(.slide-video):not(.big-statement) h2",
+          "observed": [
+            "rgb(16, 32, 51)"
+          ],
+          "reason": "The colors vary, use transparency, or are outside the eleven exact brand swatches."
+        },
+        "roles.body": {
+          "selector": ".slide:not(.slide-title):not(.slide-section):not(.slide-closing):not(.slide-video):not(.big-statement) p, .slide:not(.slide-title):not(.slide-section):not(.slide-closing):not(.slide-video):not(.big-statement) li",
+          "observed": [
+            "rgb(96, 99, 107)",
+            "rgb(18, 63, 92)",
+            "rgba(255, 255, 255, 0.85)",
+            "rgb(16, 32, 51)"
+          ],
+          "reason": "The colors vary, use transparency, or are outside the eleven exact brand swatches."
+        },
+        "roles.sidebar": {
+          "selector": ".sidebar",
+          "observed": [
+            "rgb(16, 32, 51); linear-gradient(rgba(0, 167, 157, 0.18), rgba(0, 0, 0, 0) 288px), none"
+          ],
+          "reason": "A gradient, photo, overlay, transparent surface, off-palette color, or mixed surfaces has no single exact swatch."
+        },
+        "roles.button": {
+          "selector": ".slide .download-btn",
+          "observed": [
+            "rgba(255, 248, 234, 0.1); none",
+            "rgb(8, 120, 154); none"
+          ],
+          "reason": "A gradient, photo, overlay, transparent surface, off-palette color, or mixed surfaces has no single exact swatch."
+        },
+        "fonts.heading": {
+          "selector": ".slide-title h1",
+          "observed": [
+            "\"DM Serif Display\", serif"
+          ]
+        },
+        "fonts.body": {
+          "selector": ".slide:not(.slide-title):not(.slide-section):not(.slide-closing):not(.slide-video):not(.big-statement) p, .slide:not(.slide-title):not(.slide-section):not(.slide-closing):not(.slide-video):not(.big-statement) li",
+          "observed": [
+            "Outfit, sans-serif"
+          ]
+        },
+        "roles.contentBackground": {
+          "selector": ".main background-color",
+          "observed": [
+            "rgba(0, 0, 0, 0)"
+          ],
+          "reason": "No exact opaque brand base color when null."
+        },
+        "background": {
+          "selector": ".main background-image",
+          "observed": [
+            "linear-gradient(90deg, rgba(16, 32, 51, 0.04) 1px, rgba(0, 0, 0, 0) 1px), linear-gradient(0deg, rgba(16, 32, 51, 0.04) 1px, rgba(0, 0, 0, 0) 1px), linear-gradient(135deg, rgb(255, 255, 255) 0%, rgb(255, 248, 234) 58%, rgb(237, 243, 247) 100%)"
+          ],
+          "reason": "Custom or layered background does not match a supported single pattern."
+        },
+        "slides.title.layout": {
+          "selector": ".slide-title h1 and ::before/::after geometry",
+          "observed": [
+            "text-align:left; split-panels:false; title-in-lower-half:false"
+          ]
+        },
+        "slides.title.logo": {
+          "selector": ".slide-title .logo geometry relative to h1",
+          "observed": [
+            "position:absolute; above-title:false"
+          ],
+          "reason": "Logo placement is absent or has no equivalent supported position."
+        },
+        "slides.title.colors": {
+          "selector": ".slide-title background and split panels",
+          "observed": [
+            "linear-gradient(120deg, rgba(16, 32, 51, 0.94) 0%, rgba(18, 63, 92, 0.9) 46%, rgba(8, 120, 154, 0.82) 100%), url(\"lesson-time-management/images/busy-mom.webp\")"
+          ],
+          "reason": "Photo/composite title has no equivalent one-color or two-color finish."
+        },
+        "roles.titleBackground": {
+          "selector": ".slide-title background / first gradient stop / left split panel",
+          "observed": [
+            "linear-gradient(120deg, rgba(16, 32, 51, 0.94) 0%, rgba(18, 63, 92, 0.9) 46%, rgba(8, 120, 154, 0.82) 100%), url(\"lesson-time-management/images/busy-mom.webp\")"
+          ],
+          "reason": "No single exact first color when null (photo, transparency or more than two stops)."
+        },
+        "roles.titleBackgroundEnd": {
+          "selector": ".slide-title last gradient stop",
+          "observed": [
+            "linear-gradient(120deg, rgba(16, 32, 51, 0.94) 0%, rgba(18, 63, 92, 0.9) 46%, rgba(8, 120, 154, 0.82) 100%), url(\"lesson-time-management/images/busy-mom.webp\")"
+          ],
+          "reason": "No comparable second color: solid, photo, multi-color split panel, or unsupported gradient."
+        },
+        "slides.divider.layout": {
+          "selector": ".slide-section (every chapter)",
+          "observed": [
+            "linear-gradient(115deg, rgba(16, 32, 51, 0.98) 0%, rgba(16, 32, 51, 0.96) 38%, rgba(255, 248, 234, 0.96) 38.2%, rgba(251, 253, 254, 0.98) 100%); rgba(0, 0, 0, 0); text-align:left; custom-side-panel:true; watermark:false; frame:1000x720"
+          ],
+          "reason": "The reference uses mixed or unsupported values for this characteristic."
+        },
+        "slides.divider.watermark": {
+          "selector": ".slide-section (every chapter)",
+          "observed": [
+            "linear-gradient(115deg, rgba(16, 32, 51, 0.98) 0%, rgba(16, 32, 51, 0.96) 38%, rgba(255, 248, 234, 0.96) 38.2%, rgba(251, 253, 254, 0.98) 100%); rgba(0, 0, 0, 0); text-align:left; custom-side-panel:true; watermark:false; frame:1000x720"
+          ]
+        },
+        "slides.divider.colors": {
+          "selector": ".slide-section (every chapter)",
+          "observed": [
+            "linear-gradient(115deg, rgba(16, 32, 51, 0.98) 0%, rgba(16, 32, 51, 0.96) 38%, rgba(255, 248, 234, 0.96) 38.2%, rgba(251, 253, 254, 0.98) 100%); rgba(0, 0, 0, 0); text-align:left; custom-side-panel:true; watermark:false; frame:1000x720"
+          ]
+        },
+        "roles.dividerBackground": {
+          "selector": ".slide-section background (every chapter)",
+          "observed": [
+            "linear-gradient(115deg, rgba(16, 32, 51, 0.98) 0%, rgba(16, 32, 51, 0.96) 38%, rgba(255, 248, 234, 0.96) 38.2%, rgba(251, 253, 254, 0.98) 100%); rgba(0, 0, 0, 0); text-align:left; custom-side-panel:true; watermark:false; frame:1000x720"
+          ],
+          "reason": "Chapter backgrounds vary or are gradients, photos, overlays or off-palette colors."
+        },
+        "slides.cards.count": {
+          "selector": ".cards-grid > .card (every standard group)",
+          "observed": [],
+          "reason": "No comparable element exists in this reference lesson."
+        },
+        "slides.cards.titleBar": {
+          "selector": ".cards-grid > .card (every standard group)",
+          "observed": [],
+          "reason": "No comparable element exists in this reference lesson."
+        },
+        "slides.cards.treatment": {
+          "selector": ".cards-grid > .card (every standard group)",
+          "observed": [],
+          "reason": "No comparable element exists in this reference lesson."
+        },
+        "slides.cards.look": {
+          "selector": ".cards-grid > .card (every standard group)",
+          "observed": [],
+          "reason": "No comparable element exists in this reference lesson."
+        },
+        "slides.cards.layout": {
+          "selector": ".cards-grid > .card (every standard group)",
+          "observed": [],
+          "reason": "No comparable element exists in this reference lesson."
+        },
+        "roles.accent": {
+          "selector": ".cards-grid > .card dominant left/top border",
+          "observed": [],
+          "reason": "No comparable element exists in this reference lesson."
+        },
+        "slides.video.layout": {
+          "selector": "Not mapped",
+          "observed": [],
+          "reason": "This slide role uses custom reference markup; no reliable mapping to the builder option has been measured."
+        },
+        "slides.video.frame": {
+          "selector": "Not mapped",
+          "observed": [],
+          "reason": "This slide role uses custom reference markup; no reliable mapping to the builder option has been measured."
+        },
+        "slides.video.titleStyle": {
+          "selector": "Not mapped",
+          "observed": [],
+          "reason": "This slide role uses custom reference markup; no reliable mapping to the builder option has been measured."
+        },
+        "slides.activity.layout": {
+          "selector": "Not mapped",
+          "observed": [],
+          "reason": "This slide role uses custom reference markup; no reliable mapping to the builder option has been measured."
+        },
+        "slides.activity.labelStyle": {
+          "selector": "Not mapped",
+          "observed": [],
+          "reason": "This slide role uses custom reference markup; no reliable mapping to the builder option has been measured."
+        }
+      }
+    }
+  ]
+}

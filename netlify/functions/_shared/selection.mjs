@@ -1,6 +1,9 @@
 /** Server-side authority: committed schema plus current catalog constraints. */
 import { createHash } from 'node:crypto';
 import schema from '../../../bespoke/selection.schema.json' with { type: 'json' };
+import schemaV2 from '../../../bespoke/selection-v2.schema.json' with { type: 'json' };
+import builderCatalog from '../../../bespoke/builder-catalog.json' with { type: 'json' };
+import { validateDesign } from '../../../bespoke/builder-model.mjs';
 import catalog from '../../../SPOKES Builder/bespoke-library-catalog.json' with { type: 'json' };
 import meta from '../../../bespoke/catalog.json' with { type: 'json' };
 
@@ -16,8 +19,17 @@ function check(value, rule, at = '$', forSend = true) {
   if (value === null) return errors;
   if (typeof value === 'string') {
     if ([...value].some(character => { const code = character.codePointAt(0); return code >= 0xd800 && code <= 0xdfff; })) errors.push(`${at}: invalid Unicode text`);
-    if (rule.minLength && [...value].length < rule.minLength && (forSend || at !== '$.team.spokesperson.name')) errors.push(`${at}: missing text`);
+    // Archived v1 drafts can legitimately predate a spokesperson name. Keep
+    // that original unchanged; only the current envelope must be Send-ready.
+    const draftName = at.endsWith('.team.spokesperson.name') && (!forSend || at.startsWith('$.legacySelection.'));
+    if (rule.minLength && [...value].length < rule.minLength && !draftName) errors.push(`${at}: missing text`);
+    if (rule.maxLength && [...value].length > rule.maxLength) errors.push(`${at}: text is too long`);
     if (rule.pattern && !new RegExp(rule.pattern).test(value)) errors.push(`${at}: invalid format`);
+  }
+  if (Array.isArray(value)) {
+    if (rule.minItems !== undefined && value.length < rule.minItems) errors.push(`${at}: too few items`);
+    if (rule.maxItems !== undefined && value.length > rule.maxItems) errors.push(`${at}: too many items`);
+    if (rule.items) value.forEach((child, index) => errors.push(...check(child, rule.items, `${at}[${index}]`, forSend)));
   }
   if (object(value)) {
     for (const key of rule.required || []) if (!Object.hasOwn(value, key)) errors.push(`${at}.${key}: required`);
@@ -30,12 +42,21 @@ function check(value, rule, at = '$', forSend = true) {
 }
 
 export function selectionErrors(selection, lessonId, forSend = true) {
-  const errors = check(selection, schema, '$', forSend);
+  const isV2 = selection?.schema === 'bespoke-selection/v2';
+  const errors = check(selection, isV2 ? schemaV2 : schema, '$', forSend);
   if (errors.length) return errors;
   if (selection.lesson.id !== lessonId || !LESSON_IDS.includes(lessonId)) errors.push('Choose the matching lesson.');
   if (!selection.lesson.title.trim() || (forSend && !selection.team.spokesperson.name.trim())) errors.push('Add the lesson title and spokesperson name.');
   const date = new Date(`${selection.date}T00:00:00Z`);
   if (Number(selection.date.slice(0, 4)) < 1 || !Number.isFinite(date.getTime()) || date.toISOString().slice(0, 10) !== selection.date) errors.push('The saved date is invalid.');
+  if (isV2) {
+    errors.push(...validateDesign(builderCatalog, selection.design).map(error => `design: ${error}`));
+    if (selection.legacySelection) {
+      if (selection.legacySelection.schema !== 'bespoke-selection/v1') errors.push('legacySelection: only an original v1 selection is allowed.');
+      else errors.push(...selectionErrors(selection.legacySelection, selection.legacySelection.lesson?.id, false).map(error => `legacySelection: ${error}`));
+    }
+    return errors;
+  }
   const fields = { colorLead: 'colorLeads', sidebarColor: 'sidebarColors', backgroundTexture: 'backgroundTextures', titleSlide: 'titleSlides', dividerStyle: 'dividers' };
   const allowed = (family, slug) => catalog.families[family]?.options.some(option => option.slug === slug && !option.blocked);
   for (const [field, family] of Object.entries(fields)) if (!allowed(family, selection.theme[field])) errors.push(`${field}: unavailable choice`);

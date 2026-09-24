@@ -1,0 +1,136 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Bespoke — SPOKES instructor design wizard</title>
+  <link rel="icon" href="../SPOKES-Logo.png">
+  <link rel="stylesheet" href="./styles.css">
+</head>
+<body class="app-shell">
+  <a class="skip-link" href="#stepPanel">Skip to wizard</a>
+  <div id="liveRegion" class="sr-only" aria-live="polite"></div>
+
+  <header class="app-header">
+    <a class="brand" href="./index.html">
+      <img src="../SPOKES-Logo.png" alt="" width="40" height="40">
+      <div class="brand-text">
+        <strong>Bespoke</strong>
+        <span>Instructor design wizard · Spokes Model preview</span>
+      </div>
+    </a>
+    <div class="header-actions">
+      <div class="header-primary-actions">
+        <button type="button" class="btn btn-primary" id="btnSave">Save shared design</button>
+        <button type="button" class="btn btn-secondary" id="btnOpen">Open team design</button>
+      </div>
+      <button type="button" class="btn btn-accent" id="btnSend">Send to Britt</button>
+      <p id="saveStatus" class="save-status"></p>
+      <span id="saveLive" class="sr-only" aria-live="polite"></span>
+      <div class="header-backup" role="group" aria-label="Backup file">
+        <button type="button" class="btn btn-ghost btn-sm" id="btnDownloadBackup">Download backup</button>
+        <button type="button" class="btn btn-ghost btn-sm" id="btnOpenBackup">Open backup</button>
+      </div>
+      <input id="teamFileInput" type="file" accept="application/json,.json" hidden>
+      <details class="more-menu">
+        <summary class="btn btn-ghost btn-sm">More</summary>
+        <div class="more-menu-list">
+          <button type="button" class="btn btn-ghost btn-sm" id="btnRecoverDraft" hidden>Recover previous draft</button>
+          <a class="btn btn-ghost btn-sm" href="../Dashboard.html">Curriculum hub</a>
+          <button type="button" class="btn btn-ghost btn-sm" id="btnClear">Clear draft</button>
+        </div>
+      </details>
+    </div>
+  </header>
+  <p id="fileStatus" class="restore-notice" role="status" hidden></p>
+  <section id="teamSessionBar" class="team-session-bar" aria-label="Shared team session" hidden>
+    <p id="teamSessionStatus"></p>
+    <div class="team-session-actions">
+      <button type="button" class="btn btn-primary" id="btnLoadLatest" hidden>Load latest shared design</button>
+      <button type="button" class="btn btn-secondary" id="btnKeepLocal" hidden>Keep this browser draft</button>
+      <button type="button" class="btn btn-ghost" id="btnHistory" aria-expanded="false" aria-controls="historyPanel">Previous versions</button>
+      <button type="button" class="btn btn-ghost" id="btnCheckStatus" hidden>Check review status</button>
+      <button type="button" class="btn btn-ghost" id="btnLeaveSession">Leave team session on this browser</button>
+    </div>
+    <div id="historyPanel" class="history-panel" hidden></div>
+  </section>
+  <p id="accessBanner" class="access-banner" role="status" hidden>Only the team lead can change this.</p>
+  <p id="restoreNotice" class="restore-notice" role="status" hidden></p>
+  <dialog id="openDialog" class="open-dialog" aria-labelledby="openDialogTitle">
+    <form id="openForm">
+      <h2 id="openDialogTitle">Open your team design</h2>
+      <p>Use the lesson and private access code Britt or your administrator gave your team.</p>
+      <label class="field" for="openLesson">Lesson
+        <select id="openLesson" required></select>
+      </label>
+      <label class="field" for="openEditCode">Private access code
+        <input id="openEditCode" type="password" autocomplete="off" minlength="20" maxlength="128" required>
+      </label>
+      <p id="openError" class="share-status" role="status" aria-live="polite"></p>
+      <div class="share-actions">
+        <button type="submit" class="btn btn-primary" id="openConfirm">Open</button>
+        <button type="button" class="btn btn-secondary" id="openCancel">Cancel</button>
+      </div>
+    </form>
+  </dialog>
+
+  <div class="surface-switcher" role="tablist" aria-label="Workspace surface" id="surfaceSwitcher">
+    <button type="button" role="tab" id="surface-design" data-surface="design" aria-selected="true" aria-controls="chromeRail">Design</button>
+    <button type="button" role="tab" id="surface-preview" data-surface="preview" aria-selected="false" aria-controls="previewPane">Preview</button>
+  </div>
+
+  <div class="workspace" id="workspace" data-active-surface="design">
+    <div class="chrome-rail" id="chromeRail" data-surface-panel="design">
+      <nav class="stepper" aria-label="Wizard steps">
+        <div class="stepper-head">
+          <h2>Steps</h2>
+          <span class="step-progress" id="stepProgress" aria-hidden="true"></span>
+        </div>
+        <ol class="step-list" id="stepList"></ol>
+      </nav>
+
+      <main class="chrome-main">
+        <section class="panel" id="stepPanel" tabindex="-1" aria-label="Current wizard step"></section>
+      </main>
+    </div>
+
+    <aside class="preview-pane" id="previewPane" aria-label="Spokes Model" data-surface-panel="preview">
+      <div class="preview-header">
+        <div>
+          <h2>Spokes Model</h2>
+          <p class="preview-note">Live preview. Point at an option to try it.</p>
+        </div>
+        <p class="distinct-meter" id="distinctMeter"></p>
+        <div class="preview-tabs" role="tablist" aria-label="Preview surface" id="previewTabs">
+          <button type="button" role="tab" id="tab-title" data-view="title" aria-selected="true" aria-controls="modelStage">Title</button>
+          <button type="button" role="tab" id="tab-divider" data-view="divider" aria-selected="false" aria-controls="modelStage">Divider</button>
+          <button type="button" role="tab" id="tab-cards" data-view="cards" aria-selected="false" aria-controls="modelStage">Cards</button>
+        </div>
+      </div>
+      <div class="stage">
+        <div class="stage-canvas">
+          <div class="spokes-model" id="spokesModel">
+            <div class="model-chrome">
+              <div class="model-sidebar" id="modelSidebar" aria-hidden="true"></div>
+              <div class="model-main" id="modelMain">
+                <span class="model-progress" aria-hidden="true"></span>
+                <div id="modelStage" role="tabpanel" aria-label="Preview stage"></div>
+                <img class="model-logo" src="../SPOKES-Logo.png" alt="" aria-hidden="true" width="40" height="40">
+              </div>
+            </div>
+            <span class="stage-pill" aria-hidden="true">Sample content</span>
+          </div>
+        </div>
+        <p class="stage-caption" id="stageCaption" aria-hidden="true"></p>
+      </div>
+    </aside>
+  </div>
+
+  <footer class="footer-bar">
+    <p>SPOKES · WV Adult Basic Education · Prototype · Available choices use the SPOKES library · Final lessons require review</p>
+  </footer>
+
+  <script src="./brief.js"></script>
+  <script src="./app.js"></script>
+</body>
+</html>

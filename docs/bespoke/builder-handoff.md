@@ -1,46 +1,85 @@
 # BeSpoke builder handoff
 
-Teachers work only on the visual design. They open their private team link,
-compare approved styles during a Teams call, save the agreed look, and send it to
-Britt for design review. They do not need a Word form, lesson content, a GitHub
-account, command-line tools, or agent access.
+BeSpoke v2 configures reusable visual slide roles with sample copy. It is not
+curriculum authoring, unrestricted drag-and-drop deck editing, or automatic lesson
+construction. Teachers can use the guided path or editable presets; both write the
+same cumulative design. Independent role colors, heading/body fonts and component
+choices must survive every save and artifact boundary.
 
-The shared design service authenticates the provisioned team access, stores
-encrypted revisions on `bespoke-drafts`, and rejects stale saves. A private team
-link automatically reopens the latest shared design when local work can be safely
-replaced. Local browser drafts and downloaded backups remain recovery options;
-they must not be mistaken for confirmed shared saves.
+**September 24, 2026:** this implementation is prepared for local review. Service
+behavior has synthetic tests; the revised wizard/service have not been deployed
+or accepted on the hosted environment. September 22 live acceptance describes the
+previous v1 deployment. Do not infer hosted v2 readiness from it or from local tests.
 
-**Send to Britt** uses the canonical saved selection to start Spoke Signals. The
-browser shows processing until a matching proposal pull request is confirmed.
-Only that receipt permits **Britt received the review request.** An accepted workflow dispatch alone is not
-delivery. Retrying the same selection must reuse or discover its existing
-proposal. Failed submissions remain visible and retryable.
+The current user decisions are in [decisions.md](decisions.md). They supersede the
+September 23 spec's restricted palette, fixed font pairing and removal of presets.
+All eleven existing brand swatches remain visible for direct role painting, and
+all twelve existing font families can be selected independently for headings and
+body. Franklin Gothic Book remains optional and unavailable: no usable licensed
+local webfont package was found.
 
-A proposal is a request to review the visual choices. It does not apply registries,
-create a lesson, merge itself, or publish. Approval of a design does not establish
-that lesson content exists or authorize agents to invent it. A later lesson build
-requires separate authorization and complete instructor-owned source material.
-The canonical content-intake artifact generated below is for that later builder
-stage, not a prerequisite or form assigned to teachers using BeSpoke.
+## Selection and recovery contract
 
-See [shared service setup](auto-handoff-setup.md) for provisioning, secrets,
-rotation, hosted acceptance checks, and operating requirements. Keep
-private team links and credentials out of proposals and logs. Proposals contain
-only the agreed selection and its build artifacts. This repository is public, so
-proposal text and work contact details are publicly readable; team-draft access
-control does not make the proposal private.
+A `bespoke-selection/v2` contains the same lesson/team metadata, date and optional
+submission timestamp, plus a complete `design`:
+
+- Eleven role colors, independent heading/body font IDs and background pattern.
+- Title arrangement, logo position and background finish.
+- Divider arrangement, watermark and background finish.
+- One to four text boxes, optional shared title bar, paragraph/bullet/numbered
+  treatment, box style and arrangement.
+- Video arrangement/frame/heading style and activity arrangement/label style.
+- Title/subtitle and all four sample-box strings, including currently hidden boxes.
+- The optional preset origin represented by `design.startingPoint` (`custom` after
+  individual visual edits).
+
+The live preview, CSS and component samples derive from
+`bespoke/builder-model.mjs`. The closed schema is generated from the same catalog
+by `scripts/generate-selection-v2-schema.mjs`. Python tools call the committed
+Node bridge for the same validation and rendering authority; Node.js 22+ is an
+explicit dependency. Invalid catalog values, malformed arrays, arbitrary CSS and
+unreadable modeled text/surface combinations are rejected at shared-save/build
+boundaries. Browser drafts and undo preserve in-progress work for correction.
+
+V1 remains valid under its unchanged schema. V1 conversion is approximate and
+shows warnings for styles with no exact counterpart. Keep the original v1 payload
+verbatim in optional `legacySelection`; its independent validation must not be
+replaced by a free-form archive. Earlier incomplete shared drafts can retain an
+empty spokesperson in that archive, while the current envelope must be complete
+for Send. Do not delete the original chapter-specific styling or sample text just
+because the new reusable-role model cannot render it identically.
+
+## Local preview and synthetic persistence
+
+From this isolated worktree:
+
+```sh
+node scripts/bespoke-dev-server.mjs --port 8766 \
+  --runtime-dir "/Users/brittlegg/Library/Application Support/Codex/local-previews/bespoke-guided-builder"
+```
+
+Open [the local preview](http://127.0.0.1:8766/bespoke/). This uses a distinct origin
+from the saved checkout at port 8765, preserving its browser draft. The dev server
+binds to loopback, serves approved builder assets, and replaces the handoff config
+with a synthetic service on its own origin. No private team access is needed.
+Save/Open/history exercise the real revision and retry handler with local data;
+Send and review-status calls are blocked. Disk persistence is optional and must
+remain outside every Git checkout. MacDev itself has a Git parent, so use the
+external runtime path above. No runtime data belongs in a proposal.
+
+The exported test API is `await createDevServer({port: 0, runtimeDir})`, returning
+`server`, `baseUrl`, `runtimeFile` and async `close()`. Omitting `runtimeDir` uses
+memory only. Closing the server does not delete an external persisted runtime.
 
 ## Receive a teacher file
 
-From the repository root, run this one command with the downloaded or locally
-synced team file. Keep the quotes around a path that contains spaces.
+For an authorized design-proposal intake, run:
 
 ```sh
 python3 scripts/bespoke-write-submission.py "/absolute/path/to/team-selection.json"
 ```
 
-This validates the file before writing and prints the proposal folder:
+The writer validates first and produces an immutable folder:
 
 ```text
 docs/phase-2/submissions/<lesson-id>/<date>-<selection-digest>/
@@ -48,63 +87,76 @@ docs/phase-2/submissions/<lesson-id>/<date>-<selection-digest>/
   content-intake.md
   design.css
   build-contract.json
+  component-samples.html   # v2 only
 ```
 
-Two submissions on the same day have different folders when their contents differ.
-Retrying the exact same file leaves the proposal and any completed intake intact.
-The full canonical intake remains present. Preview samples are identified as sample
-copy and are not silently assigned to a teaching stage. The command creates a
-proposal only. It does not read OneDrive, create a lesson, open a PR, or publish.
+Different contents get different digest folders. An exact retry leaves completed
+intake edits and proposal history intact. `selection.json` keeps the full design
+and any original v1 recovery payload. Sample copy stays labeled as sample material;
+it is never assigned to a teaching stage. The canonical content-intake template
+remains for a later separately authorized build, not a teacher prerequisite.
+`component-samples.html` is a reusable visual demonstration, not a completed lesson.
+Its relative base resolves the existing repository font assets when served at the
+normal submission location.
 
-Britt or a builder can also paste the file into **Actions → Spoke Signals → Run
-workflow**. The optional GitHub issue flow runs the same validator and writer.
-The workflow opens a draft proposal PR, requests Britt's review, and never applies
-registries or builds a lesson. Approve and run the full quality workflow before merge. PRs created with
-GitHub's built-in workflow token require approval for their PR workflow runs.
-See [GitHub workflow-trigger documentation](https://docs.github.com/en/actions/how-tos/write-workflows/choose-when-workflows-run/trigger-a-workflow).
-The workflow requests review; repository protection settings must enforce any
-required approval rule. No protection settings are changed by this package.
+The writer itself does not open a PR, access OneDrive, apply registries, build or
+publish. After the compatible hosted service and workflow are deployed and
+accepted, authenticated Send can create the draft design proposal through Spoke
+Signals. **Processing is not delivery:** the matching proposal receipt is required.
+Save retries retain mutation identity; Send uses the confirmed saved selection.
+The handler preserves authorization before storage access, stale-revision rejection,
+encrypted shared drafts, history and retry/receipt behavior.
+
+Private team links and service credentials must stay out of proposals/logs.
+Proposals are public repository artifacts; use work contact details and non-sensitive
+sample text. [Shared service setup](auto-handoff-setup.md) describes provisioning
+and hosted acceptance. Deploy the updated service authority/schema/model before
+exposing v2 writes, then perform hosted acceptance. No deployment or production
+configuration change is included in this local implementation.
 
 ## For a separately authorized lesson build
 
-Confirm explicit build authorization, complete instructor-owned content, referenced
-source files, permissions, and the approved design proposal path. Design approval
-alone is not evidence of content readiness or permission to begin a build.
+Confirm explicit build authorization, approved instructor content, required source
+files, permissions and the reviewed proposal. A visual-design approval neither
+supplies content nor authorizes an agent to invent it. The existing six Phase 1
+releases already have Britt's September 23 approval; this work does not reopen them.
 
-Registry preparation remains an explicit builder step. Preview the change first:
+**V2 registry limitation:** `scripts/bespoke-apply-selection.py` deliberately rejects
+v2 selections because the existing v1 theme registry cannot represent independent
+colors, fonts and structural choices. Keep the complete v2 artifacts. A separately
+reviewed v2 registry consumer is required before registry-based construction can
+use them. Never flatten the design to a preset or pretend CSS alone creates text
+boxes, a title bar or list structure.
+
+For an existing v1 proposal only, registry preparation remains an explicit builder
+step in the authorized lesson-build branch:
 
 ```sh
-python3 scripts/bespoke-apply-selection.py --selection "<approved-proposal>/selection.json" --dry-run
+python3 scripts/bespoke-apply-selection.py --selection "<approved-v1-proposal>/selection.json" --dry-run
 ```
 
-Use the same command without `--dry-run` to prepare the pending registry entries
-in the lesson-build branch. This changes registries only. It refuses to overwrite
-an existing built or released lesson. A different pending proposal requires
-`--expected-selection-sha256 <current-digest>` after reviewing the current
-registry entry, preventing an older proposal from silently replacing a newer one.
-During that authorized build, update Dashboard.html's offline FALLBACK_LESSONS
-entry to match the registry; `check-registry-sync.py` deliberately fails if the
-online and offline catalogs diverge. Do not publish a pending lesson as ready.
+Removing `--dry-run` writes pending registry entries. Existing released lessons
+cannot be replaced. Updating a different pending proposal requires review and
+`--expected-selection-sha256 <current-digest>`. Keep Dashboard's offline catalog
+consistent with authorized registry changes; do not mark a pending lesson ready.
 
-## Preserve the selected appearance
+## Preserve the approved design
 
-`design.css` is assembled automatically from the selected library options,
-self-hosted font declarations, and the fixed WIPPEA chapter map. Its companion
-`build-contract.json` records the original selection digest, exact CSS digest,
-source template/library digests, chosen font assets, and required dark-theme class.
-Use the files from the approved proposal; do not regenerate a different look after
-approval without review.
+The v2 contract records the complete model, selection/CSS/catalog/model digests,
+font assets, shared component markup and structural requirements. V1 contracts
+retain their original theme/template/chapter-map form. Use the approved artifact
+versions; do not silently regenerate a changed look from later code.
 
-1. Keep the canonical template markup and its navigation engine.
-2. Insert the complete `design.css` text inside the final
-   `<style id="theme-override">` block after all base CSS. Keep this the last
-   embedded style block and do not override the chosen appearance elsewhere.
-3. Add `<meta name="bespoke-selection-sha256" content="DIGEST">` using
-   `selectionSha256` from `build-contract.json`.
-4. Match `chapterMap` in each section divider. When the contract requires
-   `theme-dark`, add that class to `.main`. Keep font paths valid relative to the
-   lesson's `index.html`.
-5. Check the finished lesson:
+1. Preserve the canonical lesson navigation/content architecture when separately
+   building a lesson. Adapt the approved v2 role markup explicitly; its data
+   attributes and structural classes are part of the contract.
+2. Insert the complete `design.css` in the final `<style id="theme-override">`
+   after base CSS, and add the selection SHA-256 meta tag from the contract.
+3. For v2, create the saved number of real text boxes, the saved title-bar presence
+   and actual `p`, `ul` or `ol` markup. Retain the chosen per-role attributes. For
+   v1, retain its chapter map and any required `theme-dark` class.
+4. Keep selected self-hosted font paths valid relative to the finished HTML.
+5. Run the design checker, lesson validator and appropriate full quality gate.
 
 ```sh
 python3 scripts/bespoke-check-design.py "<approved-proposal>/build-contract.json" "lesson-<id>/index.html"
@@ -112,21 +164,21 @@ python3 scripts/validate-lesson.py "lesson-<id>/index.html"
 bash scripts/quality.sh
 ```
 
-The design checker is a **static contract check**, not a screenshot comparison or
-accessibility certification. Inspect every final chapter and component in a
-browser, including contrast, font loading, overflow, classroom projection and
-mobile layouts. Different card components can look different from the preview
-sample. Get teacher/Britt acceptance of the final appearance and content before
-release. Extra presentation chapters need an explicit approved chapter map; this
-first contract covers W, I, P1, P2, P3, E, A.
+These are required verification actions, not a statement that a lesson or the
+current root gate has passed. The design checker is static: inspect fonts,
+contrast, overflow, all component roles and projection/mobile layouts in a browser.
+Teacher/Britt acceptance of the completed appearance and content remains separate.
 
+## Similarity and historical limits
 
-## Known template and library limits
+`lesson-fingerprints.json` records measured evidence from six actual presentations;
+`similarity.mjs` counts matching supported choices and exposes unknown dimensions.
+It compares colors, independent fonts, backgrounds and meaningful component/layout
+choices where measurable. Mixed/custom/unmeasured reference features remain unknown.
+This is advisory exact-choice overlap, not a perceptual percentage or a check
+against private team designs. It cannot certify that a new design is unique.
 
-The base template and design contract include a Warm-Up divider at chapter 1 and
-preserve the W, I, P1, P2, P3, E, A mapping. Keep those roles in the built lesson.
-
-`split-panel` dividers and `gradient-fill` cards are blocked until their known
-watermark/contrast defects are remediated. The Outspoken preset uses `gold-rail`
-and `stamp-frame` instead. Blocking these two defects does not certify every
-remaining option combination for contrast or visual fidelity.
+The preserved v1 library blocks defective `split-panel` dividers and `gradient-fill`
+cards. Its optional per-chapter variation and fixed pairing rules describe the old
+model. The new reusable-role builder does not flatten or delete that old information;
+it keeps the original v1 selection for recovery and explains the conversion.

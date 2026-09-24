@@ -14,7 +14,7 @@ import tempfile
 
 sys.path.insert(0, str(Path(__file__).resolve().parent))
 from bespoke_support import ROOT, require_valid_selection, selection_digest
-from bespoke_design import build_design
+from bespoke_design import build_design, component_sample_html
 
 
 def esc(value: object) -> str:
@@ -33,7 +33,7 @@ def build_intake_markdown(payload: dict, date: str) -> str:
     # D11: retain every section of the actual template. Preview copy is not a
     # teacher-approved Warm-Up or Introduction and must not be assigned to either.
     template = (ROOT / "SPOKES Builder/content-intake-template.md").read_text(encoding="utf-8")
-    lesson, team, theme = payload["lesson"], payload["team"], payload["theme"]
+    lesson, team, theme = payload["lesson"], payload["team"], payload.get("theme", {})
     spokesperson = team["spokesperson"]
     title = lesson.get("displayTitle") or lesson["title"]
     overview = {
@@ -48,11 +48,25 @@ def build_intake_markdown(payload: dict, date: str) -> str:
     rows = {
         "Spokesperson": spokesperson["name"],
         "Spokesperson email": spokesperson.get("email", ""),
-        "Preset": payload["presetId"],
-        **{key: theme[key] for key in ("colorLead", "sidebarColor", "backgroundTexture", "titleSlide", "dividerStyle", "fontPairing")},
-        "Cards": json.dumps(theme["cards"], ensure_ascii=False),
         "Team notes (Unspoken)": payload.get("unspoken", ""),
     }
+    is_v2 = payload.get("schema") == "bespoke-selection/v2"
+    if is_v2:
+        design = payload["design"]
+        rows.update({
+            "Starting point": design["startingPoint"],
+            "Colors by role": json.dumps(design["roles"], ensure_ascii=False),
+            "Independent fonts": json.dumps(design["fonts"], ensure_ascii=False),
+            "Background": design["background"],
+            **{f"{role.capitalize()} design": json.dumps(choices, ensure_ascii=False) for role, choices in design["slides"].items()},
+            "Recovery": "Original v1 selection preserved verbatim in selection.json" if "legacySelection" in payload else "Native v2 selection",
+        })
+    else:
+        rows.update({
+            "Preset": payload["presetId"],
+            **{key: theme[key] for key in ("colorLead", "sidebarColor", "backgroundTexture", "titleSlide", "dividerStyle", "fontPairing")},
+            "Cards": json.dumps(theme["cards"], ensure_ascii=False),
+        })
     brief = payload.get("brief")
     if brief:
         rows["Design brief"] = (
@@ -61,6 +75,9 @@ def build_intake_markdown(payload: dict, date: str) -> str:
         )
     table = "\n".join(f"| {key} | {esc(value)} |" for key, value in rows.items())
     sample = payload.get("sampleContent") or {}
+    sample_section = f"### Preview bullets (preserved verbatim)\n\n{fenced(sample.get('bullets', ''))}\n\n### Preview myth/reality (preserved verbatim)\n\n{fenced(sample.get('mythReality', ''))}"
+    if is_v2:
+        sample_section = "### Visual preview copy (all four drafts preserved; not curriculum)\n\n" + fenced(json.dumps(payload["design"]["samples"], indent=2, ensure_ascii=False))
     return template.rstrip() + f"""
 
 ---
@@ -70,21 +87,15 @@ def build_intake_markdown(payload: dict, date: str) -> str:
 This package records design choices for Britt's review. The unfinished template
 above still needs the team's full content and resource references. Preview text
 below is sample copy only; it has not been mapped to a WIPPEA stage.
-Merge is approval to begin a separate lesson build, not a completed lesson.
+Building a lesson requires separate authorization and complete approved content.
 
 | Dimension | Selection |
 |-----------|-----------|
 {table}
 
-### Preview bullets (preserved verbatim)
+{sample_section}
 
-{fenced(sample.get("bullets", ""))}
-
-### Preview myth/reality (preserved verbatim)
-
-{fenced(sample.get("mythReality", ""))}
-
-- Payload schema: bespoke-selection/v1
+- Payload schema: {payload['schema']}
 - Selection SHA-256: `{selection_digest(payload)}`
 - Approval: Britt reviews the draft PR before any build.
 """
@@ -103,7 +114,10 @@ def write_submission(payload: dict, repo_root: Path) -> Path:
         previous = dest / "selection.json"
         if not previous.is_file() or previous.read_text(encoding="utf-8") != selection:
             raise ValueError("Existing submission differs; refusing to overwrite it")
-        if any(not (dest / name).is_file() for name in ("content-intake.md", "design.css", "build-contract.json")):
+        required_files = ["content-intake.md", "design.css", "build-contract.json"]
+        if payload.get("schema") == "bespoke-selection/v2":
+            required_files.append("component-samples.html")
+        if any(not (dest / name).is_file() for name in required_files):
             raise ValueError("Existing submission is incomplete; review it before retrying")
         return dest  # Retry preserves instructor edits to intake and proposal history.
     intake = build_intake_markdown(payload, date)
@@ -115,6 +129,8 @@ def write_submission(payload: dict, repo_root: Path) -> Path:
         (staging / "content-intake.md").write_text(intake, encoding="utf-8")
         (staging / "design.css").write_text(css, encoding="utf-8")
         (staging / "build-contract.json").write_text(json.dumps(contract, indent=2, ensure_ascii=False) + "\n", encoding="utf-8")
+        if payload.get("schema") == "bespoke-selection/v2":
+            (staging / "component-samples.html").write_text(component_sample_html(css, contract), encoding="utf-8")
         os.rename(staging, dest)
     finally:
         if staging.exists():

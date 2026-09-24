@@ -18,6 +18,8 @@ from pathlib import Path
 from typing import Any
 
 REPO_ROOT = Path(__file__).resolve().parent.parent
+sys.path.insert(0, str(REPO_ROOT / "scripts"))
+from bespoke_model import model_result
 SCHEMA_PATH = REPO_ROOT / "bespoke" / "selection.schema.json"
 LIBRARY_CATALOG = REPO_ROOT / "SPOKES Builder" / "bespoke-library-catalog.json"
 
@@ -73,8 +75,19 @@ def validate_against_schema(instance: Any, schema: dict, path: str = "$") -> lis
     if isinstance(instance, str):
         if "minLength" in schema and len(instance) < schema["minLength"]:
             errors.append(f"{path}: string shorter than minLength {schema['minLength']}")
+        if "maxLength" in schema and len(instance) > schema["maxLength"]:
+            errors.append(f"{path}: string longer than maxLength {schema['maxLength']}")
         if "pattern" in schema and not re.search(schema["pattern"], instance):
             errors.append(f"{path}: string does not match pattern {schema['pattern']!r}")
+
+    if isinstance(instance, list):
+        if "minItems" in schema and len(instance) < schema["minItems"]:
+            errors.append(f"{path}: too few items")
+        if "maxItems" in schema and len(instance) > schema["maxItems"]:
+            errors.append(f"{path}: too many items")
+        if "items" in schema:
+            for index, item in enumerate(instance):
+                errors.extend(validate_against_schema(item, schema["items"], f"{path}[{index}]"))
 
     if isinstance(instance, dict):
         required = schema.get("required") or []
@@ -144,6 +157,11 @@ def custom_checks(payload: dict, schema: dict) -> tuple[list[str], list[str]]:
 
 
 def validate_payload(payload: dict, schema: dict) -> tuple[list[str], list[str]]:
+    if isinstance(payload, dict) and payload.get("schema") == "bespoke-selection/v2":
+        try:
+            return model_result(payload)["errors"], []
+        except ValueError as exc:
+            return [str(exc)], []
     errors = validate_against_schema(payload, schema)
     if errors:
         return errors, []

@@ -5,8 +5,10 @@ import hashlib
 import json
 from pathlib import Path
 import re
+from copy import deepcopy
 
 from bespoke_support import ROOT, require_valid_selection, selection_digest
+from bespoke_model import model_result
 
 CHAPTERS = ("W", "I", "P1", "P2", "P3", "E", "A")
 
@@ -17,6 +19,8 @@ def sha(text: str) -> str:
 
 def build_design(payload: dict) -> tuple[str, dict]:
     require_valid_selection(payload)
+    if payload.get("schema") == "bespoke-selection/v2":
+        return build_design_v2(payload)
     source = (ROOT / "SPOKES Builder/theme-options.json").read_text(encoding="utf-8")
     sections = json.loads(source)["sections"]
     meta = json.loads((ROOT / "bespoke/catalog.json").read_text(encoding="utf-8"))
@@ -97,3 +101,67 @@ def build_design(payload: dict) -> tuple[str, dict]:
         ],
     }
     return css, manifest
+
+
+def build_design_v2(payload: dict) -> tuple[str, dict]:
+    """A complete component contract, never a lossy legacy-theme conversion."""
+    result = model_result(payload, "design")
+    if result["errors"]:
+        raise ValueError("Invalid v2 design: " + "; ".join(result["errors"]))
+    css = f"/* Bespoke selection SHA-256: {selection_digest(payload)} */\n" + result["css"].strip() + "\n"
+    font_paths = sorted(set(re.findall(r'url\([\"\']?(\.\./fonts/[^\)\"\']+)', css)))
+    for font_path in font_paths:
+        if not (ROOT / "bespoke" / font_path).is_file():
+            raise ValueError(f"Missing font asset: {font_path}")
+    if not font_paths:
+        raise ValueError("V2 design is missing self-hosted font declarations")
+    design = deepcopy(payload["design"])
+    manifest = {
+        "schema": "bespoke-build-contract/v2",
+        "lessonId": payload["lesson"]["id"],
+        "selectionSha256": selection_digest(payload),
+        "catalogSha256": sha((ROOT / "bespoke/builder-catalog.json").read_text(encoding="utf-8")),
+        "modelSha256": sha((ROOT / "bespoke/builder-model.mjs").read_text(encoding="utf-8")),
+        "cssSha256": sha(css),
+        "design": design,
+        "fonts": result["fonts"],
+        "fontPaths": font_paths,
+        "componentMarkup": result["markup"],
+        "componentRequirements": {
+            kind: {"rootClass": "bespoke-slide", "attributes": {"data-kind": kind, **{
+                "data-" + re.sub(r"([A-Z])", lambda match: "-" + match[1].lower(), key): str(value).lower() if isinstance(value, bool) else value
+                for key, value in choices.items()
+            }}} for kind, choices in design["slides"].items()
+        },
+        "scope": "Reusable visual slide roles and sample copy only. Not an authored lesson or a release approval.",
+        "acceptance": [
+            "Use the shared componentMarkup as the structural reference. Replace sample copy only with separately approved instructor content.",
+            "Insert design.css verbatim into style#theme-override after base CSS, and add the selection SHA-256 meta tag.",
+            "Retain each role's data attributes and structural classes. Cards require the saved number of real text boxes, the saved title-bar presence, and actual paragraph/ul/ol markup; CSS alone cannot implement those choices.",
+            "Keep all four sample box strings in selection.json, even when fewer boxes are displayed. Do not treat hidden drafts as deleted content.",
+            "Run scripts/bespoke-check-design.py with this contract and the finished HTML; browser review, lesson validation and quality gates remain required.",
+            "Legacy registry application is deliberately unsupported. A reviewed v2 registry consumer is required before any separately authorized lesson build uses that registry.",
+            "No automatic lesson building, publication or production changes are authorized by this proposal.",
+        ],
+    }
+    return css, manifest
+
+
+def component_sample_html(css: str, contract: dict) -> str:
+    """Reviewable sample artifact located with an immutable submission in the repo."""
+    import html
+    markup = "\n".join(
+        f'<h2>{html.escape(kind.capitalize())} sample</h2>\n{fragment}'
+        for kind, fragment in contract["componentMarkup"].items()
+    )
+    return f'''<!doctype html>
+<html lang="en"><head><meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<base href="../../../../../bespoke/">
+<meta name="bespoke-selection-sha256" content="{contract['selectionSha256']}">
+<title>BeSpoke reusable visual samples</title>
+<style>body{{margin:0;padding:2rem;background:#edf3f7;color:#00133f;font-family:system-ui}}main{{max-width:1100px;margin:auto}}h2{{margin-top:2rem}}</style>
+<style id="theme-override">{css}</style></head><body><main>
+<h1>Reusable visual samples</h1><p>Sample text only. This design proposal does not build or publish a lesson.</p>
+{markup}
+</main></body></html>\n'''

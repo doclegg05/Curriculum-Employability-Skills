@@ -11,7 +11,7 @@ on:
   workflow_dispatch:
     inputs:
       payload_json:
-        description: "Full Bespoke selection JSON (bespoke-selection/v1)"
+        description: "Full Bespoke selection JSON (bespoke-selection/v1 or v2)"
         required: true
         type: string
       submission_id:
@@ -41,6 +41,9 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: "22"
 
       - name: Extract payload
         id: payload
@@ -59,7 +62,7 @@ jobs:
               if (fence) {
                 raw = fence[1];
               } else {
-                const alt = body.match(/```json\s*(\{[\s\S]*?"schema"\s*:\s*"bespoke-selection\/v1"[\s\S]*?\})\s*```/);
+                const alt = body.match(/```json\s*(\{[\s\S]*?"schema"\s*:\s*"bespoke-selection\/v[12]"[\s\S]*?\})\s*```/);
                 if (!alt) {
                   core.setFailed('No bespoke-selection JSON payload found in issue body.');
                   return;

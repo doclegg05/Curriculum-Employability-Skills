@@ -195,6 +195,12 @@ def apply_selection(
     expected_previous: str | None = None,
 ) -> tuple[dict, dict, str]:
     require_valid_selection(payload)
+    if payload.get("schema") == "bespoke-selection/v2":
+        raise ValueError(
+            "Bespoke v2 is a complete component design; the legacy theme registry cannot represent it. "
+            "Keep the immutable selection.json, design.css and v2 build-contract.json for a separately "
+            "authorized lesson build. Registry application requires a reviewed v2 consumer; no files changed."
+        )
     # Work on copies so rejected updates cannot leave one registry mutated.
     theme_registry = deepcopy(theme_registry)
     lesson_registry = deepcopy(lesson_registry)
