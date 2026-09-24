@@ -55,3 +55,32 @@ The browser suite creates separate ephemeral servers and contexts. Its state nev
 ## Remaining rollout work
 
 Hosted service staging/deployment and hosted acceptance are still required before any v2 team rollout. The submission workflow now declares Node 22 for the shared JS model bridge. Deploy service and static v2 assets together only after authorization and acceptance. The existing legacy registry command deliberately rejects v2 rather than discarding independent choices; a reviewed v2 registry consumer is needed only if a future separately authorized lesson build uses that registry. Current proposal generation produces the complete selection, intake, CSS, contract and reusable sample HTML.
+
+## Follow-up: visible button-color feedback
+
+Britt reported that Buttons could be painted while Text boxes showed no button.
+The role value was serialized, but the selected preview could not demonstrate it.
+The correction adds a temporary, labeled action sample outside title/divider/text-box
+slide markup while Buttons is selected. It keeps the chosen tab, uses the same model
+button styles, and provides an inline sample on phones. Video and Activity now use
+actual inert sample buttons. No sample has a link, download target or submit action.
+Local drafts also retain the selected paint role and preview tab through refresh.
+
+A new desktop/390px behavioral regression verifies Green/Royal and Navy/White
+computed button colors and 4.5:1-or-better text contrast; visible feedback without
+switching surfaces; keyboard selection/focus; unchanged unrelated choices; Undo;
+reload with history; all preview tabs; removal of the contextual sample when leaving
+the Buttons role; and inert activation without navigation, downloads or service
+requests. The new builder suite now passes eight scenarios with no runtime, asset,
+external-request or accessibility failures under the same documented watermark
+exception. The full `scripts/quality.sh` gate passed again, including generated
+contracts/artifacts and the unchanged legacy/lesson baselines.
+
+Synthetic desktop and mobile screenshots visibly show the Green sample beneath
+Text boxes and beside the phone palette. Before refreshing the existing Safari tab,
+a recovery download was confirmed. After refresh, the selected Raleway heading,
+Source Sans 3 body, Soft wash background, Divider preview and available Undo remained.
+The user resumed editing; their subsequent preset confirmation was left untouched.
+No saved selections were reseeded or cleared. The old checkout and port 8765 were
+untouched. Follow-up logs/screenshots are retained in the external preview runtime
+directory as `bespoke-button-*`; no production rollout occurred.

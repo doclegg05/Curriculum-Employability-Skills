@@ -265,3 +265,12 @@ Comparison is advisory: it shows exact matching comparable choices against six r
 - Don't describe the comparison as a perceptual score or a requirement to pass.
 - Don't treat a saved design or review request as authorization to build or publish a lesson.
 - Don't extend this document's authority to the dashboard, original wizard, or released lessons.
+
+### Button-color feedback
+
+While the Buttons color role is active, show a clearly labeled temporary sample
+below a buttonless slide, without changing the selected preview tab or adding a
+permanent button to that slide's structure. At phone widths, also show the sample
+inside the controls so its paint change is visible without switching surfaces.
+Video and Activity retain their own inert sample actions. All examples reuse the
+model's button background, automatic ink, body font and 44px minimum target height.

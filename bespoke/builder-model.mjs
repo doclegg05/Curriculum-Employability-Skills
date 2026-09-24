@@ -152,7 +152,7 @@ export function cssForDesign(catalog, design, { scope = '.bespoke-slide', fontBa
   rule(selector('.slide-heading'), '.slide:not(.slide-title):not(.slide-section) h2, .card h4', 'color: var(--role-heading);');
   rule(selector('.slide-body'), '.slide:not(.slide-title):not(.slide-section) p, .content-list li, .card p', 'color: var(--role-body); line-height: 1.55;');
   rule(selector('.slide-accent'), '.divider', 'background: var(--role-accent);');
-  rule(selector('.slide-button'), '.download-btn, .video-btn', 'background: var(--role-button); color: var(--role-button-ink); border: 0; border-radius: .4rem; padding: .65rem 1.1rem; font-family: var(--font-body);');
+  rule(selector('.slide-button'), '.download-btn, .video-btn', 'background: var(--role-button); color: var(--role-button-ink); border: 0; border-radius: .4rem; padding: .65rem 1.1rem; font-family: var(--font-body); font-size: 1rem; line-height: 1.4; min-height: 44px;');
   rule(selector('.slide-logo'), '', 'font-family: var(--font-body); font-weight: 600; letter-spacing: .14em; font-size: .85rem; margin-bottom: 2rem;');
   rule(selector('img.slide-logo'), '', 'display:block; width:5rem; height:5rem; object-fit:contain; background:var(--light); border-radius:.4rem; padding:.4rem;');
   const titleBackground = title.layout === 'split' ? (title.colors === 'gradient' ? 'linear-gradient(90deg, var(--role-title-background) 30%, var(--role-title-background-end) 75%)' : 'linear-gradient(90deg, var(--role-title-background) 40%, var(--role-title-background-end) 40%)') : title.colors === 'gradient' ? 'linear-gradient(135deg, var(--role-title-background), var(--role-title-background-end))' : 'var(--role-title-background)';
@@ -199,6 +199,11 @@ export function cssForDesign(catalog, design, { scope = '.bespoke-slide', fontBa
   return `${blocks.join('\n')}\n`;
 }
 
+/** Inert by design: preview actions have no navigation, download, or submit behavior. */
+export function renderSampleButton(label = 'Sample handout') {
+  return `<button type="button" class="slide-button" aria-label="${escape(label)} (preview only)">${escape(label)}</button>`;
+}
+
 /** Sample copy demonstrates reusable visual roles only; it never becomes instructor lesson content. */
 export function renderSlide(catalog, design, kind, options = {}) {
   const errors = structuralErrors(catalog, design);
@@ -220,8 +225,8 @@ export function renderSlide(catalog, design, kind, options = {}) {
     title: `${logo}<h2 class="slide-title-text">${title}</h2><div class="slide-accent" aria-hidden="true"></div><p class="slide-subtitle">${subtitle}</p>`,
     divider: `<span class="slide-watermark" aria-hidden="true">02</span><p class="slide-body">CHAPTER TWO</p><h2 class="slide-heading">Put it into practice</h2><p class="slide-body">One clear step at a time</p>`,
     cards: `${sidebar}${design.slides.cards.titleBar ? '<header class="slide-title-bar bespoke-title-bar"><h2 class="slide-heading">Build a useful habit</h2></header>' : ''}<div class="slide-cards bespoke-boxes">${boxes}</div>`,
-    video: `${sidebar}<div class="slide-video-layout"><h2 class="slide-heading">See a skill in action</h2><div class="slide-video-frame" role="img" aria-label="Sample video placeholder; no video is loaded"><span>▶ &nbsp; Sample video</span></div></div>`,
-    activity: `${sidebar}<h2 class="slide-heading">Try it together</h2><div class="slide-activity"><span class="slide-activity-label">Partner practice</span><p class="slide-body">Choose one next step. Tell a partner what you will try, and ask what could make it easier.</p></div><p><span class="slide-button">Sample handout button</span></p>`
+    video: `${sidebar}<div class="slide-video-layout"><h2 class="slide-heading">See a skill in action</h2><div class="slide-video-frame" role="img" aria-label="Sample video placeholder; no video is loaded"><span>▶ &nbsp; Sample video</span></div></div><p>${renderSampleButton('Sample video action')}</p>`,
+    activity: `${sidebar}<h2 class="slide-heading">Try it together</h2><div class="slide-activity"><span class="slide-activity-label">Partner practice</span><p class="slide-body">Choose one next step. Tell a partner what you will try, and ask what could make it easier.</p></div><p>${renderSampleButton()}</p>`
   };
   return `<article class="bespoke-slide" data-kind="${kind}" ${attributes} aria-label="${escape(catalog.slideGroups.find(group => group.id === kind).label)} sample">${views[kind]}</article>`;
 }

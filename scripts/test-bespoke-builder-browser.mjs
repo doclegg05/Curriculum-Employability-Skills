@@ -8,6 +8,7 @@ import { fileURLToPath } from 'node:url';
 import { chromium } from 'playwright';
 import { createDevServer, LOCAL_PREVIEW_CODE } from './bespoke-dev-server.mjs';
 import { compareDesign } from '../bespoke/similarity.mjs';
+import { contrast } from '../bespoke/builder-model.mjs';
 
 const root = path.resolve(path.dirname(fileURLToPath(import.meta.url)), '..');
 const catalog = JSON.parse(await fs.readFile(path.join(root, 'bespoke/builder-catalog.json'), 'utf8'));
@@ -198,6 +199,69 @@ try {
     const second = await makePage();
     await upload(second, backup.payload, backup.name);
     assert.deepEqual(await design(second), expected);
+  });
+
+  await scenario('Buttons exposes a live contextual sample without changing the chosen slide or other choices', async ({ makePage, actions }) => {
+    const rgbHex = value => '#' + value.match(/\d+/g).slice(0, 3).map(n => Number(n).toString(16).padStart(2, '0')).join('');
+    for (const mobile of [false, true]) {
+      const page = await makePage({ mobile });
+      await go(page, 'Paint your elements');
+      const before = await design(page);
+      await page.locator('#colorRole').selectOption('button');
+      assert.equal(await page.locator('#previewTabs [aria-selected="true"]').getAttribute('data-view'), 'cards');
+      const swatch = page.locator('#paint-button-accent');
+      await swatch.focus(); await page.keyboard.press('Enter');
+      assert.equal(await page.evaluate(() => document.activeElement.id), 'paint-button-accent');
+      const sample = page.locator(mobile ? '#buttonColorInline button' : '#buttonColorSample button');
+      assert(await sample.isVisible(), 'Button is visible immediately without switching preview surfaces.');
+      const checkPaint = async (button, background, ink) => {
+        const colors = await button.evaluate(el => ({ background: getComputedStyle(el).backgroundColor, ink: getComputedStyle(el).color }));
+        assert.equal(colors.background, background); assert.equal(colors.ink, ink);
+        assert(contrast(rgbHex(colors.background), rgbHex(colors.ink)) >= 4.5);
+      };
+      await checkPaint(sample, 'rgb(55, 181, 80)', 'rgb(0, 19, 63)');
+      assert.deepEqual(await design(page), { ...before, roles: { ...before.roles, button: 'accent' } });
+      await page.locator('#paint-button-dark').click();
+      await checkPaint(sample, 'rgb(0, 64, 113)', 'rgb(255, 255, 255)');
+      await page.locator('#btnUndo').click();
+      await checkPaint(sample, 'rgb(55, 181, 80)', 'rgb(0, 19, 63)');
+      const saved = await draft(page), url = page.url(), actionCount = actions.length;
+      let downloads = 0; page.on('download', () => downloads++);
+      await sample.focus(); await page.keyboard.press('Enter');
+      assert.equal(page.url(), url); assert.equal(actions.length, actionCount); assert.equal(downloads, 0);
+      assert.deepEqual((await draft(page)).design, saved.design);
+      await page.reload(); await ready(page);
+      assert.equal(await page.locator('#colorRole').inputValue(), 'button');
+      assert.equal(await page.locator('#previewTabs [aria-selected="true"]').getAttribute('data-view'), 'cards');
+      assert.deepEqual((await draft(page)).changes, saved.changes);
+      await checkPaint(sample, 'rgb(55, 181, 80)', 'rgb(0, 19, 63)');
+      assert.equal(await page.locator('#modelStage .slide-button').count(), 0, 'No permanent button added to text-box markup.');
+      await axe(page, 'Button color controls '+(mobile?'mobile':'desktop'));
+      if (mobile) await page.locator('#surface-preview').click();
+      assert(await page.locator('#buttonColorSample button').isVisible());
+      await assertNoOverflow(page, 'Button color preview');
+      for (const view of ['title', 'divider', 'video', 'activity']) {
+        await page.locator(`#previewTabs [data-view="${view}"]`).click();
+        if (mobile) await page.locator('#surface-design').click();
+        await page.locator('#colorRole').selectOption('button');
+        assert.equal(await page.locator('#previewTabs [aria-selected="true"]').getAttribute('data-view'), view);
+        if (mobile) await page.locator('#surface-preview').click();
+        const native = ['video', 'activity'].includes(view);
+        const button = page.locator(native ? '#modelStage .slide-button' : '#buttonColorSample button');
+        assert(await button.isVisible());
+        await checkPaint(button, 'rgb(55, 181, 80)', 'rgb(0, 19, 63)');
+        assert.equal(await page.locator('#buttonColorSample').count(), native ? 0 : 1);
+        await button.click(); assert.equal(page.url(), url); assert.equal(downloads, 0);
+      }
+      // A non-default preview survives refresh, too; changing roles removes the contextual aid.
+      await page.reload(); await ready(page);
+      assert.equal(await page.locator('#previewTabs [aria-selected="true"]').getAttribute('data-view'), 'activity');
+      if (mobile) await page.locator('#surface-design').click();
+      await page.locator('#colorRole').selectOption('sidebar');
+      assert.equal(await page.locator('#buttonColorSample').count(), 0);
+      assert.equal(await page.locator('#buttonColorInline').count(), 0);
+      assert.deepEqual(await design(page), { ...before, roles: { ...before.roles, button: 'accent' } });
+    }
   });
 
   await scenario('text boxes retain hidden words across every count, title bar and text treatment', async ({ makePage }) => {

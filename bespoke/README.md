@@ -39,7 +39,11 @@ background, headings, body, accent, buttons and divider background. There is no
 preselected two-primary/three-secondary palette. Unsafe text/background combinations
 show an explanation; readability rules do not silently reset unrelated choices.
 Existing brand restrictions on Gold and Green text remain in the model. Decorative
-accents and text are separate roles.
+accents and text are separate roles. Selecting Buttons keeps the current preview
+and shows a temporary action-button sample when that slide has no button. On phones,
+the same sample also appears beside the palette. Video and Activity use their own
+sample buttons. Every sample uses the selected button color with automatically chosen
+legible text; sample activation does not navigate, download or submit.
 
 **Fonts:** choose heading/title and body fonts independently from all twelve existing
 self-hosted families. The six former pairings remain available through their font

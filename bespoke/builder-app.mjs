@@ -1149,7 +1149,13 @@ function buildSelectionPayload(){
  const lesson=findMeta(state.meta.lessons,state.lessonId);
  return {schema:'bespoke-selection/v2',submittedAt:new Date().toISOString(),date:new Date().toISOString().slice(0,10),lesson:{id:state.lessonId,title:lesson.title,displayTitle:state.design.samples.title||lesson.title,subtitle:state.design.samples.subtitle},team:{name:state.teamName.trim(),spokesperson:{name:state.spokespersonName.trim(),email:state.spokespersonEmail.trim()}},design:clone(state.design),unspoken:state.unspoken,...(state.legacySelection?{legacySelection:clone(state.legacySelection)}:{})};
 }
-function restoreStep(saved){state.step=stepIndex(saved.stepId||'welcome');}
+function restoreStep(saved){
+ state.step=stepIndex(saved.stepId||'welcome');
+ state.previewView=Object.hasOwn(VIEW_NAMES,saved.previewView)?saved.previewView:STEPS[state.step].view;
+ if(catalog.roles.some(role=>role.id===saved.activeRole))ui.activeRole=saved.activeRole;
+ // Initial render must keep the stored preview context, just as later edits do.
+ ui.renderedStep=state.step;
+}
 function loadDraft(){
  try{
   const raw=localStorage.getItem(STORAGE_KEY);
@@ -1177,7 +1183,7 @@ function saveDraft(){
   if(localStorage.getItem(STORAGE_KEY)!==lastSavedRaw){storageConflict=true;fileNotice('Another tab changed this draft. Download your backup before reopening the newest browser draft.');return false;}
   state.stepId=STEPS[state.step].id;
   const {meta,library,editCode,...saved}=state;
-  lastSavedRaw=JSON.stringify({...saved,autosavePaused:ui.autosavePaused});localStorage.setItem(STORAGE_KEY,lastSavedRaw);
+  lastSavedRaw=JSON.stringify({...saved,activeRole:ui.activeRole,autosavePaused:ui.autosavePaused});localStorage.setItem(STORAGE_KEY,lastSavedRaw);
   setSaveStatus(draftStatusText());queueSaveAnnouncement();scheduleAutosave(AUTOSAVE.idleMs);updateCloudChrome();return true;
  }catch{setSaveStatus('Browser storage unavailable. Download a backup.');return false;}
 }
@@ -1255,9 +1261,10 @@ function addColorControls(panel,roleIds){
  const label=document.createElement('label');label.className='field';label.textContent='Element to paint';
  const select=document.createElement('select');select.id='colorRole';
  for(const id of roleIds){const role=catalog.roles.find(r=>r.id===id);const o=document.createElement('option');o.value=id;o.textContent=role.label;o.selected=id===ui.activeRole;select.append(o);}
- select.onchange=()=>{ui.activeRole=select.value;const role=ui.activeRole;state.previewView=role.startsWith('title')||role==='subtitle'?'title':role.startsWith('divider')?'divider':'cards';render(false);};label.append(select);panel.append(label);
+ select.onchange=()=>{ui.activeRole=select.value;const role=ui.activeRole;if(role!=='button')state.previewView=role.startsWith('title')||role==='subtitle'?'title':role.startsWith('divider')?'divider':'cards';render(false);};label.append(select);panel.append(label);
  const role=catalog.roles.find(r=>r.id===ui.activeRole);
  const hint=document.createElement('p');hint.className='helper';hint.textContent=role.note;panel.append(hint);
+ if(role.id==='button')panel.insertAdjacentHTML('beforeend',buttonColorSample('buttonColorInline'));
  const palette=document.createElement('div');palette.className='paint-palette';palette.setAttribute('role','group');palette.setAttribute('aria-label',role.label+' colors');
  for(const color of catalog.palette){
   const available=Model.colorAvailability(catalog,state.design,role.id,color.id);
@@ -1344,10 +1351,18 @@ function updateSimilarity(design){
  const details=byId('similarityDetails');
  details.innerHTML='<p>This counts matching visual choices, not a perceptual percentage. Unknown features do not count. The six released lessons are the comparison library.</p><h3>Matches</h3><p>'+escapeHtml(near.matches?.length?near.matches.map(labelOf).join(', '):'No measured choices match.')+'</p><h3>Different</h3><p>'+escapeHtml(near.differences?.length?near.differences.map(labelOf).join(', '):'No measured differences.')+'</p><h3>Not comparable</h3><p>'+escapeHtml(near.unknown?.length?near.unknown.map(e=>labelOf(e)+(e.reason?': '+e.reason:'')).join('; '):'All supported characteristics were measured.')+'</p><ul>'+comparisons.map(c=>'<li>'+escapeHtml(c.title)+': '+c.shared+' of '+c.total+'</li>').join('')+'</ul>';
 }
+function buttonColorSample(id){
+ return `<section id="${id}" class="bespoke-slide button-color-sample" aria-label="Button color sample"><div><strong>Button color sample</strong><p>Style preview only; no file opens.</p></div>${Model.renderSampleButton()}</section>`;
+}
 function updatePreview(design=state.design){
  if(!design)return;
  byId('designStyle').textContent=Model.cssForDesign(catalog,design,{scope:'.bespoke-slide',fontBase:'../fonts',canonical:false});
  byId('modelStage').innerHTML=Model.renderSlide(catalog,design,state.previewView,{title:design.samples.title,subtitle:design.samples.subtitle,lessonTitle:state.meta.lessons.find(l=>l.id===state.lessonId)?.title,logoUrl:'../SPOKES-Logo.png'});
+ // Contextual sample sits outside the slide; cards/title/dividers keep their real structure.
+ const buttonSample=byId('buttonColorSample');
+ const needsSample=STEPS[state.step].id==='colors'&&ui.activeRole==='button'&&!['video','activity'].includes(state.previewView);
+ if(buttonSample)buttonSample.remove();
+ if(needsSample)byId('modelStage').insertAdjacentHTML('afterend',buttonColorSample('buttonColorSample'));
  byId('previewName').textContent=VIEW_NAMES[state.previewView];
  document.querySelectorAll('#previewTabs [role=tab]').forEach(t=>{t.setAttribute('aria-selected',String(t.dataset.view===state.previewView));t.tabIndex=t.dataset.view===state.previewView?0:-1;});
  updateSimilarity(design);
@@ -1355,7 +1370,7 @@ function updatePreview(design=state.design){
  if(errors.length){const repair=document.createElement('button');repair.className='text-link';repair.textContent='Go to color controls';repair.onclick=()=>{state.step=2;byId('workspace').dataset.activeSurface='design';render();};warn.append(repair);}
  byId('liveRegion').textContent=VIEW_NAMES[state.previewView]+' preview updated.';
 }
-function showView(view){state.previewView=view;ui.previewPinned=true;updatePreview();}
+function showView(view){state.previewView=view;ui.previewPinned=true;updatePreview();saveDraft();}
 function render(focus=true){
  const changed=ui.renderedStep!==state.step;if(changed){ui.renderedStep=state.step;state.previewView=STEPS[state.step].view;ui.previewPinned=false;}
  const active=document.activeElement,activeId=active?.id;
