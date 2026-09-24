@@ -91,6 +91,15 @@ and activity have their own controls. Reducing the box count keeps all four draf
 strings so increasing it restores the hidden text. The live preview uses the same
 accumulated design used by backups, shared saves and generated artifacts.
 
+**Title arrangements:** the preview uses a 16:9 canvas with a 420px minimum height,
+and grows for long sample copy. Centered centers the text; Left aligned keeps the
+same vertical grouping at the left; Bottom left moves the group down. Split panels
+places the text in a separate right column with a visible panel boundary, retaining
+the selected solid/gradient finish and pattern. Above the title keeps the logo with
+the text group; Top corner anchors it independently. Type scales with the canvas
+width rather than the browser window. These semantics also apply to generated
+samples and canonical title CSS. The existing title controls stay in place.
+
 **Comparison:** the advisory meter counts exact matching measured choices against
 six actual presentations: Time Management, Interview Skills, Controlling Anger,
 Employee Accountability, Communicating with the Public, and Problem Solving &

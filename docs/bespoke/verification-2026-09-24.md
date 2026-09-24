@@ -317,3 +317,67 @@ and port 8765 still responds. The user's Safari page, prompt, storage and active
 draft were never operated or refreshed; their existing page-update flow loads the
 new policy. Actual Safari acceptance is not claimed. No production configuration,
 private team access, real Send, deployment, merge, new PR or released lesson changed.
+
+## Follow-up: title arrangements move the title and subtitle
+
+The saved arrangement value and control event were already correct. The old title
+preview was a content-sized flex column: its text and in-flow logo consumed the
+available height, leaving no free space for Bottom left to use. Split panels only
+changed the gradient recipe and never established a separate text column. At a
+1920px viewport, Left aligned, Bottom left and Split panels all placed the title at
+the same `(56, 160)` canvas-relative coordinates. Browser-width typography also
+made the title scale independently of the actual preview width.
+
+The shared title CSS now uses a grid canvas with a 16:9 baseline, 420px minimum
+height and natural growth for long copy. Centered and Left aligned have distinct
+horizontal alignment; Bottom left puts the available space above the text group.
+Split panels creates a hard boundary at 38% and places the title and subtitle in
+the right column while retaining the chosen gradient and overlaid pattern. Type
+scales with canvas width. Corner logos have a reserved top area; above-title logos
+occupy their own row with the text. Generated samples and canonical title CSS use
+the same geometry, including replacement of the canonical flex spacer elements.
+The liked editor shell, local color controls and saved model shape are unchanged.
+
+The new `scripts/test-bespoke-title-layouts.mjs`, included in the quality gate,
+executes 24 editor arrangement/logo combinations at 1920px, 1100px and 390px.
+It measures actual title/subtitle glyph positions, logo/rule containment and
+overlap, viewport overflow, computed colors/fonts, both Crosshatch axes and a
+rendered-pixel split boundary. It verifies exact preservation of all unrelated
+choices plus Undo/Redo, navigation, shared save, reload and a fresh-context reopen.
+An additional 96 generated sample/canonical checks cover every arrangement and
+both logo positions at those widths with normal copy and the allowed 200-character
+title / 500-character subtitle limits. Long copy grows the canvas without clipping.
+
+Representative final measurements with a corner logo and the same synthetic
+Raleway/Source Sans 3 sample are below. Coordinates are relative to the canvas;
+the centered text's actual line boxes are checked separately from its outer box.
+
+| Viewport | Canvas | Left title x/y | Bottom title x/y | Split title x/y |
+| --- | --- | --- | --- | --- |
+| 1920px | 1176 × 661.5px | 70.5 / 283.2 | 70.5 / 454.3 | 505.2 / 283.2 |
+| 1100px | 551.1 × 420px | 33.1 / 193.1 | 33.1 / 274.2 | 236.8 / 193.1 |
+| 390px | 342 × 420px | 20.5 / 193.1 | 20.5 / 274.2 | 146.9 / 181.1 |
+
+Both title and subtitle move down about 171px on desktop and 81px on the narrower
+canvases when choosing Bottom left. A bounded desktop/laptop/phone screenshot
+batch confirms visibly distinct arrangements, readable wrapping, separate logos
+and retained colors/patterns. The Gold-to-Green/White example intentionally keeps
+the user's color choice; contrast remains advisory and is not claimed compliant.
+Evidence stays outside Git in the preview runtime under `title-review/`,
+`title-layouts.log` and `title-quality.log`. This is isolated synthetic Chromium
+coverage, not actual Safari/WebKit acceptance or exhaustive palette/font coverage.
+
+The full `bash scripts/quality.sh` gate passed: 47 validator and 36 BeSpoke Python
+tests, 13 model groups, eight similarity tests, 46 Node service/contract/server
+tests, 27 legacy and 13 builder workflows, the new title geometry matrix, the
+70-render/140-distinct-pixel/80-parity pattern matrix, generated-output checks,
+schema checks and existing lesson baselines. Existing report-only template layout
+warnings and committed lesson accessibility exceptions remain unchanged.
+
+The preview at `http://127.0.0.1:8766/bespoke/` serves the current builder assets
+with HTTP 200 and `Cache-Control: no-store`, byte-identical to disk. This rendering
+change needs no service restart or migration; the encrypted synthetic runtime
+remains byte-identical. The original checkout stays clean and port 8765 responds.
+The user's Safari page, dialogs, storage and draft were never operated or refreshed.
+Their existing page-update flow can load the fix. No new user-facing browser tab, production
+deployment, merge, real Send, private access, new PR or lesson edit was involved.

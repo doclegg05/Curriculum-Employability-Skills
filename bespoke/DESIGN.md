@@ -182,7 +182,7 @@ The 11 editable roles are sidebar, title background, title second color, title t
 
 **Lesson fonts:** either heading or body can use any of the 12 existing local families: DM Serif Display, Outfit, Playfair Display, Inter, Merriweather, Source Sans 3, Vollkorn, Fira Sans, Crimson Pro, Work Sans, Bitter, or Raleway. There is no required pairing and no serif/sans role restriction. Presets populate the two independent selectors; they do not constrain later choices.
 
-The model gives lesson title text a fluid scale (`clamp(2rem, 4vw, 3.7rem)`), a short measure (18ch), and tight line-height (1.12). Content headings use `clamp(1.55rem, 3vw, 2.25rem)` and line-height 1.2. Lesson body text uses line-height 1.55; text inside boxes uses 0.92rem. These are authored-slide styles, separate from the UI hierarchy.
+The model gives lesson title text a canvas-relative scale (`clamp(1.5rem, 4.8cqw, 3.7rem)`), a short measure (20ch), and tight line-height (1.12). Title subtitles scale from 1rem to 1.25rem within a 42ch measure. Content headings use `clamp(1.55rem, 3vw, 2.25rem)` and line-height 1.2. Lesson body text uses line-height 1.55; text inside boxes uses 0.92rem. These are authored-slide styles, separate from the UI hierarchy.
 
 **The Independent Type Rule.** Preserve both 12-family selectors. Never reintroduce the original wizard's fixed font-pair restrictions.
 
@@ -242,6 +242,21 @@ Professional, Modern, Serious, Light-hearted, Fun, and Outspoken are starting lo
 Replacing visual choices uses a native HTML dialog styled like the existing access dialog. Its heading names the chosen preset, and its copy explains sample preservation and Undo. Cancel receives initial focus; Tab and Shift+Tab wrap through the three controls, Escape cancels, and dismissal returns focus to the initiating preset. The checkbox label is a 44px target and the actions wrap on narrow screens. The initially unchecked session opt-out is committed only by Apply preset and never suppresses other warnings. It is transient tab state, separate from design and team persistence; Leave session, changing team/lesson, and starting a new draft clear it.
 
 ### Cumulative preview and comparison
+
+Title arrangements use a shared grid canvas with a 16:9 minimum proportion and a
+420px minimum height. A nonvisual grid sizing item reserves space while real text
+rows can grow beyond it; fixed-height cropping is avoided. Centered and Left aligned
+share vertical centering with distinct horizontal alignment. Bottom left allocates
+remaining space above the text. Split panels places the title/subtitle in the right
+column, after a hard 38% background boundary; the right panel retains the chosen
+gradient when enabled. Pattern layers remain above both panels. Narrow canvases keep
+these placement differences with smaller type and natural vertical growth.
+
+The corner logo occupies a reserved top area independently of title alignment.
+Above-title logos occupy a separate grid row in the text column. All title copy,
+rules and logos stay inside the canvas. Generated sample and canonical title styles
+share this geometry; canonical flex spacer pseudo-elements are replaced by the same
+grid sizing rule. The editor shell and localized title controls are unchanged.
 
 The preview is a rendered reusable slide design with explicitly labeled sample content. It takes colors, fonts, arrangements, text, and backgrounds from the same model used by the reusable artifact and template override. It supports the five slide types, including one to four text boxes with paragraph, bullet, or numbered treatment. Hidden box samples remain in the draft.
 
