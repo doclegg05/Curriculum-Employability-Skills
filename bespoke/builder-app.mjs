@@ -6,6 +6,10 @@ import { compareDesign } from './similarity.mjs';
 const STORAGE_KEY = 'bespoke-draft-v2';
 const BACKUP_KEY = 'bespoke-previous-draft-v2';
 const TEAM_SESSION_KEY = 'bespoke-team-session-v2';
+// Tab-lifetime UI preference only; never part of a design, team record or export.
+const PRESET_CONFIRM_KEY = 'bespoke-skip-preset-confirmation-session';
+let skipPresetConfirmation = (()=>{try{return sessionStorage.getItem(PRESET_CONFIRM_KEY)==='1';}catch{return false;}})();
+let pendingPreset = null;
 const PENDING_SUBMISSION_STORAGE = 'bespoke-pending-submission-v2';
 const MAX_FILE_BYTES = 256000;
 const SHARE_URL_MAX = 8000;
@@ -93,6 +97,7 @@ const findOption=(family,slug)=>state.library?.families?.[family]?.options.find(
   }
 
   function forgetTeamSession() {
+    resetPresetConfirmation();
     ui.teamSession = null;
     ui.cloudConflict = null;
     state.editCode = "";
@@ -116,6 +121,7 @@ const findOption=(family,slug)=>state.library?.families?.[family]?.options.find(
 
   function installTeamSession(lessonId, editCode) {
     const same = ui.teamSession && ui.teamSession.lessonId === lessonId && ui.teamSession.editCode === editCode;
+    if (!same) resetPresetConfirmation();
     ui.teamSession = same ? ui.teamSession : {
       lessonId,
       editCode,
@@ -1233,6 +1239,36 @@ function choiceGroup(label,options,selected,pick,{mini}={}){
 }
 function miniArrangement(option){return '<span class="layout-mini layout-'+escapeHtml(option.id)+'" aria-hidden="true"><i></i><i></i><i></i></span>';}
 function heading(panel,title,description){panel.innerHTML='<h1>'+escapeHtml(title)+'</h1><p class="panel-lead">'+escapeHtml(description)+'</p>';}
+function resetPresetConfirmation(){
+ skipPresetConfirmation=false;
+ try{sessionStorage.removeItem(PRESET_CONFIRM_KEY);}catch{/* Private mode: in-memory preference is already cleared. */}
+ if(pendingPreset)finishPresetConfirmation(false);
+}
+function applyPresetChoice(id){
+ if(!isLeadSession())return false;
+ const preset=catalog.presets.find(item=>item.id===id);if(!preset)return false;
+ const samples=clone(state.design.samples);state.changes.push({label:'Applied '+preset.label,design:clone(state.design)});state.changes=state.changes.slice(-40);state.redo=[];state.design=Model.applyPreset(catalog,preset.id);state.design.samples=samples;
+ render(false);fileNotice(preset.label+' applied. Every choice remains editable.');return true;
+}
+function requestPreset(id){
+ if(!isLeadSession())return;
+ if(!state.changes.length||skipPresetConfirmation){applyPresetChoice(id);return;}
+ const preset=catalog.presets.find(item=>item.id===id);if(!preset)return;
+ pendingPreset=id;
+ byId('presetDialogTitle').textContent='Apply '+preset.label+' preset?';
+ byId('presetSkipConfirmation').checked=false;
+ byId('presetDialog').showModal();byId('presetCancel').focus();
+}
+function finishPresetConfirmation(apply){
+ const id=pendingPreset;if(!id)return;
+ const skip=apply&&byId('presetSkipConfirmation').checked;
+ pendingPreset=null;byId('presetDialog').close();
+ if(apply&&applyPresetChoice(id)&&skip){
+  skipPresetConfirmation=true;
+  try{sessionStorage.setItem(PRESET_CONFIRM_KEY,'1');}catch{/* Keep the opt-out only in this page when tab storage is unavailable. */}
+ }
+ byId('preset-'+id)?.focus({preventScroll:true});
+}
 function renderWelcome(panel){
  heading(panel,'Make it your own','Build a lesson’s look one choice at a time, or start with an editable preset. Your choices stay together as you move.');
  const custom=document.createElement('button');custom.className='custom-path';custom.type='button';custom.innerHTML='<strong>Guide me through</strong><span>Colors → fonts → title → divider → text boxes</span><span class="path-action">Start choosing <span aria-hidden="true">→</span></span>';
@@ -1246,10 +1282,7 @@ function renderWelcome(panel){
   const closest=compareDesign(fingerprints,d)[0];
   const previewFont=catalog.fonts.find(f=>f.id===d.fonts.heading);
   b.innerHTML='<span class="preset-sample" style="--ps-font:'+escapeHtml(previewFont.family)+';--ps-bg:'+color(d.roles.titleBackground)+';--ps-sidebar:'+color(d.roles.sidebar)+';--ps-ink:'+color(d.roles.titleText)+';--ps-accent:'+color(d.roles.accent)+'"><i></i><span>Aa</span><b></b></span><strong>'+escapeHtml(preset.label)+'</strong><span>'+escapeHtml(preset.blurb)+'</span><small>'+escapeHtml(closest?`${closest.shared} of ${closest.total} comparable choices match ${closest.title}`:'Comparison available in preview')+'</small>';
-  b.onclick=()=>{
-   if(state.changes.length&&!confirm('Apply this preset to the visual choices? Sample text stays. Undo can restore your current look.'))return;
-   const samples=clone(state.design.samples);state.changes.push({label:'Applied '+preset.label,design:clone(state.design)});state.changes=state.changes.slice(-40);state.redo=[];state.design=Model.applyPreset(catalog,preset.id);state.design.samples=samples;render(false);fileNotice(preset.label+' applied. Every choice remains editable.');
-  };grid.append(b);
+  b.onclick=()=>requestPreset(preset.id);grid.append(b);
  }panel.append(grid);
 }
 function renderColors(panel){
@@ -1418,9 +1451,11 @@ async function init(){
  byId('btnHistory').onclick=loadHistory;byId('btnCheckStatus').onclick=()=>{const pending=pendingSubmission();if(pending?.stage==='receipt')pollSubmission(pending);else if(pending?.stage==='request')cloudSend();};
  byId('btnUndo').onclick=()=>undoChange();byId('btnRedo').onclick=()=>undoChange(true);
  byId('openCancel').onclick=()=>byId('openDialog').close();byId('openForm').onsubmit=e=>{e.preventDefault();cloudOpen();};
+ byId('presetCancel').onclick=()=>finishPresetConfirmation(false);byId('presetDialog').oncancel=e=>{e.preventDefault();finishPresetConfirmation(false);};byId('presetForm').onsubmit=e=>{e.preventDefault();finishPresetConfirmation(true);};
+ byId('presetDialog').onkeydown=e=>{if(e.key!=='Tab')return;const first=byId('presetSkipConfirmation'),last=byId('presetApply');if(e.shiftKey&&document.activeElement===first){e.preventDefault();last.focus();}else if(!e.shiftKey&&document.activeElement===last){e.preventDefault();first.focus();}};
  byId('btnRecoverDraft').onclick=()=>{try{const previous=localStorage.getItem(BACKUP_KEY);if(!previous||!confirm('Restore the previous browser draft? Download a backup first if you need this version.'))return;const current=localStorage.getItem(STORAGE_KEY);localStorage.setItem(STORAGE_KEY,previous);if(current)localStorage.setItem(BACKUP_KEY,current);ui.allowUnload=true;location.reload();}catch{fileNotice('Recovery is unavailable. Open a downloaded backup.');}};
  byId('btnLeaveSession').onclick=()=>{if(!confirm('Leave this session on this browser? Download a backup or save first.'))return;forgetTeamSession();try{localStorage.removeItem(STORAGE_KEY);localStorage.removeItem(BACKUP_KEY);}catch{}ui.allowUnload=true;location.reload();};
- byId('btnClear').onclick=()=>{if(!isLeadSession()||!confirm('Start a new browser draft? A recovery copy will be kept. Shared designs remain unchanged.'))return;if(!keepRecoveryCopy())return;lastSavedRaw=localStorage.getItem(STORAGE_KEY);storageConflict=false;resetDesignForLesson(state.lessonId);ui.autosavePaused=true;render();};
+ byId('btnClear').onclick=()=>{if(!isLeadSession()||!confirm('Start a new browser draft? A recovery copy will be kept. Shared designs remain unchanged.'))return;if(!keepRecoveryCopy())return;resetPresetConfirmation();lastSavedRaw=localStorage.getItem(STORAGE_KEY);storageConflict=false;resetDesignForLesson(state.lessonId);ui.autosavePaused=true;render();};
  document.querySelectorAll('#previewTabs [role=tab]').forEach(tab=>tab.onclick=()=>showView(tab.dataset.view));bindTablistKeys(byId('previewTabs'));
  document.querySelectorAll('#surfaceSwitcher [role=tab]').forEach(tab=>tab.onclick=()=>{byId('workspace').dataset.activeSurface=tab.dataset.surface;document.querySelectorAll('#surfaceSwitcher [role=tab]').forEach(t=>t.setAttribute('aria-selected',String(t===tab)));});bindTablistKeys(byId('surfaceSwitcher'));
  window.addEventListener('storage',event=>{if((event.key===STORAGE_KEY||event.key===null)&&isLeadSession()){storageConflict=true;setSaveStatus('Another tab changed this draft');fileNotice('This tab’s draft is kept. Download a backup before reopening the latest version.');}});

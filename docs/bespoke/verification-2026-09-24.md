@@ -193,3 +193,55 @@ with the updated contrast model; its external persisted runtime remained byte-id
 and the existing synthetic revision reopened. The original saved checkout stayed
 clean. No Safari actions, production configuration, private codes, Send, deployment,
 merge or lesson publication were involved.
+
+## Follow-up: preset confirmation for the current session
+
+The preset-only `window.confirm` is replaced by a labeled HTML dialog with an
+initially unchecked **Don't ask again during this session** checkbox and explicit
+**Cancel** / **Apply preset** actions. The existing confirmation trigger is retained:
+the first preset in a draft without design history applies directly. Later preset
+choices ask unless the user has checked the box and applied one. Cancel and Escape
+change neither the design/history nor the preference. Applying a preset retains
+the existing single Undo transaction and preserves all sample text.
+
+The opt-out is a standalone `sessionStorage` flag, with an in-memory fallback if
+tab storage is unavailable. It survives step navigation and normal reload in the
+same tab. Leave session, installing a different team/lesson, and Start a new browser
+draft explicitly clear it. A fresh tab after closing the old one starts unchecked,
+including when durable team/draft data is retained. The fallback asks again after
+reload. No preference is added to localStorage, the design model, draft history,
+backups, shared selections, requests or server/account records.
+
+Executed synthetic Chromium checks cover unchecked Apply asking again, checked
+Apply suppressing later requests, checked Cancel/Escape leaving state unchanged,
+sample preservation, Undo, step navigation, reload, team/lesson switch, new draft,
+Leave, a new browser context with the same durable draft, a fresh tab after close,
+and unavailable sessionStorage. Backup/shared data and all captured request bodies
+are checked for preference leakage. While opted out, unreadable designs still show
+warnings and refuse Save; new-draft and Leave native confirmations still appear.
+Existing conflict, retry and recovery regressions remain in the full gate.
+
+The dialog receives an accessible name and description. Cancel has initial focus;
+Tab/Shift+Tab wrap between its controls, Space operates the native checkbox, Escape
+cancels, and both dismissal paths return focus to the initiating preset. Desktop
+and 390px phone checks pass axe WCAG A/AA and viewport bounds checks. Screenshots
+were inspected as one desktop/phone batch: copy is readable, the checkbox is
+clearly unchecked, focus is visible, and both 44px actions fit. A scoped Tab wrap
+fixes the browser's default end-of-dialog focus escape to its chrome.
+
+The live preview at `http://127.0.0.1:8766/bespoke/` serves all three changed assets
+with HTTP 200 and `Cache-Control: no-store`; served HTML, JavaScript and CSS match
+disk byte-for-byte. This UI-only follow-up required no service restart or runtime
+data migration. The user's Safari page, existing native prompt and active draft
+were never operated or refreshed. Safari acceptance is left to the user's existing
+page-update flow; the automated evidence is Chromium, not a live Safari claim.
+Screenshots and the full check log remain outside Git in the existing preview
+runtime (`preset-review/` and `preset-quality.log`).
+
+The full `bash scripts/quality.sh` gate passed: 47 validator and 35 BeSpoke Python
+tests, 12 model groups, eight similarity tests, 46 Node service/contract/server
+tests, 27 legacy browser workflows, all 13 builder workflows, the existing pattern
+pixel matrix and generated-artifact checks. Existing report-only title-layout
+warnings and lesson accessibility baselines were unchanged. The original checkout
+remained clean. No production deployment, merge, Send, private codes, schema change
+or released-lesson edit was involved.

@@ -42,5 +42,14 @@ FINISH: unreviewed and undocumented is unfinished; this build ends with the fini
  </aside>
 </div>
 <dialog id="openDialog" aria-labelledby="openDialogTitle"><form id="openForm"><h2 id="openDialogTitle">Open your team design</h2><p>Use the lesson and private access code supplied to your team.</p><label class="field">Lesson<select id="openLesson" required></select></label><label class="field">Private access code<input id="openEditCode" type="password" autocomplete="off" minlength="20" maxlength="128" required></label><p id="openError" role="status"></p><div class="dialog-actions"><button type="submit" class="btn btn-primary" id="openConfirm">Open</button><button type="button" class="btn btn-secondary" id="openCancel">Cancel</button></div></form></dialog>
+<dialog id="presetDialog" aria-labelledby="presetDialogTitle" aria-describedby="presetDialogDescription">
+ <form id="presetForm" method="dialog">
+  <h2 id="presetDialogTitle">Apply this preset?</h2>
+  <p id="presetDialogDescription">Your visual choices will change. Sample text stays. Undo can restore your current look.</p>
+  <label class="dialog-check"><input type="checkbox" id="presetSkipConfirmation" aria-describedby="presetSessionHelp"><span>Don't ask again during this session</span></label>
+  <p id="presetSessionHelp" class="helper">Only in this tab's current editing session. Other warnings stay on.</p>
+  <div class="dialog-actions"><button type="button" class="btn btn-secondary" id="presetCancel" autofocus>Cancel</button><button type="submit" class="btn btn-primary" id="presetApply">Apply preset</button></div>
+ </form>
+</dialog>
 <script type="module" src="./builder-app.mjs"></script>
 </body></html>

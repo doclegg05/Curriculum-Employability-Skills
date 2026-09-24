@@ -239,6 +239,8 @@ Five preview tabs expose Title, Divider, Text boxes, Video, and Activity. The se
 
 Professional, Modern, Serious, Light-hearted, Fun, and Outspoken are starting looks in the same model as the guided path. Each preset button includes a small palette/type sample, name, short description, and a reference comparison. The selected preset has a blue outline. Choosing a preset is not a lock: every following color, font, arrangement, and sample remains editable.
 
+Replacing visual choices uses a native HTML dialog styled like the existing access dialog. Its heading names the chosen preset, and its copy explains sample preservation and Undo. Cancel receives initial focus; Tab and Shift+Tab wrap through the three controls, Escape cancels, and dismissal returns focus to the initiating preset. The checkbox label is a 44px target and the actions wrap on narrow screens. The initially unchecked session opt-out is committed only by Apply preset and never suppresses other warnings. It is transient tab state, separate from design and team persistence; Leave session, changing team/lesson, and starting a new draft clear it.
+
 ### Cumulative preview and comparison
 
 The preview is a rendered reusable slide design with explicitly labeled sample content. It takes colors, fonts, arrangements, text, and backgrounds from the same model used by the reusable artifact and template override. It supports the five slide types, including one to four text boxes with paragraph, bullet, or numbered treatment. Hidden box samples remain in the draft.

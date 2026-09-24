@@ -19,6 +19,17 @@ and controls. A preset fills those controls; changing an individual choice keeps
 the other choices. Applying another preset replaces the visual choices, preserves
 sample text, and can be undone.
 
+The preset confirmation offers **Cancel**, **Apply preset**, and an initially
+unchecked **Don't ask again during this session** option. Only checking it and
+applying a preset suppresses later preset confirmations. Cancel and Escape leave
+both the design and preference unchanged. Other warnings stay active.
+
+The preference belongs to the current tab's editing session: it survives step
+navigation and reload, and resets on Leave session, a different team/lesson,
+Start a new browser draft, or a fresh tab after closing this one. It uses only
+`sessionStorage`; it never enters designs, backups, history, or shared records.
+If tab storage is unavailable, the preference lasts only until the page reloads.
+
 The guided steps are:
 
 1. Your starting point

@@ -138,3 +138,10 @@
 .color-edit-links{display:flex;flex-direction:column;align-items:flex-start;margin-bottom:12px}.readability-actions{display:flex;flex-wrap:wrap;gap:4px 20px}.color-edit-links .text-link,.readability-actions .text-link{min-height:44px;text-align:left;line-height:1.4}
 
 .pattern-mini{display:block;width:100%;height:48px;border:1px solid #8191a3;border-radius:3px}
+
+/* Preset confirmation uses the existing modal surface and native checkbox behavior. */
+#presetDialog{max-height:calc(100dvh - 32px);overflow:auto}
+#presetDialog .dialog-check{display:flex;align-items:flex-start;gap:10px;min-height:44px;line-height:1.45;cursor:pointer}
+#presetDialog .dialog-check input{flex:0 0 auto;width:18px;height:18px;margin:3px 0 0;accent-color:var(--blue)}
+#presetDialog .dialog-actions{flex-wrap:wrap;justify-content:flex-end}
+#presetDialog .dialog-actions .btn{min-height:44px}
