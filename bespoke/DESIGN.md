@@ -250,11 +250,11 @@ The header keeps How it works, save, open, and connected review actions visible;
 
 Field labels sit above full-width inputs, selects, and text areas with a 7px gap. Inputs and text areas use a 1px Input line and the field padding; all fields have a 44px minimum height. Selects retain native selection behavior with the field-select padding, a 1.5 line-height, an authored arrow, and platform appearance disabled so WebKit does not force a shallow control. Text areas resize vertically. Decision groups are semantic fieldsets with visible legends; chosen buttons carry `aria-pressed`, a stronger border, a selected surface, and a check mark.
 
-The color-role selector precedes the 11-color palette. A selected circular swatch has both a visible mark and an accessible selected label. All colors are enabled, without strike-throughs. Accessible labels identify a contrast advisory as selectable. The chosen role’s warning explains the text/background difference and why low contrast can be harder to read; it includes the actual ratio, the applicable guideline, and the team leader’s option to keep and save the design. The persistent live region announces advisories after updates.
+The color-role selector and Apply color to selector precede the 11-color palette. Choosing an element starts in This slide scope: the selected swatch reflects its effective local color, and painting writes only that field on the visible slide. Shared default is an explicit separate scope; it writes the global default and retains local exceptions. Sidebar, Accent and Buttons have only shared scope. Preview tabs retain the equivalent element on the new slide, and selecting an element retains a compatible current preview. Scope persists only in the browser UI draft. A selected circular swatch has both a visible mark and an accessible selected label. All colors are enabled, without strike-throughs. Accessible labels identify a contrast advisory as selectable, calculated for the selected scope. The warning explains the text/background difference and why low contrast can be harder to read; it includes the actual ratio, the applicable guideline, and the team leader’s option to keep and save the design. The persistent live region announces advisories after updates.
 
 Each slide-type editor groups its existing Arrangement controls with Background, Texture, Text and Watermark disclosures. Arrangement and Background start open; disclosure choices stay in UI memory, never in a design payload. Stable native controls retain focus after redraw. Local edits show the affected preview while preserving every other role's choices. Shared theme groups shared colors, fonts and texture in one optional disclosure, available in every stage; its open state persists through stage changes.
 
-Shared theme's summary has a 48px minimum height. Its scope text names affected Shared slide types and Custom exceptions, with links to the relevant local field. Sidebar, Accent and Buttons have no misleading local-color shortcut: those colors remain shared. Navigation and button typography always use the shared body font; the canvas and Band divider exterior retain shared Content background. The seven inheritable local fields (primary/secondary background, heading/body color, heading/body font and texture) show Shared or Custom beside the control. Use shared theme in a field or its named reset button restores only that field on that slide, retaining other choices.
+Shared theme's summary has a 48px minimum height. Paint colors names the selected slide and field; Shared default scope names affected Shared slide types and Custom exceptions, with links to the relevant local field. Shared font and texture controls retain their shared scope labels. Sidebar, Accent and Buttons have no misleading local-color shortcut: those colors remain shared. Navigation and button typography always use the shared body font; the canvas and Band divider exterior retain shared Content background. The seven inheritable local fields (primary/secondary background, heading/body color, heading/body font and texture) show Shared or Custom beside the control. Use shared theme in a field or its named reset button restores only that field on that slide, retaining other choices.
 
 Background supports an inherited finish, Solid or a two-color gradient, local primary/secondary colors and three gradient directions. The second color stays saved when hidden. Split title panels use the second color in the right panel and omit the inapplicable direction control; Solid colors both panels uniformly. Divider Band retains its colored middle panel and the shared lesson surface above and below it. Texture offers the existing five recipes and three strengths, independently per role. Plain hides the strength control without clearing it.
 
@@ -340,11 +340,16 @@ model's button background, automatic ink, body font and 44px minimum target heig
 
 ### Divider color ownership
 
-Title & divider headings and Subtitle & divider supporting text name their shared
-scope directly. Shared theme exposes background, both text roles, and the shared
-second gradient color. The Chapter divider editor can override its local fields;
-scope links open the matching field. Selecting the shared text/second-color roles
-retains an already selected divider preview. Content heading/body choices remain
+Title & divider headings and Subtitle & divider supporting text name their element
+families. Paint colors exposes background, both text roles, and Second gradient
+color. This slide paints the current effective local field immediately; Shared
+default changes only its separate inherited default. The Chapter divider editor
+can also edit or reset its local fields; shared-scope links open the matching field.
+Selecting text/second-color elements retains an already selected divider preview.
+Painting one gradient stop preserves the second stop, direction, texture and all
+other choices. A hidden text color or unused second stop stays saved; the helper
+explains when it appears without changing visibility or background finish.
+Content heading/body choices remain
 independent. Low-contrast backgrounds preserve the chosen text
 and show the actual result plus ratio warnings. Repair buttons change only the named
 background, with Undo. These alternatives are optional; shared saving and artifact

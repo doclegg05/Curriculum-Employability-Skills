@@ -31,6 +31,12 @@ for an existing design even after a fresh load.
 The optional **Shared theme** disclosure stays available in every stage and groups
 shared colors, fonts and texture. Preserve Sidebar, Accent and Buttons colors,
 navigation/button typography, and the shared canvas/Band exterior bindings. A
+color element starts in **This slide** scope: its selected swatch and paint action
+use the current preview's effective local field. **Shared default** explicitly
+edits the separate global value and retains custom exceptions. Choosing another
+element returns to This slide; preview tabs follow the equivalent local field.
+Sidebar, Accent and Buttons remain shared-only. Scope is browser UI state, never
+part of a selection or shared record. A
 slide field marked Shared follows the current default; Custom records an explicit
 exception. Use shared theme restores only that field's inheritance on that slide.
 Review reports the effective choices and exceptions for all five roles, not just

@@ -98,6 +98,8 @@ async function shared(page, open = true) {
 async function paint(page, role, color) {
   await shared(page);
   await page.locator('#colorRole').selectOption(role);
+  // Shared-theme journeys choose their scope; direct slide paint has its own suite.
+  if (await page.locator('#colorScope').count()) await page.locator('#colorScope').selectOption('shared');
   await page.locator(`#paint-${role}-${color}`).click();
   assert.equal((await design(page)).roles[role], color);
 }
@@ -341,6 +343,7 @@ try {
     await preview(page, 'video');
     for (const selector of ['.slide-sidebar', '.slide-button']) assert((await page.locator('#modelStage ' + selector).first().evaluate(el => getComputedStyle(el).fontFamily)).includes('Raleway'), 'Shared body font paints navigation and buttons despite a local text override');
     await shared(page); await page.locator('#colorRole').selectOption('heading');
+    await page.locator('#colorScope').selectOption('shared');
     await page.locator('[data-shared-scope=heading] [data-scope-role=cards]').click();
     assert.equal(await page.locator('#editor-cards').getAttribute('aria-selected'), 'true');
     assert.equal(await page.evaluate(() => document.activeElement.id), 'role-cards-headingColor', 'Shared Heading shortcut opens its matching field');

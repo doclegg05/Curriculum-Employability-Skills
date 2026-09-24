@@ -77,6 +77,8 @@ const design = async page => (await draft(page)).design;
 async function paint(page, role, color) {
   await go(page, 'Shared colors');
   await page.locator('#colorRole').selectOption(role);
+  // These existing cases exercise the shared theme contract explicitly.
+  if (await page.locator('#colorScope').count()) await page.locator('#colorScope').selectOption('shared');
   await page.locator(`[data-color="${color}"]`).click();
 }
 async function choose(page, decision, value) {
@@ -154,6 +156,7 @@ try {
     assert.deepEqual((await design(page)).roles, expectedRoles);
     await paint(page, 'contentBackground', 'light');
     await page.locator('#colorRole').selectOption('body');
+    await page.locator('#colorScope').selectOption('shared');
     const beforeUnsafe = await design(page);
     const gold = page.locator('[data-color="gold"]');
     assert.equal(await gold.getAttribute('aria-disabled'), null);

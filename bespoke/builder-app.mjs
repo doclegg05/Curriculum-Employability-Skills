@@ -25,7 +25,7 @@ const STEPS = [
 ];
 const LEGACY_STEPS = ['welcome','team','colors','fonts','title','divider','cards','video','activity','review'];
 const state = {step:0,stepId:'start',meta:null,library:null,lessonId:'money-management',teamName:'',spokespersonName:'',spokespersonEmail:'',lessonTitle:'',lessonSubtitle:'',unspoken:'',editCode:'',previewView:'title',design:null,legacySelection:null,changes:[],redo:[]};
-const ui = {mode:'view',renderedStep:null,previewPinned:false,teamSession:null,cloudConflict:null,cloudBusy:false,autosavePaused:false,allowUnload:false,skipNextLocalSave:false,restoreNote:'',restoredFromLink:false,editCodeHash:'',activeRole:'sidebar',localPreview:false,editorRole:'title',sharedThemeOpen:false,startingLooksOpen:false,meaningfulDesign:false};
+const ui = {mode:'view',renderedStep:null,previewPinned:false,teamSession:null,cloudConflict:null,cloudBusy:false,autosavePaused:false,allowUnload:false,skipNextLocalSave:false,restoreNote:'',restoredFromLink:false,editCodeHash:'',activeRole:'sidebar',paintScope:'slide',localPreview:false,editorRole:'title',sharedThemeOpen:false,startingLooksOpen:false,meaningfulDesign:false};
 let catalog, fingerprints, selectionSchema, handoffApiBase='', handoffBusy=false, lastSavedRaw=null, storageConflict=false;
 // Replacing a draft or team invalidates pending operations against its predecessor.
 let draftGeneration=0;
@@ -1212,6 +1212,7 @@ function restoreStep(saved){
  ui.sharedThemeOpen=saved.sharedThemeOpen===true||['colors','fonts'].includes(legacyId);
  state.previewView=Object.hasOwn(VIEW_NAMES,saved.previewView)?saved.previewView:state.step===1?ui.editorRole:'title';
  if(catalog.roles.some(role=>role.id===saved.activeRole))ui.activeRole=saved.activeRole;
+ ui.paintScope=saved.paintScope==='shared'?'shared':'slide';
  ui.meaningfulDesign=saved.meaningfulDesign===true||JSON.stringify(state.design)!==JSON.stringify(Model.defaultDesign(catalog));
  ui.renderedStep=state.step;
 }
@@ -1237,7 +1238,7 @@ function loadDraft(){
 }
 function serializeDraft(){
  const {meta,library,editCode,...saved}=state;
- return JSON.stringify({...saved,stepId:STEPS[state.step].id,activeRole:ui.activeRole,editorRole:ui.editorRole,sharedThemeOpen:ui.sharedThemeOpen,meaningfulDesign:ui.meaningfulDesign,autosavePaused:ui.autosavePaused});
+ return JSON.stringify({...saved,stepId:STEPS[state.step].id,activeRole:ui.activeRole,paintScope:ui.paintScope,editorRole:ui.editorRole,sharedThemeOpen:ui.sharedThemeOpen,meaningfulDesign:ui.meaningfulDesign,autosavePaused:ui.autosavePaused});
 }
 function saveDraft(){
  if(!isLeadSession()||!state.design)return false;
@@ -1250,7 +1251,7 @@ function saveDraft(){
  }catch{setSaveStatus('Browser storage unavailable. Download a backup.');return false;}
 }
 function resetDesignForLesson(lessonId){
- draftGeneration++;resetPresetConfirmation();ui.meaningfulDesign=false;ui.startingLooksOpen=false;ui.editorRole='title';ui.sharedThemeOpen=false;
+ draftGeneration++;resetPresetConfirmation();ui.meaningfulDesign=false;ui.startingLooksOpen=false;ui.editorRole='title';ui.sharedThemeOpen=false;ui.paintScope='slide';
  Object.assign(state,{step:0,lessonId,teamName:'',spokespersonName:'',spokespersonEmail:'',unspoken:'',design:Model.defaultDesign(catalog),legacySelection:null,changes:[],redo:[]});
 }
 function applySelectionPayload(payload){
@@ -1396,47 +1397,69 @@ function appendSharedScope(host,key){
 }
 function renderSharedTheme(panel){
  const details=document.createElement('details');details.id='sharedTheme';details.className='shared-theme';details.open=ui.sharedThemeOpen;
- details.innerHTML='<summary>Shared theme · optional</summary><p class="helper">Coordinate the slides that use shared defaults. Custom fields keep their own choices. Sidebar, Accent and Buttons are always shared.</p>';
+ details.innerHTML='<summary>Shared theme · optional</summary><p class="helper">Paint the slide in the preview, or choose Shared default to coordinate slides that use it. Sidebar, Accent and Buttons are always shared. Shared fonts and texture follow their own defaults below.</p>';
  details.addEventListener('toggle',()=>{if(details.isConnected&&ui.sharedThemeOpen!==details.open){ui.sharedThemeOpen=details.open;updatePreview();if(isLeadSession())saveDraft();}});panel.append(details);
- const colors=document.createElement('section');colors.setAttribute('aria-labelledby','sharedColorsTitle');colors.innerHTML='<h2 id="sharedColorsTitle">Shared colors</h2>';details.append(colors);addColorControls(colors,catalog.roles.map(r=>r.id));
+ const colors=document.createElement('section');colors.setAttribute('aria-labelledby','sharedColorsTitle');colors.innerHTML='<h2 id="sharedColorsTitle">Paint colors</h2>';details.append(colors);addColorControls(colors,catalog.roles.map(r=>r.id));
  const type=document.createElement('section');type.setAttribute('aria-labelledby','sharedTypeTitle');details.append(type);renderFonts(type);
 }
 function addColorControls(panel,roleIds){
  if(!roleIds.includes(ui.activeRole))ui.activeRole=roleIds[0];
+ // Preview tabs keep the same kind of element selected on the newly visible slide.
+ // Merely navigating never materializes a role override or edits the shared theme.
+ const previousBindings=sharedBindings(ui.activeRole);
+ if(ui.paintScope==='slide'&&previousBindings.length&&!previousBindings.some(([kind])=>kind===state.previewView)){
+  const field=previousBindings[0][1];
+  ui.activeRole=roleIds.find(key=>sharedBindings(key).some(([kind,keyField])=>kind===state.previewView&&keyField===field))||ui.activeRole;
+ }
  const label=document.createElement('label');label.className='field';label.textContent='Element to paint';
  const select=document.createElement('select');select.id='colorRole';
- for(const id of roleIds){const role=catalog.roles.find(r=>r.id===id);const o=document.createElement('option');o.value=id;o.textContent=role.label;o.selected=id===ui.activeRole;select.append(o);}
+ for(const id of roleIds){const role=catalog.roles.find(r=>r.id===id);const o=document.createElement('option');o.value=id;o.textContent=id==='titleBackgroundEnd'?'Second gradient color':role.label;o.selected=id===ui.activeRole;select.append(o);}
  select.onchange=()=>{
-  ui.activeRole=select.value;const role=ui.activeRole;
-  const sharedDividerRole=['titleText','subtitle','titleBackgroundEnd'].includes(role)&&state.previewView==='divider';
-  if(role!=='button'&&!sharedDividerRole)state.previewView=role.startsWith('title')||role==='subtitle'?'title':role.startsWith('divider')?'divider':'cards';
+  ui.activeRole=select.value;ui.paintScope='slide';const bindings=sharedBindings(ui.activeRole);
+  if(bindings.length&&!bindings.some(([kind])=>kind===state.previewView))state.previewView=bindings[0][0];
+  else if(!bindings.length&&ui.activeRole!=='button')state.previewView='cards';
   render(false);
  };label.append(select);panel.append(label);
  const role=catalog.roles.find(r=>r.id===ui.activeRole);
- appendSharedScope(panel,role.id);
- const hint=document.createElement('p');hint.className='helper';hint.textContent=role.note;panel.append(hint);
+ const binding=sharedBindings(role.id).find(([kind])=>kind===state.previewView);
+ const local=binding&&ui.paintScope==='slide',kind=binding?.[0],field=binding?.[1];
+ if(sharedBindings(role.id).length){
+  const scopeLabel=document.createElement('label');scopeLabel.className='field';scopeLabel.textContent='Apply color to';
+  const scope=document.createElement('select');scope.id='colorScope';scope.setAttribute('aria-describedby','colorScopeHelp');
+  for(const [id,name] of [['slide','This slide · '+VIEW_NAMES[state.previewView]],['shared','Shared default']]){const option=document.createElement('option');option.value=id;option.textContent=name;option.selected=ui.paintScope===id;scope.append(option);}
+  scope.onchange=()=>{ui.paintScope=scope.value;render(false);};scopeLabel.append(scope);panel.append(scopeLabel);
+ }
+ const hint=document.createElement('p');hint.id='colorScopeHelp';hint.className='helper';
+ const effective=local?Model.effectiveRoleStyle(catalog,state.design,kind):null;
+ const target=local?VIEW_NAMES[kind]+' · '+FIELD_LABELS[field]:'Shared default · '+role.label;
+ hint.textContent=local?target+'. Currently '+(savedRoleStyle(kind)[field]==='inherit'?'Shared':'Custom')+'. Painting changes only this field on this slide.':sharedBindings(role.id).length?'Painting changes this shared default. Slides with a custom color keep it.':'Painting changes '+role.label+' throughout the design.';
+ if(local&&field==='secondary'&&effective.backgroundMode!=='gradient')hint.textContent+=' This slide uses one color; the second color is kept until you choose a two-color gradient.';
+ if(local&&((field==='headingColor'&&!effective.headingVisible&&!(kind==='activity'&&effective.labelVisible))||(field==='bodyColor'&&!effective.bodyVisible&&!(kind==='divider'&&effective.labelVisible))))hint.textContent+=' This text is hidden; its color is kept until you show it.';
+ panel.append(hint);
+ if(!local){appendSharedScope(panel,role.id);const note=document.createElement('p');note.className='helper';note.textContent=role.note;panel.append(note);}
  if(role.id==='button')panel.insertAdjacentHTML('beforeend',buttonColorSample('buttonColorInline'));
  if(role.id==='dividerBackground'){
   const links=document.createElement('div');links.className='color-edit-links';panel.append(links);
   for(const [id,label] of [['titleText','Edit divider heading'],['subtitle','Edit divider supporting text']]){
    const edit=document.createElement('button');edit.type='button';edit.className='text-link';edit.id='edit-divider-'+id;
-   edit.textContent=label+': '+catalog.palette.find(c=>c.id===state.design.roles[id]).name;
+   edit.textContent=label+': '+catalog.palette.find(c=>c.id===Model.effectiveRoleStyle(catalog,state.design,'divider')[id==='titleText'?'headingColor':'bodyColor']).name;
    edit.onclick=()=>showRoleEditor('divider','text',id==='titleText'?'headingColor':'bodyColor');links.append(edit);
   }
  }
 
- const palette=document.createElement('div');palette.className='paint-palette';palette.setAttribute('role','group');palette.setAttribute('aria-label',role.label+' colors');
+ const selected=local?effective[field]:state.design.roles[role.id];
+ const palette=document.createElement('div');palette.className='paint-palette';palette.setAttribute('role','group');palette.setAttribute('aria-label',target+' colors');
  for(const color of catalog.palette){
-  const available=Model.colorAvailability(catalog,state.design,role.id,color.id);
-  const b=document.createElement('button');b.type='button';b.className='paint-chip';b.id='paint-'+role.id+'-'+color.id;b.dataset.color=color.id;b.setAttribute('aria-pressed',String(state.design.roles[role.id]===color.id));
-  b.setAttribute('aria-label',color.name+(state.design.roles[role.id]===color.id?' selected':'')+(available.warnings.length?'. Contrast advisory; selectable.':''));
-  b.innerHTML='<span class="paint-swatch" style="background:'+color.hex+'">'+(state.design.roles[role.id]===color.id?'<span class="paint-check">✓</span>':'')+'</span><span>'+escapeHtml(color.name)+'</span>';
-  b.title='Use '+color.name+' for '+role.label.toLowerCase()+(available.warnings.length?'. Contrast advisory: '+available.warnings.join(' '):'');
-  b.onclick=()=>{if(!available.ok){byId('colorHelp').textContent=available.reason;return;}changeDesign(role.label+': '+color.name,d=>{d.roles[role.id]=color.id;});};palette.append(b);
+  const available=local?{ok:true,warnings:Model.contrastIssues(catalog,Model.setRoleStyle(catalog,state.design,kind,field,color.id)).filter(issue=>issue.kind===kind).map(issue=>issue.message)}:Model.colorAvailability(catalog,state.design,role.id,color.id);
+  const b=document.createElement('button');b.type='button';b.className='paint-chip';b.id='paint-'+role.id+'-'+color.id;b.dataset.color=color.id;b.setAttribute('aria-pressed',String(selected===color.id));
+  b.setAttribute('aria-label',color.name+(selected===color.id?' selected':'')+(available.warnings.length?'. Contrast advisory; selectable.':''));
+  b.innerHTML='<span class="paint-swatch" style="background:'+color.hex+'">'+(selected===color.id?'<span class="paint-check">✓</span>':'')+'</span><span>'+escapeHtml(color.name)+'</span>';
+  b.title='Use '+color.name+' for '+target+(available.warnings.length?'. Contrast advisory: '+available.warnings.join(' '):'');
+  b.onclick=()=>{if(!available.ok){byId('colorHelp').textContent=available.reason;return;}changeDesign(target+': '+color.name,d=>{if(local)Object.assign(d,Model.setRoleStyle(catalog,d,kind,field,color.id));else d.roles[role.id]=color.id;});};palette.append(b);
  }
  panel.append(palette);
  const help=document.createElement('div');help.id='colorHelp';help.className='helper';
- const issues=Model.contrastIssues(catalog,state.design).filter(issue=>issue.related.includes(role.id));
+ const issues=Model.contrastIssues(catalog,state.design).filter(issue=>local?issue.kind===kind||!state.design.roleStyles?.[kind]&&issue.related.includes(role.id):issue.related.includes(role.id));
  help.innerHTML=issues.length?contrastAdvisory(issues):'All 11 brand colors are selectable. Contrast guidance appears here when a choice may be harder to read.';panel.append(help);
 }
 function renderFonts(panel){
