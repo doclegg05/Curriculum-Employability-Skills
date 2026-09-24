@@ -10,38 +10,55 @@ review. Shared-service integration has synthetic local tests; this revision has
 not been deployed or accepted on the hosted service. The
 [September 22 hosted acceptance](../docs/bespoke/verification-2026-09-22.md) records
 the earlier v1 flow and does not establish hosted v2 readiness.
+The [workflow implementation report](../docs/bespoke/workflow-fixes-2026-09-24.md)
+records the three-stage changes, compatibility and verification.
 
 ## Choose a design
 
-Start with **Guide me through** or one of six editable presets: Professional,
-Modern, Serious, Light-hearted, Fun and Outspoken. Both paths use the same model
-and controls. A preset fills those controls; changing an individual choice keeps
+The builder has three stages, with no mandatory walkthrough:
+
+1. **Start:** check Lesson & team, then choose **Build my own** or one of six
+   editable presets: Professional, Modern, Serious, Light-hearted, Fun and
+   Outspoken. Both paths use the same model and begin with usable defaults.
+2. **Slide designs:** open **Title**, **Chapter divider**, **Text boxes**, **Video**
+   or **Activity** directly. All five editors are optional. **Next slide type** is
+   a navigation aid, not a completion requirement.
+3. **Review & save:** review the effective choices and Shared/Custom state for all
+   five slide types, advice and notes, then save the agreed design.
+
+A preset can go directly to Review & save, or through just one editor for a tweak.
+Build my own can use the optional Shared theme and whichever editors are useful.
+Returning teams can **Continue editing** or **Review & save** their existing look;
+**Change starting look** opens the starting choices deliberately.
+
+A preset fills the same controls as individual editing. Changing a field keeps
 the other choices. Applying another preset replaces the visual choices, preserves
-sample text, and can be undone.
+sample text, and can be undone. An existing saved design receives the same
+replacement confirmation as a design edited in the current session.
 
 The preset confirmation offers **Cancel**, **Apply preset**, and an initially
 unchecked **Don't ask again during this session** option. Only checking it and
 applying a preset suppresses later preset confirmations. Cancel and Escape leave
 both the design and preference unchanged. Other warnings stay active.
 
-The preference belongs to the current tab's editing session: it survives step
+The preference belongs to the current tab's editing session: it survives stage
 navigation and reload, and resets on Leave session, a different team/lesson,
 Start a new browser draft, or a fresh tab after closing this one. It uses only
 `sessionStorage`; it never enters designs, backups, history, or shared records.
 If tab storage is unavailable, the preference lasts only until the page reloads.
 
-The guided steps are:
+**Shared theme** is an optional disclosure available in every stage. It contains
+the shared colors, heading/body fonts and texture, including Sidebar, Accent and
+Buttons colors. These three colors have no local slide replacement; shared body
+typography also supplies navigation and buttons. Shared content background still
+supplies the lesson canvas and the exterior of a Band divider.
 
-1. Your starting point
-2. Lesson & team
-3. Paint your elements
-4. Fonts & background
-5. Title slide
-6. Chapter divider
-7. Text boxes
-8. Video slide
-9. Activity
-10. Review & save
+Each inheritable slide field is marked **Shared** or **Custom**. Shared fields
+follow the corresponding current default; custom fields stay unchanged when that
+default changes. **Use shared theme** restores inheritance for that field on that
+slide type, keeping its other fields and the other slide designs. The effective
+Review summary reports each slide's resolved choices instead of describing shared
+font defaults as though every slide used them.
 
 **Colors:** select an element, then a brand swatch to replace its color immediately.
 All eleven swatches stay visible, including White. Colors are assigned directly to
@@ -61,8 +78,9 @@ legible text; sample activation does not navigate, download or submit.
 **Divider text:** Title & divider headings controls both large title lettering and
 chapter headings. Subtitle & divider supporting text controls the title subtitle,
 copyright, chapter label and divider supporting copy. Content headings/body remain
-independent. The divider step exposes these shared choices and the gradient's shared
-second color. Painting a divider background preserves all selected text colors;
+independent. Shared theme exposes these shared choices and the gradient's shared
+second color. The Chapter divider editor can override its own fields. Painting a
+divider background preserves all selected text colors;
 contrast advisories offer optional color alternatives without blocking shared saves
 or generated output. Existing files and shared revisions retain their original values.
 Structural, schema, access and conflict checks still apply. Generated contracts and
@@ -75,16 +93,16 @@ families; presets can initialize combinations, but do not lock a pairing. Frankl
 Gothic Book is omitted because no existing licensed webfont package was found. Its
 absence does not block the builder, and no substitute is labeled as that font.
 
-**Background pattern:** Plain, Dot grid, Diagonal, Crosshatch and Soft wash apply to
-all five slide backgrounds, including title slides and chapter dividers. Each control
-shows a miniature on the current preview's base color. Pattern ink adapts between
+**Background pattern:** Plain, Dot grid, Diagonal, Crosshatch and Soft wash supply
+the shared texture for all five slide types. A custom slide texture stays independent.
+Each shared control shows a miniature on the current preview's base color. Pattern ink adapts between
 White and Royal for visibility and readability without changing saved color roles.
 Text boxes keep their chosen opaque reading surface. Title/divider readability checks
 include the pattern and gradient layers. Plain removes texture while keeping the
 selected base color, gradient or band layout. Preview and generated output share the
 same treatment.
 
-**Components:** title and divider designs have separate guided arrangement and
+**Components:** title and divider designs have separate optional arrangement and
 appearance choices. Text boxes support one to four boxes, one optional shared
 title bar, paragraph/bullet/numbered treatment, box style and arrangement. Video
 and activity have their own controls. Reducing the box count keeps all four draft
@@ -127,8 +145,8 @@ copy or downloaded backup is not a confirmed shared save.
 
 The connected workflow retains private team access, shared Save/Open, revision
 checks, history, retry protection and receipt-confirmed Send. Choose one spokesperson
-to operate the design during a team call. Shared autosave runs on step changes and
-after 30 seconds without a change; immediate Save is available. A failed, stale or
+to operate the design during a team call. Shared autosave runs shortly after stage
+changes and after 30 seconds without a change; immediate Save is available. A failed, stale or
 pending save remains visible. Restored backups and earlier versions require explicit
 Save before shared autosave resumes. A stale revision is rejected rather than
 replacing another computer's newer design. Keep a backup, open the latest shared
@@ -142,7 +160,7 @@ backup. Review conversion and readability notes before saving the new design. Th
 original wizard remains at `bespoke/legacy.html`; its storage keys are separate.
 
 For the deployed workflow, original private team links grant real access and must
-stay within the intended team. **Leave team session on this browser** removes
+stay within the intended team. **Leave session** removes
 remembered access and local drafts, not shared work. View links are read-only
 snapshots, not live collaboration or team access. They can contain readable sample
 text and contact details. Review proposals are public repository artifacts; use
@@ -220,4 +238,6 @@ current implementation's evidence belongs in its dated verification report.
 Read [decisions](../docs/bespoke/decisions.md) for the September 24 overrides. The
 September 23 slide-builder specification and color mockup remain historical design
 records; their restricted palette, fixed pairing and no-preset constraints are
-superseded. The earlier [team meeting guide](team-guide.html) describes v1 controls.
+superseded. The [team meeting guide](team-guide.html) describes the three-stage
+builder, optional editors, shared defaults and recovery. The original wizard is
+preserved separately; its historical sequence is not the current builder's flow.

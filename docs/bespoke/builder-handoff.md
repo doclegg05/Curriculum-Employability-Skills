@@ -2,7 +2,7 @@
 
 BeSpoke v2 configures reusable visual slide roles with sample copy. It is not
 curriculum authoring, unrestricted drag-and-drop deck editing, or automatic lesson
-construction. Teachers can use the guided path or editable presets; both write the
+construction. Teachers can choose Build my own or editable presets; both write the
 same cumulative design. Independent role colors, heading/body fonts and component
 choices must survive every save and artifact boundary.
 
@@ -17,6 +17,29 @@ All eleven existing brand swatches remain visible for direct role painting, and
 all twelve existing font families can be selected independently for headings and
 body. Franklin Gothic Book remains optional and unavailable: no usable licensed
 local webfont package was found.
+
+## Instructor workflow
+
+The current builder uses **Start → Slide designs → Review & save**. Start combines
+Lesson & team with a preset or **Build my own**. A preset can go straight to review
+or through one editor for a tweak. Title, Chapter divider, Text boxes, Video and
+Activity are direct, optional editors; there is no requirement to visit them all.
+Returning teams resume the current look with Continue editing or Review & save.
+Change starting look is a separate deliberate action, with replacement confirmation
+for an existing design even after a fresh load.
+
+The optional **Shared theme** disclosure stays available in every stage and groups
+shared colors, fonts and texture. Preserve Sidebar, Accent and Buttons colors,
+navigation/button typography, and the shared canvas/Band exterior bindings. A
+slide field marked Shared follows the current default; Custom records an explicit
+exception. Use shared theme restores only that field's inheritance on that slide.
+Review reports the effective choices and exceptions for all five roles, not just
+the shared font defaults. Navigation and these labels do not change the saved
+selection contract or authorize a lesson build.
+
+The [team guide](../../bespoke/team-guide.html) is the instructor-facing reference.
+Its connected Save/Open/Send instructions do not establish hosted v2 acceptance.
+The local preview uses Save test design/Open test design and blocks review delivery.
 
 ## Selection and recovery contract
 
@@ -41,7 +64,7 @@ Each present role record is closed and complete. Designs without the extension
 retain their earlier CSS and sample markup exactly; there is no eager migration of
 stored drafts. Older strict consumers reject the extension instead of discarding
 it. Use the updated schema, model, service and Python bridge together. Presets reset
-visual choices while preserving all sample words. The first step and header help
+visual choices while preserving all sample words. Start and header help
 explain this workflow and the brand, contrast and comparison guardrails. See the
 [implementation and evidence report](role-customization-2026-09-24.md).
 

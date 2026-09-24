@@ -1,5 +1,6 @@
 #!/usr/bin/env node
 // Real editor controls and inert generated/canonical media; never touches user state.
+import { builderDestination } from './bespoke-test-navigation.mjs';
 import assert from 'node:assert/strict';
 import fs from 'node:fs/promises';
 import path from 'node:path';
@@ -45,7 +46,7 @@ async function editor(width) {
 }
 const saved = page=>page.evaluate(()=>JSON.parse(localStorage.getItem('bespoke-draft-v2')).design);
 async function designSurface(page) {if(await page.locator('#surface-design').isVisible())await page.locator('#surface-design').click();}
-async function go(page,label) {await designSurface(page);await page.locator('#stepList button').filter({hasText:label}).click();}
+const go = builderDestination;
 async function choose(page,label,value) {await designSurface(page);await page.getByRole('group',{name:new RegExp(label)}).locator(`[data-choice="${value}"]`).click();}
 async function preview(page,width) {if(width===390)await page.locator('#surface-preview').click();await page.evaluate(()=>document.fonts.ready);}
 async function measure(frame) {
@@ -127,7 +128,7 @@ try {
     const final=await saved(page);
     await designSurface(page);await page.locator('#btnUndo').click();assert.equal((await saved(page)).slides.video.frame,'plain');
     await page.locator('#btnRedo').click();assert.deepEqual(await saved(page),final);
-    await go(page,'Fonts & background');await go(page,'Video slide');assert.deepEqual(await saved(page),final);
+    await go(page,'Shared typography');await go(page,'Video slide');assert.deepEqual(await saved(page),final);
     const response=page.waitForResponse(r=>r.url().endsWith('/api/bespoke')&&r.request().postDataJSON()?.action==='save');await page.locator('#btnSave').click();assert.equal((await response).status(),200);
     await page.locator('#fileStatus').filter({hasText:/Local test design saved|already up to date/}).waitFor();
     await page.reload();await page.locator('#localPreviewNotice').waitFor();await go(page,'Video slide');assert.deepEqual(await saved(page),final);

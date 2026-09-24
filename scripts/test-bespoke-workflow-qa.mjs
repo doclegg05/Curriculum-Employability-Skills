@@ -1,6 +1,7 @@
 #!/usr/bin/env node
 // Synthetic workflow races only. An ephemeral loopback service and isolated browser
 // contexts cannot access the user's preview, remembered team, or browser draft.
+import { builderDestination, recoveryMenu } from './bespoke-test-navigation.mjs';
 import assert from 'node:assert/strict';
 import fs from 'node:fs/promises';
 import { browserType, browserName } from './bespoke-test-browser.mjs';
@@ -39,15 +40,15 @@ async function ready(page) {
 }
 const draft = page => page.evaluate(() => JSON.parse(localStorage.getItem('bespoke-draft-v2')));
 const design = async page => (await draft(page)).design;
-async function go(page, label) { await page.locator('#stepList button').filter({ hasText: label }).click(); }
+const go = builderDestination;
 async function team(page) {
-  await go(page, 'Lesson & team');
+  await go(page, 'Start');
   await page.locator('#teamName').fill('Synthetic race review');
   await page.locator('#spokespersonName').fill('Sample Instructor');
   await page.locator('#spokespersonEmail').fill('sample@example.org');
 }
 async function paint(page, color) {
-  await go(page, 'Paint your elements'); await page.locator('#colorRole').selectOption('sidebar');
+  await go(page, 'Shared colors'); await page.locator('#colorRole').selectOption('sidebar');
   await page.locator(`[data-color="${color}"]`).click();
 }
 async function save(page) {
@@ -181,7 +182,7 @@ try {
     const newDraft = async () => {
       if (!await page.locator('#btnClear').isVisible()) await page.locator('.more-menu summary').click();
       await page.locator('#btnClear').click();
-      await page.locator('.more-menu summary').click();
+      await recoveryMenu(page, false);
     };
     // A list response arriving after replacement must restore the disclosure state.
     const pending = deferred(), release = deferred(); let held = false;

@@ -4,7 +4,7 @@ This is the administrator guide. Teachers use a private team link, choose a look
 and save it. They do not create accounts, choose passwords, edit files, or run
 commands. Their [meeting guide](../../bespoke/team-guide.html) explains those steps.
 
-The wizard remains on GitHub Pages. Its Save, Open, history, and Send controls call
+The connected deployment uses GitHub Pages. Its Save, Open, history, and Send controls call
 a Netlify function. The function stores encrypted design revisions on the
 `bespoke-drafts` Git branch and starts the existing Spoke Signals workflow when a
 team requests review. Neither saving nor sending builds lessons, applies a design
@@ -12,9 +12,13 @@ to lesson HTML, merges a proposal, or publishes content.
 
 ## Process map
 
-This flow is implemented by the service and wizard. The initial hosted release
-passed [live acceptance on September 22, 2026](verification-2026-09-22.md). Repeat
-the relevant checks below after service, workflow, access, or hosting changes.
+This flow is implemented by the service and builder. The initial v1 hosted release
+passed [live acceptance on September 22, 2026](verification-2026-09-22.md). The
+current v2 three-stage builder is prepared for local review; its synthetic Save
+test design/Open test design service blocks Send and receipt-status calls. The
+earlier acceptance does not establish hosted v2 readiness. Deploy compatible
+reviewed builder/service versions and repeat the relevant checks below after
+service, workflow, access, or hosting changes.
 
 ```mermaid
 flowchart TD

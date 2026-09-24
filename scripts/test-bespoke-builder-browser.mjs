@@ -1,6 +1,7 @@
 #!/usr/bin/env node
 // End-to-end checks use a fresh loopback-only server, synthetic people and memory drafts.
 // Nothing here uses provisioned team codes, a hosted API, Send, or released lessons.
+import { builderDestination, EDITOR_DESTINATIONS, recoveryMenu } from './bespoke-test-navigation.mjs';
 import assert from 'node:assert/strict';
 import fs from 'node:fs/promises';
 import path from 'node:path';
@@ -21,6 +22,7 @@ const failures = [], assets = [], pageErrors = [], externalRequests = [];
 let passed = 0;
 
 async function scenario(name, callback) {
+  if (process.env.BESPOKE_BUILDER_SCENARIO && !name.includes(process.env.BESPOKE_BUILDER_SCENARIO)) return;
   const server = await createDevServer({ port: 0 });
   const contexts = [], actions = [];
   const makePage = async ({ mobile = false, autosave = { enabled: false }, remoteSelection, storageState, sessionStorageUnavailable = false } = {}) => {
@@ -69,16 +71,11 @@ async function ready(page) {
   await page.locator('#localPreviewNotice').waitFor({ state: 'visible' });
   await page.locator('#btnSave').filter({ hasText: 'Save test design' }).waitFor();
 }
-// Match human-facing step names without relying on their ordinal position.
-async function go(page, label) {
-  if (await page.locator('#surface-design').isVisible()) await page.locator('#surface-design').click();
-  const steps = page.locator('#stepList button');
-  await steps.filter({ hasText: label }).click();
-}
+const go = builderDestination;
 const draft = page => page.evaluate(() => JSON.parse(localStorage.getItem('bespoke-draft-v2')));
 const design = async page => (await draft(page)).design;
 async function paint(page, role, color) {
-  await go(page, 'Paint your elements');
+  await go(page, 'Shared colors');
   await page.locator('#colorRole').selectOption(role);
   await page.locator(`[data-color="${color}"]`).click();
 }
@@ -87,7 +84,7 @@ async function choose(page, decision, value) {
   await group.locator(`[data-choice="${value}"]`).click();
 }
 async function fillTeam(page) {
-  await go(page, 'Lesson & team');
+  await go(page, 'Start');
   await page.locator('#teamName').fill('Synthetic review team');
   await page.locator('#spokespersonName').fill('Sample Instructor');
   await page.locator('#spokespersonEmail').fill('sample@example.org');
@@ -132,19 +129,19 @@ async function axe(page, label, { excludePreview = false } = {}) {
 try {
   await scenario('cumulative colors, independent fonts, editable presets, history and v2 file recovery', async ({ makePage }) => {
     const page = await makePage();
-    await go(page, 'Your starting point');
+    await go(page, 'Starting look');
     assert.equal(await page.locator('[data-preset]').count(), 6);
     await page.locator('[data-preset="professional"]').click();
     await go(page, 'Text boxes');
     if(!await page.locator('#section-cards-text').evaluate(el=>el.open))await page.locator('#section-cards-text > summary').click();
     await page.getByText('Try your own sample text', { exact: true }).click();
     await page.locator('#sample-box-3').fill('Keep this fourth sample even while it is hidden.');
-    await go(page, 'Your starting point');
+    await go(page, 'Starting look');
     await page.locator('[data-preset="modern"]').click();
     await page.locator('#presetApply').click();
     assert.equal((await design(page)).samples.boxes[3], 'Keep this fourth sample even while it is hidden.');
     const beforePaint = await design(page);
-    await go(page, 'Paint your elements');
+    await go(page, 'Shared colors');
     for (const role of catalog.roles) {
       await page.locator('#colorRole').selectOption(role.id);
       assert.equal(await page.locator('.paint-chip').count(), 11, role.id);
@@ -164,7 +161,8 @@ try {
     assert.match(await page.locator('#colorHelp').textContent(), /below the 4.5:1 guideline/);
     assert.equal((await design(page)).roles.body, 'gold');
     await page.locator('#btnUndo').click(); assert.deepEqual(await design(page), beforeUnsafe);
-    await go(page, 'Fonts & background');
+    await go(page, 'Text boxes');
+    await go(page, 'Shared typography');
     assert.equal(await page.locator('#font-heading option').count(), 12);
     assert.equal(await page.locator('#font-body option').count(), 12);
     await page.locator('#font-heading').selectOption('bitter');
@@ -216,11 +214,11 @@ try {
     const preference = page => page.evaluate(key => sessionStorage.getItem(key), key);
     const page = await makePage(); await fillTeam(page);
     const native = []; page.on('dialog', dialog => native.push(dialog.message()));
-    await go(page, 'Your starting point'); await page.locator('[data-preset="professional"]').click();
+    await go(page, 'Starting look'); await page.locator('[data-preset="professional"]').click();
     await go(page, 'Text boxes'); if(!await page.locator('#section-cards-text').evaluate(el=>el.open))await page.locator('#section-cards-text > summary').click();
     await page.getByText('Try your own sample text', { exact: true }).click();
     await page.locator('#sample-box-3').fill('Retain my hidden sample after every preset.');
-    await go(page, 'Your starting point');
+    await go(page, 'Starting look');
     const before = await draft(page);
     await page.locator('[data-preset="modern"]').click();
     assert.equal(await page.locator('#presetSkipConfirmation').isChecked(), false);
@@ -252,8 +250,9 @@ try {
     assert.equal((await design(page)).startingPoint, 'fun');
     assert.equal(await page.evaluate(() => document.activeElement.id), 'preset-fun');
     await page.locator('#btnUndo').click(); assert.deepEqual(await design(page), modern);
-    await go(page, 'Fonts & background'); await go(page, 'Your starting point');
+    await go(page, 'Shared typography'); await go(page, 'Starting look');
     await page.reload(); await ready(page); assert.equal(await preference(page), '1');
+    await go(page, 'Starting look');
     await page.locator('[data-preset="outspoken"]').click();
     assert.equal(await page.locator('#presetDialog').isVisible(), false);
     assert.equal((await design(page)).startingPoint, 'outspoken');
@@ -272,26 +271,29 @@ try {
     for(const value of [backup.payload, remote, persistent, actions]) assert(!/skipPresetConfirmation|skip-preset-confirmation|pendingPreset|presetSkipConfirmation/.test(JSON.stringify(value)), 'Preference must not leak into durable records or requests.');
     // A fresh browser session retaining the same durable draft/team record asks again.
     const fresh = await makePage({ storageState: await page.context().storageState() });
-    await go(fresh, 'Your starting point'); await fresh.locator('[data-preset="serious"]').click();
+    await go(fresh, 'Starting look'); await fresh.locator('[data-preset="serious"]').click();
     assert(await fresh.locator('#presetDialog').isVisible()); assert.equal(await fresh.locator('#presetSkipConfirmation').isChecked(), false);
     await fresh.keyboard.press('Escape');
     // Starting another draft is explicit and its separate native confirmation is not suppressed.
+    await recoveryMenu(page, true);
     await page.locator('#btnClear').click();
-    await page.locator('.more-menu summary').click();
+    await recoveryMenu(page, false);
     assert(native.some(message => message.startsWith('Start a new browser draft?')));
     assert.equal(await preference(page), null);
-    await go(page, 'Your starting point'); await page.locator('[data-preset="professional"]').click();
+    await go(page, 'Starting look'); await page.locator('[data-preset="professional"]').click();
     await page.locator('[data-preset="modern"]').click();
     assert.equal(await page.locator('#presetSkipConfirmation').isChecked(), false);
     await page.locator('#presetSkipConfirmation').check(); await page.locator('#presetApply').click();
-    await go(page, 'Lesson & team'); await page.locator('#lessonSelect').selectOption('goal-setting');
+    await go(page, 'Start'); await page.locator('#lessonSelect').selectOption('goal-setting');
     assert.equal(await preference(page), null, 'Changing teams/lessons starts a new confirmation session.');
-    await go(page, 'Your starting point'); await page.locator('[data-preset="serious"]').click();
+    await go(page, 'Starting look'); await page.locator('[data-preset="serious"]').click();
     await page.locator('#presetSkipConfirmation').check(); await page.locator('#presetApply').click();
     await page.locator('#btnLeaveSession').click(); await ready(page);
     assert(native.some(message => message.startsWith('Leave this session on this browser?')));
     assert.equal(await preference(page), null);
-    await go(page, 'Your starting point'); await page.locator('[data-preset="professional"]').click();
+    await go(page, 'Starting look'); await page.locator('[data-preset="professional"]').click();
+    assert(await page.locator('#presetDialog').isVisible(), 'Returning saved design is protected even with cleared Undo history.');
+    await page.locator('#presetApply').click();
     await page.locator('[data-preset="modern"]').click();
     assert.equal(await page.locator('#presetSkipConfirmation').isChecked(), false);
     await page.locator('#presetSkipConfirmation').check(); await page.locator('#presetApply').click();
@@ -299,7 +301,7 @@ try {
     const nextTab = await context.newPage(); nextTab.on('dialog', dialog => dialog.accept());
     await nextTab.goto(server.baseUrl+'/bespoke/'); await ready(nextTab);
     assert.equal(await preference(nextTab), null, 'A fresh tab does not inherit the closed tab’s opt-out.');
-    await go(nextTab, 'Your starting point'); await nextTab.locator('[data-preset="serious"]').click();
+    await go(nextTab, 'Starting look'); await nextTab.locator('[data-preset="serious"]').click();
     assert(await nextTab.locator('#presetDialog').isVisible()); assert.equal(await nextTab.locator('#presetSkipConfirmation').isChecked(), false);
     assert(!native.some(message => message.startsWith('Apply this preset')), 'Preset confirmation is no longer a native window.confirm.');
   });
@@ -335,7 +337,7 @@ try {
     await blocked.locator('#presetSkipConfirmation').check(); await blocked.locator('#presetApply').click();
     await blocked.locator('[data-preset="fun"]').click(); assert.equal((await design(blocked)).startingPoint,'fun');
     assert.equal(await blocked.locator('#presetDialog').isVisible(),false);
-    await blocked.reload(); await ready(blocked); await blocked.locator('[data-preset="serious"]').click();
+    await blocked.reload(); await ready(blocked); await go(blocked, 'Starting look'); await blocked.locator('[data-preset="serious"]').click();
     assert(await blocked.locator('#presetDialog').isVisible()); assert.equal(await blocked.locator('#presetSkipConfirmation').isChecked(),false);
   });
 
@@ -343,7 +345,8 @@ try {
     const rgbHex = value => '#' + value.match(/\d+/g).slice(0, 3).map(n => Number(n).toString(16).padStart(2, '0')).join('');
     for (const mobile of [false, true]) {
       const page = await makePage({ mobile });
-      await go(page, 'Paint your elements');
+      await go(page, 'Text boxes');
+      await go(page, 'Shared colors');
       const before = await design(page);
       await page.locator('#colorRole').selectOption('button');
       assert.equal(await page.locator('#previewTabs [aria-selected="true"]').getAttribute('data-view'), 'cards');
@@ -465,7 +468,7 @@ try {
       assert.deepEqual(await design(reopened), saved.design);
       await go(reopened, 'Chapter divider'); await assertDivider(reopened, 'rgb(0, 64, 113)');
       // The all-colors step also keeps a chosen divider while changing shared text roles.
-      await go(reopened, 'Paint your elements');
+      await go(reopened, 'Shared colors');
       await reopened.locator('#colorRole').selectOption('dividerBackground');
       await reopened.locator('#colorRole').selectOption('subtitle');
       await assertDivider(reopened, 'rgb(0, 64, 113)');
@@ -494,7 +497,7 @@ try {
       const page = await makePage({ mobile }); await fillTeam(page);
       for (const role of ['titleBackground', 'titleBackgroundEnd', 'dividerBackground']) await paint(page, role, 'accent');
       for (const role of ['titleText', 'subtitle']) await paint(page, role, 'royal');
-      await go(page, 'Fonts & background');
+      await go(page, 'Shared typography');
       await page.locator('#font-heading').selectOption('raleway');
       await page.locator('#font-body').selectOption('source-sans-3');
       if (mobile) await page.locator('#surface-preview').click();
@@ -524,12 +527,12 @@ try {
       assert.deepEqual((await draft(page)).changes, saved.changes);
       assert.deepEqual(await design(page), saved.design);
       assert.equal(await page.locator('#previewTabs [aria-selected="true"]').getAttribute('data-view'), 'divider');
-      await go(page, 'Text boxes'); await go(page, 'Fonts & background');
+      await go(page, 'Text boxes'); await go(page, 'Shared typography');
       assert.equal((await design(page)).background, 'soft-gradient');
       await save(page);
       const reopened = await makePage({ mobile });
       assert.deepEqual(await design(reopened), saved.design);
-      await go(reopened, 'Fonts & background');
+      await go(reopened, 'Shared typography');
       await axe(reopened, 'Pattern miniatures '+(mobile?'phone':'desktop'));
       if(process.env.BESPOKE_REVIEW_DIR){await fs.mkdir(process.env.BESPOKE_REVIEW_DIR,{recursive:true});await reopened.screenshot({path:path.join(process.env.BESPOKE_REVIEW_DIR,'pattern-controls-'+(mobile?'phone':'desktop')+'.png'),fullPage:true});}
       await assertNoOverflow(reopened, 'Pattern choices');
@@ -574,7 +577,7 @@ try {
   await scenario('low-contrast text remains a team choice through preview, review, history and shared recovery', async ({ makePage, server }) => {
     for (const mobile of [false, true]) {
       const page = await makePage({ mobile }); await fillTeam(page);
-      await go(page, 'Fonts & background'); await choose(page, 'Background pattern', 'plain');
+      await go(page, 'Shared typography'); await choose(page, 'Background pattern', 'plain');
       await paint(page, 'titleBackground', 'mauve'); await paint(page, 'titleBackgroundEnd', 'accent');
       await paint(page, 'titleText', 'royal');
       const before = await design(page);
@@ -630,7 +633,7 @@ try {
     assert.deepEqual(await design(second), saved);
     await paint(first, 'sidebar', 'royal'); await save(first);
     const newest = await design(first);
-    await go(second, 'Fonts & background'); await second.locator('#font-body').selectOption('inter');
+    await go(second, 'Shared typography'); await second.locator('#font-body').selectOption('inter');
     const staleLocal = await design(second);
     await second.locator('#btnSave').click();
     await second.locator('#fileStatus').filter({ hasText: 'Someone saved a newer shared version.' }).waitFor();
@@ -691,14 +694,14 @@ try {
     assert.equal(await desktop.getByRole('group', { name: /Arrangement/ }).locator('[data-choice="bottom"]').evaluate(el => el === document.activeElement), true, 'Layout focus survives a rerender.');
     await desktop.keyboard.press(tabKey);
     assert.equal(await desktop.getByRole('group', { name: /Arrangement/ }).locator('[data-choice="split"]').evaluate(el => el === document.activeElement), true, 'Tab continues to the next arrangement.');
-    const labels = await desktop.locator('#stepList button').allTextContents();
+    const labels = EDITOR_DESTINATIONS;
     for (const label of labels) {
-      await desktop.locator('#stepList button').filter({ hasText: label }).click();
+      await go(desktop, label);
       await axe(desktop, `desktop ${label}`);
       await assertNoOverflow(desktop, `desktop ${label}`);
     }
     const mobile = await makePage({ mobile: true });
-    await go(mobile, 'Paint your elements');
+    await go(mobile, 'Shared colors');
     await mobile.locator('#colorRole').focus();
     assert.equal(await mobile.locator('#colorRole').evaluate(el => el === document.activeElement), true);
     await mobile.keyboard.press(tabKey);
@@ -726,6 +729,7 @@ try {
   await browser.close();
 }
 
+if (!passed && !failures.length) failures.push({name:'scenario selection', message:'No builder scenario matched the requested filter.'});
 if (pageErrors.length) failures.push({ name: 'runtime errors', message: JSON.stringify(pageErrors) });
 if (assets.length) failures.push({ name: 'missing local assets', message: JSON.stringify(assets) });
 if (externalRequests.length) failures.push({ name: 'unexpected external requests', message: JSON.stringify(externalRequests) });

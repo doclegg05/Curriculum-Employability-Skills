@@ -1,6 +1,7 @@
 #!/usr/bin/env node
 // Independent role-control acceptance: actual UI, computed paint/type, isolated
 // synthetic service persistence. Never accesses a user's Safari or saved runtime.
+import { builderDestination, recoveryMenu } from './bespoke-test-navigation.mjs';
 import assert from 'node:assert/strict';
 import fs from 'node:fs/promises';
 import path from 'node:path';
@@ -41,7 +42,7 @@ async function pageFor(width=1440,height=1000,scale=1){
   return page;
 }
 async function surface(page,name){const tab=page.locator('#surface-'+name);if(await tab.isVisible())await tab.click();}
-async function go(page,name){await surface(page,'design');await page.locator('#stepList button').filter({hasText:labels[name]||name}).click();}
+const go = (page, name) => builderDestination(page, labels[name] || name);
 async function preview(page,kind){await surface(page,'preview');await page.locator(`#previewTabs [data-view="${kind}"]`).click();await page.evaluate(()=>document.fonts.ready);}
 async function openField(page,kind,field){
   await surface(page,'design');const control=page.locator(`#role-${kind}-${field}`);
@@ -70,7 +71,7 @@ async function choose(page,group,value){await surface(page,'design');await page.
 async function backup(page){
   if(!await page.locator('#btnDownloadBackup').isVisible())await page.locator('.more-menu summary').click();
   const event=page.waitForEvent('download',{timeout:10000});await page.locator('#btnDownloadBackup').click();const file=await event.catch(async error=>{throw new Error(error.message+'; backup status: '+await page.locator('#fileStatus').textContent());});
-  const result=JSON.parse(await fs.readFile(await file.path(),'utf8'));await page.locator('.more-menu summary').click();return result;
+  const result=JSON.parse(await fs.readFile(await file.path(),'utf8'));await recoveryMenu(page, false);return result;
 }
 async function upload(page,value,name='synthetic-role-design.json'){
   await page.locator('#teamFileInput').setInputFiles({name,mimeType:'application/json',buffer:Buffer.from(JSON.stringify(value))});
@@ -129,7 +130,7 @@ async function focusedRegressions(){
 try{
   await focusedRegressions();
   if(!focusOnly){
-  const page=await pageFor();await upload(page,payload(defaultDesign(catalog)));await go(page,'Your starting point');
+  const page=await pageFor();await upload(page,payload(defaultDesign(catalog)));await go(page,'Starting look');
   assert(await page.locator('.getting-started').isVisible(),'Beginner introduction is on the first step');
   const beforeHelp=await design(page);await page.locator('#btnHelp').click();
   const help=await page.locator('#builderHelp').textContent();
@@ -197,7 +198,7 @@ try{
   await go(page,'title');await preview(page,'activity');await setStyle(page,'title','headingColor','light');
   assert.equal(await slide(page).getAttribute('data-kind'),'title','Editing a local control reveals the relevant role even after selecting another preview tab');
   await page.locator('#btnUndo').click();assert.deepEqual(await design(page),allLocal);
-  await go(page,'Fonts & background');await page.locator('#font-heading').selectOption('inter');
+  await go(page,'Shared typography');await page.locator('#font-heading').selectOption('inter');
   assert.deepEqual((await design(page)).roleStyles,allLocal.roleStyles,'Shared defaults preserve all explicit local styles');
   for(const kind of Object.keys(labels)){await preview(page,kind);assert((await css(page,kind,'heading','fontFamily')).includes('Source Sans 3'),'Explicit local heading fonts survive shared default changes');}
   await surface(page,'design');await page.locator('#btnUndo').click();assert.deepEqual(await design(page),allLocal);
@@ -209,7 +210,7 @@ try{
   const reopened=await pageFor();assert.deepEqual(await design(reopened),cumulative);await go(reopened,'activity');await setStyle(reopened,'activity','bodyColor','mauve');await save(reopened);
   await reopened.locator('#btnHistory').click();await reopened.locator('#historyPanel button').nth(1).click();await reopened.locator('#fileStatus').filter({hasText:'Previous choices loaded'}).waitFor();assert.deepEqual(await design(reopened),cumulative);assert.equal((await draft(reopened)).autosavePaused,true);await save(reopened);
   const recovered=await pageFor();await upload(recovered,exported);assert.deepEqual(await design(recovered),cumulative);
-  await go(recovered,'Your starting point');await recovered.locator('[data-preset="professional"]').click();if(await recovered.locator('#presetDialog').isVisible())await recovered.locator('#presetApply').click();
+  await go(recovered,'Starting look');await recovered.locator('[data-preset="professional"]').click();if(await recovered.locator('#presetDialog').isVisible())await recovered.locator('#presetApply').click();
   const preset=await design(recovered);assert.deepEqual(preset.samples,cumulative.samples);
   for(const kind of Object.keys(labels)){assert.equal(preset.roleStyles[kind].headingText,cumulative.roleStyles[kind].headingText);assert.equal(preset.roleStyles[kind].bodyText,cumulative.roleStyles[kind].bodyText);assert.equal(preset.roleStyles[kind].labelText,cumulative.roleStyles[kind].labelText);assert.equal(preset.roleStyles[kind].watermarkText,cumulative.roleStyles[kind].watermarkText);assert.equal(preset.roleStyles[kind].primary,'inherit');}
   const old=defaultDesign(catalog);delete old.roleStyles;await upload(recovered,payload(old),'old-v2.json');assert.deepEqual(await design(recovered),old,'Old v2 opens without materializing role overrides');

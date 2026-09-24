@@ -1,5 +1,6 @@
 #!/usr/bin/env node
 // Actual editor geometry plus generated/canonical title layouts. Synthetic state only.
+import { builderDestination } from './bespoke-test-navigation.mjs';
 import assert from 'node:assert/strict';
 import fs from 'node:fs/promises';
 import path from 'node:path';
@@ -34,10 +35,7 @@ async function editor(width) {
   return page;
 }
 const saved = page => page.evaluate(() => JSON.parse(localStorage.getItem('bespoke-draft-v2')).design);
-async function go(page, step) {
-  if(await page.locator('#surface-design').isVisible()) await page.locator('#surface-design').click();
-  await page.locator('#stepList button').filter({hasText:step}).click();
-}
+const go = builderDestination;
 async function choice(page, group, value) {
   if(await page.locator('#surface-design').isVisible()) await page.locator('#surface-design').click();
   await page.getByRole('group', {name:new RegExp(group)}).locator('[data-choice="'+value+'"]').click();
@@ -133,7 +131,7 @@ try {
     if(await page.locator('#surface-design').isVisible())await page.locator('#surface-design').click();
     await page.locator('#btnUndo').click(); assert.equal((await saved(page)).slides.title.layout,'bottom');
     await page.locator('#btnRedo').click(); assert.deepEqual(await saved(page),final);
-    await go(page,'Fonts & background');await go(page,'Title slide');assert.deepEqual(await saved(page),final);
+    await go(page,'Shared typography');await go(page,'Title slide');assert.deepEqual(await saved(page),final);
     const response=page.waitForResponse(r=>r.url().endsWith('/api/bespoke')&&r.request().postDataJSON()?.action==='save');
     await page.locator('#btnSave').click();assert.equal((await response).status(),200);
     await page.locator('#fileStatus').filter({hasText:/Local test design saved|already up to date/}).waitFor();

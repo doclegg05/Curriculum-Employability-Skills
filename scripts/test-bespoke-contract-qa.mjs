@@ -1,5 +1,6 @@
 #!/usr/bin/env node
 // Adversarial boundary and cross-authority QA. Only synthetic, ephemeral data.
+import { builderDestination } from './bespoke-test-navigation.mjs';
 import assert from 'node:assert/strict';
 import fs from 'node:fs';
 import path from 'node:path';
@@ -209,7 +210,7 @@ test('browser rejects malformed backups before replacement and retains an editab
       assert.equal(await page.locator('#modelStage').innerHTML(), preview, item.name);
       assert.equal(dialogCount, 0, `${item.name}: invalid input reached replacement confirmation`);
     }
-    await page.locator('#stepList button').filter({ hasText: 'Title slide' }).click();
+    await builderDestination(page, 'Title slide');
     const layout = page.getByRole('group', { name: 'Arrangement' });
     await layout.locator('[data-choice="left"]').click();
     assert.equal(await page.locator('#modelStage .bespoke-slide').getAttribute('data-layout'), 'left');

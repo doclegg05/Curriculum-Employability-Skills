@@ -1,5 +1,6 @@
 #!/usr/bin/env node
 // Sidebar preview checks use an ephemeral synthetic service and isolated browsers.
+import { builderDestination } from './bespoke-test-navigation.mjs';
 import assert from 'node:assert/strict';
 import fs from 'node:fs/promises';
 import path from 'node:path';
@@ -32,7 +33,7 @@ async function pageFor(width,height=900,scale=1) {
   await page.evaluate(()=>document.fonts.ready);return page;
 }
 async function surface(page,name) {if(await page.locator('#surface-'+name).isVisible())await page.locator('#surface-'+name).click();}
-async function go(page,step) {await surface(page,'design');await page.locator('#stepList button').filter({hasText:step}).click();}
+const go = builderDestination;
 async function preview(page,kind) {await surface(page,'preview');await page.locator(`#previewTabs [data-view="${kind}"]`).click();await page.evaluate(()=>document.fonts.ready);}
 const design=page=>page.evaluate(()=>JSON.parse(localStorage.getItem('bespoke-draft-v2')).design);
 async function openDrawer(page) {
@@ -83,7 +84,7 @@ async function axe(page,label) {
 try {
   for(const {width,height,scale} of [{width:1920,height:1080,scale:1},{width:1440,height:900,scale:1},{width:1100,height:800,scale:1},{width:768,height:900,scale:1},{width:390,height:844,scale:1},{width:320,height:568,scale:1},{width:390,height:568,scale:2}]) {
     const page=await pageFor(width,height,scale),label=`${width}/${scale}`;
-    await go(page,'Paint your elements');await page.locator('#colorRole').selectOption('sidebar');
+    await go(page,'Shared colors');await page.locator('#colorRole').selectOption('sidebar');
     const initial=await design(page);
     for(const kind of ['cards','video','activity']) {
       await preview(page,kind);
@@ -114,8 +115,8 @@ try {
     // The title/divider arrangement canvas remains its own existing role sample.
     for(const kind of ['title','divider']) {await preview(page,kind);assert.equal(await page.locator('#modelStage .slide-sidebar,#modelStage .slide-sidebar-disclosure').count(),0);}
     if(![1920,390].includes(width)||scale!==1)continue;
-    await go(page,'Lesson & team');await page.locator('#teamName').fill('Synthetic sidebar team');await page.locator('#spokespersonName').fill('Sample Instructor');await page.locator('#spokespersonEmail').fill('sidebar@example.org');
-    await go(page,'Paint your elements');await page.locator('#colorRole').selectOption('sidebar');await preview(page,'cards');await openDrawer(page);
+    await go(page,'Start');await page.locator('#teamName').fill('Synthetic sidebar team');await page.locator('#spokespersonName').fill('Sample Instructor');await page.locator('#spokespersonEmail').fill('sidebar@example.org');
+    await go(page,'Shared colors');await page.locator('#colorRole').selectOption('sidebar');await preview(page,'cards');await openDrawer(page);
     const before=await design(page);let firstPng;
     for(const choice of catalog.palette) {
       await surface(page,'design');await page.locator(`[data-color="${choice.id}"]`).click();await surface(page,'preview');

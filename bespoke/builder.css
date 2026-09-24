@@ -156,3 +156,33 @@
 .role-section{border-top:1px solid var(--line);margin:0;padding:0}.role-section>summary{display:flex;flex-direction:column;gap:5px;position:relative;padding:18px 28px 18px 0;list-style:none;min-height:64px}.role-section>summary::-webkit-details-marker{display:none}.role-section>summary::after{content:'+';position:absolute;right:4px;top:20px;font-size:1.2rem;line-height:1}.role-section[open]>summary::after{content:'−'}.role-section>summary strong{font-size:1rem;font-weight:500}.role-section>summary>span{font-size:.78rem;color:var(--muted);line-height:1.35}.role-section-body{padding:6px 0 16px}.role-section-body>.field:last-child{margin-bottom:0}.role-section-body .decision:last-child{margin-bottom:8px}.role-section .helper{margin:0 0 16px}.role-field .helper{font-weight:400;margin:0}.field-swatch{display:inline-block;width:18px;height:18px;border:1px solid #8191a3;border-radius:50%;vertical-align:middle;margin-left:8px}.role-toggle{display:flex;align-items:center;gap:10px;min-height:44px;font-size:.9rem;line-height:1.4;margin:4px 0 16px}.role-toggle input{width:18px;height:18px;flex:0 0 auto;accent-color:var(--blue)}.role-section .field,.role-section input,.role-section select,.role-section textarea{min-width:0;max-width:100%}.role-section .inline-details{margin-bottom:12px}.role-section-body .role-scope-note{background:var(--mist);padding:12px;font-size:.8rem;line-height:1.5}
 
 .role-editor-link{display:block;text-align:left;min-height:44px;line-height:1.4;margin-bottom:10px}
+
+/* Three stages remain separate from optional editors and preview-only tabs. */
+.stage-count{font-size:.875rem;font-weight:500;color:var(--muted);line-height:1.45}
+.shared-theme{border-block:1px solid var(--line);margin:0 0 24px;padding:0}
+.shared-theme>summary{font-size:1rem;font-weight:500;min-height:48px;padding:14px 0;line-height:1.4;color:var(--blue)}
+.shared-theme>section{padding:14px 0 6px}.shared-theme>section+section{border-top:1px solid var(--line);margin-top:20px;padding-top:24px}
+.shared-scope{margin-bottom:14px}.shared-scope .helper{margin-bottom:6px}.scope-links{display:flex;flex-wrap:wrap;gap:2px 16px}.scope-links .text-link{font-size:.875rem;text-align:left;line-height:1.4}
+.start-team,.starting-looks{margin-top:24px}.start-actions{display:flex;flex-wrap:wrap;gap:8px;margin-bottom:10px}#startingLookChoices{margin-top:20px}
+.role-editor-tabs{display:flex;flex-wrap:wrap;gap:8px;margin:4px 0 24px}
+.role-editor-tabs button{flex:1 1 120px;border:1px solid var(--line);border-radius:5px;padding:11px 12px;min-height:44px;background:var(--paper);font-size:.9rem;line-height:1.4;color:var(--blue)}
+.role-editor-tabs button[aria-selected=true]{background:var(--mist);border-color:var(--blue);font-weight:600;box-shadow:inset 0 -3px var(--blue)}
+.role-editor-tabs button:hover{background:var(--mist)}
+#roleEditorPanel>h2{font-size:1.4rem;margin-bottom:12px}#btnNextRole{margin-top:20px;text-align:left}
+.field-scope{font-weight:400}.field-reset{display:block;margin:-12px 0 20px;text-align:left;font-size:.875rem;line-height:1.4}
+.review-summary{border:0;padding:0}.review-role{padding:20px 0;border-top:1px solid var(--line)}.review-role h3{font-size:1.15rem;margin-bottom:14px}.review-role dl{display:grid;grid-template-columns:minmax(0,1fr);gap:3px;margin:0 0 16px}.review-role dt{font-size:.875rem;color:var(--muted);line-height:1.4}.review-role dd{font-size:.95rem;line-height:1.4;margin:0 0 8px;overflow-wrap:anywhere}.review-role-actions{display:flex;flex-wrap:wrap;gap:8px 20px}.review-role-actions button{text-align:left;line-height:1.4}.review-summary .helper{font-size:.875rem}
+/* Comfortable editor targets and supporting text; authored slide styles remain independent. */
+.btn,.header-actions .btn,.panel-nav .btn,.choice,.text-link,.stepper #stepList button,.preview-tabs button,.surface-switcher button{min-height:44px}
+.field input,.field select,.field textarea{min-height:44px;min-width:0;max-width:100%}
+.field select{appearance:none;-webkit-appearance:none;height:auto;padding:11px 34px 11px 10px;line-height:1.5;background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='8' viewBox='0 0 12 8'%3E%3Cpath d='m1 1 5 5 5-5' fill='none' stroke='%2300133f' stroke-width='1.6'/%3E%3C/svg%3E");background-repeat:no-repeat;background-position:right 12px center}
+.helper,.status-strip,.team-session,.team-session>p,.history-local details,.preset-choice small,.preset-choice>span:not(.preset-sample),.role-section>summary>span,.comparison-note,.preview-caption,.similarity details,.comparison-heading>span,.sample-label{font-size:.875rem;line-height:1.5}
+.history-local summary,.inline-details summary,.similarity summary{min-height:44px;padding-block:10px}
+.paint-chip{font-size:.8rem;line-height:1.3}.paint-swatch{width:44px;height:44px}.step-num{font-size:.8rem;min-width:22px;height:22px}.panel-nav{flex-wrap:wrap}.header-actions .btn,.panel-nav .btn,.undo-actions .btn{font-size:.875rem}
+.more-menu-list{max-width:min(280px,calc(100vw - 32px));width:260px}.more-menu-list button,.more-menu-list a{min-height:44px;overflow-wrap:anywhere}
+.surface-navigation{display:none}
+@media(max-width:760px){.surface-navigation{display:block;position:sticky;top:0;z-index:5}.surface-switcher{position:static}.header-actions .btn{font-size:.875rem}.history-local{gap:8px;flex-wrap:wrap}.history-local details{max-width:none}.controls{padding:24px 16px}.preview-heading,.comparison-heading{flex-wrap:wrap}.sample-label{white-space:normal}.stepper #stepList button{min-width:150px;font-size:.875rem}.role-editor-tabs button{flex-basis:110px}.preset-grid{grid-template-columns:repeat(auto-fit,minmax(min(100%,140px),1fr))}.paint-palette{grid-template-columns:repeat(auto-fit,minmax(min(100%,62px),1fr))}}
+@media(max-width:760px){.more-menu-list{position:fixed;left:16px;right:16px;top:auto;width:auto;margin-top:8px}.start-actions .btn{flex:1 1 100%}}
+
+@media(min-width:1200px){.review-role dl{grid-template-columns:minmax(0,1fr) minmax(0,1fr);gap:8px 12px}.review-role dd{margin-bottom:0}}
+/* The phone workspace scrolls below its surface bar, never underneath it. */
+@media(max-width:760px){.workspace{max-height:calc(100dvh - var(--surface-navigation-height,61px));overflow:auto;scroll-padding-block:12px}.surface-navigation{position:relative;top:auto}}

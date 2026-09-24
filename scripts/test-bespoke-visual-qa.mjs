@@ -1,5 +1,6 @@
 #!/usr/bin/env node
 // Synthetic responsive/editor checks, independent of the user's browser or preview service.
+import { builderDestination, EDITOR_DESTINATIONS } from './bespoke-test-navigation.mjs';
 import assert from 'node:assert/strict';
 import fs from 'node:fs/promises';
 import path from 'node:path';
@@ -74,23 +75,23 @@ async function geometry(page,label) {
 try {
   for(const view of process.env.BESPOKE_QA_GEOMETRY_ONLY?[]:cases) {
     const label=`${view.width}x${view.height}${view.textScale?' text200':''}`,page=await pageFor(view);
-    const labels=await page.locator('#stepList button').allTextContents();
+    const labels=EDITOR_DESTINATIONS;
     for(const name of labels) {
-      await surface(page,'design');await page.locator('#stepList button').filter({hasText:name}).click();
+      await builderDestination(page, name);
       await overflow(page,`${label}/${name}`);
-      if(/Lesson & team/.test(name)) {
+      if(name === 'Start') {
         const lesson=page.locator('#lessonSelect'),chosen=await lesson.inputValue();await lesson.focus();
         assert(await lesson.evaluate(el=>el===document.activeElement),'Native lesson selector remains keyboard focusable');
         await page.keyboard.press('Tab');assert(await page.locator('#teamName').evaluate(el=>el===document.activeElement),'Tab leaves the native selector for the next field');
         await lesson.selectOption(chosen);assert.equal(await lesson.inputValue(),chosen,'Native select preserves its chosen value');
       }
-      if(/starting point|Paint your elements|Text boxes|Video slide|Review & save/.test(name))await axe(page,`${label}/${name}`);
+      if(/Start|Shared colors|Text boxes|Video slide|Review & save/.test(name))await axe(page,`${label}/${name}`);
     }
     await surface(page,'preview');
     for(const kind of ['title','divider','cards','video','activity']) {
       await page.locator(`#previewTabs [data-view="${kind}"]`).click();await overflow(page,`${label}/preview-${kind}`);await geometry(page,`${label}/preview-${kind}`);
     }
-    await surface(page,'design');await page.locator('#stepList button').filter({hasText:'Your starting point'}).click();
+    await surface(page,'design');await builderDestination(page, 'Starting look');
     await page.locator('[data-preset="modern"]').click();
     if(!await page.locator('#presetDialog').isVisible())await page.locator('[data-preset="professional"]').click();
     await page.locator('#presetDialog').waitFor({state:'visible'});await axe(page,label+'/preset dialog');
@@ -100,7 +101,7 @@ try {
     await page.keyboard.press('Tab');assert(await page.locator('#presetSkipConfirmation').evaluate(el=>el===document.activeElement),'Dialog forward focus wraps');
     await page.keyboard.press('Shift+Tab');assert(await page.locator('#presetApply').evaluate(el=>el===document.activeElement),'Dialog backward focus wraps');
     await page.keyboard.press('Escape');assert(!await page.locator('#presetDialog').isVisible());
-    await surface(page,'design');await page.locator('#stepList button').filter({hasText:'Video slide'}).click();
+    await surface(page,'design');await builderDestination(page, 'Video slide');
     if(output&&[320,390,768,1920].includes(view.width))await page.screenshot({path:path.join(output,`editor-${label}.png`),fullPage:true});
     console.log('CHECK editor '+label);
   }
@@ -113,7 +114,7 @@ try {
     const fixture=longDesign();await surface(page,'design');
     await page.locator('#teamFileInput').setInputFiles({name:'synthetic-visual.json',mimeType:'application/json',buffer:Buffer.from(JSON.stringify({schema:'bespoke-selection/v2',date:'2026-09-24',submittedAt:'2026-09-24T16:30:00.000Z',lesson:legacy.lesson,team:legacy.team,design:fixture}))});
     await page.locator('#fileStatus').filter({hasText:'Opened synthetic-visual.json.'}).waitFor();
-    await page.locator('#stepList button').filter({hasText:'Text boxes'}).click();
+    await builderDestination(page, 'Text boxes');
     for(const layout of ['columns','grid','rows']) {
       await surface(page,'design');await page.getByRole('group',{name:/Arrangement/}).locator(`[data-choice="${layout}"]`).click();
       const current=await page.evaluate(()=>JSON.parse(localStorage.getItem('bespoke-draft-v2')).design);
