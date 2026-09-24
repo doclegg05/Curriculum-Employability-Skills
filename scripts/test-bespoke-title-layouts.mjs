@@ -4,7 +4,7 @@ import assert from 'node:assert/strict';
 import fs from 'node:fs/promises';
 import path from 'node:path';
 import { execFileSync } from 'node:child_process';
-import { chromium } from 'playwright';
+import { browserType } from './bespoke-test-browser.mjs';
 import catalog from '../bespoke/builder-catalog.json' with { type:'json' };
 import { defaultDesign } from '../bespoke/builder-model.mjs';
 import { createDevServer } from './bespoke-dev-server.mjs';
@@ -22,7 +22,7 @@ initial.fonts = { heading:'raleway', body:'source-sans-3' }; initial.background 
 initial.samples.title = 'Make room for your next step'; initial.samples.subtitle = 'A sample lesson for a confident start';
 initial.slides.title.colors = 'gradient';
 const payload = design => ({ schema:'bespoke-selection/v2', date:'2026-09-24', submittedAt:'2026-09-24T16:30:00.000Z', lesson:legacy.lesson, team:legacy.team, design });
-const server = await createDevServer({ port:0 }), browser = await chromium.launch();
+const server = await createDevServer({ port:0 }), browser = await browserType.launch();
 const contexts = [];
 async function editor(width) {
   const context = await browser.newContext({ viewport:{width,height:1080}, reducedMotion:'reduce' }); contexts.push(context);
@@ -30,6 +30,7 @@ async function editor(width) {
   await context.route(/^https?:/, route => new URL(route.request().url()).origin === server.baseUrl ? route.continue() : route.abort());
   const page = await context.newPage(); page.on('dialog', dialog => dialog.accept());
   await page.goto(server.baseUrl+'/bespoke/'); await page.locator('#localPreviewNotice').waitFor();
+  await page.locator('#btnSave').filter({hasText:'Save test design'}).waitFor();
   return page;
 }
 const saved = page => page.evaluate(() => JSON.parse(localStorage.getItem('bespoke-draft-v2')).design);

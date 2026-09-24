@@ -6,6 +6,11 @@ const kebab = value => value.replace(/[A-Z]/g, letter => `-${letter.toLowerCase(
 const findColor = (catalog, id) => catalog.palette.find(color => color.id === id);
 const rgb = hex => [1, 3, 5].map(index => parseInt(hex.slice(index, index + 2), 16));
 const escape = value => String(value).replace(/[&<>"']/g, c => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' })[c]);
+// Keep the existing UTF-16 length limits without cutting a Unicode surrogate pair.
+const truncateSample = (value, limit) => {
+  const text = value.slice(0, limit);
+  return /[\uD800-\uDBFF]$/.test(text) && /[\uDC00-\uDFFF]/.test(value.charAt(text.length)) ? text.slice(0, -1) : text;
+};
 
 export function contrast(first, second) {
   const luminance = hex => rgb(hex).map(v => v / 255).map(v => v <= .04045 ? v / 12.92 : ((v + .055) / 1.055) ** 2.4).reduce((sum, v, i) => sum + v * [.2126, .7152, .0722][i], 0);
@@ -214,20 +219,26 @@ export function cssForDesign(catalog, design, { scope = '.bespoke-slide', fontBa
   rule(`${kind('title')} .slide-accent`, '.slide-title .divider', `grid-column:${titleColumn}; grid-row:4; width:clamp(40px,8cqw,80px); height:4px; margin:0 0 16px; background:var(--role-accent);`);
   if (canonical) blocks.push(`.slide-title .copyright{grid-column:${titleColumn};grid-row:6;color:var(--role-subtitle);font-family:var(--font-body);font-size:.85rem;line-height:1.5;margin:16px 0 0;}`);
   const dividerBackground = divider.colors === 'gradient' ? 'linear-gradient(135deg,var(--role-divider-background),var(--role-title-background-end))' : 'var(--role-divider-background)';
-  rule(kind('divider'), '.slide-section, .slide-section[data-chapter-num]', `background-color:var(--role-divider-background); ${patternBackground(catalog, design, 'dividerBackground', divider.colors === 'gradient' ? dividerBackground : undefined)} color:var(--role-subtitle); text-align:${divider.layout === 'center' || divider.layout === 'band' ? 'center' : 'left'}; align-items:${divider.layout === 'center' || divider.layout === 'band' ? 'center' : 'flex-start'}; position:relative;`);
+  rule(kind('divider'), '.slide-section, .slide-section[data-chapter-num]', `container-type:inline-size; background-color:var(--role-divider-background); ${patternBackground(catalog, design, 'dividerBackground', divider.colors === 'gradient' ? dividerBackground : undefined)} color:var(--role-subtitle); text-align:${divider.layout === 'center' || divider.layout === 'band' ? 'center' : 'left'}; align-items:${divider.layout === 'center' || divider.layout === 'band' ? 'center' : 'flex-start'}; position:relative;`);
   rule(kind('divider'), '', 'display:flex; flex-direction:column; justify-content:center;');
   rule(`${kind('divider')} .slide-heading`, '.slide-section h2', 'color:var(--role-title-text); position:relative; z-index:1;');
   rule(`${kind('divider')} .slide-body`, '.slide-section p, .slide-section .chapter-label', 'color:var(--role-subtitle); position:relative; z-index:1;');
   if (divider.layout === 'band') rule(kind('divider'), '.slide-section, .slide-section[data-chapter-num]', `background-color:var(--role-content-background); ${patternBackground(catalog, design, 'dividerBackground', divider.colors === 'gradient' ? dividerBackground : 'linear-gradient(var(--role-divider-background),var(--role-divider-background))', '100% 70%')}`);
-  rule(selector('.slide-watermark'), '.slide-section::after', `display:${divider.watermark === 'hide' ? 'none' : 'block'}; position:absolute; right:6%; top:5%; font-size:${divider.layout === 'number' ? '12rem' : '9rem'}; line-height:1; color:var(--role-title-text); opacity:.12; pointer-events:none;`);
+  // Keep the decorative chapter mark in one bounded line. Enlarging text must not
+  // wrap its digits into a second line beyond the slide or clip meaningful copy.
+  rule(selector('.slide-watermark'), '.slide-section::after', `display:${divider.watermark === 'hide' ? 'none' : 'block'}; position:absolute; right:6%; top:5%; max-width:88%; max-height:90%; overflow:hidden; white-space:nowrap; transform:none; font-size:min(${divider.layout === 'number' ? '12rem,56cqw' : '9rem,42cqw'}); line-height:1; color:var(--role-title-text); opacity:.12; pointer-events:none;`);
   rule(`${kind('cards')}, ${kind('video')}, ${kind('activity')}`, '.slide:not(.slide-title):not(.slide-section)', `background-color:var(--role-content-background); ${patternBackground(catalog, design, 'contentBackground')}`);
   if (canonical) blocks.push('.main {background-color:var(--role-content-background);background-image:none;}');
   // Content text stays on its chosen opaque surface. Title/divider contrast includes pattern ink.
   rule(`${selector('.slide-card')}, ${selector('.slide-title-bar')}, ${selector('.slide-activity')}, ${selector('.slide-heading')}`, '.slide:not(.slide-title):not(.slide-section) h2, .slide:not(.slide-title):not(.slide-section) h3, .slide:not(.slide-title):not(.slide-section) p, .slide:not(.slide-title):not(.slide-section) li', 'background-color:var(--role-content-background);');
   rule(`${kind('divider')} .slide-heading`, '', 'background:transparent;');
   const columns = cards.layout === 'rows' ? 1 : cards.layout === 'grid' ? Math.min(2, Number(cards.count)) : Number(cards.count);
+  rule(kind('cards'), '.slide', 'container-type:inline-size;');
+  // The template centers fixed-height slides. Safe centering keeps the beginning
+  // of long generated content reachable when the slide needs vertical scrolling.
+  if (canonical) blocks.push('.slide.active{justify-content:safe center;}');
   rule(selector('.slide-cards'), '.cards-grid', `display:grid; grid-template-columns:repeat(${columns},minmax(0,1fr)); gap:1rem; align-items:stretch;`);
-  rule(selector('.slide-card'), '.card', `background:var(--role-content-background); color:var(--role-body); padding:1.1rem; border-radius:${cards.look === 'filled' ? '1rem' : '.3rem'}; border:${cards.look === 'outline' ? '2px solid var(--role-accent)' : '0'}; box-shadow:${cards.look === 'filled' ? 'inset 0 0 0 2px var(--role-accent)' : 'none'};`);
+  rule(selector('.slide-card'), '.card', `min-width:0; overflow-wrap:anywhere; background:var(--role-content-background); color:var(--role-body); padding:1.1rem; border-radius:${cards.look === 'filled' ? '1rem' : '.3rem'}; border:${cards.look === 'outline' ? '2px solid var(--role-accent)' : '0'}; box-shadow:${cards.look === 'filled' ? 'inset 0 0 0 2px var(--role-accent)' : 'none'};`);
   if (cards.look === 'rail') rule(selector('.slide-card'), '.card', 'border-left:5px solid var(--role-accent);');
   if (cards.look === 'band') rule(selector('.slide-card'), '.card', 'border-top:8px solid var(--role-accent);');
   rule(selector('.slide-card h3'), '.card h4', 'color:var(--role-heading); margin:0 0 .6rem; font-size:1.25rem;');
@@ -252,6 +263,11 @@ export function cssForDesign(catalog, design, { scope = '.bespoke-slide', fontBa
   rule(selector('.slide-activity-label'), '.activity-label', `font-family:var(--font-${activity.labelStyle === 'heading' ? 'heading' : 'body'}); color:var(--role-heading); font-size:${activity.labelStyle === 'heading' ? '1.5rem' : '.95rem'}; text-transform:${activity.labelStyle === 'caps' ? 'uppercase' : 'none'};`);
   if (activity.labelStyle === 'pill' || activity.layout === 'banner') rule(selector('.slide-activity-label'), '.activity-label', `display:${activity.layout === 'banner' ? 'block' : 'inline-block'}; border:2px solid var(--role-accent); padding:.5rem .8rem; border-radius:${activity.layout === 'banner' ? '0' : '2rem'};`);
   blocks.push(`@media(max-width:600px) { ${scope} {padding:1.25rem;min-height:300px;} ${selector('.slide-cards')} {grid-template-columns:repeat(${cards.layout === 'rows' || cards.count === '1' ? 1 : 2},minmax(0,1fr));gap:.7rem;} ${selector('.slide-card')} {padding:.8rem;} ${selector('.slide-video-layout')},${selector('.slide-activity')} {grid-template-columns:1fr;} }`);
+  // The editor's preview can be narrow even on a desktop-sized viewport. Reflow
+  // boxes against their actual slide width, including enlarged text in rem units.
+  const cardGrids = `${selector('.slide-cards')}${canonical ? ', .cards-grid' : ''}`;
+  blocks.push(`@container(max-width:38rem){${cardGrids}{grid-template-columns:repeat(${Math.min(columns,2)},minmax(0,1fr));}}`);
+  blocks.push(`@container(max-width:22rem){${cardGrids}{grid-template-columns:minmax(0,1fr);}}`);
   if (canonical && video.layout === 'side') blocks.push('@media(max-width:600px){.slide-video.active{grid-template-columns:minmax(0,1fr);}}');
   return `${blocks.join('\n')}\n`;
 }
@@ -319,11 +335,11 @@ export function migrateV1(payload, catalog, meta = {}) {
   if (theme.cards?.varyByChapter) warnings.push('Different card styles by chapter are retained only in the original backup; this builder edits one reusable content design.');
   const oldSamples = payload.previewSamples || payload.samples || {};
   const sampleTitle = oldSamples.title || payload.lesson?.displayTitle || payload.lesson?.title;
-  if (typeof sampleTitle === 'string') design.samples.title = sampleTitle.slice(0, catalog.sampleLimits.title);
+  if (typeof sampleTitle === 'string') design.samples.title = truncateSample(sampleTitle, catalog.sampleLimits.title);
   const sampleSubtitle = oldSamples.subtitle ?? payload.lesson?.subtitle;
-  if (typeof sampleSubtitle === 'string') design.samples.subtitle = sampleSubtitle.slice(0, catalog.sampleLimits.subtitle);
-  if (typeof payload.sampleContent?.bullets === 'string') { design.samples.boxes[0] = payload.sampleContent.bullets.slice(0, catalog.sampleLimits.box); design.slides.cards.treatment = 'bullets'; }
-  if (typeof payload.sampleContent?.mythReality === 'string') design.samples.boxes[1] = payload.sampleContent.mythReality.slice(0, catalog.sampleLimits.box);
+  if (typeof sampleSubtitle === 'string') design.samples.subtitle = truncateSample(sampleSubtitle, catalog.sampleLimits.subtitle);
+  if (typeof payload.sampleContent?.bullets === 'string') { design.samples.boxes[0] = truncateSample(payload.sampleContent.bullets, catalog.sampleLimits.box); design.slides.cards.treatment = 'bullets'; }
+  if (typeof payload.sampleContent?.mythReality === 'string') design.samples.boxes[1] = truncateSample(payload.sampleContent.mythReality, catalog.sampleLimits.box);
   warnings.push(...contrastIssues(catalog, design).map(issue => `Contrast advisory: ${issue.message}`));
   return { design, warnings };
 }

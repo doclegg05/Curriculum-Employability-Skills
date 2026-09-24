@@ -197,9 +197,11 @@ Panel padding is 26px 22px 36px; preview padding is 26px 28px. Related fields an
 | At least 1500px | Control region is 530–640px, preview has at least 650px, step navigation is 190px, and preview padding grows to 30px 40px. |
 | 761–1100px | Step navigation becomes a horizontal scrolling strip above the control panel; the preview remains beside it. |
 | At most 760px | A sticky Design / Preview switch shows one workspace region at a time. Step navigation scrolls horizontally, the preview loses sticky positioning, and swatches grow from 38px to 44px. |
-| At most 600px | Generated slide styles reduce padding and collapse video/activity side layouts. Text boxes use one or two columns according to the model. This is a viewport media query, not a container query. |
+| At most 600px viewport | Generated slide styles reduce padding and collapse video/activity side layouts. |
+| At most 38rem slide container | Text boxes use at most two columns, retaining the selected count, arrangement and text. |
+| At most 22rem slide container | Text boxes reflow to one column so a narrow desktop preview remains readable. |
 
-The preview stage declares an inline-size container, but the current model's responsive rules use viewport media queries. Preserve that distinction when describing or changing responsive behavior.
+The preview stage and shared slide styles declare inline-size containers. Text-box reflow follows the actual slide width; rem thresholds also respond to enlarged text. Viewport queries still control surrounding editor layout, slide padding and video/activity stacking. Divider watermarks use bounded, canvas-relative type on a single decorative line. Generated canonical slides use safe centering so long content begins at a reachable scroll position.
 
 ## Elevation & Depth
 

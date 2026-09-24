@@ -4,7 +4,7 @@ import assert from 'node:assert/strict';
 import fs from 'node:fs/promises';
 import path from 'node:path';
 import { execFileSync } from 'node:child_process';
-import { chromium } from 'playwright';
+import { browserType } from './bespoke-test-browser.mjs';
 import catalog from '../bespoke/builder-catalog.json' with { type:'json' };
 import { defaultDesign, inkFor } from '../bespoke/builder-model.mjs';
 import { createDevServer } from './bespoke-dev-server.mjs';
@@ -32,7 +32,7 @@ const payload = design => ({schema:'bespoke-selection/v2',date:'2026-09-24',subm
 const channels = id => [1,3,5].map(i=>parseInt(catalog.palette.find(c=>c.id===id).hex.slice(i,i+2),16));
 const color = id => `rgb(${channels(id).join(', ')})`;
 const evidence = [], contexts = [], requests = [], errors = [];
-const server = await createDevServer({port:0}), browser = await chromium.launch();
+const server = await createDevServer({port:0}), browser = await browserType.launch();
 async function editor(width) {
   const context = await browser.newContext({viewport:{width,height:1080},reducedMotion:'reduce'});contexts.push(context);
   await context.addInitScript(()=>window.__bespokeAutosave={enabled:false});
@@ -40,7 +40,8 @@ async function editor(width) {
   context.on('request',request=>requests.push(request));
   context.on('page',page=>page.on('pageerror',error=>errors.push(error.message)));
   const page = await context.newPage();page.on('dialog',dialog=>dialog.accept());
-  await page.goto(server.baseUrl+'/bespoke/');await page.locator('#localPreviewNotice').waitFor();return page;
+  await page.goto(server.baseUrl+'/bespoke/');await page.locator('#localPreviewNotice').waitFor();
+  await page.locator('#btnSave').filter({hasText:'Save test design'}).waitFor();return page;
 }
 const saved = page=>page.evaluate(()=>JSON.parse(localStorage.getItem('bespoke-draft-v2')).design);
 async function designSurface(page) {if(await page.locator('#surface-design').isVisible())await page.locator('#surface-design').click();}
@@ -136,7 +137,9 @@ try {
   }
   assert.deepEqual(errors,[],'No browser runtime errors');
   assert(!requests.some(r=>r.resourceType()==='media'||/\.(mp4|vtt)(?:\?|$)/.test(r.url())),'No media was loaded');
-  assert(!requests.some(r=>new URL(r.url()).origin!==server.baseUrl),'No external requests');
+  // WebKit reports our in-memory PNG decoding as blob: image requests. These
+  // never use the network; retain the external HTTP(S) dependency assertion.
+  assert.deepEqual(requests.filter(r=>/^https?:/.test(r.url())&&new URL(r.url()).origin!==server.baseUrl).map(r=>({url:r.url(),type:r.resourceType()})),[],'No external network requests');
   if(output)await fs.writeFile(path.join(output,'video-frame-evidence.json'),JSON.stringify(evidence,null,2));
   console.log(`Video frame checks: ${editorChecks} editor, ${generatedChecks} generated/canonical, ${parity} exact frame-band pixel parity comparisons.`);
 } finally {for(const context of contexts)await context.close();await browser.close();await server.close();}

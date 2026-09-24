@@ -56,6 +56,9 @@ if [ -d node_modules/playwright ] && [ -d node_modules/axe-core ]; then
   echo "==> bespoke browser workflow"
   node scripts/test-bespoke-browser.mjs
   node scripts/test-bespoke-builder-browser.mjs
+  node scripts/test-bespoke-workflow-qa.mjs
+  node scripts/test-bespoke-contract-qa.mjs
+  node scripts/test-bespoke-visual-qa.mjs
   node scripts/test-bespoke-title-layouts.mjs
   node scripts/test-bespoke-video-frames.mjs
   node scripts/test-bespoke-patterns.mjs

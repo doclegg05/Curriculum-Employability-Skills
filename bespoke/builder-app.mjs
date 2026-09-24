@@ -33,6 +33,8 @@ const STEPS = [
 const state = {step:0,stepId:'welcome',meta:null,library:null,lessonId:'money-management',teamName:'',spokespersonName:'',spokespersonEmail:'',lessonTitle:'',lessonSubtitle:'',unspoken:'',editCode:'',previewView:'title',design:null,legacySelection:null,changes:[],redo:[]};
 const ui = {mode:'view',renderedStep:null,previewPinned:false,teamSession:null,cloudConflict:null,cloudBusy:false,autosavePaused:false,allowUnload:false,skipNextLocalSave:false,restoreNote:'',restoredFromLink:false,editCodeHash:'',activeRole:'sidebar',localPreview:false};
 let catalog, fingerprints, selectionSchema, handoffApiBase='', handoffBusy=false, lastSavedRaw=null, storageConflict=false;
+// Replacing a draft or team invalidates pending operations against its predecessor.
+let draftGeneration=0;
 let autosaveTimer=null, autosaveReady=false, saveAnnounceTimer=null, saveAnnounceReady=false, submissionPollTimer=null;
 const AUTOSAVE=Object.freeze({enabled:true,idleMs:30000,stepMs:1500,...(window.__bespokeAutosave||{})});
 let startupTeamLink=(()=>{const v=location.hash.startsWith('#team=')?location.hash.slice(6):'';if(v)history.replaceState(null,'',location.pathname+location.search);return v;})();
@@ -121,7 +123,7 @@ const findOption=(family,slug)=>state.library?.families?.[family]?.options.find(
 
   function installTeamSession(lessonId, editCode) {
     const same = ui.teamSession && ui.teamSession.lessonId === lessonId && ui.teamSession.editCode === editCode;
-    if (!same) resetPresetConfirmation();
+    if (!same) { draftGeneration++; resetPresetConfirmation(); }
     ui.teamSession = same ? ui.teamSession : {
       lessonId,
       editCode,
@@ -344,8 +346,7 @@ const findOption=(family,slug)=>state.library?.families?.[family]?.options.find(
     }
     if (raw) {
       if (!confirm("Open this copy instead of the current browser draft? Choose Save first if you need to keep your current work. One previous browser draft will be kept for recovery.")) return false;
-      try { localStorage.setItem(BACKUP_KEY, raw); }
-      catch { fileNotice("Could not keep a recovery copy. Choose Save before clearing the browser draft and trying again."); return false; }
+      if (!keepRecoveryCopy()) return false;
     }
     lastSavedRaw = raw;
     storageConflict = false;
@@ -637,7 +638,10 @@ const findOption=(family,slug)=>state.library?.families?.[family]?.options.find(
   function keepRecoveryCopy() {
     try {
       const raw = localStorage.getItem(STORAGE_KEY);
-      if (raw) localStorage.setItem(BACKUP_KEY, raw);
+      // A different tab may own localStorage while this tab has newer in-memory
+      // choices. Preserve the actual design about to be replaced. If restoration
+      // failed, retain the unreadable original instead of a default substitute.
+      if (raw || lastSavedRaw) localStorage.setItem(BACKUP_KEY, lastSavedRaw === null && raw ? raw : serializeDraft());
       return true;
     } catch {
       fileNotice("Could not keep a browser recovery copy. Download backup before loading another design.");
@@ -648,11 +652,13 @@ const findOption=(family,slug)=>state.library?.families?.[family]?.options.find(
   async function fetchSharedDesign({ replace = false, announce = true } = {}) {
     const session = requireTeamSession();
     if (!session || handoffBusy) return false;
+    const generation = draftGeneration, openingKey = currentSelectionKey();
     handoffBusy = true;
     ui.cloudBusy = true;
     if (announce) fileNotice("Checking the latest shared design…");
     try {
       const result = await handoffRequest("open", { lessonId: session.lessonId, editCode: session.editCode });
+      if (session !== ui.teamSession || generation !== draftGeneration) return false;
       if (!result.ok) {
         fileNotice(result.message || "Could not open the shared design. Your browser draft is unchanged.");
         return false;
@@ -666,7 +672,7 @@ const findOption=(family,slug)=>state.library?.families?.[family]?.options.find(
       }
       const dirty = hasUnsavedTeamWork();
       const remoteChanged = result.revision !== session.revision;
-      if (dirty && !replace) {
+      if (dirty && (!replace || openingKey !== currentSelectionKey())) {
         if (remoteChanged) {
           ui.cloudConflict = { revision: result.revision, savedAt: result.savedAt };
           fileNotice("A newer shared version exists. This browser draft was kept. Download a backup, then load the latest shared design before recovering any local choices.");
@@ -727,6 +733,7 @@ const findOption=(family,slug)=>state.library?.families?.[family]?.options.find(
       return;
     }
     const requestKey = selectionKey(payload);
+    const generation = draftGeneration;
     let pending = session.pendingSave;
     if (!pending || pending.selectionKey !== requestKey || pending.expectedRevision !== session.revision) {
       pending = {
@@ -750,7 +757,10 @@ const findOption=(family,slug)=>state.library?.families?.[family]?.options.find(
         expectedRevision: pending.expectedRevision,
         mutationId: pending.mutationId
       });
+      if (session !== ui.teamSession) return;
+      const replacedDuringSave = generation !== draftGeneration;
       if (!result.ok) {
+        if (replacedDuringSave) { session.pendingSave = null; persistTeamSession(); return; }
         if (result.httpStatus === 409 || result.error === "conflict") {
           ui.cloudConflict = { revision: result.revision, savedAt: result.savedAt };
           session.pendingSave = null;
@@ -768,8 +778,15 @@ const findOption=(family,slug)=>state.library?.families?.[family]?.options.find(
       session.baseSelectionKey = requestKey;
       session.pendingSave = null;
       ui.cloudConflict = null;
+      if (replacedDuringSave) {
+        persistTeamSession();
+        setSaveStatus(draftStatusText());
+        fileNotice("The previous draft finished saving. Your current browser draft was kept; review it and choose Save to share it.");
+        return;
+      }
       ui.autosavePaused = false;
       persistTeamSession();
+      saveDraft();
       const changedDuringSave = currentSelectionKey() !== requestKey;
       setSaveStatus(changedDuringSave
         ? "Newer browser changes not shared yet"
@@ -930,6 +947,7 @@ const findOption=(family,slug)=>state.library?.families?.[family]?.options.find(
 
   async function cloudOpen() {
     if (handoffBusy) return;
+    const generation = draftGeneration, openingKey = currentSelectionKey();
     const lessonId = byId("openLesson")?.value || "";
     const editCode = (byId("openEditCode")?.value || "").trim();
     const err = byId("openError");
@@ -942,6 +960,10 @@ const findOption=(family,slug)=>state.library?.families?.[family]?.options.find(
     if (err) err.textContent = "Checking private team access…";
     try {
       const result = await handoffRequest("open", { lessonId, editCode });
+      if (generation !== draftGeneration || openingKey !== currentSelectionKey()) {
+        if (err) err.textContent = "The browser draft changed while opening. Your current choices were kept; open again when ready.";
+        return;
+      }
       if (!result.ok) {
         if (err) err.textContent = result.message || "That private team access could not be opened. Check the lesson and code, then try again.";
         byId("openEditCode")?.focus();
@@ -994,12 +1016,16 @@ const findOption=(family,slug)=>state.library?.families?.[family]?.options.find(
   async function loadHistory() {
     const session = requireTeamSession();
     if (!session || handoffBusy) return;
+    const generation = draftGeneration;
     const panel = byId("historyPanel");
     const trigger = byId("btnHistory");
-    if (!panel.hidden) {
+    const closeHistory = () => {
       panel.hidden = true;
       trigger?.setAttribute("aria-expanded", "false");
       if (trigger) trigger.textContent = "Previous versions";
+    };
+    if (!panel.hidden) {
+      closeHistory();
       trigger?.focus();
       return;
     }
@@ -1011,6 +1037,7 @@ const findOption=(family,slug)=>state.library?.families?.[family]?.options.find(
       handoffRequest("history", { lessonId: session.lessonId, editCode: session.editCode }),
       handoffRequest("open", { lessonId: session.lessonId, editCode: session.editCode })
     ]);
+    if (session !== ui.teamSession || generation !== draftGeneration) { closeHistory(); return; }
     if (!result.ok) {
       panel.textContent = result.message || "Previous versions could not be loaded.";
       return;
@@ -1026,6 +1053,8 @@ const findOption=(family,slug)=>state.library?.families?.[family]?.options.find(
       button.className = "btn btn-secondary";
       button.textContent = "Use these choices";
       button.addEventListener("click", async () => {
+        if (session !== ui.teamSession || generation !== draftGeneration) { closeHistory(); return; }
+        const openingKey = currentSelectionKey();
         if (!latest.ok) {
           fileNotice("The latest shared version could not be checked. Previous choices were not loaded.");
           return;
@@ -1037,6 +1066,11 @@ const findOption=(family,slug)=>state.library?.families?.[family]?.options.find(
           editCode: session.editCode,
           revision: item.revision
         });
+        if (session !== ui.teamSession || generation !== draftGeneration || openingKey !== currentSelectionKey()) {
+          closeHistory();
+          fileNotice("The browser draft changed while opening a previous version. Your current choices were kept.");
+          return;
+        }
         if (!opened.ok || !opened.selection) {
           fileNotice(opened.message || "That previous version could not be opened.");
           return;
@@ -1051,9 +1085,7 @@ const findOption=(family,slug)=>state.library?.families?.[family]?.options.find(
         ui.autosavePaused = true;
         persistTeamSession();
         state.step = stepIndex("review");
-        panel.hidden = true;
-        trigger?.setAttribute("aria-expanded", "false");
-        if (trigger) trigger.textContent = "Previous versions";
+        closeHistory();
         render();
         fileNotice("Previous choices loaded into this browser draft. Review them, then Save shared design to create a new revision. Later history is preserved.");
         window.requestAnimationFrame(() => byId("stepPanel")?.focus({ preventScroll: true }));
@@ -1082,6 +1114,10 @@ const findOption=(family,slug)=>state.library?.families?.[family]?.options.find(
     });
   }
   function validateV1(payload) {
+    const errors = schemaErrors(payload, selectionSchema.properties.legacySelection);
+    if (errors.length) throw new Error(errors[0]);
+    validateSavedDate(payload.date);
+    if (!payload.lesson.title.trim()) throw new Error("Add the lesson title.");
     const object = (value) => value && typeof value === "object" && !Array.isArray(value);
     if (!object(payload) || payload.schema !== "bespoke-selection/v1") throw new Error("Choose a Bespoke design file.");
     if (!object(payload.lesson) || !findMeta(state.meta.lessons, payload.lesson.id)) throw new Error("This file does not name one of the six new lessons.");
@@ -1102,6 +1138,12 @@ const findOption=(family,slug)=>state.library?.families?.[family]?.options.find(
         if (!legalCard(slug) || slug === previous) throw new Error("Each chapter needs an available card style different from the chapter before it.");
         previous = slug;
       }
+    }
+    if (theme.catalogIds) {
+      const expected = Object.fromEntries(Object.entries({colorLead:'colorLeads',sidebarColor:'sidebarColors',backgroundTexture:'backgroundTextures',titleSlide:'titleSlides',dividerStyle:'dividers'}).map(([field,family])=>[field,`${family}.${theme[field]}`]));
+      expected.cards = theme.cards.varyByChapter ? Object.fromEntries(state.meta.chapterKeys.map(chapter=>[chapter,`cards.${theme.cards.chapterStyles[chapter]}`])) : `cards.${theme.cards.lessonWide}`;
+      const same = (a,b) => typeof a === 'string' ? a === b : object(a) && object(b) && Object.keys(a).length === Object.keys(b).length && Object.keys(a).every(key=>Object.hasOwn(b,key)&&same(a[key],b[key]));
+      for (const [field,value] of Object.entries(theme.catalogIds)) if (!Object.hasOwn(expected,field)||!same(value,expected[field])) throw new Error(`catalogIds.${field}: reference differs from the selected design.`);
     }
     for (const value of [payload.lesson.title, payload.lesson.displayTitle, payload.lesson.subtitle, payload.team.name, payload.team.spokesperson.name, payload.team.spokesperson.email, payload.unspoken, payload.sampleContent?.bullets, payload.sampleContent?.mythReality]) {
       if (value !== undefined && typeof value !== "string") throw new Error("This file has invalid text fields. Your current draft has not changed.");
@@ -1125,6 +1167,7 @@ function schemaErrors(value,rule,path='$') {
  if(rule.enum&&!rule.enum.includes(value))errors.push(path+': unavailable choice');
  if(value===null)return errors;
  if(typeof value==='string'){
+  if([...value].some(character=>{const code=character.codePointAt(0);return code>=0xd800&&code<=0xdfff;}))errors.push(path+': invalid Unicode text');
   if(rule.maxLength&&[...value].length>rule.maxLength)errors.push(path+': text is too long');
   if(rule.minLength&&[...value].length<rule.minLength&&!path.endsWith('.team.spokesperson.name'))errors.push(path+': text is missing');
   if(rule.pattern&&!new RegExp(rule.pattern).test(value))errors.push(path+': invalid format');
@@ -1136,19 +1179,25 @@ function schemaErrors(value,rule,path='$') {
  if(object(value)){
   for(const k of rule.required||[])if(!Object.hasOwn(value,k))errors.push(path+'.'+k+': missing');
   for(const [k,v] of Object.entries(value)){
-   if(rule.properties?.[k])errors.push(...schemaErrors(v,rule.properties[k],path+'.'+k));
+   if(Object.hasOwn(rule.properties||{},k))errors.push(...schemaErrors(v,rule.properties[k],path+'.'+k));
    else if(rule.additionalProperties===false)errors.push(path+'.'+k+': unrecognized field');
   }
  }
  return errors;
 }
+function validateSavedDate(value){
+ const date=new Date(`${value}T00:00:00Z`);
+ if(Number(value.slice(0,4))<1||!Number.isFinite(date.getTime())||date.toISOString().slice(0,10)!==value)throw new Error('The saved date is invalid.');
+}
 function validateSelectionPayload(payload,{draft=false}={}){
  if(payload?.schema==='bespoke-selection/v1'){validateV1(payload);return;}
  const errors=schemaErrors(payload,selectionSchema);
  if(errors.length)throw new Error(errors[0]);
+ validateSavedDate(payload.date);
+ if(!payload.lesson.title.trim())throw new Error('Add the lesson title.');
  if(!state.meta.lessons.some(l=>l.id===payload.lesson.id))throw new Error('Choose one of the six planned lessons.');
  if(payload.legacySelection)validateV1(payload.legacySelection);
- if(!draft){const issues=Model.validateDesign(catalog,payload.design);if(issues.length)throw new Error(issues[0]);}
+ const issues=Model.validateDesign(catalog,payload.design);if(issues.length)throw new Error(issues[0]);
  if(JSON.stringify(payload).length>MAX_FILE_BYTES)throw new Error('This design is too large. Keep source material in the team folder.');
 }
 function buildSelectionPayload(){
@@ -1177,10 +1226,14 @@ function loadDraft(){
    validateSelectionPayload(buildSelectionPayload(),{draft:true});
    if(!Array.isArray(state.changes)||!Array.isArray(state.redo))throw new Error('Invalid history');
    // Undo snapshots are data boundaries too; reject corrupted history before it can reach preview.
-   for(const entry of [...state.changes,...state.redo])if(!entry||typeof entry.label!=='string'||schemaErrors({...buildSelectionPayload(),design:entry.design},selectionSchema).length)throw new Error('Invalid history');
-   restoreStep(saved);ui.autosavePaused=saved.autosavePaused===true;lastSavedRaw=raw;
+   for(const entry of [...state.changes,...state.redo])if(!entry||typeof entry.label!=='string'||schemaErrors({...buildSelectionPayload(),design:entry.design},selectionSchema).length||Model.validateDesign(catalog,entry.design).length)throw new Error('Invalid history');
+   draftGeneration++;restoreStep(saved);ui.autosavePaused=saved.autosavePaused===true;lastSavedRaw=raw;
   }catch(e){Object.assign(state,before);throw e;}
  }catch{storageConflict=true;ui.restoreNote='This browser draft needs recovery. It has not been replaced. Download a backup from the other tab, or open a known backup here.';}
+}
+function serializeDraft(){
+ const {meta,library,editCode,...saved}=state;
+ return JSON.stringify({...saved,stepId:STEPS[state.step].id,activeRole:ui.activeRole,autosavePaused:ui.autosavePaused});
 }
 function saveDraft(){
  if(!isLeadSession()||!state.design)return false;
@@ -1188,23 +1241,26 @@ function saveDraft(){
  try{
   if(localStorage.getItem(STORAGE_KEY)!==lastSavedRaw){storageConflict=true;fileNotice('Another tab changed this draft. Download your backup before reopening the newest browser draft.');return false;}
   state.stepId=STEPS[state.step].id;
-  const {meta,library,editCode,...saved}=state;
-  lastSavedRaw=JSON.stringify({...saved,activeRole:ui.activeRole,autosavePaused:ui.autosavePaused});localStorage.setItem(STORAGE_KEY,lastSavedRaw);
+  lastSavedRaw=serializeDraft();localStorage.setItem(STORAGE_KEY,lastSavedRaw);
   setSaveStatus(draftStatusText());queueSaveAnnouncement();scheduleAutosave(AUTOSAVE.idleMs);updateCloudChrome();return true;
  }catch{setSaveStatus('Browser storage unavailable. Download a backup.');return false;}
 }
 function resetDesignForLesson(lessonId){
+ draftGeneration++;
  Object.assign(state,{step:0,lessonId,teamName:'',spokespersonName:'',spokespersonEmail:'',unspoken:'',design:Model.defaultDesign(catalog),legacySelection:null,changes:[],redo:[]});
 }
 function applySelectionPayload(payload){
  validateSelectionPayload(payload,{draft:true});
+ const migrated=payload.schema==='bespoke-selection/v1'?Model.migrateV1(payload,catalog,state.meta):null;
+ const nextDesign=migrated?.design||clone(payload.design), issues=Model.validateDesign(catalog,nextDesign);
+ if(issues.length)throw new Error(issues[0]);
  const team=payload.team||{};
+ draftGeneration++;
  Object.assign(state,{lessonId:payload.lesson.id,teamName:team.name||'',spokespersonName:team.spokesperson?.name||'',spokespersonEmail:team.spokesperson?.email||'',unspoken:payload.unspoken||'',changes:[],redo:[]});
  if(payload.schema==='bespoke-selection/v1'){
-  const migrated=Model.migrateV1(payload,catalog,state.meta);
   state.design=migrated.design;state.legacySelection=clone(payload);ui.autosavePaused=true;
   ui.restoreNote='Converted a copy of the older design. '+migrated.warnings.join(' ')+' The original is included in every backup and can be downloaded on Review. Review this conversion before saving.';
- }else{state.design=clone(payload.design);state.legacySelection=payload.legacySelection?clone(payload.legacySelection):null;ui.restoreNote='';}
+ }else{state.design=nextDesign;state.legacySelection=payload.legacySelection?clone(payload.legacySelection):null;ui.restoreNote='';}
 }
 function changeDesign(label,edit,{redraw=true}={}){
  if(!isLeadSession())return;
@@ -1459,7 +1515,7 @@ async function init(){
  byId('openCancel').onclick=()=>byId('openDialog').close();byId('openForm').onsubmit=e=>{e.preventDefault();cloudOpen();};
  byId('presetCancel').onclick=()=>finishPresetConfirmation(false);byId('presetDialog').oncancel=e=>{e.preventDefault();finishPresetConfirmation(false);};byId('presetForm').onsubmit=e=>{e.preventDefault();finishPresetConfirmation(true);};
  byId('presetDialog').onkeydown=e=>{if(e.key!=='Tab')return;const first=byId('presetSkipConfirmation'),last=byId('presetApply');if(e.shiftKey&&document.activeElement===first){e.preventDefault();last.focus();}else if(!e.shiftKey&&document.activeElement===last){e.preventDefault();first.focus();}};
- byId('btnRecoverDraft').onclick=()=>{try{const previous=localStorage.getItem(BACKUP_KEY);if(!previous||!confirm('Restore the previous browser draft? Download a backup first if you need this version.'))return;const current=localStorage.getItem(STORAGE_KEY);localStorage.setItem(STORAGE_KEY,previous);if(current)localStorage.setItem(BACKUP_KEY,current);ui.allowUnload=true;location.reload();}catch{fileNotice('Recovery is unavailable. Open a downloaded backup.');}};
+ byId('btnRecoverDraft').onclick=()=>{try{const previous=localStorage.getItem(BACKUP_KEY);if(!previous||!confirm('Restore the previous browser draft? Download a backup first if you need this version.'))return;const raw=localStorage.getItem(STORAGE_KEY),current=lastSavedRaw===null&&raw?raw:serializeDraft();localStorage.setItem(STORAGE_KEY,previous);localStorage.setItem(BACKUP_KEY,current);ui.allowUnload=true;location.reload();}catch{fileNotice('Recovery is unavailable. Open a downloaded backup.');}};
  byId('btnLeaveSession').onclick=()=>{if(!confirm('Leave this session on this browser? Download a backup or save first.'))return;forgetTeamSession();try{localStorage.removeItem(STORAGE_KEY);localStorage.removeItem(BACKUP_KEY);}catch{}ui.allowUnload=true;location.reload();};
  byId('btnClear').onclick=()=>{if(!isLeadSession()||!confirm('Start a new browser draft? A recovery copy will be kept. Shared designs remain unchanged.'))return;if(!keepRecoveryCopy())return;resetPresetConfirmation();lastSavedRaw=localStorage.getItem(STORAGE_KEY);storageConflict=false;resetDesignForLesson(state.lessonId);ui.autosavePaused=true;render();};
  document.querySelectorAll('#previewTabs [role=tab]').forEach(tab=>tab.onclick=()=>showView(tab.dataset.view));bindTablistKeys(byId('previewTabs'));

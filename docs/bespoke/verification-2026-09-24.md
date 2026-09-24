@@ -53,7 +53,7 @@ bash scripts/quality.sh
 
 Do not launch a second server on an occupied port. The running process's PID, log, synthetic encrypted store, full quality log and review screenshots are under that runtime directory, outside Git. The server intentionally rejects runtime directories inside any Git checkout. The dependencies used for this run were existing pinned Playwright/axe packages linked into the isolated checkout; `npm ci` is the reproducible installation path.
 
-The browser suite creates separate ephemeral servers and contexts. Its state never enters the persistent user-facing local preview. Original v1 files remain accepted; converted designs retain the untouched original and explicit approximation notes. Browser drafts/backups can retain readability warnings for recovery, while shared-save/design-generation authority rejects unresolved unsafe combinations.
+The browser suite creates separate ephemeral servers and contexts. Its state never enters the persistent user-facing local preview. Original v1 files remain accepted; converted designs retain the untouched original and explicit approximation notes. At this initial checkpoint, shared-save/design-generation authority rejected unresolved contrast combinations. The advisory-color follow-up below supersedes that policy: explicit palette choices now remain valid for saving and generation, with readability warnings retained.
 
 ## Remaining rollout work
 

@@ -5,7 +5,7 @@ import assert from 'node:assert/strict';
 import fs from 'node:fs/promises';
 import path from 'node:path';
 import { fileURLToPath } from 'node:url';
-import { chromium } from 'playwright';
+import { browserType, tabKey, reverseTabKey } from './bespoke-test-browser.mjs';
 import { createDevServer, LOCAL_PREVIEW_CODE } from './bespoke-dev-server.mjs';
 import { compareDesign } from '../bespoke/similarity.mjs';
 import { contrast } from '../bespoke/builder-model.mjs';
@@ -16,7 +16,7 @@ const catalog = JSON.parse(await fs.readFile(path.join(root, 'bespoke/builder-ca
 const fingerprints = JSON.parse(await fs.readFile(path.join(root, 'bespoke/lesson-fingerprints.json'), 'utf8'));
 const oldSelection = JSON.parse(await fs.readFile(path.join(root, 'scripts/test-fixtures/bespoke/selection-money-management.json'), 'utf8'));
 const axeSource = await fs.readFile(path.join(root, 'node_modules/axe-core/axe.min.js'), 'utf8');
-const browser = await chromium.launch({ headless: true });
+const browser = await browserType.launch({ headless: true });
 const failures = [], assets = [], pageErrors = [], externalRequests = [];
 let passed = 0;
 
@@ -309,11 +309,11 @@ try {
       const before = await design(page);
       await page.locator('[data-preset="modern"]').focus(); await page.keyboard.press('Enter');
       assert.equal(await page.evaluate(() => document.activeElement.id), 'presetCancel');
-      await page.keyboard.press('Tab'); assert.equal(await page.evaluate(() => document.activeElement.id), 'presetApply');
-      await page.keyboard.press('Tab');
+      await page.keyboard.press(tabKey); assert.equal(await page.evaluate(() => document.activeElement.id), 'presetApply');
+      await page.keyboard.press(tabKey);
       assert.equal(await page.evaluate(() => document.activeElement.id), 'presetSkipConfirmation', 'Tab stays within the native modal.');
-      await page.keyboard.press('Shift+Tab'); assert.equal(await page.evaluate(() => document.activeElement.id), 'presetApply', 'Reverse Tab wraps within the dialog.');
-      await page.keyboard.press('Tab');
+      await page.keyboard.press(reverseTabKey); assert.equal(await page.evaluate(() => document.activeElement.id), 'presetApply', 'Reverse Tab wraps within the dialog.');
+      await page.keyboard.press(tabKey);
       await page.keyboard.press('Space'); assert.equal(await page.locator('#presetSkipConfirmation').isChecked(), true);
       await page.keyboard.press('Escape');
       assert.deepEqual(await design(page), before);
@@ -689,13 +689,13 @@ try {
     await desktop.locator('[data-preset="professional"]').focus();
     await desktop.keyboard.press('Enter');
     assert.equal(await desktop.locator('[data-preset="professional"]').evaluate(el => el === document.activeElement), true, 'Preset focus survives a rerender.');
-    await desktop.keyboard.press('Tab');
+    await desktop.keyboard.press(tabKey);
     assert.equal(await desktop.locator('[data-preset="modern"]').evaluate(el => el === document.activeElement), true, 'Tab continues to the next preset.');
     await go(desktop, 'Title slide');
     await desktop.getByRole('group', { name: /Arrangement/ }).locator('[data-choice="bottom"]').focus();
     await desktop.keyboard.press('Enter');
     assert.equal(await desktop.getByRole('group', { name: /Arrangement/ }).locator('[data-choice="bottom"]').evaluate(el => el === document.activeElement), true, 'Layout focus survives a rerender.');
-    await desktop.keyboard.press('Tab');
+    await desktop.keyboard.press(tabKey);
     assert.equal(await desktop.getByRole('group', { name: /Arrangement/ }).locator('[data-choice="split"]').evaluate(el => el === document.activeElement), true, 'Tab continues to the next arrangement.');
     const labels = await desktop.locator('#stepList button').allTextContents();
     for (const label of labels) {
@@ -707,12 +707,12 @@ try {
     await go(mobile, 'Paint your elements');
     await mobile.locator('#colorRole').focus();
     assert.equal(await mobile.locator('#colorRole').evaluate(el => el === document.activeElement), true);
-    await mobile.keyboard.press('Tab');
+    await mobile.keyboard.press(tabKey);
     assert.equal(await mobile.evaluate(() => document.activeElement?.classList.contains('paint-chip')), true);
     await mobile.keyboard.press('Enter');
     assert.equal((await design(mobile)).roles.sidebar, 'primary');
     assert.equal(await mobile.locator('[data-color="primary"]').evaluate(el => el === document.activeElement), true, 'Paint focus survives a rerender.');
-    await mobile.keyboard.press('Tab');
+    await mobile.keyboard.press(tabKey);
     assert.equal(await mobile.locator('[data-color="dark"]').evaluate(el => el === document.activeElement), true, 'Tab continues to the next color.');
     await mobile.locator('[data-color="light"]').scrollIntoViewIfNeeded();
     const visible = await mobile.locator('[data-color="light"]').evaluate(el => {
