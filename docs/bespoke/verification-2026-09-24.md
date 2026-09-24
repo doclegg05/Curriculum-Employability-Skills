@@ -381,3 +381,74 @@ remains byte-identical. The original checkout stays clean and port 8765 responds
 The user's Safari page, dialogs, storage and draft were never operated or refreshed.
 Their existing page-update flow can load the fix. No new user-facing browser tab, production
 deployment, merge, real Send, private access, new PR or lesson edit was involved.
+
+## Follow-up: visible Plain and Accent video frames
+
+The frame choice was reaching the renderer immediately. Its old Accent treatment
+was a 4px border in the selected accent color, touching the same-colored sample
+surface without a separator. A reproduction of Blue accent/Blue video on Gold
+showed only 0.00047% changed pixels between Plain and Accent: the option worked
+in state and computed CSS but was visually indistinguishable. Neither a lost
+selection nor preview clipping caused the reported problem.
+
+Plain now removes border, padding, outline and shadow. Accent retains the exact
+chosen accent in a 6px border, with 2px inner and outer White/Royal separating
+lines. The decorative separator uses the existing contrast-based ink choice;
+it never changes a saved color or enforces a contrast restriction. The frame fits
+inside the existing responsive 16:9 box, so switching does not resize the canvas.
+The editor shell, video heading/arrangement controls and inert sample stay intact.
+
+The shared CSS also fits direct native video and iframe children into the remaining
+content box. The canonical iframe's absolute positioning and video's inline corner
+and shadow treatment no longer bypass or obscure the chosen frame. Media controls
+remain inside the frame, without an overlay intercepting input. The canonical side
+arrangement now uses the same phone stacking behavior as the sample. No template,
+lesson content, media source, autoplay behavior or saved design schema was changed.
+
+The targeted `scripts/test-bespoke-video-frames.mjs` regression is part of the
+quality gate. It passes 60 actual-editor cases: both frame choices, all three
+arrangements, 1920px desktop and 390px phone viewports, and five color cases
+(Blue-on-Blue/Gold, all Blue, all White, all Royal and Gold accent/background).
+The checks operate the real controls, assert exact unrelated design preservation,
+computed borders/insets and chosen colors, responsive geometry, containment and
+no horizontal overflow. Thirty screenshot pairs show 2.07%–22.17% changed pixels;
+the reported Blue-on-Blue banner changes 2.07% on desktop and 7.14% on phone.
+Measured outer frame sizes stay 1064 × 598.5px and 302 × 169.875px respectively.
+
+An additional 180 generated sample/canonical cases use production bridge output
+with the actual template's wrapper, inline sizing and base CSS, for both native
+video and iframe children. The native video has its test sources/poster removed;
+the iframe is sandboxed and empty. These verify an 8px reserved media inset for
+Accent and zero for Plain, contained 16:9 wrappers and phone stacking. There are
+120 exact frame-band pixel comparisons with the live preview (native Plain media
+pixels are deliberately excluded because the browser owns the empty player).
+The editor contains no media element; all test contexts record zero media loads,
+external requests and runtime errors. Undo/Redo, step navigation, shared save,
+reload and fresh-context reopen also pass at both widths.
+
+A bounded desktop/phone visual batch confirms clearly different frames, including
+matching light/dark colors, while retaining layout, type and background patterns.
+The layout detector has no findings. This is synthetic Chromium verification;
+actual Safari/WebKit and playback of real or externally hosted media are untested.
+Coverage is representative, not every palette/font combination. Existing contrast
+advisories remain separate from frame visibility and continue to allow user choices.
+Logs, screenshots and pixel/geometry evidence remain outside Git in the existing
+preview runtime under `video-review/`, `video-frames.log` and `video-quality.log`.
+
+The existing port 8766 preview serves the current builder index/app/model/CSS with
+HTTP 200 and `Cache-Control: no-store`, byte-identical to disk. This rendering-only
+change needs no service restart or runtime migration. The encrypted synthetic
+runtime remains byte-identical; the original checkout is clean and port 8765 still
+responds. Safari, user-facing tabs/dialogs, browser storage and the active draft
+were never operated or refreshed. The user's existing page-update flow can load
+the fix. No production deployment, merge, real Send, private access, new PR or
+released lesson edit was involved.
+
+The full `bash scripts/quality.sh` gate passed: 47 validator and 36 BeSpoke Python
+tests, 13 model groups, eight similarity tests, 46 Node service/contract/server
+tests, 27 legacy and 13 builder workflows, all title geometry regressions, the
+new video-frame matrix, the existing 70-render/140-distinct-pixel/80-parity pattern
+matrix, generated-artifact checks, schema checks and existing lesson baselines.
+Earlier title, color, divider, pattern, button and preset-session fixes remain
+covered. Report-only template warnings and committed lesson accessibility
+exceptions are unchanged.

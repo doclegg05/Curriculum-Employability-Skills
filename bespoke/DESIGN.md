@@ -258,6 +258,15 @@ rules and logos stay inside the canvas. Generated sample and canonical title sty
 share this geometry; canonical flex spacer pseudo-elements are replaced by the same
 grid sizing rule. The editor shell and localized title controls are unchanged.
 
+Video frames keep the same outer 16:9 dimensions when switched. Plain removes the
+border, padding, outline and shadow. Accent frame reserves an 8px inset for a 6px
+chosen-accent border and 2px inner separator; a 2px inward outline separates the
+outer edge. Decorative separator ink uses White or Royal according to the accent,
+without modifying saved colors. The sample and canonical video/iframe children
+fill the remaining content box, so media cannot paint over the frame. Canonical
+inline corner/shadow styles are reset within this wrapper. All three arrangements
+share the treatment; the canonical side arrangement also stacks below 600px.
+
 The preview is a rendered reusable slide design with explicitly labeled sample content. It takes colors, fonts, arrangements, text, and backgrounds from the same model used by the reusable artifact and template override. It supports the five slide types, including one to four text boxes with paragraph, bullet, or numbered treatment. Hidden box samples remain in the draft.
 
 Readability notes name the problematic text/background pair and provide a path back to colors. The model checks title/heading pairs at 3:1 and subtitle/body pairs at 4.5:1, including sampled gradient surfaces and composited pattern ink; this is a modeled check, not a claim of whole-page accessibility certification.

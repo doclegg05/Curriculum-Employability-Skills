@@ -100,6 +100,13 @@ the text group; Top corner anchors it independently. Type scales with the canvas
 width rather than the browser window. These semantics also apply to generated
 samples and canonical title CSS. The existing title controls stay in place.
 
+**Video frames:** Plain removes the frame. Accent frame uses the chosen accent
+with thin White or Royal separating lines, so it stays visible when the accent,
+video placeholder and slide background match. The separator is decorative; saved
+color choices are unchanged. The frame fits inside the same responsive 16:9 box
+in the preview, generated sample and canonical video/iframe wrapper. Samples stay
+inert and never load media.
+
 **Comparison:** the advisory meter counts exact matching measured choices against
 six actual presentations: Time Management, Interview Skills, Controlling Anger,
 Employee Accountability, Communicating with the Public, and Problem Solving &

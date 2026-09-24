@@ -237,7 +237,12 @@ export function cssForDesign(catalog, design, { scope = '.bespoke-slide', fontBa
   rule(selector('.slide-title-bar'), '', 'padding: .8rem 0; margin:0 0 1rem; border-bottom:3px solid var(--role-accent);');
   rule(`${selector('.slide-title-bar')} .slide-heading`, '', 'margin:0;');
   rule(selector('.slide-heading'), '', 'font-size:clamp(1.55rem,3vw,2.25rem); margin:0 0 1rem; line-height:1.2;');
-  rule(selector('.slide-video-frame'), '.video-container', `aspect-ratio:16/9; min-width:0; background:var(--role-sidebar); color:var(--role-sidebar-ink); border:${video.frame === 'accent' ? '4px solid var(--role-accent)' : '0'}; display:grid; place-items:center; border-radius:.5rem;`);
+  // Reserve the frame inside the box so it cannot be clipped or covered by media.
+  // Decorative keylines separate the exact chosen accent from matching surfaces.
+  const videoKeyline = `var(--${inkFor(catalog, design.roles.accent)})`;
+  rule(selector('.slide-video-frame'), '.video-container', `box-sizing:border-box; width:100%; max-width:100%; aspect-ratio:16/9; min-width:0; min-height:0; overflow:hidden; background:${video.frame === 'accent' ? videoKeyline : 'var(--role-sidebar)'}; color:var(--role-sidebar-ink); border:${video.frame === 'accent' ? '6px solid var(--role-accent)' : '0'}; padding:${video.frame === 'accent' ? '2px' : '0'}; outline:${video.frame === 'accent' ? `2px solid ${videoKeyline}` : '0'}; outline-offset:-2px; box-shadow:none; display:grid; grid-template: minmax(0,1fr) / minmax(0,1fr); place-items:stretch; border-radius:.5rem;`);
+  rule(selector('.slide-video-frame > span'), '.video-container > video, .video-container > iframe', 'position:static; display:block; box-sizing:border-box; width:100%; height:100%; min-width:0; min-height:0; max-width:100%; background:var(--role-sidebar); object-fit:contain; border:0; border-radius:0!important; box-shadow:none!important;');
+  rule(selector('.slide-video-frame > span'), '', 'display:grid; place-items:center;');
   rule(`${kind('video')} .slide-heading`, '.slide-video h2', `font-size:${video.titleStyle === 'large' ? '2.6rem' : video.titleStyle === 'caps' ? '1.2rem' : '2rem'}; text-transform:${video.titleStyle === 'caps' ? 'uppercase' : 'none'}; letter-spacing:${video.titleStyle === 'caps' ? '.08em' : 'normal'};`);
   if (video.layout === 'side') rule(`${kind('video')} .slide-video-layout`, '.slide-video.active', 'display:grid; grid-template-columns:minmax(0,1fr) minmax(0,2fr); gap:1.5rem; align-items:center;');
   if (video.layout === 'banner') rule(`${kind('video')} .slide-heading`, '.slide-video h2', 'padding:.8rem; border-bottom:4px solid var(--role-accent);');
@@ -247,6 +252,7 @@ export function cssForDesign(catalog, design, { scope = '.bespoke-slide', fontBa
   rule(selector('.slide-activity-label'), '.activity-label', `font-family:var(--font-${activity.labelStyle === 'heading' ? 'heading' : 'body'}); color:var(--role-heading); font-size:${activity.labelStyle === 'heading' ? '1.5rem' : '.95rem'}; text-transform:${activity.labelStyle === 'caps' ? 'uppercase' : 'none'};`);
   if (activity.labelStyle === 'pill' || activity.layout === 'banner') rule(selector('.slide-activity-label'), '.activity-label', `display:${activity.layout === 'banner' ? 'block' : 'inline-block'}; border:2px solid var(--role-accent); padding:.5rem .8rem; border-radius:${activity.layout === 'banner' ? '0' : '2rem'};`);
   blocks.push(`@media(max-width:600px) { ${scope} {padding:1.25rem;min-height:300px;} ${selector('.slide-cards')} {grid-template-columns:repeat(${cards.layout === 'rows' || cards.count === '1' ? 1 : 2},minmax(0,1fr));gap:.7rem;} ${selector('.slide-card')} {padding:.8rem;} ${selector('.slide-video-layout')},${selector('.slide-activity')} {grid-template-columns:1fr;} }`);
+  if (canonical && video.layout === 'side') blocks.push('@media(max-width:600px){.slide-video.active{grid-template-columns:minmax(0,1fr);}}');
   return `${blocks.join('\n')}\n`;
 }
 

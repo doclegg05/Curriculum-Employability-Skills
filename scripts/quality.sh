@@ -57,6 +57,7 @@ if [ -d node_modules/playwright ] && [ -d node_modules/axe-core ]; then
   node scripts/test-bespoke-browser.mjs
   node scripts/test-bespoke-builder-browser.mjs
   node scripts/test-bespoke-title-layouts.mjs
+  node scripts/test-bespoke-video-frames.mjs
   node scripts/test-bespoke-patterns.mjs
   node scripts/generate-lesson-fingerprints.mjs --check
   echo "==> theme library title-slide layouts"
