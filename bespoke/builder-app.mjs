@@ -25,7 +25,7 @@ const STEPS = [
 ];
 const LEGACY_STEPS = ['welcome','team','colors','fonts','title','divider','cards','video','activity','review'];
 const state = {step:0,stepId:'start',meta:null,library:null,lessonId:'money-management',teamName:'',spokespersonName:'',spokespersonEmail:'',lessonTitle:'',lessonSubtitle:'',unspoken:'',editCode:'',previewView:'title',design:null,legacySelection:null,changes:[],redo:[]};
-const ui = {mode:'view',renderedStep:null,previewPinned:false,teamSession:null,cloudConflict:null,cloudBusy:false,autosavePaused:false,allowUnload:false,skipNextLocalSave:false,restoreNote:'',restoredFromLink:false,editCodeHash:'',activeRole:'sidebar',paintScope:'slide',localPreview:false,editorRole:'title',sharedThemeOpen:false,startingLooksOpen:false,meaningfulDesign:false};
+const ui = {mode:'view',renderedStep:null,previewPinned:false,teamSession:null,cloudConflict:null,cloudBusy:false,autosavePaused:false,allowUnload:false,skipNextLocalSave:false,restoreNote:'',restoredFromLink:false,editCodeHash:'',activeRole:'sidebar',paintScope:'slide',themeScope:'slide',localPreview:false,editorRole:'title',sharedThemeOpen:false,startingLooksOpen:false,meaningfulDesign:false};
 let catalog, fingerprints, selectionSchema, handoffApiBase='', handoffBusy=false, lastSavedRaw=null, storageConflict=false;
 // Replacing a draft or team invalidates pending operations against its predecessor.
 let draftGeneration=0;
@@ -1213,6 +1213,7 @@ function restoreStep(saved){
  state.previewView=Object.hasOwn(VIEW_NAMES,saved.previewView)?saved.previewView:state.step===1?ui.editorRole:'title';
  if(catalog.roles.some(role=>role.id===saved.activeRole))ui.activeRole=saved.activeRole;
  ui.paintScope=saved.paintScope==='shared'?'shared':'slide';
+ ui.themeScope=saved.themeScope==='shared'?'shared':'slide';
  ui.meaningfulDesign=saved.meaningfulDesign===true||JSON.stringify(state.design)!==JSON.stringify(Model.defaultDesign(catalog));
  ui.renderedStep=state.step;
 }
@@ -1238,7 +1239,7 @@ function loadDraft(){
 }
 function serializeDraft(){
  const {meta,library,editCode,...saved}=state;
- return JSON.stringify({...saved,stepId:STEPS[state.step].id,activeRole:ui.activeRole,paintScope:ui.paintScope,editorRole:ui.editorRole,sharedThemeOpen:ui.sharedThemeOpen,meaningfulDesign:ui.meaningfulDesign,autosavePaused:ui.autosavePaused});
+ return JSON.stringify({...saved,stepId:STEPS[state.step].id,activeRole:ui.activeRole,paintScope:ui.paintScope,themeScope:ui.themeScope,editorRole:ui.editorRole,sharedThemeOpen:ui.sharedThemeOpen,meaningfulDesign:ui.meaningfulDesign,autosavePaused:ui.autosavePaused});
 }
 function saveDraft(){
  if(!isLeadSession()||!state.design)return false;
@@ -1251,7 +1252,7 @@ function saveDraft(){
  }catch{setSaveStatus('Browser storage unavailable. Download a backup.');return false;}
 }
 function resetDesignForLesson(lessonId){
- draftGeneration++;resetPresetConfirmation();ui.meaningfulDesign=false;ui.startingLooksOpen=false;ui.editorRole='title';ui.sharedThemeOpen=false;ui.paintScope='slide';
+ draftGeneration++;resetPresetConfirmation();ui.meaningfulDesign=false;ui.startingLooksOpen=false;ui.editorRole='title';ui.sharedThemeOpen=false;ui.paintScope='slide';ui.themeScope='slide';
  Object.assign(state,{step:0,lessonId,teamName:'',spokespersonName:'',spokespersonEmail:'',unspoken:'',design:Model.defaultDesign(catalog),legacySelection:null,changes:[],redo:[]});
 }
 function applySelectionPayload(payload){
@@ -1397,7 +1398,7 @@ function appendSharedScope(host,key){
 }
 function renderSharedTheme(panel){
  const details=document.createElement('details');details.id='sharedTheme';details.className='shared-theme';details.open=ui.sharedThemeOpen;
- details.innerHTML='<summary>Shared theme · optional</summary><p class="helper">Paint the slide in the preview, or choose Shared default to coordinate slides that use it. Sidebar, Accent and Buttons are always shared. Shared fonts and texture follow their own defaults below.</p>';
+ details.innerHTML='<summary>Shared theme · optional</summary><p class="helper">Edit the slide in the preview, or choose Shared default to coordinate slides that use it. Colors and Fonts &amp; texture each show their scope. Sidebar, Accent and Buttons are always shared.</p>';
  details.addEventListener('toggle',()=>{if(details.isConnected&&ui.sharedThemeOpen!==details.open){ui.sharedThemeOpen=details.open;updatePreview();if(isLeadSession())saveDraft();}});panel.append(details);
  const colors=document.createElement('section');colors.setAttribute('aria-labelledby','sharedColorsTitle');colors.innerHTML='<h2 id="sharedColorsTitle">Paint colors</h2>';details.append(colors);addColorControls(colors,catalog.roles.map(r=>r.id));
  const type=document.createElement('section');type.setAttribute('aria-labelledby','sharedTypeTitle');details.append(type);renderFonts(type);
@@ -1463,19 +1464,33 @@ function addColorControls(panel,roleIds){
  help.innerHTML=issues.length?contrastAdvisory(issues):'All 11 brand colors are selectable. Contrast guidance appears here when a choice may be harder to read.';panel.append(help);
 }
 function renderFonts(panel){
- panel.innerHTML='<h2 id="sharedTypeTitle">Shared fonts &amp; texture</h2><p class="helper">Choose either font independently. A slide can keep these defaults or use custom fonts and texture.</p>';
+ const kind=state.previewView,local=ui.themeScope==='slide',effective=Model.effectiveRoleStyle(catalog,state.design,kind),saved=savedRoleStyle(kind);
+ panel.innerHTML='<h2 id="sharedTypeTitle">Fonts &amp; texture</h2>';
+ const scopeLabel=document.createElement('label');scopeLabel.className='field';scopeLabel.textContent='Apply fonts & texture to';
+ const scope=document.createElement('select');scope.id='themeScope';scope.setAttribute('aria-describedby','themeScopeHelp');
+ for(const [id,label] of [['slide','This slide · '+VIEW_NAMES[kind]],['shared','Shared default']]){const option=document.createElement('option');option.value=id;option.textContent=label;option.selected=ui.themeScope===id;scope.append(option);}
+ scope.onchange=()=>{ui.themeScope=scope.value;render(false);};scopeLabel.append(scope);panel.append(scopeLabel);
+ const scopeHelp=document.createElement('p');scopeHelp.id='themeScopeHelp';scopeHelp.className='helper';scopeHelp.textContent=local?'Each choice changes just that setting on '+VIEW_NAMES[kind]+'.':'Each choice changes its shared default. Slides with a custom font or texture keep it.';panel.append(scopeHelp);
+ const edit=(field,value,label)=>changeDesign((local?VIEW_NAMES[kind]:'Shared default')+' · '+label,d=>{if(local)Object.assign(d,Model.setRoleStyle(catalog,d,kind,field,value));else if(field==='pattern')d.background=value;else d.fonts[field==='headingFont'?'heading':'body']=value;});
  for(const [key,label] of [['heading','Title & heading font'],['body','Body font']]){
   const field=document.createElement('label');field.className='field';field.textContent=label;
-  const select=document.createElement('select');select.id='font-'+key;
-  for(const font of catalog.fonts){const o=document.createElement('option');o.value=font.id;o.textContent=font.label;o.selected=state.design.fonts[key]===font.id;select.append(o);}
-  select.onchange=()=>changeDesign(label+': '+catalog.fonts.find(f=>f.id===select.value).label,d=>{d.fonts[key]=select.value;});field.append(select);panel.append(field);appendSharedScope(panel,key+'Font');
+  const select=document.createElement('select');select.id='font-'+key;select.setAttribute('aria-describedby',select.id+'-help');
+  for(const font of catalog.fonts){const o=document.createElement('option');o.value=font.id;o.textContent=font.label;o.selected=(local?effective[key+'Font']:state.design.fonts[key])===font.id;select.append(o);}
+  select.onchange=()=>edit(key+'Font',select.value,label+': '+catalog.fonts.find(f=>f.id===select.value).label);field.append(select);panel.append(field);
+  const help=document.createElement('p');help.id=select.id+'-help';help.className='helper';help.textContent=local?(saved[key+'Font']==='inherit'?'Shared':'Custom')+' · '+VIEW_NAMES[kind]+'.':'Shared default · '+label+'.';
+  const visible=effective[key+'Visible']||(key==='body'&&kind==='divider'&&effective.labelVisible)||(key==='heading'&&kind==='activity'&&effective.labelVisible);
+  if(local&&!visible)help.textContent+=' This text is hidden. The font is kept for when you show it in the slide editor.';
+  panel.append(help);if(!local)appendSharedScope(panel,key+'Font');
  }
- const note=document.createElement('p');note.className='font-sample';const bodyFont=catalog.fonts.find(f=>f.id===state.design.fonts.body);note.style.fontFamily='"'+bodyFont.family+'", '+bodyFont.fallback;note.textContent='A clear next step makes a big idea feel possible.';panel.append(note);
- const patternSurface=state.previewView==='title'?'titleBackground':state.previewView==='divider'?'dividerBackground':'contentBackground';
- const mini=option=>'<span class="pattern-mini" aria-hidden="true" style="background-color:'+catalog.palette.find(c=>c.id===state.design.roles[patternSurface]).hex+';'+Model.patternBackground(catalog,{...state.design,background:option.id},patternSurface)+'"></span>';
- panel.append(choiceGroup('Background pattern',catalog.backgrounds,state.design.background,id=>changeDesign('Background: '+id,d=>{d.background=id;}),{mini}));
- const patternNote=document.createElement('p');patternNote.className='helper';patternNote.textContent='Applies to slides using the shared texture. A local Texture choice stays independent. Colors stay the same; text boxes keep a clear reading surface.';panel.append(patternNote);
- appendSharedScope(panel,'pattern');
+ const note=document.createElement('p');note.className='font-sample';const bodyFont=catalog.fonts.find(f=>f.id===(local?effective.bodyFont:state.design.fonts.body));note.style.fontFamily='"'+bodyFont.family+'", '+bodyFont.fallback;note.textContent='A clear next step makes a big idea feel possible.';panel.append(note);
+ const mini=option=>{
+  const sample=local?state.design:{...state.design,roleStyles:{}};
+  const trial=Model.setRoleStyle(catalog,sample,kind,'pattern',option.id);
+  return '<span class="pattern-mini" aria-hidden="true" style="'+Model.roleBackgroundCss(catalog,trial,kind)+'"></span>';
+ };
+ const patterns=choiceGroup('Background pattern',catalog.backgrounds,local?effective.pattern:state.design.background,id=>edit('pattern',id,'Texture: '+catalog.backgrounds.find(p=>p.id===id).label),{mini});patterns.setAttribute('aria-describedby','patternScopeHelp');panel.append(patterns);
+ const patternNote=document.createElement('p');patternNote.id='patternScopeHelp';patternNote.className='helper';patternNote.textContent=local?VIEW_NAMES[kind]+' texture · '+(saved.pattern==='inherit'?'Shared':'Custom')+'. Thumbnails use this slide’s colors, gradient and '+({subtle:'Subtle',normal:'Standard',bold:'Stronger'}[effective.patternStrength])+' texture strength. Plain removes the texture and keeps its strength for next time.':'Thumbnails show shared colors at Standard texture strength. Plain removes the shared texture; custom slide textures stay independent.';panel.append(patternNote);
+ if(!local)appendSharedScope(panel,'pattern');
 }
 function showRoleEditor(kind,section='background',field='primary'){
  ui.roleSections||={};ui.roleSections['section-'+kind+'-'+section]=true;ui.editorRole=kind;ui.focusStyleField=field;state.step=stepIndex('slides');state.previewView=kind;

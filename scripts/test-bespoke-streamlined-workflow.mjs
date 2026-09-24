@@ -187,6 +187,7 @@ try {
     assert.equal(await page.locator('#font-heading option').count(), 12);
     assert.equal(await page.locator('#font-body option').count(), 12);
     await paint(page, 'sidebar', 'royal');
+    await page.locator('#themeScope').selectOption('shared');
     await page.locator('#font-heading').selectOption('merriweather');
     await page.locator('#font-body').selectOption('raleway');
     await shared(page, false);
@@ -295,6 +296,7 @@ try {
     assert.match(primaryScope, /Custom, unchanged.*Title slide/);
     assert.equal((await design(page)).roleStyles.title.primary, 'gold');
     assert.equal(await page.locator('#modelStage .bespoke-slide').evaluate(el => getComputedStyle(el).backgroundColor), rgb('gold'));
+    await page.locator('#themeScope').selectOption('shared');
     await page.locator('#font-heading').selectOption('inter');
     assert.match(await page.locator('[data-shared-scope=headingFont]').textContent(), /Custom, unchanged.*Title slide/);
     assert((await page.locator('#modelStage .slide-title-text').evaluate(el => getComputedStyle(el).fontFamily)).includes('Bitter'));
@@ -336,7 +338,7 @@ try {
       evidence.push({ label: role + ' shared-only visible paint', delta });
     }
     await editor(page, 'title'); await setField(page, 'title', 'bodyFont', 'bitter');
-    await shared(page); await page.locator('#font-body').selectOption('raleway');
+    await shared(page); await page.locator('#themeScope').selectOption('shared'); await page.locator('#font-body').selectOption('raleway');
     assert.match(await page.locator('[data-shared-scope=bodyFont]').textContent(), /Custom, unchanged.*Title slide/);
     await preview(page, 'title');
     assert((await page.locator('#modelStage .slide-subtitle').evaluate(el => getComputedStyle(el).fontFamily)).includes('Bitter'));

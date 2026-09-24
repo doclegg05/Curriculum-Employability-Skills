@@ -254,7 +254,7 @@ The color-role selector and Apply color to selector precede the 11-color palette
 
 Each slide-type editor groups its existing Arrangement controls with Background, Texture, Text and Watermark disclosures. Arrangement and Background start open; disclosure choices stay in UI memory, never in a design payload. Stable native controls retain focus after redraw. Local edits show the affected preview while preserving every other role's choices. Shared theme groups shared colors, fonts and texture in one optional disclosure, available in every stage; its open state persists through stage changes.
 
-Shared theme's summary has a 48px minimum height. Paint colors names the selected slide and field; Shared default scope names affected Shared slide types and Custom exceptions, with links to the relevant local field. Shared font and texture controls retain their shared scope labels. Sidebar, Accent and Buttons have no misleading local-color shortcut: those colors remain shared. Navigation and button typography always use the shared body font; the canvas and Band divider exterior retain shared Content background. The seven inheritable local fields (primary/secondary background, heading/body color, heading/body font and texture) show Shared or Custom beside the control. Use shared theme in a field or its named reset button restores only that field on that slide, retaining other choices.
+Shared theme's summary has a 48px minimum height. Paint colors names the selected slide and field; Shared default scope names affected Shared slide types and Custom exceptions, with links to the relevant local field. Fonts & texture has a separate Apply fonts & texture to selector, defaulting to This slide. It reads effective fonts and texture and changes only the selected local field. Its explicit Shared default option keeps global edits and custom exceptions separate. Both scope preferences persist only in the browser UI draft. Sidebar, Accent and Buttons have no misleading local-color shortcut: those colors remain shared. Navigation and button typography always use the shared body font; the canvas and Band divider exterior retain shared Content background. The seven inheritable local fields (primary/secondary background, heading/body color, heading/body font and texture) show Shared or Custom beside the control. Use shared theme in a field or its named reset button restores only that field on that slide, retaining other choices.
 
 Background supports an inherited finish, Solid or a two-color gradient, local primary/secondary colors and three gradient directions. The second color stays saved when hidden. Split title panels use the second color in the right panel and omit the inapplicable direction control; Solid colors both panels uniformly. Divider Band retains its colored middle panel and the shared lesson surface above and below it. Texture offers the existing five recipes and three strengths, independently per role. Plain hides the strength control without clearing it.
 
@@ -361,7 +361,9 @@ separately from title text; mixed or translucent reference colors stay unknown.
 
 ### Background-pattern feedback
 
-The shared pattern applies to inheriting fields across all five slide roles; explicit
+In This slide scope, the selected pattern is the effective texture of the previewed
+role. A choice changes its local pattern only, including an existing override.
+Shared default changes the global pattern followed by inheriting fields; explicit
 local textures remain independent. Texture layers sit above the
 chosen color, split panel, band or gradient; Plain removes only the texture. Dot grid
 uses 5px dots on 24px spacing, Diagonal uses 2px lines on 22px spacing, Crosshatch uses
@@ -369,6 +371,12 @@ uses 5px dots on 24px spacing, Diagonal uses 2px lines on 22px spacing, Crosshat
 White or Royal, chosen for visible separation from the base, with the opposite tone
 used when needed to retain already-readable title/divider text. Stored base/text
 colors never change. Contrast sampling includes the actual opacity range and grid
-intersections; unresolved failures remain explicit warnings. Content reading surfaces
-remain opaque. Palette miniatures use the same pattern recipe and current preview
-surface; changing the preview tab refreshes them without changing the design.
+intersections; unresolved failures remain explicit warnings. Local pattern thumbnails
+reuse the exact model background recipe, including the current primary/secondary
+colors, gradient direction, split/Band arrangement and texture strength. Shared-default
+thumbnails are identified as shared colors at Standard strength. Changing preview
+tabs refreshes effective selections and thumbnails without editing the design.
+Plain keeps the saved Subtle, Standard or Stronger strength for a later pattern;
+there is no zero-strength setting. Font selections likewise read the effective local
+font in This slide scope; a hidden text field keeps its font without being revealed,
+with that state explained beside the selector.

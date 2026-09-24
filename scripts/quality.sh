@@ -61,6 +61,7 @@ if [ -d node_modules/playwright ] && [ -d node_modules/axe-core ]; then
   node scripts/test-bespoke-workflow-qa.mjs
   node scripts/test-bespoke-streamlined-workflow.mjs
   node scripts/test-bespoke-effective-paint.mjs
+  node scripts/test-bespoke-effective-theme.mjs
   node scripts/test-bespoke-contract-qa.mjs
   node scripts/test-bespoke-visual-qa.mjs
   node scripts/test-bespoke-sidebar.mjs

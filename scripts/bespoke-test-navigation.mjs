@@ -16,6 +16,8 @@ export async function builderDestination(page, destination) {
     const theme = page.locator('#sharedTheme');
     if (!await theme.evaluate(el => el.open)) await theme.locator(':scope > summary').click();
     await page.locator(destination === 'Shared colors' ? '#colorRole' : '#font-heading').waitFor({state:'visible'});
+    // Existing shared-typography journeys explicitly edit shared defaults.
+    if (destination === 'Shared typography') await page.locator('#themeScope').selectOption('shared');
     return;
   }
   if (roles[destination]) {

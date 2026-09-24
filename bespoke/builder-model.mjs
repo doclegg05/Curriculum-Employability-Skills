@@ -227,7 +227,8 @@ function rolePattern(catalog, design, kind) {
   return {images,sizes,ink,peakAlpha:alphas[style.pattern],bases};
 }
 
-function roleBackgroundCss(catalog,design,kind) {
+// Pattern-choice thumbnails use the same effective surface recipe as the slide.
+export function roleBackgroundCss(catalog,design,kind) {
   const style=effectiveRoleStyle(catalog,design,kind), pattern=rolePattern(catalog,design,kind);
   const a=findColor(catalog,style.primary).hex,b=findColor(catalog,style.secondary).hex;
   const split=kind==='title'&&design.slides.title.layout==='split';

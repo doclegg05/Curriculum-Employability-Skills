@@ -35,9 +35,13 @@ color element starts in **This slide** scope: its selected swatch and paint acti
 use the current preview's effective local field. **Shared default** explicitly
 edits the separate global value and retains custom exceptions. Choosing another
 element returns to This slide; preview tabs follow the equivalent local field.
-Sidebar, Accent and Buttons remain shared-only. Scope is browser UI state, never
-part of a selection or shared record. A
-slide field marked Shared follows the current default; Custom records an explicit
+Sidebar, Accent and Buttons remain shared-only. **Fonts & texture** has its own
+This slide / Shared default scope. Its controls read the effective fonts and
+pattern; local edits change just that field. Pattern thumbnails reuse the model's
+background recipe with the selected slide's colors, gradient and texture strength.
+Plain removes texture without clearing strength. Hidden text retains font edits
+without becoming visible. Scope is browser UI state, never part of a selection
+or shared record. A slide field marked Shared follows the current default; Custom records an explicit
 exception. Use shared theme restores only that field's inheritance on that slide.
 Review reports the effective choices and exceptions for all five roles, not just
 the shared font defaults. Navigation and these labels do not change the saved
