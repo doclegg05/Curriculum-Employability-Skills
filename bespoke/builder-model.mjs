@@ -19,6 +19,51 @@ export function inkFor(catalog, id) {
   return contrast(findColor(catalog, 'light').hex, surface.hex) >= contrast(findColor(catalog, 'royal').hex, surface.hex) ? 'light' : 'royal';
 }
 
+const blend = (base, ink, alpha) => '#' + rgb(base).map((v, channel) => Math.round(v * (1 - alpha) + rgb(ink)[channel] * alpha).toString(16).padStart(2, '0')).join('');
+
+/** Decorative ink adapts to the surface; saved base/text colors are never modified. */
+export function patternFor(catalog, design, surface) {
+  const id = design.background;
+  if (!catalog.backgrounds.some(item => item.id === id)) throw new Error('Unknown background pattern.');
+  const peaks = { plain: 0, 'dot-grid': .2, diagonal: .18, crosshatch: 1 - (1 - .14) ** 2, 'soft-gradient': .24 };
+  const base = findColor(catalog, design.roles[surface]).hex;
+  const gradient = surface === 'titleBackground' ? design.slides.title.colors === 'gradient' || design.slides.title.layout === 'split' : surface === 'dividerBackground' && design.slides.divider.colors === 'gradient';
+  const bases = gradient ? gradientSamples(base, findColor(catalog, design.roles.titleBackgroundEnd).hex) : [base];
+  const foregrounds = surface === 'contentBackground' ? [] : [['titleText', 3], ['subtitle', 4.5]].map(([role, minimum]) => ({ hex: findColor(catalog, design.roles[role]).hex, minimum }));
+  let ink = findColor(catalog, inkFor(catalog, design.roles[surface])).hex;
+  // Prefer visible ink, but choose its opposite when that keeps already-readable
+  // title/divider text readable (especially White lettering over a Blue gradient).
+  const preservesReadability = candidate => foregrounds.every(({ hex, minimum }) => bases.every(bg => contrast(hex, bg) < minimum || Array.from({ length: 9 }, (_, i) => contrast(hex, blend(bg, candidate, peaks[id] * i / 8))).every(ratio => ratio >= minimum)));
+  const opposite = findColor(catalog, ink === findColor(catalog, 'light').hex ? 'royal' : 'light').hex;
+  if (!preservesReadability(ink) && preservesReadability(opposite)) ink = opposite;
+  const tint = alpha => `rgba(${rgb(ink).join(', ')}, ${alpha})`;
+  const patterns = {
+    plain: { images: [], sizes: [] },
+    'dot-grid': { images: [`radial-gradient(circle, ${tint(.2)} 2.5px, transparent 3px)`], sizes: ['24px 24px'] },
+    diagonal: { images: [`repeating-linear-gradient(135deg, ${tint(.18)} 0 2px, transparent 2px 22px)`], sizes: ['auto'] },
+    crosshatch: { images: [`linear-gradient(${tint(.14)} 1.5px, transparent 1.5px)`, `linear-gradient(90deg, ${tint(.14)} 1.5px, transparent 1.5px)`], sizes: ['32px 32px', '32px 32px'] },
+    'soft-gradient': { images: [`linear-gradient(135deg, ${tint(.24)}, ${tint(0)} 75%)`], sizes: ['100% 100%'] },
+  };
+  return { ...patterns[id], peakAlpha: peaks[id], ink };
+}
+
+function patternedSurfaces(catalog, design, surface, bases) {
+  const pattern = patternFor(catalog, design, surface);
+  if (!pattern.peakAlpha) return bases;
+  // Include the full opacity range and overlapping grid lines, not only the base.
+  return bases.flatMap(hex => Array.from({ length: 9 }, (_, index) => blend(hex, pattern.ink, pattern.peakAlpha * index / 8)));
+}
+
+/** Same layer recipe in the editor, miniatures, reusable artifacts and canonical CSS. */
+export function patternBackground(catalog, design, surface, baseImage, baseSize = '100% 100%') {
+  const pattern = patternFor(catalog, design, surface);
+  const images = [...pattern.images, ...(baseImage ? [baseImage] : [])];
+  const sizes = [...pattern.sizes, ...(baseImage ? [baseSize] : [])];
+  const positions = [...pattern.images.map(() => 'left top'), ...(baseImage ? ['center'] : [])];
+  const repeats = [...pattern.images.map(() => 'repeat'), ...(baseImage ? ['no-repeat'] : [])];
+  return `background-image:${images.join(', ') || 'none'}; background-size:${sizes.join(', ') || 'auto'}; background-position:${positions.join(', ') || 'left top'}; background-repeat:${repeats.join(', ') || 'no-repeat'};`;
+}
+
 export const defaultDesign = catalog => clone(catalog.defaults);
 export function applyPreset(catalog, id, currentDesign) {
   const preset = catalog.presets.find(item => item.id === id);
@@ -83,23 +128,24 @@ export function contrastIssues(catalog, design) {
   if (structuralErrors(catalog, design).length) return [];
   const issues = [];
   const color = role => findColor(catalog, design.roles[role]);
-  const textPair = (role, surface, minimum, gradientEnd) => {
+  const textPair = (role, surface, minimum, gradientEnd, patterned = false) => {
     const fg = color(role), bg = color(surface);
-    const surfaces = gradientEnd ? gradientSamples(bg.hex, color(gradientEnd).hex) : [bg.hex];
+    const bases = gradientEnd ? gradientSamples(bg.hex, color(gradientEnd).hex) : [bg.hex];
+    const surfaces = patterned ? patternedSurfaces(catalog, design, surface, bases) : bases;
     const ratio = Math.min(...surfaces.map(hex => contrast(fg.hex, hex)));
-    if (ratio + 1e-9 < minimum) issues.push({ role, surface, ratio, minimum, related: [role, surface, ...(gradientEnd ? [gradientEnd] : [])], message: `${catalog.roles.find(r => r.id === role).label}: ${fg.name} on ${catalog.roles.find(r => r.id === surface).label.toLowerCase()} (${bg.name}${gradientEnd ? ` to ${color(gradientEnd).name}` : ''}) is ${ratio.toFixed(2)}:1; needs ${minimum}:1. Choose a different text color or background.` });
+    if (ratio + 1e-9 < minimum) issues.push({ role, surface, ratio, minimum, related: [role, surface, ...(gradientEnd ? [gradientEnd] : []), ...(patterned ? ['background'] : [])], message: `${catalog.roles.find(r => r.id === role).label}: ${fg.name} on ${catalog.roles.find(r => r.id === surface).label.toLowerCase()} (${bg.name}${gradientEnd ? ` to ${color(gradientEnd).name}` : ''}${patterned && design.background !== 'plain' ? `, ${catalog.backgrounds.find(item => item.id === design.background).label}` : ''}) is ${ratio.toFixed(2)}:1; needs ${minimum}:1. Choose a different text color or background.` });
   };
   for (const role of catalog.roles.filter(r => r.kind === 'text')) {
     if (catalog.notText.includes(design.roles[role.id])) issues.push({ role: role.id, related: [role.id], message: `${role.label}: ${color(role.id).name} is reserved for shapes and backgrounds, not text, in the SPOKES brand.` });
   }
   const end = design.slides.title.colors === 'gradient' || design.slides.title.layout === 'split' ? 'titleBackgroundEnd' : undefined;
-  textPair('titleText', 'titleBackground', 3, end);
-  textPair('subtitle', 'titleBackground', 4.5, end);
+  textPair('titleText', 'titleBackground', 3, end, true);
+  textPair('subtitle', 'titleBackground', 4.5, end, true);
   textPair('heading', 'contentBackground', 3);
   textPair('body', 'contentBackground', 4.5);
   const dividerEnd = design.slides.divider.colors === 'gradient' ? 'titleBackgroundEnd' : undefined;
-  textPair('titleText', 'dividerBackground', 3, dividerEnd);
-  textPair('subtitle', 'dividerBackground', 4.5, dividerEnd);
+  textPair('titleText', 'dividerBackground', 3, dividerEnd, true);
+  textPair('subtitle', 'dividerBackground', 4.5, dividerEnd, true);
   return issues;
 }
 
@@ -154,7 +200,7 @@ export function cssForDesign(catalog, design, { scope = '.bespoke-slide', fontBa
   rule(selector('.slide-logo'), '', 'font-family: var(--font-body); font-weight: 600; letter-spacing: .14em; font-size: .85rem; margin-bottom: 2rem;');
   rule(selector('img.slide-logo'), '', 'display:block; width:5rem; height:5rem; object-fit:contain; background:var(--light); border-radius:.4rem; padding:.4rem;');
   const titleBackground = title.layout === 'split' ? (title.colors === 'gradient' ? 'linear-gradient(90deg, var(--role-title-background) 30%, var(--role-title-background-end) 75%)' : 'linear-gradient(90deg, var(--role-title-background) 40%, var(--role-title-background-end) 40%)') : title.colors === 'gradient' ? 'linear-gradient(135deg, var(--role-title-background), var(--role-title-background-end))' : 'var(--role-title-background)';
-  rule(kind('title'), '.slide-title', `background: ${titleBackground}; text-align: ${title.layout === 'center' ? 'center' : 'left'}; align-items: ${title.layout === 'center' ? 'center' : 'flex-start'}; justify-content: ${title.layout === 'bottom' ? 'flex-end' : 'center'}; flex-direction:column; position:relative;`);
+  rule(kind('title'), '.slide-title', `background-color:var(--role-title-background); ${patternBackground(catalog, design, 'titleBackground', titleBackground.startsWith('linear-gradient') ? titleBackground : undefined)} text-align: ${title.layout === 'center' ? 'center' : 'left'}; align-items: ${title.layout === 'center' ? 'center' : 'flex-start'}; justify-content: ${title.layout === 'bottom' ? 'flex-end' : 'center'}; flex-direction:column; position:relative;`);
   rule(kind('title'), '', 'display: flex; padding-block: 3rem;');
   rule(selector('.slide-title-text'), '.slide-title h1', 'color: var(--role-title-text); font-size: clamp(2rem, 4vw, 3.7rem); line-height: 1.12; margin: 0 0 1rem; max-width: 18ch;');
   rule(selector('.slide-subtitle'), '.slide-title .subtitle, .slide-title .copyright', 'color: var(--role-subtitle); font-family:var(--font-body); line-height:1.5;');
@@ -162,16 +208,16 @@ export function cssForDesign(catalog, design, { scope = '.bespoke-slide', fontBa
   rule(`${kind('title')} .slide-logo`, '', 'color: var(--role-title-text);');
   rule(`${kind('title')} .slide-accent`, '', 'width: 5rem; height: .25rem; margin-bottom: 1rem;');
   const dividerBackground = divider.colors === 'gradient' ? 'linear-gradient(135deg,var(--role-divider-background),var(--role-title-background-end))' : 'var(--role-divider-background)';
-  rule(kind('divider'), '.slide-section, .slide-section[data-chapter-num]', `background:${dividerBackground}; color:var(--role-subtitle); text-align:${divider.layout === 'center' || divider.layout === 'band' ? 'center' : 'left'}; align-items:${divider.layout === 'center' || divider.layout === 'band' ? 'center' : 'flex-start'}; position:relative;`);
+  rule(kind('divider'), '.slide-section, .slide-section[data-chapter-num]', `background-color:var(--role-divider-background); ${patternBackground(catalog, design, 'dividerBackground', divider.colors === 'gradient' ? dividerBackground : undefined)} color:var(--role-subtitle); text-align:${divider.layout === 'center' || divider.layout === 'band' ? 'center' : 'left'}; align-items:${divider.layout === 'center' || divider.layout === 'band' ? 'center' : 'flex-start'}; position:relative;`);
   rule(kind('divider'), '', 'display:flex; flex-direction:column; justify-content:center;');
   rule(`${kind('divider')} .slide-heading`, '.slide-section h2', 'color:var(--role-title-text); position:relative; z-index:1;');
   rule(`${kind('divider')} .slide-body`, '.slide-section p, .slide-section .chapter-label', 'color:var(--role-subtitle); position:relative; z-index:1;');
-  if (divider.layout === 'band') rule(kind('divider'), '.slide-section, .slide-section[data-chapter-num]', `background-color:var(--role-content-background); background-image:${divider.colors === 'gradient' ? dividerBackground : 'linear-gradient(var(--role-divider-background),var(--role-divider-background))'}; background-size:100% 70%; background-position:center; background-repeat:no-repeat;`);
+  if (divider.layout === 'band') rule(kind('divider'), '.slide-section, .slide-section[data-chapter-num]', `background-color:var(--role-content-background); ${patternBackground(catalog, design, 'dividerBackground', divider.colors === 'gradient' ? dividerBackground : 'linear-gradient(var(--role-divider-background),var(--role-divider-background))', '100% 70%')}`);
   rule(selector('.slide-watermark'), '.slide-section::after', `display:${divider.watermark === 'hide' ? 'none' : 'block'}; position:absolute; right:6%; top:5%; font-size:${divider.layout === 'number' ? '12rem' : '9rem'}; line-height:1; color:var(--role-title-text); opacity:.12; pointer-events:none;`);
-  const patterns = { plain: 'none', 'dot-grid': 'radial-gradient(rgba(var(--role-accent-rgb),.09) 1px,transparent 1px)', diagonal: 'repeating-linear-gradient(45deg,rgba(var(--role-accent-rgb),.06) 0 1px,transparent 1px 18px)', crosshatch: 'linear-gradient(rgba(var(--role-accent-rgb),.04) 1px,transparent 1px),linear-gradient(90deg,rgba(var(--role-accent-rgb),.04) 1px,transparent 1px)', 'soft-gradient': 'linear-gradient(135deg,rgba(var(--role-accent-rgb),.04),transparent 60%)' };
-  rule(`${kind('cards')}, ${kind('video')}, ${kind('activity')}`, '.main', `background-color:var(--role-content-background); background-image:${patterns[design.background]}; background-size:${design.background === 'dot-grid' ? '18px 18px' : design.background === 'crosshatch' ? '28px 28px' : 'auto'};`);
-  // Text has an opaque chosen surface: decorative texture never reduces its contrast.
-  rule(`${selector('.slide-card')}, ${selector('.slide-title-bar')}, ${selector('.slide-activity')}, ${selector('.slide-heading')}`, '', 'background-color:var(--role-content-background);');
+  rule(`${kind('cards')}, ${kind('video')}, ${kind('activity')}`, '.slide:not(.slide-title):not(.slide-section)', `background-color:var(--role-content-background); ${patternBackground(catalog, design, 'contentBackground')}`);
+  if (canonical) blocks.push('.main {background-color:var(--role-content-background);background-image:none;}');
+  // Content text stays on its chosen opaque surface. Title/divider contrast includes pattern ink.
+  rule(`${selector('.slide-card')}, ${selector('.slide-title-bar')}, ${selector('.slide-activity')}, ${selector('.slide-heading')}`, '.slide:not(.slide-title):not(.slide-section) h2, .slide:not(.slide-title):not(.slide-section) h3, .slide:not(.slide-title):not(.slide-section) p, .slide:not(.slide-title):not(.slide-section) li', 'background-color:var(--role-content-background);');
   rule(`${kind('divider')} .slide-heading`, '', 'background:transparent;');
   const columns = cards.layout === 'rows' ? 1 : cards.layout === 'grid' ? Math.min(2, Number(cards.count)) : Number(cards.count);
   rule(selector('.slide-cards'), '.cards-grid', `display:grid; grid-template-columns:repeat(${columns},minmax(0,1fr)); gap:1rem; align-items:stretch;`);

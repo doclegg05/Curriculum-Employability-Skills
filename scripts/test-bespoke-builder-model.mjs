@@ -4,7 +4,7 @@ import assert from 'node:assert/strict';
 import fs from 'node:fs';
 import path from 'node:path';
 import { fileURLToPath } from 'node:url';
-import { applyPreset, colorAvailability, contrast, contrastIssues, cssForDesign, defaultDesign, designSchema, inkFor, migrateV1, renderSlide, roleOptions, structuralErrors, validateDesign } from '../bespoke/builder-model.mjs';
+import { applyPreset, colorAvailability, contrast, contrastIssues, cssForDesign, defaultDesign, designSchema, inkFor, migrateV1, patternFor, renderSlide, roleOptions, structuralErrors, validateDesign } from '../bespoke/builder-model.mjs';
 
 const root = path.resolve(path.dirname(fileURLToPath(import.meta.url)), '..');
 const catalog = JSON.parse(fs.readFileSync(path.join(root, 'bespoke/builder-catalog.json'), 'utf8'));
@@ -103,6 +103,22 @@ check('divider contrast checks selected text on solid and gradient backgrounds w
   const issues = contrastIssues(catalog, design).filter(issue => issue.surface === 'dividerBackground');
   assert.equal(issues.length, 2);
   assert(issues.every(issue => issue.related.includes('titleBackgroundEnd')));
+});
+
+check('patterns retain roles and cover their rendered ink in title/divider contrast', () => {
+  const design = defaultDesign(catalog);
+  design.roles.titleBackground = design.roles.titleBackgroundEnd = design.roles.dividerBackground = 'primary';
+  design.slides.title.colors = design.slides.divider.colors = 'solid';
+  for (const pattern of catalog.backgrounds) {
+    design.background = pattern.id;
+    const before = JSON.stringify(design);
+    assert.deepEqual(validateDesign(catalog, design), [], 'White on Blue stays readable through adaptive decorative ink.');
+    if (pattern.id !== 'plain') assert.equal(patternFor(catalog, design, 'dividerBackground').ink, '#00133f');
+    assert.equal(JSON.stringify(design), before);
+  }
+  design.roles.dividerBackground = 'accent';
+  assert(contrastIssues(catalog, design).some(issue => issue.surface === 'dividerBackground' && issue.related.includes('background')));
+  assert.equal(design.roles.titleText, 'light'); assert.equal(design.roles.subtitle, 'light');
 });
 
 check('every current font works independently in both roles', () => {

@@ -243,7 +243,7 @@ Professional, Modern, Serious, Light-hearted, Fun, and Outspoken are starting lo
 
 The preview is a rendered reusable slide design with explicitly labeled sample content. It takes colors, fonts, arrangements, text, and backgrounds from the same model used by the reusable artifact and template override. It supports the five slide types, including one to four text boxes with paragraph, bullet, or numbered treatment. Hidden box samples remain in the draft.
 
-Readability notes name the problematic text/background pair and provide a path back to colors. The model checks title/heading pairs at 3:1 and subtitle/body pairs at 4.5:1, including sampled gradient surfaces; this is a modeled check, not a claim of whole-page accessibility certification.
+Readability notes name the problematic text/background pair and provide a path back to colors. The model checks title/heading pairs at 3:1 and subtitle/body pairs at 4.5:1, including sampled gradient surfaces and composited pattern ink; this is a modeled check, not a claim of whole-page accessibility certification.
 
 Comparison is advisory: it shows exact matching comparable choices against six released references, with matches, differences, and unknowns disclosed. It is not a perceptual percentage, a passing score, or a reservation of private team designs. Save/recovery and preview updates use status/live regions, including an explicit local-test label when that mode is active.
 
@@ -287,3 +287,17 @@ background, with Undo; shared saving and artifact generation remain blocked unti
 contrast passes. Read paths retain structurally valid existing v2 values for repair.
 Reference comparison measures actual chapter heading and supporting-text colors
 separately from title text; mixed or translucent reference colors stay unknown.
+
+
+### Background-pattern feedback
+
+The pattern choice applies across all five slide roles. Texture layers sit above the
+chosen color, split panel, band or gradient; Plain removes only the texture. Dot grid
+uses 5px dots on 24px spacing, Diagonal uses 2px lines on 22px spacing, Crosshatch uses
+1.5px lines on a 32px grid, and Soft wash is a broad diagonal tint. Decorative ink is
+White or Royal, chosen for visible separation from the base, with the opposite tone
+used when needed to retain already-readable title/divider text. Stored base/text
+colors never change. Contrast sampling includes the actual opacity range and grid
+intersections; unresolved failures remain explicit warnings. Content reading surfaces
+remain opaque. Palette miniatures use the same pattern recipe and current preview
+surface; changing the preview tab refreshes them without changing the design.

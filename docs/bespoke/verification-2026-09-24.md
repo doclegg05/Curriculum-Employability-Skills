@@ -136,3 +136,60 @@ Git and remained byte-identical across restart; the existing synthetic revision 
 The current module is served with `Cache-Control: no-store`. No cache/config changes
 were needed. The original checkout remained clean and production/released lessons
 were untouched. Logs, screenshots and runtime backups remain outside the repository.
+
+
+## Follow-up: visible patterns on the current preview
+
+Root cause: the texture rule targeted only text-box/video/activity previews and the
+canonical `.main` element. Title and divider background rules therefore had no
+texture. The old content pattern also used a fixed accent at 4–9% opacity, often
+indistinguishable from its base. Changing the saved choice could leave the visible
+chapter divider unchanged.
+
+Patterns now layer above the selected base across all five slide roles and canonical
+slide styling, including gradients, split titles and band dividers. White/Royal
+pattern ink responds to the base and preserves already-readable title/divider text
+where either tone can do so. Readability validation samples the composite opacity
+range, including crossing grid lines. It never changes selected text or background
+roles; existing unsafe combinations remain recoverable with warnings. Content text
+has opaque reading surfaces. Miniatures demonstrate all five patterns in the existing
+controls and follow the currently selected preview. No schema or saved-field change
+was required; defaults and all six presets remain valid.
+
+Verification uses synthetic local state and real screenshot pixels:
+
+- A bounded matrix renders all five choices on White, Mist, Green, Blue, Navy, Royal
+  and Mauve at 720px desktop and 342px phone slide widths (70 divider combinations).
+  All 140 pairwise comparisons exceed 1.8% changed pixels at a 12-level RGB threshold
+  and a mean channel delta of 0.5. The observed minima are 4.04% and 0.57, respectively.
+  Returning to Plain reproduces its initial pixels exactly. This is a regression
+  guard for visible differentiation, not a universal perceptual/accessibility score.
+- The same matrix plus all five slide roles has 80 exact rendered-pixel parity checks
+  against output from the production model bridge. Role checks include a split title
+  and a gradient band divider. The Python artifact assembler/checker additionally
+  verifies both grid directions on reusable samples and canonical template dividers.
+- The actual editor regression operates all five choices while Divider remains
+  selected, including keyboard activation, Raleway/Source Sans 3, unchanged color and
+  layout values, Undo/Redo, navigation, reload/history, shared save/reopen and Plain.
+  Desktop and 390px controls pass axe and overflow checks. Prior button and explicit
+  divider text-color regressions continue to pass.
+- Normal-size desktop/phone screenshots were visually inspected for Green patterns,
+  light/dark surfaces and the miniature controls. The five choices are recognizable;
+  the wash is a broad tint, while the other choices have distinct repeating geometry.
+
+Coverage is representative, not every possible palette/layout/text combination.
+Synthetic Chromium verification does not claim actual Safari acceptance or classroom
+projector testing. Existing lesson accessibility baselines remain separate from the
+builder's modeled contrast rules. The user's active Safari page and draft are left
+untouched; their existing page-update flow loads the corrected assets from port 8766.
+Logs, pixel measurements and screenshots are under the external local-preview runtime
+(`pattern-quality.log` and `pattern-review/`), outside Git.
+
+The full `scripts/quality.sh` gate passed: 47 validator and 35 BeSpoke Python tests,
+12 model groups, eight similarity tests, 46 Node service/contract/server tests,
+27 legacy workflows, eleven builder workflows, the new pixel matrix, schema/export
+checks and existing lesson baselines. The loopback service was gracefully restarted
+with the updated contrast model; its external persisted runtime remained byte-identical
+and the existing synthetic revision reopened. The original saved checkout stayed
+clean. No Safari actions, production configuration, private codes, Send, deployment,
+merge or lesson publication were involved.

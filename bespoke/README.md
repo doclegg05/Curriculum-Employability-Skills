@@ -60,6 +60,15 @@ families; presets can initialize combinations, but do not lock a pairing. Frankl
 Gothic Book is omitted because no existing licensed webfont package was found. Its
 absence does not block the builder, and no substitute is labeled as that font.
 
+**Background pattern:** Plain, Dot grid, Diagonal, Crosshatch and Soft wash apply to
+all five slide backgrounds, including title slides and chapter dividers. Each control
+shows a miniature on the current preview's base color. Pattern ink adapts between
+White and Royal for visibility and readability without changing saved color roles.
+Text boxes keep their chosen opaque reading surface. Title/divider readability checks
+include the pattern and gradient layers. Plain removes texture while keeping the
+selected base color, gradient or band layout. Preview and generated output share the
+same treatment.
+
 **Components:** title and divider designs have separate guided arrangement and
 appearance choices. Text boxes support one to four boxes, one optional shared
 title bar, paragraph/bullet/numbered treatment, box style and arrangement. Video

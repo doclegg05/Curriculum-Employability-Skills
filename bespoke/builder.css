@@ -136,3 +136,5 @@
 
 /* Explicit divider text controls and contrast repairs remain separate tap targets. */
 .color-edit-links{display:flex;flex-direction:column;align-items:flex-start;margin-bottom:12px}.readability-actions{display:flex;flex-wrap:wrap;gap:4px 20px}.color-edit-links .text-link,.readability-actions .text-link{min-height:44px;text-align:left;line-height:1.4}
+
+.pattern-mini{display:block;width:100%;height:48px;border:1px solid #8191a3;border-radius:3px}

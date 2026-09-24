@@ -1300,7 +1300,10 @@ function renderFonts(panel){
   select.onchange=()=>changeDesign(label+': '+catalog.fonts.find(f=>f.id===select.value).label,d=>{d.fonts[key]=select.value;});field.append(select);panel.append(field);
  }
  const note=document.createElement('p');note.className='font-sample';const bodyFont=catalog.fonts.find(f=>f.id===state.design.fonts.body);note.style.fontFamily='"'+bodyFont.family+'", '+bodyFont.fallback;note.textContent='A clear next step makes a big idea feel possible.';panel.append(note);
- panel.append(choiceGroup('Background pattern',catalog.backgrounds,state.design.background,id=>changeDesign('Background: '+id,d=>{d.background=id;})));
+ const patternSurface=state.previewView==='title'?'titleBackground':state.previewView==='divider'?'dividerBackground':'contentBackground';
+ const mini=option=>'<span class="pattern-mini" aria-hidden="true" style="background-color:'+catalog.palette.find(c=>c.id===state.design.roles[patternSurface]).hex+';'+Model.patternBackground(catalog,{...state.design,background:option.id},patternSurface)+'"></span>';
+ panel.append(choiceGroup('Background pattern',catalog.backgrounds,state.design.background,id=>changeDesign('Background: '+id,d=>{d.background=id;}),{mini}));
+ const patternNote=document.createElement('p');patternNote.className='helper';patternNote.textContent='Applies to every slide background. Your chosen colors stay the same; content text boxes keep a clear reading surface.';panel.append(patternNote);
  const jump=document.createElement('button');jump.type='button';jump.className='text-link';jump.textContent='Change heading or body color';jump.onclick=()=>{ui.activeRole='body';state.step=2;render();};panel.append(jump);
 }
 function renderSlideChoices(panel,kind){
@@ -1393,7 +1396,7 @@ function updatePreview(design=state.design){
  if(errors.length&&!dividerIssues){const repair=document.createElement('button');repair.className='text-link';repair.textContent='Go to color controls';repair.onclick=()=>{state.step=2;byId('workspace').dataset.activeSurface='design';render();};repairs.append(repair);}
  byId('liveRegion').textContent=VIEW_NAMES[state.previewView]+' preview updated.';
 }
-function showView(view){state.previewView=view;ui.previewPinned=true;updatePreview();saveDraft();}
+function showView(view){state.previewView=view;ui.previewPinned=true;if(STEPS[state.step].id==='fonts')render(false);else{updatePreview();saveDraft();}}
 function render(focus=true){
  const changed=ui.renderedStep!==state.step;if(changed){ui.renderedStep=state.step;state.previewView=STEPS[state.step].view;ui.previewPinned=false;}
  const active=document.activeElement,activeId=active?.id;

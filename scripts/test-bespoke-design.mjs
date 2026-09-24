@@ -38,6 +38,7 @@ scenarios.append(('alternative-design',alternative))
 for background in ('dark','mauve'):
     current={'schema':'bespoke-selection/v2','date':'2026-09-24','submittedAt':'2026-09-24T16:30:00.000Z','lesson':copy.deepcopy(payload['lesson']),'team':copy.deepcopy(payload['team']),'design':json.loads((root/'bespoke/builder-catalog.json').read_text())['defaults']}
     current['design']['roles'].update(titleText='offwhite',subtitle='light',dividerBackground=background)
+    current['design']['background']='crosshatch'
     scenarios.append(('v2-'+background,current))
 
 for name,current in scenarios:
@@ -88,9 +89,10 @@ for name,current in scenarios:
       const styles = await page.evaluate(canonical => {
         const root = document.querySelector(canonical ? '.slide-section' : '[data-kind="divider"]');
         if (canonical) root.insertAdjacentHTML('beforeend', '<p>Supporting copy uses the subtitle role.</p>');
-        return { background: getComputedStyle(root).backgroundColor, heading: getComputedStyle(root.querySelector('h2')).color, supporting: [...root.querySelectorAll('p, .chapter-label')].map(el => getComputedStyle(el).color) };
+        return { pattern: getComputedStyle(root).backgroundImage, background: getComputedStyle(root).backgroundColor, heading: getComputedStyle(root.querySelector('h2')).color, supporting: [...root.querySelectorAll('p, .chapter-label')].map(el => getComputedStyle(el).color) };
       }, canonical);
       assert.equal(styles.background, rgb);
+      assert.equal((styles.pattern.match(/linear-gradient/g) || []).length, 2, `${file}: both pattern directions are layered above the chosen base`);
       assert.equal(styles.heading, 'rgb(209, 211, 212)', `${file}: selected heading color`);
       assert(styles.supporting.length >= 2 && styles.supporting.every(color => color === 'rgb(255, 255, 255)'), `${file}: selected subtitle color applies to labels and supporting copy`);
     }

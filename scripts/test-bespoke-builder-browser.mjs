@@ -9,6 +9,7 @@ import { chromium } from 'playwright';
 import { createDevServer, LOCAL_PREVIEW_CODE } from './bespoke-dev-server.mjs';
 import { compareDesign } from '../bespoke/similarity.mjs';
 import { contrast } from '../bespoke/builder-model.mjs';
+import { pixelDifference } from './bespoke-pixel-check.mjs';
 
 const root = path.resolve(path.dirname(fileURLToPath(import.meta.url)), '..');
 const catalog = JSON.parse(await fs.readFile(path.join(root, 'bespoke/builder-catalog.json'), 'utf8'));
@@ -364,6 +365,55 @@ try {
     await page.locator('#btnOpen').click();
     await page.locator('#fileStatus').filter({ hasText: /Opened the latest shared design/ }).waitFor();
     assert.deepEqual(await design(page), backup.design);
+  });
+
+  await scenario('all patterns visibly update the current divider and preserve colors, fonts, layout and recovery', async ({ makePage }) => {
+    for (const mobile of [false, true]) {
+      const page = await makePage({ mobile }); await fillTeam(page);
+      for (const role of ['titleBackground', 'titleBackgroundEnd', 'dividerBackground']) await paint(page, role, 'accent');
+      for (const role of ['titleText', 'subtitle']) await paint(page, role, 'royal');
+      await go(page, 'Fonts & background');
+      await page.locator('#font-heading').selectOption('raleway');
+      await page.locator('#font-body').selectOption('source-sans-3');
+      if (mobile) await page.locator('#surface-preview').click();
+      await page.locator('#previewTabs [data-view="divider"]').click();
+      if (mobile) await page.locator('#surface-design').click();
+      assert.equal(await page.locator('.pattern-mini').count(), 5);
+      await choose(page, 'Background pattern', 'plain');
+      const original = await design(page), shots = new Map();
+      for (const pattern of catalog.backgrounds) {
+        const button = page.getByRole('group', { name: 'Background pattern' }).locator(`[data-choice="${pattern.id}"]`);
+        await button.focus(); await page.keyboard.press('Enter');
+        assert.equal(await button.evaluate(el => el === document.activeElement), true);
+        assert.equal(await page.locator('#previewTabs [aria-selected="true"]').getAttribute('data-view'), 'divider');
+        assert.deepEqual(await design(page), { ...original, background: pattern.id });
+        if (mobile) await page.locator('#surface-preview').click();
+        shots.set(pattern.id, await page.locator('#modelStage .bespoke-slide').screenshot());
+        if (mobile) await page.locator('#surface-design').click();
+      }
+      for (const pattern of catalog.backgrounds.slice(1)) {
+        const pixels = await pixelDifference(page, shots.get('plain'), shots.get(pattern.id));
+        assert(pixels.changedFraction > .018 && pixels.meanChannelDelta > .5, pattern.id+' must visibly change the actual UI preview.');
+      }
+      await page.locator('#btnUndo').click(); assert.equal((await design(page)).background, 'crosshatch');
+      await page.locator('#btnRedo').click(); assert.equal((await design(page)).background, 'soft-gradient');
+      const saved = await draft(page);
+      await page.reload(); await ready(page);
+      assert.deepEqual((await draft(page)).changes, saved.changes);
+      assert.deepEqual(await design(page), saved.design);
+      assert.equal(await page.locator('#previewTabs [aria-selected="true"]').getAttribute('data-view'), 'divider');
+      await go(page, 'Text boxes'); await go(page, 'Fonts & background');
+      assert.equal((await design(page)).background, 'soft-gradient');
+      await save(page);
+      const reopened = await makePage({ mobile });
+      assert.deepEqual(await design(reopened), saved.design);
+      await go(reopened, 'Fonts & background');
+      await axe(reopened, 'Pattern miniatures '+(mobile?'phone':'desktop'));
+      if(process.env.BESPOKE_REVIEW_DIR){await fs.mkdir(process.env.BESPOKE_REVIEW_DIR,{recursive:true});await reopened.screenshot({path:path.join(process.env.BESPOKE_REVIEW_DIR,'pattern-controls-'+(mobile?'phone':'desktop')+'.png'),fullPage:true});}
+      await assertNoOverflow(reopened, 'Pattern choices');
+      await choose(page, 'Background pattern', 'plain');
+      assert.deepEqual(await design(page), original);
+    }
   });
 
   await scenario('text boxes retain hidden words across every count, title bar and text treatment', async ({ makePage }) => {
