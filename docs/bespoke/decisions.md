@@ -16,7 +16,7 @@ color-role mockup. Those files remain historical planning evidence.
 |-------|------------------|
 | Purpose | Beginners choose reusable visual slide-role designs with sample copy and a cumulative preview. This is not curriculum authoring, a drag-anywhere full deck editor or automatic lesson construction. |
 | Starting path | Offer guided custom design and six editable presets. Both populate the exact same individual controls/model. Selecting a field preserves other choices; applying a new preset can be undone and preserves sample text. The earlier no-preset constraint is superseded. |
-| Colors | Select an element, then replace its color with a swatch. Show all eleven existing brand colors, including White. No two-primary/three-secondary palette membership step; no restriction that content backgrounds must be White/Mist or body text only Royal/Navy/Gray. Retain explicit brand text restrictions and modeled readability checks, explain unsafe choices, and never silently reset unrelated fields. |
+| Colors | Select an element, then replace its color with a swatch. Show all eleven existing brand colors, including White. No two-primary/three-secondary palette membership step; no restriction that content backgrounds must be White/Mist or body text only Royal/Navy/Gray. Every one of the eleven colors is selectable for every role, including Gold and Green text. Modeled contrast is advisory throughout selection, review, save and generation. Explain the measured ratio and guideline; the team leader can keep the choice. Do not disable swatches, silently recolor, or add approval requirements. Structural/auth/conflict validation remains enforced. |
 | Fonts | Preserve all twelve existing self-hosted font families. Choose one title/heading font and one body font independently; use each coherently across roles. Presets may initialize combinations. This supersedes the fixed-pairing restriction for v2; serif headings remain available. |
 | Franklin Gothic Book | Optional only. A focused local check found no usable licensed webfont package. Omit it for now; do not purchase, extract Office fonts, relabel a substitute or block the builder. |
 | Component steps | Separate title, divider and text-box decisions. Cards have one to four boxes, an optional shared title bar, paragraph/bullet/numbered treatment, style and arrangement. Video and activity retain their own designs. A global card preset must not reset other roles. |
@@ -81,6 +81,7 @@ Wizard loads `SPOKES Builder/bespoke-library-catalog.json` (see companion card-l
 title subtitle/copyright and divider chapter labels/supporting text. Content `heading`
 and `body` stay independent. Explicit choices take precedence over background-derived
 ink. No additional persisted field or v2 migration is needed. Existing v2 drafts and
-shared revisions open unchanged with new readability warnings where necessary. New
-shared writes and artifacts require 3:1 heading and 4.5:1 supporting-text contrast on
-both title and divider surfaces, including gradient samples. Defaults/presets pass.
+shared revisions open unchanged with new readability warnings where necessary. The later September 24 advisory-only color decision supersedes contrast blocking:
+3:1 headings and 4.5:1 supporting text remain guidance on both title and divider
+surfaces, including gradients and patterns. Writes and artifacts preserve the team
+leader’s choice. Defaults/presets meet the guidance.

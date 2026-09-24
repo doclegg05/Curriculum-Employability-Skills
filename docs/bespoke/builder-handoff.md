@@ -37,9 +37,13 @@ The live preview, CSS and component samples derive from
 `bespoke/builder-model.mjs`. The closed schema is generated from the same catalog
 by `scripts/generate-selection-v2-schema.mjs`. Python tools call the committed
 Node bridge for the same validation and rendering authority; Node.js 22+ is an
-explicit dependency. Invalid catalog values, malformed arrays, arbitrary CSS and
-unreadable modeled text/surface combinations are rejected at shared-save/build
-boundaries. Browser drafts and undo preserve in-progress work for correction.
+explicit dependency. Invalid catalog values, malformed arrays and arbitrary CSS
+are rejected at shared-save/build boundaries. Contrast is advisory-only: all eleven
+brand colors are permitted for every role, and low-contrast choices remain exact
+through shared save, reopen and generation. The bridge returns separate warnings;
+Python validation reports them without failure, and generated v2 contracts and sample
+HTML carry the same advisories. The team leader can retain the choice. Auth, revision,
+receipt and structural checks are unchanged. No approval checkbox or new role is added.
 
 V1 remains valid under its unchanged schema. V1 conversion is approximate and
 shows warnings for styles with no exact counterpart. Keep the original v1 payload

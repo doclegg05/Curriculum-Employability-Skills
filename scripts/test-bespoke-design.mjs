@@ -40,6 +40,10 @@ for background in ('dark','mauve'):
     current['design']['roles'].update(titleText='offwhite',subtitle='light',dividerBackground=background)
     current['design']['background']='crosshatch'
     scenarios.append(('v2-'+background,current))
+advisory=copy.deepcopy(current)
+advisory['design']['roles'].update(titleBackground='mauve',titleBackgroundEnd='accent',titleText='light',subtitle='light',dividerBackground='accent',heading='accent',body='gold')
+advisory['design']['slides']['title']['colors']='gradient'
+scenarios.append(('v2-advisory',advisory))
 
 for name,current in scenarios:
     css,contract=build_design(current)
@@ -98,6 +102,23 @@ for name,current in scenarios:
     }
   }
   console.log('PASS v2 artifact and canonical divider colors follow the explicit heading/supporting roles');
+
+  const advisoryFolder = path.join(temporary, 'v2-advisory');
+  const advisoryContract = JSON.parse(await fs.readFile(path.join(advisoryFolder, 'build-contract.json'), 'utf8'));
+  assert(advisoryContract.contrastAdvisories.some(message => /Mauve to Green.*Crosshatch.*below the 3:1/.test(message)));
+  execFileSync(python, [path.join(root, 'scripts/bespoke-check-design.py'), path.join(advisoryFolder, 'build-contract.json'), path.join(advisoryFolder, 'component-samples.html')], { cwd: root, stdio: 'pipe' });
+  for (const file of ['index.html', 'component-samples.html']) {
+    await page.goto(pathToFileURL(path.join(advisoryFolder, file)).href);
+    const actual = await page.evaluate(canonical => {
+      const color = selector => getComputedStyle(document.querySelector(selector)).color;
+      const title = document.querySelector(canonical ? '.slide-title' : '[data-kind="title"]');
+      return { title: color(canonical ? '.slide-title h1' : '.slide-title-text'), divider: color(canonical ? '.slide-section h2' : '[data-kind="divider"] h2'), subtitle: color(canonical ? '.slide-section .chapter-label' : '[data-kind="divider"] .slide-body'), heading: color(canonical ? '.card h4' : '.slide-card h3'), body: color(canonical ? '.card p' : '.slide-card .slide-body'), background: getComputedStyle(title).backgroundImage };
+    }, file === 'index.html');
+    assert.deepEqual({ title: actual.title, divider: actual.divider, subtitle: actual.subtitle, heading: actual.heading, body: actual.body }, { title:'rgb(255, 255, 255)', divider:'rgb(255, 255, 255)', subtitle:'rgb(255, 255, 255)', heading:'rgb(55, 181, 80)', body:'rgb(211, 178, 87)' });
+    assert(actual.background.includes('rgb(167, 37, 63)') && actual.background.includes('rgb(55, 181, 80)'));
+    if(file === 'component-samples.html') assert.match(await page.locator('.contrast-advisory').textContent(), /team leader can keep this choice/);
+  }
+  console.log('PASS low-contrast title/divider/body/heading colors remain exact in generated and canonical output, with advisory guidance');
 
   async function appearance(name) {
     await page.goto(pathToFileURL(path.join(temporary, name, 'index.html')).href);

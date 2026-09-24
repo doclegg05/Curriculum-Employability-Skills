@@ -89,8 +89,7 @@ class V2SubmissionTests(unittest.TestCase):
 
     def test_invalid_v2_and_legacy_cannot_write_files(self):
         changes = [
-            lambda p: p["design"]["roles"].update(dividerBackground="accent"),
-            lambda p: p["design"]["roles"].update(body=p["design"]["roles"]["contentBackground"]),
+            lambda p: p["design"]["roles"].update(body="not-a-brand-color"),
             lambda p: p["design"]["fonts"].update(heading="made-up-font"),
             lambda p: p["design"]["samples"]["boxes"].append("fifth"),
             lambda p: p["legacySelection"]["theme"].update(colorLead="off-brand"),
@@ -102,6 +101,27 @@ class V2SubmissionTests(unittest.TestCase):
                 with self.assertRaises(ValueError):
                     writer.write_submission(selection, Path(tmp))
                 self.assertEqual(list(Path(tmp).iterdir()), [])
+
+    def test_low_contrast_choices_generate_exact_artifacts_with_nonblocking_advisories(self):
+        self.payload["design"]["roles"].update(titleBackground="mauve", titleBackgroundEnd="accent", titleText="light", subtitle="light", dividerBackground="accent", heading="accent", body="gold")
+        self.payload["design"]["background"] = "plain"
+        original = deepcopy(self.payload)
+        validator = module("validate-bespoke-selection.py")
+        errors, warnings = validator.validate_payload(self.payload, {})
+        self.assertEqual(errors, [])
+        self.assertTrue(any("2.66:1" in warning for warning in warnings))
+        with tempfile.TemporaryDirectory() as tmp:
+            destination = writer.write_submission(self.payload, Path(tmp))
+            (Path(tmp) / "fonts").symlink_to(ROOT / "fonts")
+            (Path(tmp) / "bespoke").mkdir()
+            contract = json.loads((destination / "build-contract.json").read_text())
+            self.assertEqual(contract["design"], original["design"])
+            self.assertEqual(contract["contrastAdvisories"], warnings)
+            self.assertEqual(json.loads((destination / "selection.json").read_text()), original)
+            self.assertEqual(checker.check_design(contract, destination / "component-samples.html"), [])
+            self.assertIn("The team leader can keep this choice", (destination / "component-samples.html").read_text())
+            self.assertIn("--role-body: var(--gold)", (destination / "design.css").read_text())
+            self.assertEqual(self.payload, original)
 
     def test_legacy_registry_cannot_silently_flatten_v2_design(self):
         themes, lessons = {"lessons": {}}, {"lessons": []}

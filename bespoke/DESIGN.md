@@ -170,11 +170,11 @@ All 11 approved colors stay visible in every role's palette. The catalog's displ
 | `muted` | Mist | `mist` |
 | `light` | White | `paper` |
 
-The 11 editable roles are sidebar, title background, title second color, title text, subtitle, content background, heading, body, accent, button, and divider background. Sidebar, accent, and button surfaces receive automatic readable ink. Divider headings use the explicit titleText role; chapter labels and supporting copy use subtitle. The watermark inherits titleText as decoration. Those shared colors never change when the divider background changes. Green and Gold are unavailable for direct text roles under the brand rules. Other unavailable text choices remain visible and explain the contrast failure when activated. A surface change preserves other selections and exposes repair notes instead of silently repainting them.
+The 11 editable roles are sidebar, title background, title second color, title text, subtitle, content background, heading, body, accent, button, and divider background. Sidebar, accent, and button surfaces receive automatic readable ink. Divider headings use the explicit titleText role; chapter labels and supporting copy use subtitle. The watermark inherits titleText as decoration. Those shared colors never change when the divider background changes. All eleven brand colors, including Green and Gold, are selectable for every role. A choice below the modeled contrast guideline displays advisory guidance; it is still applied, rendered, saved and generated exactly. The team leader decides whether to retain it. Structural validation and access controls remain separate.
 
 **The Two Layers Rule.** Lesson choices change the shared preview model; they never repaint the builder's navigation, fields, or status surfaces.
 
-**The Visible Choice Rule.** Keep every approved color visible. Explain an unavailable text choice in place, and preserve the rest of the draft while the user repairs a contrast conflict.
+**The Visible Choice Rule.** Keep every approved color visible. Apply the selected color faithfully. Explain contrast in place, include the measured ratio and guideline, and offer alternatives as suggestions. Never require an override checkbox or disguise a selectable color as disabled.
 
 ## Typography
 
@@ -227,7 +227,7 @@ The header keeps save, open, and review actions visible. Files & recovery uses n
 
 Field labels sit above full-width inputs, selects, and text areas with a 7px gap. Fields use a 1px Input line, 10px padding, and a 43px minimum height. Text areas resize vertically. Decision groups are semantic fieldsets with visible legends; chosen buttons carry `aria-pressed`, a stronger border, a selected surface, and a check mark.
 
-The color-role selector precedes the 11-color palette. A selected circular swatch has both a visible mark and an accessible selected label. Unavailable text colors carry a strike-through and `aria-disabled`; they remain activatable to disclose the reason. Do not replace this explanation with an inert, unnamed disabled square.
+The color-role selector precedes the 11-color palette. A selected circular swatch has both a visible mark and an accessible selected label. All colors are enabled, without strike-throughs. Accessible labels identify a contrast advisory as selectable. The chosen role’s warning explains the text/background difference and why low contrast can be harder to read; it includes the actual ratio, the applicable guideline, and the team leader’s option to keep and save the design. The persistent live region announces advisories after updates.
 
 ### Navigation and continuity
 
@@ -263,7 +263,7 @@ Comparison is advisory: it shows exact matching comparable choices against six r
 
 - Don't apply the selected lesson palette or fonts to application chrome.
 - Don't treat presets as locked themes or restore fixed font-pair restrictions.
-- Don't hide unsafe text colors without explaining why they are unavailable.
+- Don't disable or cross out low-contrast choices, silently recolor them, or turn contrast advice into a save/build approval requirement.
 - Don't describe the comparison as a perceptual score or a requirement to pass.
 - Don't treat a saved design or review request as authorization to build or publish a lesson.
 - Don't extend this document's authority to the dashboard, original wizard, or released lessons.
@@ -285,8 +285,9 @@ scope directly. The divider step exposes background, both text roles, and the sh
 second gradient color. Selecting these roles retains the divider preview. Content
 heading/body choices remain independent. Unsafe backgrounds preserve the chosen text
 and show the actual result plus ratio warnings. Repair buttons change only the named
-background, with Undo; shared saving and artifact generation remain blocked until
-contrast passes. Read paths retain structurally valid existing v2 values for repair.
+background, with Undo. These alternatives are optional; shared saving and artifact
+generation preserve low-contrast choices, and both current and older v2 designs open
+unchanged. Structural errors continue to block invalid records.
 Reference comparison measures actual chapter heading and supporting-text colors
 separately from title text; mixed or translucent reference colors stay unknown.
 

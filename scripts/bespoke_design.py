@@ -124,6 +124,7 @@ def build_design_v2(payload: dict) -> tuple[str, dict]:
         "modelSha256": sha((ROOT / "bespoke/builder-model.mjs").read_text(encoding="utf-8")),
         "cssSha256": sha(css),
         "design": design,
+        "contrastAdvisories": result["warnings"],
         "fonts": result["fonts"],
         "fontPaths": font_paths,
         "componentMarkup": result["markup"],
@@ -139,6 +140,7 @@ def build_design_v2(payload: dict) -> tuple[str, dict]:
             "Insert design.css verbatim into style#theme-override after base CSS, and add the selection SHA-256 meta tag.",
             "Retain each role's data attributes and structural classes. Cards require the saved number of real text boxes, the saved title-bar presence, and actual paragraph/ul/ol markup; CSS alone cannot implement those choices.",
             "Keep all four sample box strings in selection.json, even when fewer boxes are displayed. Do not treat hidden drafts as deleted content.",
+            "Contrast advisories inform the team leader's design decision and do not block this artifact. Preserve the selected colors; do not silently recolor them or treat advisory presence as a failed contract.",
             "Run scripts/bespoke-check-design.py with this contract and the finished HTML; browser review, lesson validation and quality gates remain required.",
             "Legacy registry application is deliberately unsupported. A reviewed v2 registry consumer is required before any separately authorized lesson build uses that registry.",
             "No automatic lesson building, publication or production changes are authorized by this proposal.",
@@ -154,14 +156,20 @@ def component_sample_html(css: str, contract: dict) -> str:
         f'<h2>{html.escape(kind.capitalize())} sample</h2>\n{fragment}'
         for kind, fragment in contract["componentMarkup"].items()
     )
+    advisories = contract.get("contrastAdvisories", [])
+    guidance = ("<aside class=\"contrast-advisory\" aria-label=\"Contrast advisory\"><h2>Contrast advisory</h2>"
+                "<p>Contrast is the difference between text and its background. Low contrast can make text harder to read.</p><ul>"
+                + "".join(f"<li>{html.escape(message)}</li>" for message in advisories)
+                + "</ul><p>Consider a different text or background color. The team leader can keep this choice.</p></aside>") if advisories else ""
     return f'''<!doctype html>
 <html lang="en"><head><meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <base href="../../../../../bespoke/">
 <meta name="bespoke-selection-sha256" content="{contract['selectionSha256']}">
 <title>BeSpoke reusable visual samples</title>
-<style>body{{margin:0;padding:2rem;background:#edf3f7;color:#00133f;font-family:system-ui}}main{{max-width:1100px;margin:auto}}h2{{margin-top:2rem}}</style>
+<style>body{{margin:0;padding:2rem;background:#edf3f7;color:#00133f;font-family:system-ui}}main{{max-width:1100px;margin:auto}}h2{{margin-top:2rem}}.contrast-advisory{{padding:1rem;background:#fff4f0;color:#6d2434;font:1rem/1.5 system-ui}}.contrast-advisory h2{{margin-top:0}}</style>
 <style id="theme-override">{css}</style></head><body><main>
 <h1>Reusable visual samples</h1><p>Sample text only. This design proposal does not build or publish a lesson.</p>
+{guidance}
 {markup}
 </main></body></html>\n'''

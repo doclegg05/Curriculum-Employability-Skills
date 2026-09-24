@@ -23,13 +23,12 @@ test('committed v2 schema is current and v1 remains accepted', () => {
   }
 });
 
-test('closed v2 authority rejects malformed arrays, colors, fonts, styles, unsafe contrast and injected CSS', () => {
+test('closed v2 authority rejects malformed arrays, unknown colors, fonts, styles and injected CSS', () => {
   const changes = [
     p => { p.design.samples.boxes.push('extra'); },
     p => { p.design.samples.boxes[0] = { html: '<script>' }; },
     p => { p.design.samples.boxes[0] = 'x'.repeat(catalog.sampleLimits.box + 1); },
     p => { p.design.roles.sidebar = '#ffffff'; },
-    p => { p.design.roles.body = p.design.roles.contentBackground; },
     p => { p.design.fonts.body = 'Franklin Gothic Book'; },
     p => { p.design.slides.cards.count = 3; },
     p => { p.design.slides.cards.titleBar = 'false'; },
@@ -114,18 +113,18 @@ test('v2 synthetic save/open/revision conflict/retry and receipt remain lossless
   assert.equal((await service.request('status', { submissionId: sent.body.submissionId })).body.status, 'received');
 });
 
-test('previously saved v2 divider colors open unchanged, but unsafe new writes require explicit repair', async () => {
+test('low-contrast choices save and reopen unchanged while stale writes remain blocked', async () => {
   const selection = payload(); selection.design.roles.dividerBackground = 'accent';
   const service = memoryService(selection);
   assert.deepEqual((await service.request('open')).body.selection, selection);
   assert.deepEqual((await service.request('openRevision', { revision: 'a'.repeat(40) })).body.selection, selection);
-  assert(selectionErrors(selection, selection.lesson.id).some(error => error.includes('chapter divider background')));
-  const blocked = await service.request('save', { selection, expectedRevision: 'a'.repeat(40), mutationId: randomUUID() });
-  assert.equal(blocked.status, 400); assert.equal(service.writes, 0);
-  const corrected = structuredClone(selection); corrected.design.roles.dividerBackground = 'dark';
-  const saved = await service.request('save', { selection: corrected, expectedRevision: 'a'.repeat(40), mutationId: randomUUID() });
+  Object.assign(selection.design.roles, { titleBackground: 'mauve', titleBackgroundEnd: 'accent', titleText: 'light', subtitle: 'light', body: 'gold', heading: 'accent' });
+  assert.deepEqual(selectionErrors(selection, selection.lesson.id), []);
+  const saved = await service.request('save', { selection, expectedRevision: 'a'.repeat(40), mutationId: randomUUID() });
   assert.equal(saved.status, 200, JSON.stringify(saved));
-  assert.deepEqual((await service.request('open')).body.selection.design.roles, { ...selection.design.roles, dividerBackground: 'dark' });
+  assert.deepEqual((await service.request('open')).body.selection, selection);
+  assert.deepEqual((await service.request('openRevision', { revision: saved.body.revision })).body.selection, selection);
+  assert.equal((await service.request('save', { selection, expectedRevision: 'b'.repeat(40), mutationId: randomUUID() })).status, 409);
 });
 
 test('staged service includes every v2 model authority dependency', async () => {

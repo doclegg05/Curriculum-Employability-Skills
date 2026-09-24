@@ -1315,14 +1315,16 @@ function addColorControls(panel,roleIds){
  const palette=document.createElement('div');palette.className='paint-palette';palette.setAttribute('role','group');palette.setAttribute('aria-label',role.label+' colors');
  for(const color of catalog.palette){
   const available=Model.colorAvailability(catalog,state.design,role.id,color.id);
-  const b=document.createElement('button');b.type='button';b.className='paint-chip';b.id='paint-'+role.id+'-'+color.id;b.dataset.color=color.id;b.setAttribute('aria-pressed',String(state.design.roles[role.id]===color.id));b.setAttribute('aria-disabled',String(!available.ok));
-  b.setAttribute('aria-label',color.name+(state.design.roles[role.id]===color.id?' selected':'')+(!available.ok?'. Unavailable: '+available.reason:''));
+  const b=document.createElement('button');b.type='button';b.className='paint-chip';b.id='paint-'+role.id+'-'+color.id;b.dataset.color=color.id;b.setAttribute('aria-pressed',String(state.design.roles[role.id]===color.id));
+  b.setAttribute('aria-label',color.name+(state.design.roles[role.id]===color.id?' selected':'')+(available.warnings.length?'. Contrast advisory; selectable.':''));
   b.innerHTML='<span class="paint-swatch" style="background:'+color.hex+'">'+(state.design.roles[role.id]===color.id?'<span class="paint-check">✓</span>':'')+'</span><span>'+escapeHtml(color.name)+'</span>';
-  b.title=available.reason||'Use '+color.name+' for '+role.label.toLowerCase();
+  b.title='Use '+color.name+' for '+role.label.toLowerCase()+(available.warnings.length?'. Contrast advisory: '+available.warnings.join(' '):'');
   b.onclick=()=>{if(!available.ok){byId('colorHelp').textContent=available.reason;return;}changeDesign(role.label+': '+color.name,d=>{d.roles[role.id]=color.id;});};palette.append(b);
  }
  panel.append(palette);
- const help=document.createElement('p');help.id='colorHelp';help.className='helper';help.setAttribute('role','status');help.textContent='All 11 brand colors are shown. Unavailable text colors explain why when selected.';panel.append(help);
+ const help=document.createElement('div');help.id='colorHelp';help.className='helper';help.setAttribute('role','status');help.setAttribute('aria-atomic','true');
+ const issues=Model.contrastIssues(catalog,state.design).filter(issue=>issue.related.includes(role.id));
+ help.innerHTML=issues.length?contrastAdvisory(issues):'All 11 brand colors are selectable. Contrast guidance appears here when a choice may be harder to read.';panel.append(help);
 }
 function renderFonts(panel){
  heading(panel,'Choose your type','Headings and body text are independent. Keep the same two choices across the lesson for a consistent reading experience.');
@@ -1371,11 +1373,15 @@ function addSampleField(host,key,label,value){
   saveDraft();updatePreview();updateUndo();
  });field.append(input);host.append(field);
 }
+function contrastAdvisory(issues){
+ return '<strong>Contrast advisory</strong><p>Contrast is the difference between text and its background. Low contrast can make text harder to read.</p><ul>'+issues.map(issue=>'<li>'+escapeHtml(issue.message)+'</li>').join('')+'</ul><p>Consider a different text or background color. The team leader can keep this choice and save the design.</p>';
+}
 function renderReview(panel){
  heading(panel,'Your design, together','Review each slide type in the preview. Save the agreed design before requesting a review. Building a lesson is a separate step.');
  const errors=Model.validateDesign(catalog,state.design);
+ const issues=Model.contrastIssues(catalog,state.design);
  const summary=document.createElement('div');summary.className='review-summary';summary.innerHTML='<strong>'+escapeHtml(state.meta.lessons.find(l=>l.id===state.lessonId).title)+'</strong><p>'+escapeHtml(catalog.fonts.find(f=>f.id===state.design.fonts.heading).label)+' headings · '+escapeHtml(catalog.fonts.find(f=>f.id===state.design.fonts.body).label)+' body</p><p>'+state.design.slides.cards.count+' text boxes · '+(state.design.slides.cards.titleBar?'shared title bar':'no title bar')+' · '+escapeHtml(state.design.slides.cards.treatment)+'</p>';panel.append(summary);
- const valid=document.createElement('p');valid.className=errors.length?'readability-warning':'review-ready';valid.textContent=errors.length?'Resolve the readability notes before shared saving.':'Readability checks pass for this design’s modeled text/background pairs.';panel.append(valid);
+ const valid=document.createElement('div');valid.className=errors.length||issues.length?'readability-warning':'review-ready';valid.innerHTML=errors.length?escapeHtml(errors.join(' ')):issues.length?contrastAdvisory(issues):'Contrast guidance is met for the modeled text/background pairs. This is not a whole-design accessibility assessment.';panel.append(valid);
  const label=document.createElement('label');label.className='field';label.innerHTML='Notes for the design review';const notes=document.createElement('textarea');notes.id='reviewNotes';notes.rows=3;notes.value=state.unspoken;notes.oninput=()=>{state.unspoken=notes.value;saveDraft();};label.append(notes);panel.append(label);
  const disclosure=document.createElement('p');disclosure.className='helper';disclosure.textContent=ui.localPreview?'This review preview saves only to the local test service. Nothing is sent to Britt or published.':'A review proposal is stored in a public repository. Use work contact details and non-sensitive sample text. A saved design does not authorize a lesson build.';panel.append(disclosure);
  const save=document.createElement('button');save.className='btn btn-primary';save.textContent=ui.localPreview?'Save test design':'Save shared design';save.onclick=()=>cloudSave();panel.append(save);
@@ -1416,9 +1422,9 @@ function updatePreview(design=state.design){
  byId('previewName').textContent=VIEW_NAMES[state.previewView];
  document.querySelectorAll('#previewTabs [role=tab]').forEach(t=>{t.setAttribute('aria-selected',String(t.dataset.view===state.previewView));t.tabIndex=t.dataset.view===state.previewView?0:-1;});
  updateSimilarity(design);
- const errors=Model.validateDesign(catalog,design);const warn=byId('readabilityNotes');warn.hidden=!errors.length;warn.innerHTML=errors.length?'<strong>Before sharing this design</strong><ul>'+errors.map(e=>'<li>'+escapeHtml(e)+'</li>').join('')+'</ul><p>Your browser draft is kept. Change the named text or background color; other choices stay as they are.</p>':'';
- const dividerIssues=Model.contrastIssues(catalog,design).some(issue=>issue.surface==='dividerBackground');
- const repairs=document.createElement('div');repairs.className='readability-actions';if(errors.length)warn.append(repairs);
+ const errors=Model.validateDesign(catalog,design),issues=Model.contrastIssues(catalog,design);const warn=byId('readabilityNotes');warn.hidden=!errors.length&&!issues.length;warn.innerHTML=errors.length?'<strong>Design needs attention</strong><p>'+escapeHtml(errors.join(' '))+'</p>':issues.length?contrastAdvisory(issues):'';
+ const dividerIssues=issues.some(issue=>issue.surface==='dividerBackground');
+ const repairs=document.createElement('div');repairs.className='readability-actions';if(issues.length)warn.append(repairs);
  if(dividerIssues){
   const dividerRepair=document.createElement('button');dividerRepair.type='button';dividerRepair.className='text-link';dividerRepair.textContent='Change divider colors';
   dividerRepair.onclick=()=>{ui.activeRole='dividerBackground';state.step=5;byId('workspace').dataset.activeSurface='design';render();byId('colorRole').focus();};repairs.append(dividerRepair);
@@ -1426,8 +1432,8 @@ function updatePreview(design=state.design){
   const alternatives=['dark','royal','mauve','light'].filter(id=>id!==design.roles.dividerBackground&&!Model.colorAvailability(catalog,design,'dividerBackground',id).warnings.length).slice(0,2);
   for(const id of alternatives){const color=catalog.palette.find(c=>c.id===id),repair=document.createElement('button');repair.type='button';repair.className='text-link';repair.id='repair-divider-'+id;repair.textContent='Use '+color.name+' divider background';repair.onclick=()=>{changeDesign('Chapter divider background: '+color.name,d=>{d.roles.dividerBackground=id;});document.querySelector('#previewTabs [aria-selected="true"]').focus({preventScroll:true});};repairs.append(repair);}
  }
- if(errors.length&&!dividerIssues){const repair=document.createElement('button');repair.className='text-link';repair.textContent='Go to color controls';repair.onclick=()=>{state.step=2;byId('workspace').dataset.activeSurface='design';render();};repairs.append(repair);}
- byId('liveRegion').textContent=VIEW_NAMES[state.previewView]+' preview updated.';
+ if(issues.length&&!dividerIssues){const repair=document.createElement('button');repair.className='text-link';repair.textContent='Explore color options';repair.onclick=()=>{state.step=2;byId('workspace').dataset.activeSurface='design';render();};repairs.append(repair);}
+ byId('liveRegion').textContent=VIEW_NAMES[state.previewView]+' preview updated.'+(issues.length?' Contrast advisory: '+issues.map(issue=>issue.message).join(' ')+' The team leader can keep this choice and save the design.':'');
 }
 function showView(view){state.previewView=view;ui.previewPinned=true;if(STEPS[state.step].id==='fonts')render(false);else{updatePreview();saveDraft();}}
 function render(focus=true){

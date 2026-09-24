@@ -159,7 +159,8 @@ def custom_checks(payload: dict, schema: dict) -> tuple[list[str], list[str]]:
 def validate_payload(payload: dict, schema: dict) -> tuple[list[str], list[str]]:
     if isinstance(payload, dict) and payload.get("schema") == "bespoke-selection/v2":
         try:
-            return model_result(payload)["errors"], []
+            result = model_result(payload)
+            return result["errors"], result["warnings"]
         except ValueError as exc:
             return [str(exc)], []
     errors = validate_against_schema(payload, schema)

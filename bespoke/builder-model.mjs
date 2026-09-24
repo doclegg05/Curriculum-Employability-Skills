@@ -73,7 +73,7 @@ export function applyPreset(catalog, id, currentDesign) {
   return design;
 }
 
-/** JSON-schema mirrors shape validation; the model additionally enforces brand contrast. */
+/** JSON-schema mirrors structural validation. Contrast is advisory, not validity. */
 export function designSchema(catalog) {
   const record = properties => ({ type: 'object', additionalProperties: false, required: Object.keys(properties), properties });
   const enumeration = values => ({ enum: values });
@@ -88,7 +88,7 @@ export function designSchema(catalog) {
   });
 }
 
-/** Structural validity is separate from readability: a draft may need repair without losing its choices. */
+/** Structural validity is separate from the team's visual/readability decisions. */
 export function structuralErrors(catalog, design) {
   const errors = [];
   const keys = (value, allowed, label) => {
@@ -123,7 +123,7 @@ function gradientSamples(first, second) {
   return Array.from({ length: 33 }, (_, index) => `#${a.map((v, channel) => Math.round(v + (b[channel] - v) * index / 32).toString(16).padStart(2, '0')).join('')}`);
 }
 
-/** Detailed rules power both save validation and per-swatch explanations. Accent edges are decorative. */
+/** Nonblocking contrast guidance, including gradient and decorative pattern ink. */
 export function contrastIssues(catalog, design) {
   if (structuralErrors(catalog, design).length) return [];
   const issues = [];
@@ -133,11 +133,8 @@ export function contrastIssues(catalog, design) {
     const bases = gradientEnd ? gradientSamples(bg.hex, color(gradientEnd).hex) : [bg.hex];
     const surfaces = patterned ? patternedSurfaces(catalog, design, surface, bases) : bases;
     const ratio = Math.min(...surfaces.map(hex => contrast(fg.hex, hex)));
-    if (ratio + 1e-9 < minimum) issues.push({ role, surface, ratio, minimum, related: [role, surface, ...(gradientEnd ? [gradientEnd] : []), ...(patterned ? ['background'] : [])], message: `${catalog.roles.find(r => r.id === role).label}: ${fg.name} on ${catalog.roles.find(r => r.id === surface).label.toLowerCase()} (${bg.name}${gradientEnd ? ` to ${color(gradientEnd).name}` : ''}${patterned && design.background !== 'plain' ? `, ${catalog.backgrounds.find(item => item.id === design.background).label}` : ''}) is ${ratio.toFixed(2)}:1; needs ${minimum}:1. Choose a different text color or background.` });
+    if (ratio + 1e-9 < minimum) issues.push({ role, surface, ratio, minimum, related: [role, surface, ...(gradientEnd ? [gradientEnd] : []), ...(patterned ? ['background'] : [])], message: `${catalog.roles.find(r => r.id === role).label}: ${fg.name} on ${catalog.roles.find(r => r.id === surface).label.toLowerCase()} (${bg.name}${gradientEnd ? ` to ${color(gradientEnd).name}` : ''}${patterned && design.background !== 'plain' ? `, ${catalog.backgrounds.find(item => item.id === design.background).label}` : ''}) measures ${ratio.toFixed(2)}:1, below the ${minimum}:1 guideline for ${minimum === 3 ? 'headings' : 'supporting and body text'}.` });
   };
-  for (const role of catalog.roles.filter(r => r.kind === 'text')) {
-    if (catalog.notText.includes(design.roles[role.id])) issues.push({ role: role.id, related: [role.id], message: `${role.label}: ${color(role.id).name} is reserved for shapes and backgrounds, not text, in the SPOKES brand.` });
-  }
   const end = design.slides.title.colors === 'gradient' || design.slides.title.layout === 'split' ? 'titleBackgroundEnd' : undefined;
   textPair('titleText', 'titleBackground', 3, end, true);
   textPair('subtitle', 'titleBackground', 4.5, end, true);
@@ -149,9 +146,9 @@ export function contrastIssues(catalog, design) {
   return issues;
 }
 
-export const validateDesign = (catalog, design) => [...structuralErrors(catalog, design), ...contrastIssues(catalog, design).map(issue => issue.message)];
+export const validateDesign = (catalog, design) => structuralErrors(catalog, design);
 
-/** All eleven remain visible. Unsafe text is unavailable; surface choices retain other values and expose repair warnings. */
+/** Every brand color is selectable for every role; warnings never veto a choice. */
 export function colorAvailability(catalog, design, roleId, colorId) {
   const role = catalog.roles.find(item => item.id === roleId);
   if (!role || !findColor(catalog, colorId)) return { ok: false, reason: 'Choose an existing role and brand color.', warnings: [] };
@@ -159,7 +156,7 @@ export function colorAvailability(catalog, design, roleId, colorId) {
   const shapeErrors = structuralErrors(catalog, trial);
   if (shapeErrors.length) return { ok: false, reason: shapeErrors[0], warnings: shapeErrors };
   const warnings = contrastIssues(catalog, trial).filter(issue => issue.related.includes(roleId)).map(issue => issue.message);
-  return { ok: role.kind !== 'text' || !warnings.length, reason: role.kind === 'text' ? warnings.join(' ') : '', warnings };
+  return { ok: true, reason: '', warnings };
 }
 
 export function roleOptions(catalog, design, roleId) {
@@ -312,6 +309,6 @@ export function migrateV1(payload, catalog, meta = {}) {
   if (typeof sampleSubtitle === 'string') design.samples.subtitle = sampleSubtitle.slice(0, catalog.sampleLimits.subtitle);
   if (typeof payload.sampleContent?.bullets === 'string') { design.samples.boxes[0] = payload.sampleContent.bullets.slice(0, catalog.sampleLimits.box); design.slides.cards.treatment = 'bullets'; }
   if (typeof payload.sampleContent?.mythReality === 'string') design.samples.boxes[1] = payload.sampleContent.mythReality.slice(0, catalog.sampleLimits.box);
-  warnings.push(...validateDesign(catalog, design).map(error => `Readability needs review: ${error}`));
+  warnings.push(...contrastIssues(catalog, design).map(issue => `Contrast advisory: ${issue.message}`));
   return { design, warnings };
 }

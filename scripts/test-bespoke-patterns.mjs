@@ -6,7 +6,7 @@ import path from 'node:path';
 import { execFileSync } from 'node:child_process';
 import { chromium } from 'playwright';
 import catalog from '../bespoke/builder-catalog.json' with { type: 'json' };
-import { defaultDesign, cssForDesign, renderSlide, validateDesign } from '../bespoke/builder-model.mjs';
+import { defaultDesign, cssForDesign, renderSlide, contrastIssues } from '../bespoke/builder-model.mjs';
 import { createDevServer } from './bespoke-dev-server.mjs';
 import { pixelDifference } from './bespoke-pixel-check.mjs';
 const root = path.resolve(import.meta.dirname, '..');
@@ -52,7 +52,7 @@ try {
       const original = structuredClone(design), shots = new Map();
       for (const pattern of patterns) {
         design.background = pattern;
-        assert.deepEqual(validateDesign(catalog, design), [], `${base}/${pattern} readability`);
+        assert.deepEqual(contrastIssues(catalog, design), [], `${base}/${pattern} readability`);
         const shot = await show(design); shots.set(pattern, shot); count++;
         const artifact = await show(design, 'divider', generatedFor(design));
         assert.equal((await pixelDifference(page, shot, artifact)).meanChannelDelta, 0, `${base}/${pattern}: artifact differs from the preview`); parity++;

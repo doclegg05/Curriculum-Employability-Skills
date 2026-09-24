@@ -115,10 +115,6 @@
       "hex": "#ffffff"
     }
   ],
-  "notText": [
-    "gold",
-    "accent"
-  ],
   "roles": [
     {
       "id": "sidebar",

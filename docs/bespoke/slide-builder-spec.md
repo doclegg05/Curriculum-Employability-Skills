@@ -37,22 +37,22 @@ A team picks from the 11-color palette in `template.html` `:root` (CLR-01). Pick
 | `sidebar` | Sidebar background | Text color is chosen for it. The builder overrides all of the template's sidebar text rules, which assume a dark sidebar and pass 4.5:1 only on Navy and Royal |
 | `titleBackground` | Title slide background, first gradient stop, left panel of the split layout | |
 | `titleBackgroundEnd` | Second gradient stop, right panel of the split layout | |
-| `titleText` | Title | Both title backgrounds: 3:1 (large text) |
-| `subtitle` | Subtitle and copyright line | Both title backgrounds: 4.5:1 |
-| `contentBackground` | Content slide background. Only White or Mist | |
+| `titleText` | Title and divider headings | Title/divider surfaces: 3:1 guidance |
+| `subtitle` | Subtitle, copyright and divider supporting text | Title/divider surfaces: 4.5:1 guidance |
+| `contentBackground` | Content slide background; any of the eleven colors | |
 | `heading` | Slide and card headings | Content background: 3:1 |
-| `body` | Paragraphs, card text, list text. Only Royal, Navy or Gray | Content background: 4.5:1 |
-| `accent` | Rules, card edges, list arrows, active chapter | Content background: 3:1 (WCAG 1.4.11) |
+| `body` | Paragraphs, card text, list text; any of the eleven colors | Content background: 4.5:1 guidance |
+| `accent` | Decorative rules and card edges | Decorative accents have no text-contrast advisory |
 | `button` | Handout and video buttons | Text color is chosen for it |
-| `dividerBackground` | Chapter divider background | Text color is chosen for it |
+| `dividerBackground` | Chapter divider background | Explicit titleText and subtitle roles; advisory contrast |
 
-The rules:
+The color policy, updated September 24, 2026 by explicit user direction:
 
-- A role may use the team's picked colors plus the neutrals White, Mist, Royal, Navy and Gray. Neutrals are always available so every design can stay readable.
-- Gold and Green never color text (CLR-05, CLR-06).
-- On a button, divider or solid activity box, the builder picks White or Royal text, whichever contrasts more. Every palette color has one of them at 4.5:1 or better.
-- Options that fail a rule are shown switched off with the ratio and the requirement ("1.1:1 on White, needs 3:1"). This is what the mockup does.
-- Slide pieces declare every text-on-surface pair they create, including tinted surfaces. A design is valid only if every pair it produces passes. The same check runs in the browser, the Netlify service and the Python submission tools.
+- All eleven existing brand colors are selectable for every role, including Gold and Green text. No palette membership, disabled swatches, or crossed-out choices.
+- Title/divider heading and supporting-text colors are explicit. Sidebar and button surfaces retain automatic White/Royal ink; decorative pattern ink remains adaptive without changing saved roles.
+- Contrast is the difference between text and its background. Low contrast can make text harder to read. Report actual modeled ratios against the existing 3:1 heading and 4.5:1 supporting/body-text guidelines, including gradient and pattern samples.
+- These are advisories. The team leader can keep the design through preview, review, save/reopen and generated artifacts. Alternatives are suggestions, not requirements. No forced override or approval step.
+- Schema/catalog, font/layout, security, authorization, conflict and receipt rules remain enforced. This policy supersedes the earlier blocking text-color and contrast requirements for the v2 builder; it does not authorize lesson publication.
 
 ## Slide pieces
 
@@ -79,7 +79,7 @@ The pieces live in one data file, `SPOKES Builder/role-components.json`. It also
 | Activity | Layout | Box, callout, label banner, side label |
 | Background | Pattern | Plain, dot grid, diagonal, crosshatch |
 
-That is 57 samples across 18 decisions. A few combinations don't work together (split panels with light title colors, a band divider with light colors, a label banner with a pill label). The data file lists them, and the builder switches them off with the reason, the same way it handles an unreadable color.
+That original proposal contains 57 samples across 18 decisions. The current implementation catalog is the authority for available layout options. Contrast alone never disables an available color or layout choice; it produces advisory guidance.
 
 **Fonts.** SPOKES-STANDARD keeps one font pairing across a lesson (THM-02) and has headings use the heading font (TYP-03). So teams choose the pairing once, in step 3, and each card type gets a title style (regular, large or small caps) within the heading font. A per-card font choice would break both rules. The validator only warns on hard-coded font names, so it would not catch the break.
 

@@ -1,5 +1,8 @@
 # BeSpoke guided builder — local verification, September 24, 2026
 
+This report is chronological. The final advisory-color follow-up supersedes earlier
+contrast-blocking conclusions; earlier entries describe the policy tested at that time.
+
 ## Result and boundary
 
 The v2 reusable visual-design builder is implemented on `codex/bespoke-guided-builder`, based on remote main `04f6f9fd3780a418ad3667d1c42184fe60100560`. A separate managed worktree and port preserve the original checkout, unfinished Claude worktree, and original Safari draft.
@@ -245,3 +248,72 @@ pixel matrix and generated-artifact checks. Existing report-only title-layout
 warnings and lesson accessibility baselines were unchanged. The original checkout
 remained clean. No production deployment, merge, Send, private codes, schema change
 or released-lesson edit was involved.
+
+## Follow-up: the team leader retains color decisions
+
+Explicit user direction supersedes the earlier blocking contrast and Gold/Green-text
+rules for the v2 builder. All eleven existing brand colors are now selectable for
+every paint role. Low contrast no longer disables or crosses out a swatch and never
+silently changes the selected text or background. The selected check mark, keyboard
+focus, cumulative preview, presets and Undo behavior remain intact.
+
+`validateDesign` now returns structural errors only. `contrastIssues` independently
+provides measured, nonblocking guidance. This separation reaches the browser's save
+validation, shared-save service, Python validator/model bridge, proposal assembler
+and generated component contract. The closed schema, palette/font/layout membership,
+sample bounds, escaping, access controls, conflict checks and receipts remain enforced.
+There is no new role, authorization bypass, approval checkbox or persisted override.
+The saved-design shape is unchanged. The obsolete `notText` restriction is removed
+from the v2 catalog; the generated schema description explains the new policy.
+
+The advisory explains that contrast is the difference between text and its background
+and that low contrast can make text harder to read. Each pair shows its actual modeled
+ratio and the existing 3:1 heading or 4.5:1 supporting/body-text guideline. It suggests
+alternatives while explicitly saying the team leader can keep and save the choice.
+The palette help, preview and Review step expose the guidance; the live region
+announces it. Optional background alternatives still change only the named background
+with Undo. The separate preset-confirmation opt-out never suppresses advisories.
+
+Gradient and pattern measurement is unchanged: 33 gradient samples and nine pattern
+opacity samples, including crossing grid ink. Adaptive decorative ink and automatic
+button/sidebar ink remain intact; explicit saved text/background colors remain exact.
+The model checks all 121 role/color selections. White on a plain Mauve-to-Green title
+gradient reports 2.66:1 against the 3:1 heading guideline while remaining valid.
+
+Executed targeted checks verify desktop/390px phone selection and exact computed
+colors, explanatory warnings, all swatches enabled, selected/focus indicators, no
+strike-through, Undo/Redo, navigation, Review, reload/history, shared save/reopen and
+backup recovery. Cases include that Mauve-to-Green title, White-on-Green dividers,
+White supporting text, Green headings and Gold body text. An unknown color still
+fails import without replacing the draft; stale service writes still fail. Preset
+opt-out tests retain visible contrast advisories while permitting the chosen save.
+
+Python intake accepts these designs with warnings and writes exact selection values,
+CSS, contracts and reusable HTML. Contracts carry `contrastAdvisories`; sample HTML
+displays them with readable UI styling. The artifact checker still verifies actual
+component structure and CSS identity. Generated samples and canonical template CSS
+were browser-checked for exact title/divider/supporting/heading/body colors, including
+the gradient and Crosshatch pattern. No lesson file was authored or changed.
+
+Desktop and phone screenshots were inspected together. The controls and advisory
+copy pass axe and overflow checks. Intentionally low-contrast sample content is
+excluded from the advisory-scenario axe scan; this is not a claim that the chosen
+design meets accessibility guidance. Other safe-state checks retain their coverage.
+Screenshots and logs are outside Git in the existing preview runtime under
+`contrast-review/`, `contrast-browser.log` and `contrast-quality.log`.
+
+The full `bash scripts/quality.sh` gate passed: 47 validator and 36 BeSpoke Python
+tests, 13 model groups, eight similarity tests, 46 Node service/contract/server
+tests, 27 legacy workflows, all 13 builder workflows, 70 pattern renders with 140
+distinct-pixel and 80 artifact-parity comparisons, generated-output checks, schema
+checks and existing lesson baselines. Existing report-only layout warnings and
+committed lesson accessibility exceptions are unchanged.
+
+The port 8766 service was gracefully restarted with the updated model authority;
+its encrypted synthetic runtime was backed up outside Git and remained byte-identical
+through restart. The saved synthetic design still opens. All current static assets
+match disk over HTTP with `Cache-Control: no-store`. The original checkout is clean
+and port 8765 still responds. The user's Safari page, prompt, storage and active
+draft were never operated or refreshed; their existing page-update flow loads the
+new policy. Actual Safari acceptance is not claimed. No production configuration,
+private team access, real Send, deployment, merge, new PR or released lesson changed.

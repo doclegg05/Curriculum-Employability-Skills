@@ -121,11 +121,11 @@ async function assertNoOverflow(page, label) {
   const metrics = await page.evaluate(() => ({ viewport: innerWidth, body: document.body.scrollWidth, html: document.documentElement.scrollWidth }));
   assert(metrics.body <= metrics.viewport + 1 && metrics.html <= metrics.viewport + 1, `${label}: ${JSON.stringify(metrics)}`);
 }
-async function axe(page, label) {
+async function axe(page, label, { excludePreview = false } = {}) {
   await page.addScriptTag({ content: axeSource });
   // The watermark is intentionally faint decoration, hidden from assistive tech;
   // the visible chapter label supplies the information and stays in this scan.
-  const violations = await page.evaluate(async () => (await window.axe.run({ exclude: [['.slide-watermark[aria-hidden="true"]']] }, { runOnly: { type: 'tag', values: ['wcag2a', 'wcag2aa', 'wcag21aa'] } })).violations.map(item => ({ id: item.id, impact: item.impact, nodes: item.nodes.map(node => ({ target: node.target, message: node.failureSummary })) })));
+  const violations = await page.evaluate(async excludePreview => (await window.axe.run({ exclude: [['.slide-watermark[aria-hidden="true"]'], ...(excludePreview ? [['#modelStage']] : [])] }, { runOnly: { type: 'tag', values: ['wcag2a', 'wcag2aa', 'wcag21aa'] } })).violations.map(item => ({ id: item.id, impact: item.impact, nodes: item.nodes.map(node => ({ target: node.target, message: node.failureSummary })) })), excludePreview);
   assert.deepEqual(violations, [], `${label}: ${JSON.stringify(violations, null, 2)}`);
 }
 
@@ -158,10 +158,11 @@ try {
     await page.locator('#colorRole').selectOption('body');
     const beforeUnsafe = await design(page);
     const gold = page.locator('[data-color="gold"]');
-    assert.equal(await gold.getAttribute('aria-disabled'), 'true');
+    assert.equal(await gold.getAttribute('aria-disabled'), null);
     await gold.focus(); await page.keyboard.press('Enter');
-    assert.match(await page.locator('#colorHelp').textContent(), /reserved|not text/);
-    assert.deepEqual(await design(page), beforeUnsafe);
+    assert.match(await page.locator('#colorHelp').textContent(), /below the 4.5:1 guideline/);
+    assert.equal((await design(page)).roles.body, 'gold');
+    await page.locator('#btnUndo').click(); assert.deepEqual(await design(page), beforeUnsafe);
     await go(page, 'Fonts & background');
     assert.equal(await page.locator('#font-heading option').count(), 12);
     assert.equal(await page.locator('#font-body option').count(), 12);
@@ -255,12 +256,13 @@ try {
     assert.equal(await page.locator('#presetDialog').isVisible(), false);
     assert.equal((await design(page)).startingPoint, 'outspoken');
     assert.deepEqual((await design(page)).samples, before.design.samples);
-    // Unrelated readability warnings and save refusals remain active while suppressed.
+    // Contrast advisories remain active while preset confirmations are suppressed.
     await paint(page, 'titleBackground', 'light');
     assert(await page.locator('#readabilityNotes').isVisible());
     const saves = actions.filter(a => a.action === 'save').length;
-    await page.locator('#btnSave').click(); await page.locator('#fileStatus').filter({ hasText:'Could not save.' }).waitFor();
-    assert.equal(actions.filter(a => a.action === 'save').length, saves);
+    await save(page);
+    assert.equal(actions.filter(a => a.action === 'save').length, saves + 1);
+    assert(await page.locator('#readabilityNotes').isVisible());
     await page.locator('#btnUndo').click(); await save(page);
     const backup = await download(page), remote = await openService(server);
     assert.deepEqual(backup.payload.design, remote.selection.design);
@@ -424,7 +426,7 @@ try {
         assert.equal(await page.evaluate(() => document.activeElement.id), 'paint-dividerBackground-'+id);
         await assertDivider(page, rgb);
         assert.deepEqual(await design(page), { ...before, roles: { ...before.roles, dividerBackground: id } });
-        assert.match(await page.locator('#readabilityNotes').textContent(), /chapter divider background.*needs/);
+        assert.match(await page.locator('#readabilityNotes').textContent(), /chapter divider background.*below the/);
         assert.equal(await page.locator('#repair-divider-dark').count(), 1);
         if (id === 'accent' && process.env.BESPOKE_REVIEW_DIR) {
           await fs.mkdir(process.env.BESPOKE_REVIEW_DIR, { recursive: true });
@@ -434,9 +436,8 @@ try {
         }
       }
       const invalid = await draft(page), saves = actions.filter(a => a.action === 'save').length;
-      await page.locator('#btnSave').click();
-      await page.locator('#fileStatus').filter({ hasText: 'Could not save.' }).waitFor();
-      assert.equal(actions.filter(a => a.action === 'save').length, saves);
+      await save(page);
+      assert.equal(actions.filter(a => a.action === 'save').length, saves + 1);
       const backup = await download(page);
       const fromFile = await makePage({ mobile }); await upload(fromFile, backup.payload, 'divider-repair.json');
       assert.deepEqual(await design(fromFile), invalid.design);
@@ -576,33 +577,55 @@ try {
     }
   });
 
-  await scenario('surface changes retain choices, show repair guidance and refuse unreadable shared saves', async ({ makePage, actions }) => {
-    const page = await makePage(); await fillTeam(page);
-    const initial = await design(page);
-    await paint(page, 'titleBackground', 'light');
-    assert.equal((await design(page)).roles.titleText, initial.roles.titleText);
-    assert.equal((await design(page)).roles.subtitle, initial.roles.subtitle);
-    assert(await page.locator('#readabilityNotes').isVisible());
-    assert.match(await page.locator('#readabilityNotes').textContent(), /needs .*:1/);
-    const saves = actions.filter(action => action.action === 'save').length;
-    await page.locator('#btnSave').click();
-    await page.locator('#fileStatus').filter({ hasText: 'Could not save.' }).waitFor();
-    assert.equal(actions.filter(action => action.action === 'save').length, saves);
-    const invalidDraft = await design(page);
-    const repairBackup = await download(page);
-    const repairPage = await makePage();
-    await upload(repairPage, repairBackup.payload, 'needs-readability-repair.json');
-    assert.deepEqual(await design(repairPage), invalidDraft);
-    assert(await repairPage.locator('#readabilityNotes').isVisible(), 'An unreadable backup stays recoverable for repair.');
-    await page.reload(); await ready(page);
-    assert.deepEqual(await design(page), invalidDraft);
-    await paint(page, 'titleBackgroundEnd', 'light');
-    await paint(page, 'dividerBackground', 'light');
-    await paint(page, 'titleText', 'royal');
-    await paint(page, 'subtitle', 'royal');
-    assert.equal(await page.locator('#readabilityNotes').isVisible(), false);
-    await save(page);
-    assert.equal(actions.filter(action => action.action === 'save').length, saves + 1);
+  await scenario('low-contrast text remains a team choice through preview, review, history and shared recovery', async ({ makePage, server }) => {
+    for (const mobile of [false, true]) {
+      const page = await makePage({ mobile }); await fillTeam(page);
+      await go(page, 'Fonts & background'); await choose(page, 'Background pattern', 'plain');
+      await paint(page, 'titleBackground', 'mauve'); await paint(page, 'titleBackgroundEnd', 'accent');
+      await paint(page, 'titleText', 'royal');
+      const before = await design(page);
+      await page.locator('[data-color="light"]').focus(); await page.keyboard.press('Enter');
+      assert.equal((await design(page)).roles.titleText, 'light');
+      assert.equal(await page.locator('.paint-chip').count(), 11);
+      assert.equal(await page.locator('.paint-chip[aria-disabled="true"]').count(), 0);
+      assert.equal(await page.locator('[data-color="light"]').getAttribute('aria-pressed'), 'true');
+      assert.equal(await page.locator('[data-color="light"] .paint-swatch').evaluate(el => getComputedStyle(el, '::after').content), 'none');
+      const help = await page.locator('#colorHelp').textContent();
+      assert.match(help, /Contrast is the difference between text and its background/);
+      assert.match(help, /Mauve to Green.*2.66:1.*3:1 guideline/);
+      assert.match(help, /team leader can keep this choice and save/);
+      assert.match(await page.locator('#liveRegion').textContent(), /Contrast advisory/);
+      const rendered = await page.locator('#modelStage [data-kind="title"]').evaluate(el => ({ color: getComputedStyle(el.querySelector('.slide-title-text')).color, background: getComputedStyle(el).backgroundImage }));
+      assert.equal(rendered.color, 'rgb(255, 255, 255)');
+      assert(rendered.background.includes('rgb(167, 37, 63)') && rendered.background.includes('rgb(55, 181, 80)'));
+      // Intentionally low-contrast sample content is excluded; all editor controls and warnings remain accessible.
+      await axe(page, 'Advisory editor '+(mobile?'phone':'desktop'), { excludePreview: true });
+      await assertNoOverflow(page, 'Advisory editor');
+      if(process.env.BESPOKE_REVIEW_DIR){await fs.mkdir(process.env.BESPOKE_REVIEW_DIR,{recursive:true});await page.screenshot({path:path.join(process.env.BESPOKE_REVIEW_DIR,'contrast-advisory-'+(mobile?'phone':'desktop')+'.png'),fullPage:true});}
+      await page.locator('#btnUndo').click(); assert.deepEqual(await design(page), before);
+      await page.locator('#btnRedo').click(); assert.equal((await design(page)).roles.titleText, 'light');
+      for (const [role, color] of [['subtitle','light'], ['dividerBackground','accent'], ['heading','accent'], ['body','gold']]) await paint(page, role, color);
+      const chosen = await design(page);
+      assert.equal(await page.locator('#modelStage .slide-card .slide-body').first().evaluate(el => getComputedStyle(el).color), 'rgb(211, 178, 87)');
+      await go(page, 'Review & save');
+      assert.match(await page.locator('#stepPanel .readability-warning').textContent(), /team leader can keep/);
+      await save(page); assert.deepEqual((await openService(server)).selection.design, chosen);
+      const backup = await download(page), savedHistory = (await draft(page)).changes;
+      assert.deepEqual(backup.payload.design, chosen);
+      await page.reload(); await ready(page);
+      assert.deepEqual(await design(page), chosen); assert.deepEqual((await draft(page)).changes, savedHistory);
+      const reopened = await makePage({ mobile }); assert.deepEqual(await design(reopened), chosen);
+      await go(reopened, 'Chapter divider');
+      assert.equal(await reopened.locator('#modelStage h2').evaluate(el => getComputedStyle(el).color), 'rgb(255, 255, 255)');
+      assert.match(await reopened.locator('#readabilityNotes').textContent(), /chapter divider background.*below the 3:1/);
+      const fromFile = await makePage({ mobile }); await upload(fromFile, backup.payload, 'advisory-design.json');
+      assert.deepEqual(await design(fromFile), chosen);
+      // Structural validation still rejects an unknown color and retains the current draft.
+      const malformed = structuredClone(backup.payload); malformed.design.roles.body = 'not-a-brand-color';
+      await fromFile.locator('#teamFileInput').setInputFiles({ name:'invalid.json', mimeType:'application/json', buffer:Buffer.from(JSON.stringify(malformed)) });
+      await fromFile.locator('#fileStatus').filter({ hasText: /Could not open/ }).waitFor();
+      assert.deepEqual(await design(fromFile), chosen);
+    }
   });
 
   await scenario('synthetic shared saves reopen exactly and stale writers retain a recoverable draft', async ({ makePage, server }) => {
@@ -716,4 +739,4 @@ if (failures.length) {
   console.error(JSON.stringify(failures, null, 2));
   console.error(`BeSpoke builder browser: ${passed} scenarios passed, ${failures.length} failed.`);
   process.exitCode = 1;
-} else console.log(`BeSpoke builder browser: ${passed} scenarios passed; no runtime errors, missing assets, external requests or accessibility violations (decorative aria-hidden watermark excluded).`);
+} else console.log(`BeSpoke builder browser: ${passed} scenarios passed; no runtime errors, missing assets, external requests or editor accessibility violations (decorative watermark and intentionally low-contrast previews excluded where documented).`);

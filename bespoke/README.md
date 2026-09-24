@@ -47,9 +47,11 @@ The guided steps are:
 All eleven swatches stay visible, including White. Colors are assigned directly to
 sidebar, title background and its second color, title text, subtitle, content
 background, headings, body, accent, buttons and divider background. There is no
-preselected two-primary/three-secondary palette. Unsafe text/background combinations
-show an explanation; readability rules do not silently reset unrelated choices.
-Existing brand restrictions on Gold and Green text remain in the model. Decorative
+preselected two-primary/three-secondary palette. All eleven colors, including Gold
+and Green, are selectable for every text and background role. Low-contrast combinations show an advisory, never a veto or hidden
+recoloring. Contrast is the difference between text and its background; low contrast
+can make text harder to read. The warning gives the actual modeled ratio and the
+3:1 heading or 4.5:1 supporting/body-text guideline. The team leader can keep the choice. Decorative
 accents and text are separate roles. Selecting Buttons keeps the current preview
 and shows a temporary action-button sample when that slide has no button. On phones,
 the same sample also appears beside the palette. Video and Activity use their own
@@ -61,9 +63,11 @@ chapter headings. Subtitle & divider supporting text controls the title subtitle
 copyright, chapter label and divider supporting copy. Content headings/body remain
 independent. The divider step exposes these shared choices and the gradient's shared
 second color. Painting a divider background preserves all selected text colors;
-contrast failures keep the draft recoverable, show explicit repair actions, and block
-shared saves and generated output until repaired. Existing v2 files and shared
-revisions open with their original values, even if they now need a readability repair.
+contrast advisories offer optional color alternatives without blocking shared saves
+or generated output. Existing files and shared revisions retain their original values.
+Structural, schema, access and conflict checks still apply. Generated contracts and
+sample HTML carry the same nonblocking advisories. These warnings remain visible
+even when the separate preset-confirmation opt-out is enabled.
 
 **Fonts:** choose heading/title and body fonts independently from all twelve existing
 self-hosted families. The six former pairings remain available through their font

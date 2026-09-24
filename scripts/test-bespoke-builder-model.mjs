@@ -23,9 +23,11 @@ check('all 11 original palette colors and 12 existing families have local font a
 
 check('default and six editable brand presets are valid and independent copies', () => {
   assert.deepEqual(validateDesign(catalog, defaultDesign(catalog)), []);
+  assert.deepEqual(contrastIssues(catalog, defaultDesign(catalog)), []);
   for (const item of catalog.presets) {
     const design = applyPreset(catalog, item.id);
     assert.deepEqual(validateDesign(catalog, design), [], item.id);
+    assert.deepEqual(contrastIssues(catalog, design), [], item.id);
     design.roles.sidebar = 'mauve';
     design.slides.cards.count = '1';
     assert.deepEqual(item.design, applyPreset(catalog, item.id));
@@ -49,7 +51,13 @@ check('independent edits and preset changes preserve sample text and unrelated c
 
 check('every role offers the full palette; a surface change warns without mutating other choices', () => {
   const design = defaultDesign(catalog);
-  for (const role of catalog.roles) assert.equal(roleOptions(catalog, design, role.id).length, 11);
+  for (const role of catalog.roles) {
+    assert.equal(roleOptions(catalog, design, role.id).length, 11);
+    for (const color of catalog.palette) {
+      assert.equal(colorAvailability(catalog, design, role.id, color.id).ok, true, `${role.id}/${color.id}`);
+      assert.deepEqual(validateDesign(catalog, { ...design, roles: { ...design.roles, [role.id]: color.id } }), []);
+    }
+  }
   const white = colorAvailability(catalog, design, 'titleBackground', 'light');
   assert.equal(white.ok, true);
   assert(white.warnings.length);
@@ -57,7 +65,8 @@ check('every role offers the full palette; a surface change warns without mutati
   const candidate = clone(design);
   candidate.roles.titleBackground = 'light';
   assert.deepEqual(structuralErrors(catalog, candidate), []);
-  assert(validateDesign(catalog, candidate).some(error => error.includes('Title & divider headings')));
+  assert.deepEqual(validateDesign(catalog, candidate), []);
+  assert(contrastIssues(catalog, candidate).some(issue => issue.message.includes('Title & divider headings')));
   assert.doesNotThrow(() => renderSlide(catalog, candidate, 'title'));
   assert.doesNotThrow(() => cssForDesign(catalog, candidate));
   candidate.roles.titleBackgroundEnd = 'light';
@@ -67,20 +76,33 @@ check('every role offers the full palette; a surface change warns without mutati
   assert.deepEqual(validateDesign(catalog, candidate), []);
 });
 
-check('brand and contrast rules explain unsafe text and safe repairs', () => {
+check('contrast guidance explains low contrast without prohibiting any brand text color', () => {
   const design = defaultDesign(catalog);
   for (const id of ['gold', 'accent']) {
     const choice = colorAvailability(catalog, design, 'body', id);
-    assert.equal(choice.ok, false); assert.match(choice.reason, /reserved/);
+    assert.equal(choice.ok, true); assert.equal(choice.reason, '');
+    assert(choice.warnings.some(message => message.includes('below the 4.5:1 guideline')));
   }
-  assert.equal(colorAvailability(catalog, design, 'body', 'light').ok, false);
+  assert.equal(colorAvailability(catalog, design, 'body', 'light').ok, true);
   assert.equal(colorAvailability(catalog, design, 'body', 'royal').ok, true);
   assert.equal(colorAvailability(catalog, design, 'sidebar', 'gold').ok, true);
   const invalid = clone(design);
   invalid.roles.subtitle = 'light'; invalid.roles.titleBackgroundEnd = 'light';
-  assert(validateDesign(catalog, invalid).some(error => error.includes('Subtitle')));
-  invalid.slides.title.colors = 'solid'; invalid.slides.title.layout = 'left';
   assert.deepEqual(validateDesign(catalog, invalid), []);
+  assert(contrastIssues(catalog, invalid).some(issue => issue.role === 'subtitle'));
+  invalid.slides.title.colors = 'solid'; invalid.slides.title.layout = 'left';
+  assert.deepEqual(contrastIssues(catalog, invalid), []);
+});
+
+check('White on Mauve-to-Green reports the measured gradient guideline and remains valid', () => {
+  const design = defaultDesign(catalog);
+  Object.assign(design.roles, { titleBackground: 'mauve', titleBackgroundEnd: 'accent', titleText: 'light' });
+  design.background = 'plain'; design.slides.title.colors = 'gradient';
+  const issue = contrastIssues(catalog, design).find(issue => issue.role === 'titleText' && issue.surface === 'titleBackground');
+  assert.equal(issue.minimum, 3); assert.equal(issue.ratio.toFixed(2), '2.66');
+  assert.match(issue.message, /Mauve to Green.*2.66:1.*3:1 guideline/);
+  assert.deepEqual(validateDesign(catalog, design), []);
+  assert.equal(design.roles.titleText, 'light');
 });
 
 check('divider contrast checks selected text on solid and gradient backgrounds without repairing the draft', () => {
@@ -112,7 +134,7 @@ check('patterns retain roles and cover their rendered ink in title/divider contr
   for (const pattern of catalog.backgrounds) {
     design.background = pattern.id;
     const before = JSON.stringify(design);
-    assert.deepEqual(validateDesign(catalog, design), [], 'White on Blue stays readable through adaptive decorative ink.');
+    assert.deepEqual(contrastIssues(catalog, design), [], 'White on Blue stays readable through adaptive decorative ink.');
     if (pattern.id !== 'plain') assert.equal(patternFor(catalog, design, 'dividerBackground').ink, '#00133f');
     assert.equal(JSON.stringify(design), before);
   }
