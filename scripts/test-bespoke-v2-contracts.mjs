@@ -9,7 +9,7 @@ import { fileURLToPath, pathToFileURL } from 'node:url';
 import catalog from '../bespoke/builder-catalog.json' with { type: 'json' };
 import { defaultDesign, applyPreset } from '../bespoke/builder-model.mjs';
 import { selectionErrors, digest, canonicalJson } from '../netlify/functions/_shared/selection.mjs';
-import { handleAction, hashEditCode, LESSON_IDS } from '../netlify/functions/bespoke-handoff.mjs';
+import { handleAction, hashEditCode, LESSON_IDS, seal } from '../netlify/functions/bespoke-handoff.mjs';
 const root = path.resolve(path.dirname(fileURLToPath(import.meta.url)), '..');
 const legacy = JSON.parse(fs.readFileSync(path.join(root, 'scripts/test-fixtures/bespoke/selection-money-management.json')));
 const payload = () => ({ schema: 'bespoke-selection/v2', date: '2026-09-24', submittedAt: '2026-09-24T16:30:00.000Z', lesson: structuredClone(legacy.lesson), team: structuredClone(legacy.team), design: defaultDesign(catalog) });
@@ -65,7 +65,7 @@ test('incomplete current draft stays unsendable, while original incomplete v1 re
   assert.equal(selection.legacySelection.team.spokesperson.name, '');
 });
 
-function memoryService() {
+function memoryService(existingSelection) {
   let current = null, writes = 0, dispatched = 0, proposal = null, run = null;
   const revisions = new Map();
   const api = {
@@ -83,6 +83,10 @@ function memoryService() {
   };
   const code = 'synthetic-v2-team-access-code';
   const context = { github: api, token: 'synthetic', draftKey: Buffer.alloc(32, 4).toString('base64'), teamKeys: Object.fromEntries(LESSON_IDS.map(id => [id, hashEditCode(code)])) };
+  if (existingSelection) {
+    const envelope = seal(context.draftKey, { selection: existingSelection, receipts: [] }, existingSelection.lesson.id);
+    current = { sha: 'a'.repeat(40), envelope }; revisions.set(current.sha, structuredClone(current));
+  }
   const request = (action, fields = {}) => handleAction({ action, lessonId: legacy.lesson.id, editCode: code, ...fields }, context);
   return { request, get writes() { return writes; }, get dispatched() { return dispatched; }, received() { proposal = { url: 'https://example.invalid/synthetic-review' }; } };
 }
@@ -108,6 +112,20 @@ test('v2 synthetic save/open/revision conflict/retry and receipt remain lossless
   await service.request('send', { selection: revised, expectedRevision: updated.body.revision }); assert.equal(service.dispatched, 1);
   service.received();
   assert.equal((await service.request('status', { submissionId: sent.body.submissionId })).body.status, 'received');
+});
+
+test('previously saved v2 divider colors open unchanged, but unsafe new writes require explicit repair', async () => {
+  const selection = payload(); selection.design.roles.dividerBackground = 'accent';
+  const service = memoryService(selection);
+  assert.deepEqual((await service.request('open')).body.selection, selection);
+  assert.deepEqual((await service.request('openRevision', { revision: 'a'.repeat(40) })).body.selection, selection);
+  assert(selectionErrors(selection, selection.lesson.id).some(error => error.includes('chapter divider background')));
+  const blocked = await service.request('save', { selection, expectedRevision: 'a'.repeat(40), mutationId: randomUUID() });
+  assert.equal(blocked.status, 400); assert.equal(service.writes, 0);
+  const corrected = structuredClone(selection); corrected.design.roles.dividerBackground = 'dark';
+  const saved = await service.request('save', { selection: corrected, expectedRevision: 'a'.repeat(40), mutationId: randomUUID() });
+  assert.equal(saved.status, 200, JSON.stringify(saved));
+  assert.deepEqual((await service.request('open')).body.selection.design.roles, { ...selection.design.roles, dividerBackground: 'dark' });
 });
 
 test('staged service includes every v2 model authority dependency', async () => {

@@ -89,6 +89,7 @@ class V2SubmissionTests(unittest.TestCase):
 
     def test_invalid_v2_and_legacy_cannot_write_files(self):
         changes = [
+            lambda p: p["design"]["roles"].update(dividerBackground="accent"),
             lambda p: p["design"]["roles"].update(body=p["design"]["roles"]["contentBackground"]),
             lambda p: p["design"]["fonts"].update(heading="made-up-font"),
             lambda p: p["design"]["samples"]["boxes"].append("fifth"),

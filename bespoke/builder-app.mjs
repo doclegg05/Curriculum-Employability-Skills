@@ -652,7 +652,7 @@ const findOption=(family,slug)=>state.library?.families?.[family]?.options.find(
         return false;
       }
       if (result.selection) {
-        try { validateSelectionPayload(result.selection); }
+        try { validateSelectionPayload(result.selection,{draft:true}); }
         catch (error) {
           fileNotice("The shared design could not be opened. " + error.message + " Your browser draft is unchanged.");
           return false;
@@ -942,7 +942,7 @@ const findOption=(family,slug)=>state.library?.families?.[family]?.options.find(
         return;
       }
       if (result.selection) {
-        try { validateSelectionPayload(result.selection); }
+        try { validateSelectionPayload(result.selection,{draft:true}); }
         catch (error) {
           if (err) err.textContent = "The shared design could not be opened. " + error.message;
           return;
@@ -1261,10 +1261,24 @@ function addColorControls(panel,roleIds){
  const label=document.createElement('label');label.className='field';label.textContent='Element to paint';
  const select=document.createElement('select');select.id='colorRole';
  for(const id of roleIds){const role=catalog.roles.find(r=>r.id===id);const o=document.createElement('option');o.value=id;o.textContent=role.label;o.selected=id===ui.activeRole;select.append(o);}
- select.onchange=()=>{ui.activeRole=select.value;const role=ui.activeRole;if(role!=='button')state.previewView=role.startsWith('title')||role==='subtitle'?'title':role.startsWith('divider')?'divider':'cards';render(false);};label.append(select);panel.append(label);
+ select.onchange=()=>{
+  ui.activeRole=select.value;const role=ui.activeRole;
+  const sharedDividerRole=['titleText','subtitle','titleBackgroundEnd'].includes(role)&&state.previewView==='divider';
+  if(role!=='button'&&!sharedDividerRole)state.previewView=role.startsWith('title')||role==='subtitle'?'title':role.startsWith('divider')?'divider':'cards';
+  render(false);
+ };label.append(select);panel.append(label);
  const role=catalog.roles.find(r=>r.id===ui.activeRole);
  const hint=document.createElement('p');hint.className='helper';hint.textContent=role.note;panel.append(hint);
  if(role.id==='button')panel.insertAdjacentHTML('beforeend',buttonColorSample('buttonColorInline'));
+ if(role.id==='dividerBackground'){
+  const links=document.createElement('div');links.className='color-edit-links';panel.append(links);
+  for(const [id,label] of [['titleText','Edit divider heading'],['subtitle','Edit divider supporting text']]){
+   const edit=document.createElement('button');edit.type='button';edit.className='text-link';edit.id='edit-divider-'+id;
+   edit.textContent=label+': '+catalog.palette.find(c=>c.id===state.design.roles[id]).name;
+   edit.onclick=()=>{ui.activeRole=id;state.previewView='divider';render(false);byId('colorRole').focus();};links.append(edit);
+  }
+ }
+
  const palette=document.createElement('div');palette.className='paint-palette';palette.setAttribute('role','group');palette.setAttribute('aria-label',role.label+' colors');
  for(const color of catalog.palette){
   const available=Model.colorAvailability(catalog,state.design,role.id,color.id);
@@ -1302,7 +1316,7 @@ function renderSlideChoices(panel,kind){
   const colors=document.createElement('div');details.append(colors);addColorControls(colors,['titleBackground','titleBackgroundEnd','titleText','subtitle']);
   for(const [key,label] of [['title','Sample title'],['subtitle','Sample subtitle']])addSampleField(details,key,label,state.design.samples[key]);panel.append(details);
  }else if(kind==='divider'){
-  const details=document.createElement('details');details.className='inline-details';details.innerHTML='<summary>Divider color</summary>';addColorControls(details,['dividerBackground']);panel.append(details);
+  const colors=document.createElement('section');colors.innerHTML='<h2>Divider colors</h2><p class="helper">Heading and supporting-text colors are shared with the title slide. Content headings and body text stay independent.</p>';addColorControls(colors,['dividerBackground','titleText','subtitle','titleBackgroundEnd']);panel.append(colors);
  }else if(kind==='cards'){
   const details=document.createElement('details');details.className='inline-details';details.innerHTML='<summary>Try your own sample text</summary><p class="helper">These examples test the design. They are not your approved lesson content. Hidden boxes remain recoverable here.</p>';
   state.design.samples.boxes.forEach((text,i)=>addSampleField(details,'box-'+i,'Box '+(i+1)+(i>=Number(state.design.slides.cards.count)?' (kept in draft)':''),text));panel.append(details);
@@ -1367,7 +1381,16 @@ function updatePreview(design=state.design){
  document.querySelectorAll('#previewTabs [role=tab]').forEach(t=>{t.setAttribute('aria-selected',String(t.dataset.view===state.previewView));t.tabIndex=t.dataset.view===state.previewView?0:-1;});
  updateSimilarity(design);
  const errors=Model.validateDesign(catalog,design);const warn=byId('readabilityNotes');warn.hidden=!errors.length;warn.innerHTML=errors.length?'<strong>Before sharing this design</strong><ul>'+errors.map(e=>'<li>'+escapeHtml(e)+'</li>').join('')+'</ul><p>Your browser draft is kept. Change the named text or background color; other choices stay as they are.</p>':'';
- if(errors.length){const repair=document.createElement('button');repair.className='text-link';repair.textContent='Go to color controls';repair.onclick=()=>{state.step=2;byId('workspace').dataset.activeSurface='design';render();};warn.append(repair);}
+ const dividerIssues=Model.contrastIssues(catalog,design).some(issue=>issue.surface==='dividerBackground');
+ const repairs=document.createElement('div');repairs.className='readability-actions';if(errors.length)warn.append(repairs);
+ if(dividerIssues){
+  const dividerRepair=document.createElement('button');dividerRepair.type='button';dividerRepair.className='text-link';dividerRepair.textContent='Change divider colors';
+  dividerRepair.onclick=()=>{ui.activeRole='dividerBackground';state.step=5;byId('workspace').dataset.activeSurface='design';render();byId('colorRole').focus();};repairs.append(dividerRepair);
+  // Offer only explicit background repairs; the user's text colors never change here.
+  const alternatives=['dark','royal','mauve','light'].filter(id=>id!==design.roles.dividerBackground&&!Model.colorAvailability(catalog,design,'dividerBackground',id).warnings.length).slice(0,2);
+  for(const id of alternatives){const color=catalog.palette.find(c=>c.id===id),repair=document.createElement('button');repair.type='button';repair.className='text-link';repair.id='repair-divider-'+id;repair.textContent='Use '+color.name+' divider background';repair.onclick=()=>{changeDesign('Chapter divider background: '+color.name,d=>{d.roles.dividerBackground=id;});document.querySelector('#previewTabs [aria-selected="true"]').focus({preventScroll:true});};repairs.append(repair);}
+ }
+ if(errors.length&&!dividerIssues){const repair=document.createElement('button');repair.className='text-link';repair.textContent='Go to color controls';repair.onclick=()=>{state.step=2;byId('workspace').dataset.activeSurface='design';render();};repairs.append(repair);}
  byId('liveRegion').textContent=VIEW_NAMES[state.previewView]+' preview updated.';
 }
 function showView(view){state.previewView=view;ui.previewPinned=true;updatePreview();saveDraft();}

@@ -73,3 +73,14 @@ Wizard loads `SPOKES Builder/bespoke-library-catalog.json` (see companion card-l
 ### Historical concept brief
 
 `docs/briefs/instructor-lesson-studio-concept-2026-09-17.md` (when merged from the briefs PR). Follow where it does not conflict with this lock file — **decisions win**.
+
+
+## Divider text correction — September 24, 2026
+
+`titleText` is shared by the title and divider headings; `subtitle` is shared by the
+title subtitle/copyright and divider chapter labels/supporting text. Content `heading`
+and `body` stay independent. Explicit choices take precedence over background-derived
+ink. No additional persisted field or v2 migration is needed. Existing v2 drafts and
+shared revisions open unchanged with new readability warnings where necessary. New
+shared writes and artifacts require 3:1 heading and 4.5:1 supporting-text contrast on
+both title and divider surfaces, including gradient samples. Defaults/presets pass.

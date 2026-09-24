@@ -84,3 +84,55 @@ The user resumed editing; their subsequent preset confirmation was left untouche
 No saved selections were reseeded or cleared. The old checkout and port 8765 were
 untouched. Follow-up logs/screenshots are retained in the external preview runtime
 directory as `bespoke-button-*`; no production rollout occurred.
+
+## Follow-up: preserve explicit divider text colors
+
+The earlier renderer selected White or Royal ink from `dividerBackground`, ignoring
+saved `titleText` and `subtitle` choices. Divider headings now use `titleText`; chapter
+labels and supporting copy use `subtitle`. The decorative watermark also inherits
+`titleText`. Content heading/body remain independent. The catalog labels disclose
+the shared scope, the divider step exposes all relevant colors directly, and choosing
+a shared text role retains the divider preview. No persisted fields were added.
+
+Changing the divider to Green or White keeps White text and shows the actual result.
+Warnings name the affected surface and measured ratio; explicit background repair
+buttons preserve text and other selections and participate in Undo. Solid and gradient
+divider contrast is checked by the shared model (3:1 headings, 4.5:1 supporting copy).
+Existing structurally valid v2 local/file/shared/revision data opens unchanged for
+repair, while unsafe new shared writes and artifacts remain blocked. All six presets
+and defaults still pass. Similarity now independently measures both divider text
+characteristics in the actual six source decks, retaining unknowns where necessary.
+
+Executed verification:
+
+- The full `bash scripts/quality.sh` gate passed: 47 validator and 35 BeSpoke Python
+  tests, 11 model groups, eight similarity tests, 46 service/contract/server tests,
+  27 legacy browser workflows and ten builder browser scenarios. Existing lesson
+  accessibility baselines and report-only title-layout warnings stayed unchanged.
+- Desktop and 390px regressions explicitly select White/White, then Green and White
+  divider backgrounds. Computed heading/chapter/supporting text stays White; only
+  the selected background changes. Navigation, local reload/history, Undo/Redo,
+  backup opening, shared save/reopen, and earlier v2 shared recovery are covered.
+- Safe states pass axe WCAG A/AA and horizontal-overflow checks. Intentionally unsafe
+  White-on-Green states are verified for faithful rendering plus warnings, not
+  described as accessible. The existing decorative watermark exclusion is unchanged.
+- The production artifact assembler and checker were used in temporary directories.
+  Both generated reusable samples and canonical template CSS compute the selected
+  Silver heading and White supporting colors on Navy and Mauve divider backgrounds.
+  Invalid divider contrast is rejected before artifact files can be written.
+- Synthetic desktop/mobile screenshots were inspected; repair actions were separated
+  into 44px targets. A final focused browser rerun verifies keyboard activation of
+  the background repair and focus returning to the selected preview tab when the
+  resolved warning disappears. The existing button-feedback regression remains green.
+
+Safari was inspected without changing the page: it had a saved browser draft with
+unsaved shared changes, so no refresh, navigation, color edit, prompt dismissal or new
+tab was performed. The user withdrew the interim new-tab-per-update request. Refresh
+is left to the user; actual Safari rendering of this correction is not claimed.
+
+The loopback service was gracefully restarted on the same port and runtime directory
+so its save authority uses the updated validation. Its runtime was backed up outside
+Git and remained byte-identical across restart; the existing synthetic revision opens.
+The current module is served with `Cache-Control: no-store`. No cache/config changes
+were needed. The original checkout remained clean and production/released lessons
+were untouched. Logs, screenshots and runtime backups remain outside the repository.

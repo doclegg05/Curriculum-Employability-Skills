@@ -45,6 +45,15 @@ the same sample also appears beside the palette. Video and Activity use their ow
 sample buttons. Every sample uses the selected button color with automatically chosen
 legible text; sample activation does not navigate, download or submit.
 
+**Divider text:** Title & divider headings controls both large title lettering and
+chapter headings. Subtitle & divider supporting text controls the title subtitle,
+copyright, chapter label and divider supporting copy. Content headings/body remain
+independent. The divider step exposes these shared choices and the gradient's shared
+second color. Painting a divider background preserves all selected text colors;
+contrast failures keep the draft recoverable, show explicit repair actions, and block
+shared saves and generated output until repaired. Existing v2 files and shared
+revisions open with their original values, even if they now need a readability repair.
+
 **Fonts:** choose heading/title and body fonts independently from all twelve existing
 self-hosted families. The six former pairings remain available through their font
 families; presets can initialize combinations, but do not lock a pairing. Franklin

@@ -22,7 +22,7 @@ let passed = 0;
 async function scenario(name, callback) {
   const server = await createDevServer({ port: 0 });
   const contexts = [], actions = [];
-  const makePage = async ({ mobile = false, autosave = { enabled: false } } = {}) => {
+  const makePage = async ({ mobile = false, autosave = { enabled: false }, remoteSelection } = {}) => {
     const context = await browser.newContext({ viewport: mobile ? { width: 390, height: 844 } : { width: 1440, height: 1000 }, reducedMotion: 'reduce', acceptDownloads: true });
     contexts.push(context);
     await context.addInitScript(settings => { window.__bespokeAutosave = settings; }, autosave);
@@ -31,6 +31,11 @@ async function scenario(name, callback) {
       externalRequests.push(route.request().url()); return route.abort();
     });
     const page = await context.newPage();
+    if (remoteSelection) await page.route('**/api/bespoke', async route => {
+      if (route.request().postDataJSON()?.action === 'open') return route.fulfill({ json: { ok: true, selection: remoteSelection, revision: 'a'.repeat(40), savedAt: '2026-09-24T12:00:00.000Z' } });
+      return route.fallback();
+    });
+
     page.on('pageerror', error => pageErrors.push(`${name}: ${error.message}`));
     page.on('dialog', dialog => dialog.accept());
     page.on('request', request => {
@@ -264,6 +269,103 @@ try {
     }
   });
 
+  await scenario('divider backgrounds retain explicit White text through controls, warnings, undo, refresh and shared reopen', async ({ makePage, actions }) => {
+    const assertDivider = async (page, background) => {
+      assert.equal(await page.locator('#previewTabs [aria-selected="true"]').getAttribute('data-view'), 'divider');
+      const colors = await page.locator('#modelStage [data-kind="divider"]').evaluate(el => ({ background: getComputedStyle(el).backgroundColor, heading: getComputedStyle(el.querySelector('h2')).color, supporting: [...el.querySelectorAll('p')].map(p => getComputedStyle(p).color) }));
+      assert.equal(colors.background, background);
+      assert.equal(colors.heading, 'rgb(255, 255, 255)');
+      assert.deepEqual(colors.supporting, ['rgb(255, 255, 255)', 'rgb(255, 255, 255)']);
+    };
+    for (const mobile of [false, true]) {
+      const page = await makePage({ mobile }); await fillTeam(page);
+      await paint(page, 'titleText', 'light'); await paint(page, 'subtitle', 'light');
+      const before = await design(page);
+      await go(page, 'Chapter divider');
+      assert(await page.locator('#colorRole').isVisible(), 'Divider colors are directly exposed.');
+      await page.locator('#colorRole').selectOption('dividerBackground');
+      await page.locator('#edit-divider-titleText').click();
+      assert.equal(await page.locator('#colorRole').inputValue(), 'titleText');
+      assert.equal(await page.locator('#previewTabs [aria-selected="true"]').getAttribute('data-view'), 'divider');
+      await page.locator('#colorRole').selectOption('subtitle');
+      assert.equal(await page.locator('#previewTabs [aria-selected="true"]').getAttribute('data-view'), 'divider');
+      await page.locator('#colorRole').selectOption('dividerBackground');
+      for (const [id, rgb] of [['accent', 'rgb(55, 181, 80)'], ['light', 'rgb(255, 255, 255)']]) {
+        await page.locator('#paint-dividerBackground-'+id).focus(); await page.keyboard.press('Enter');
+        assert.equal(await page.evaluate(() => document.activeElement.id), 'paint-dividerBackground-'+id);
+        await assertDivider(page, rgb);
+        assert.deepEqual(await design(page), { ...before, roles: { ...before.roles, dividerBackground: id } });
+        assert.match(await page.locator('#readabilityNotes').textContent(), /chapter divider background.*needs/);
+        assert.equal(await page.locator('#repair-divider-dark').count(), 1);
+        if (id === 'accent' && process.env.BESPOKE_REVIEW_DIR) {
+          await fs.mkdir(process.env.BESPOKE_REVIEW_DIR, { recursive: true });
+          if (mobile) await page.locator('#surface-preview').click();
+          await page.screenshot({ path: path.join(process.env.BESPOKE_REVIEW_DIR, 'divider-green-'+(mobile?'mobile':'desktop')+'.png'), fullPage: true });
+          if (mobile) await page.locator('#surface-design').click();
+        }
+      }
+      const invalid = await draft(page), saves = actions.filter(a => a.action === 'save').length;
+      await page.locator('#btnSave').click();
+      await page.locator('#fileStatus').filter({ hasText: 'Could not save.' }).waitFor();
+      assert.equal(actions.filter(a => a.action === 'save').length, saves);
+      const backup = await download(page);
+      const fromFile = await makePage({ mobile }); await upload(fromFile, backup.payload, 'divider-repair.json');
+      assert.deepEqual(await design(fromFile), invalid.design);
+      await page.reload(); await ready(page);
+      assert.deepEqual(await draft(page).then(d => d.changes), invalid.changes);
+      await assertDivider(page, 'rgb(255, 255, 255)');
+      await page.locator('#btnUndo').click(); await assertDivider(page, 'rgb(55, 181, 80)');
+      await page.locator('#btnRedo').click(); await assertDivider(page, 'rgb(255, 255, 255)');
+      await go(page, 'Title slide'); await go(page, 'Chapter divider');
+      await page.locator('#colorRole').selectOption('dividerBackground');
+      if (mobile) await page.locator('#surface-preview').click();
+      await page.locator('#repair-divider-dark').focus(); await page.keyboard.press('Enter');
+      assert.equal(await page.locator('#previewTabs [aria-selected="true"]').evaluate(el => el === document.activeElement), true, 'Focus moves to the current preview tab when a resolved warning disappears.');
+      if (mobile) await page.locator('#surface-design').click();
+      await assertDivider(page, 'rgb(0, 64, 113)');
+      assert.equal(await page.locator('#readabilityNotes').isVisible(), false);
+      await page.locator('#colorRole').selectOption('titleText');
+      await page.locator('#paint-titleText-offwhite').click();
+      assert.equal(await page.locator('#modelStage h2').evaluate(el => getComputedStyle(el).color), 'rgb(209, 211, 212)');
+      assert.equal(await page.locator('#modelStage p').first().evaluate(el => getComputedStyle(el).color), 'rgb(255, 255, 255)');
+      await page.locator('#btnUndo').click();
+      await assertDivider(page, 'rgb(0, 64, 113)');
+      assert.deepEqual(await design(page), { ...before, roles: { ...before.roles, dividerBackground: 'dark' } });
+      await axe(page, 'Divider controls '+(mobile?'mobile':'desktop')); await assertNoOverflow(page, 'Divider controls');
+      if (mobile) await page.locator('#surface-preview').click();
+      await axe(page, 'Divider preview '+(mobile?'mobile':'desktop')); await assertNoOverflow(page, 'Divider preview');
+      await save(page);
+      const saved = await draft(page);
+      await page.reload(); await ready(page);
+      assert.deepEqual((await draft(page)).changes, saved.changes);
+      const reopened = await makePage({ mobile });
+      assert.deepEqual(await design(reopened), saved.design);
+      await go(reopened, 'Chapter divider'); await assertDivider(reopened, 'rgb(0, 64, 113)');
+      // The all-colors step also keeps a chosen divider while changing shared text roles.
+      await go(reopened, 'Paint your elements');
+      await reopened.locator('#colorRole').selectOption('dividerBackground');
+      await reopened.locator('#colorRole').selectOption('subtitle');
+      await assertDivider(reopened, 'rgb(0, 64, 113)');
+    }
+  });
+
+  await scenario('earlier v2 shared designs open with their saved divider colors and repair warnings', async ({ makePage }) => {
+    const source = await makePage(); await fillTeam(source);
+    const backup = (await download(source)).payload;
+    backup.design.roles.dividerBackground = 'accent';
+    const page = await makePage({ remoteSelection: backup });
+    assert.deepEqual(await design(page), backup.design);
+    assert.match(await page.locator('#readabilityNotes').textContent(), /chapter divider background/);
+    await go(page, 'Chapter divider');
+    assert.equal(await page.locator('#modelStage h2').evaluate(el => getComputedStyle(el).color), 'rgb(255, 255, 255)');
+    await page.reload(); await ready(page);
+    assert.deepEqual(await design(page), backup.design);
+    // An explicit open follows the same recovery boundary as startup.
+    await page.locator('#btnOpen').click();
+    await page.locator('#fileStatus').filter({ hasText: /Opened the latest shared design/ }).waitFor();
+    assert.deepEqual(await design(page), backup.design);
+  });
+
   await scenario('text boxes retain hidden words across every count, title bar and text treatment', async ({ makePage }) => {
     const page = await makePage();
     await go(page, 'Text boxes');
@@ -317,6 +419,7 @@ try {
     await page.reload(); await ready(page);
     assert.deepEqual(await design(page), invalidDraft);
     await paint(page, 'titleBackgroundEnd', 'light');
+    await paint(page, 'dividerBackground', 'light');
     await paint(page, 'titleText', 'royal');
     await paint(page, 'subtitle', 'royal');
     assert.equal(await page.locator('#readabilityNotes').isVisible(), false);

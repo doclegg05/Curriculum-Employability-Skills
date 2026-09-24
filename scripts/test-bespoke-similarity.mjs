@@ -62,22 +62,36 @@ test('every measured color, independent font, layout and style contributes exact
   let checked = 0;
   for (const lesson of fingerprints.lessons) {
     const matching = design();
-    for (const { key } of CHARACTERISTICS) if (get(lesson, key) != null) set(matching, key, get(lesson, key));
+    for (const { key } of CHARACTERISTICS) if (!key.startsWith('dividerText.') && get(lesson, key) != null) set(matching, key, get(lesson, key));
     const [base] = compareDesign({ lessons: [lesson] }, matching);
-    assert.equal(base.shared, base.total);
+    assert(base.differences.every(d => d.key.startsWith('dividerText.')), 'Actual divider text is measured independently from the title.');
     for (const { key } of CHARACTERISTICS) {
-      if (get(lesson, key) == null) continue;
+      if (key.startsWith('dividerText.') || get(lesson, key) == null) continue;
       const changed = structuredClone(matching);
       const value = get(lesson, key);
       set(changed, key, alternative(key, value));
       const [after] = compareDesign({ lessons: [lesson] }, changed);
-      assert.equal(after.shared, base.shared - 1, `${lesson.id} ${key}`);
+      const linked = key === 'roles.titleText' ? 'dividerText.heading' : key === 'roles.subtitle' ? 'dividerText.supporting' : null;
+      const linkedDelta = Number(after.matches.some(d => d.key === linked)) - Number(base.matches.some(d => d.key === linked));
+      assert.equal(after.shared, base.shared - 1 + linkedDelta, `${lesson.id} ${key}`);
       assert.equal(after.total, base.total);
-      assert.deepEqual(after.differences.map((d) => d.key), [key]);
+      assert.deepEqual(after.differences.filter(d => !d.key.startsWith('dividerText.')).map((d) => d.key), [key]);
       checked += 1;
     }
   }
   assert.ok(checked > 60, 'exercise the real measured comparisons');
+});
+
+test('divider text is compared against measured divider colors using the selected shared roles', () => {
+  const lesson = { id: 'synthetic', title: 'Synthetic', roles: { titleText: 'light', subtitle: 'light' }, dividerText: { heading: 'royal', supporting: 'gray' } };
+  const current = design();
+  const [white] = compareDesign({ lessons: [lesson] }, current);
+  assert.deepEqual(white.matches.map(item => item.key), ['roles.titleText', 'roles.subtitle']);
+  assert.deepEqual(white.differences.map(item => item.key), ['dividerText.heading', 'dividerText.supporting']);
+  current.roles.titleText = 'royal'; current.roles.subtitle = 'gray';
+  const [changed] = compareDesign({ lessons: [lesson] }, current);
+  assert.deepEqual(changed.matches.map(item => item.key), ['dividerText.heading', 'dividerText.supporting']);
+  assert.deepEqual(changed.differences.map(item => item.key), ['roles.titleText', 'roles.subtitle']);
 });
 
 test('unknowns never count even when both sides are null; missing user values are explained', () => {

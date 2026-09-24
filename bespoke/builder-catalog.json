@@ -135,20 +135,20 @@
     },
     {
       "id": "titleBackgroundEnd",
-      "label": "Title slide second color",
-      "note": "The gradient's second color and the split layout's right panel.",
+      "label": "Title & divider second color",
+      "note": "The second color of title and divider gradients, and the title split layout’s right panel.",
       "kind": "surface"
     },
     {
       "id": "titleText",
-      "label": "Title text",
-      "note": "Large lettering on the title slide.",
+      "label": "Title & divider headings",
+      "note": "Large lettering on the title slide and chapter dividers. This shared choice never changes when you paint a background.",
       "kind": "text"
     },
     {
       "id": "subtitle",
-      "label": "Subtitle",
-      "note": "The line under the title, and the copyright line.",
+      "label": "Subtitle & divider supporting text",
+      "note": "The title subtitle and copyright line, plus divider chapter labels and supporting text. Content body text has its own color.",
       "kind": "text"
     },
     {
@@ -186,9 +186,8 @@
     {
       "id": "dividerBackground",
       "label": "Chapter divider background",
-      "note": "Behind each chapter's opening slide. Its text color is chosen for you.",
-      "kind": "surface",
-      "ink": true
+      "note": "Behind each chapter’s opening slide. Heading color uses Title & divider headings; chapter labels and supporting text use Subtitle & divider supporting text.",
+      "kind": "surface"
     }
   ],
   "fonts": [

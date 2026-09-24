@@ -173,6 +173,8 @@ Teacher/Britt acceptance of the completed appearance and content remains separat
 
 `lesson-fingerprints.json` records measured evidence from six actual presentations;
 `similarity.mjs` counts matching supported choices and exposes unknown dimensions.
+Divider text is measured separately against actual chapter headings and supporting
+copy; the current design derives those colors from `titleText` and `subtitle`.
 It compares colors, independent fonts, backgrounds and meaningful component/layout
 choices where measurable. Mixed/custom/unmeasured reference features remain unknown.
 This is advisory exact-choice overlap, not a perceptual percentage or a check

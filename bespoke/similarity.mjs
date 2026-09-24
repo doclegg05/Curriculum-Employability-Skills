@@ -11,6 +11,8 @@ export const CHARACTERISTICS = Object.freeze([
   ['roles.accent', 'Card accent color'],
   ['roles.button', 'Button color'],
   ['roles.dividerBackground', 'Divider background color'],
+  ['dividerText.heading', 'Divider heading color'],
+  ['dividerText.supporting', 'Divider supporting text color'],
   ['fonts.heading', 'Title font'],
   ['fonts.body', 'Body font'],
   ['background', 'Content background pattern'],
@@ -47,7 +49,7 @@ export function compareDesign(fingerprints, design) {
     const matches = [], differences = [], unknown = [];
     for (const { key, label } of CHARACTERISTICS) {
       const referenceValue = get(lesson, key);
-      const designValue = get(design, key);
+      const designValue = get(design, key === 'dividerText.heading' ? 'roles.titleText' : key === 'dividerText.supporting' ? 'roles.subtitle' : key);
       const source = lesson.evidence?.[key] || null;
       if (referenceValue == null || designValue == null) {
         unknown.push({ key, label, reason: referenceValue == null

@@ -4,7 +4,7 @@ import assert from 'node:assert/strict';
 import fs from 'node:fs';
 import path from 'node:path';
 import { fileURLToPath } from 'node:url';
-import { applyPreset, colorAvailability, contrast, cssForDesign, defaultDesign, designSchema, inkFor, migrateV1, renderSlide, roleOptions, structuralErrors, validateDesign } from '../bespoke/builder-model.mjs';
+import { applyPreset, colorAvailability, contrast, contrastIssues, cssForDesign, defaultDesign, designSchema, inkFor, migrateV1, renderSlide, roleOptions, structuralErrors, validateDesign } from '../bespoke/builder-model.mjs';
 
 const root = path.resolve(path.dirname(fileURLToPath(import.meta.url)), '..');
 const catalog = JSON.parse(fs.readFileSync(path.join(root, 'bespoke/builder-catalog.json'), 'utf8'));
@@ -57,12 +57,13 @@ check('every role offers the full palette; a surface change warns without mutati
   const candidate = clone(design);
   candidate.roles.titleBackground = 'light';
   assert.deepEqual(structuralErrors(catalog, candidate), []);
-  assert(validateDesign(catalog, candidate).some(error => error.includes('Title text')));
+  assert(validateDesign(catalog, candidate).some(error => error.includes('Title & divider headings')));
   assert.doesNotThrow(() => renderSlide(catalog, candidate, 'title'));
   assert.doesNotThrow(() => cssForDesign(catalog, candidate));
   candidate.roles.titleBackgroundEnd = 'light';
   candidate.roles.titleText = 'royal';
   candidate.roles.subtitle = 'royal';
+  candidate.roles.dividerBackground = 'light';
   assert.deepEqual(validateDesign(catalog, candidate), []);
 });
 
@@ -80,6 +81,28 @@ check('brand and contrast rules explain unsafe text and safe repairs', () => {
   assert(validateDesign(catalog, invalid).some(error => error.includes('Subtitle')));
   invalid.slides.title.colors = 'solid'; invalid.slides.title.layout = 'left';
   assert.deepEqual(validateDesign(catalog, invalid), []);
+});
+
+check('divider contrast checks selected text on solid and gradient backgrounds without repairing the draft', () => {
+  const design = defaultDesign(catalog);
+  for (const background of ['accent', 'light']) {
+    design.roles.dividerBackground = background;
+    const before = JSON.stringify(design);
+    const issues = contrastIssues(catalog, design).filter(issue => issue.surface === 'dividerBackground');
+    assert.deepEqual(issues.map(issue => issue.role), ['titleText', 'subtitle']);
+    assert(issues.every(issue => issue.message.includes('chapter divider background')));
+    assert.deepEqual(structuralErrors(catalog, design), []);
+    assert.equal(colorAvailability(catalog, design, 'dividerBackground', background).ok, true);
+    assert.doesNotThrow(() => cssForDesign(catalog, design));
+    assert.equal(JSON.stringify(design), before);
+  }
+  design.roles.dividerBackground = 'dark';
+  assert.deepEqual(validateDesign(catalog, design), []);
+  design.slides.divider.colors = 'gradient';
+  design.roles.titleBackgroundEnd = 'light';
+  const issues = contrastIssues(catalog, design).filter(issue => issue.surface === 'dividerBackground');
+  assert.equal(issues.length, 2);
+  assert(issues.every(issue => issue.related.includes('titleBackgroundEnd')));
 });
 
 check('every current font works independently in both roles', () => {

@@ -170,7 +170,7 @@ All 11 approved colors stay visible in every role's palette. The catalog's displ
 | `muted` | Mist | `mist` |
 | `light` | White | `paper` |
 
-The 11 editable roles are sidebar, title background, title second color, title text, subtitle, content background, heading, body, accent, button, and divider background. Sidebar, accent, button, and divider surfaces receive automatic readable ink. Green and Gold are unavailable for direct text roles under the brand rules. Other unavailable text choices remain visible and explain the contrast failure when activated. A surface change preserves other selections and exposes repair notes instead of silently repainting them.
+The 11 editable roles are sidebar, title background, title second color, title text, subtitle, content background, heading, body, accent, button, and divider background. Sidebar, accent, and button surfaces receive automatic readable ink. Divider headings use the explicit titleText role; chapter labels and supporting copy use subtitle. The watermark inherits titleText as decoration. Those shared colors never change when the divider background changes. Green and Gold are unavailable for direct text roles under the brand rules. Other unavailable text choices remain visible and explain the contrast failure when activated. A surface change preserves other selections and exposes repair notes instead of silently repainting them.
 
 **The Two Layers Rule.** Lesson choices change the shared preview model; they never repaint the builder's navigation, fields, or status surfaces.
 
@@ -274,3 +274,16 @@ permanent button to that slide's structure. At phone widths, also show the sampl
 inside the controls so its paint change is visible without switching surfaces.
 Video and Activity retain their own inert sample actions. All examples reuse the
 model's button background, automatic ink, body font and 44px minimum target height.
+
+
+### Divider color ownership
+
+Title & divider headings and Subtitle & divider supporting text name their shared
+scope directly. The divider step exposes background, both text roles, and the shared
+second gradient color. Selecting these roles retains the divider preview. Content
+heading/body choices remain independent. Unsafe backgrounds preserve the chosen text
+and show the actual result plus ratio warnings. Repair buttons change only the named
+background, with Undo; shared saving and artifact generation remain blocked until
+contrast passes. Read paths retain structurally valid existing v2 values for repair.
+Reference comparison measures actual chapter heading and supporting-text colors
+separately from title text; mixed or translucent reference colors stay unknown.

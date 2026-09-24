@@ -87,7 +87,7 @@ export function contrastIssues(catalog, design) {
     const fg = color(role), bg = color(surface);
     const surfaces = gradientEnd ? gradientSamples(bg.hex, color(gradientEnd).hex) : [bg.hex];
     const ratio = Math.min(...surfaces.map(hex => contrast(fg.hex, hex)));
-    if (ratio + 1e-9 < minimum) issues.push({ role, surface, ratio, minimum, related: [role, surface, ...(gradientEnd ? [gradientEnd] : [])], message: `${catalog.roles.find(r => r.id === role).label}: ${fg.name} on ${bg.name}${gradientEnd ? ` to ${color(gradientEnd).name}` : ''} is ${ratio.toFixed(2)}:1; needs ${minimum}:1. Choose a different text color or background.` });
+    if (ratio + 1e-9 < minimum) issues.push({ role, surface, ratio, minimum, related: [role, surface, ...(gradientEnd ? [gradientEnd] : [])], message: `${catalog.roles.find(r => r.id === role).label}: ${fg.name} on ${catalog.roles.find(r => r.id === surface).label.toLowerCase()} (${bg.name}${gradientEnd ? ` to ${color(gradientEnd).name}` : ''}) is ${ratio.toFixed(2)}:1; needs ${minimum}:1. Choose a different text color or background.` });
   };
   for (const role of catalog.roles.filter(r => r.kind === 'text')) {
     if (catalog.notText.includes(design.roles[role.id])) issues.push({ role: role.id, related: [role.id], message: `${role.label}: ${color(role.id).name} is reserved for shapes and backgrounds, not text, in the SPOKES brand.` });
@@ -97,11 +97,9 @@ export function contrastIssues(catalog, design) {
   textPair('subtitle', 'titleBackground', 4.5, end);
   textPair('heading', 'contentBackground', 3);
   textPair('body', 'contentBackground', 4.5);
-  if (design.slides.divider.colors === 'gradient') {
-    const ink = findColor(catalog, inkFor(catalog, design.roles.dividerBackground));
-    const ratio = Math.min(...gradientSamples(color('dividerBackground').hex, color('titleBackgroundEnd').hex).map(hex => contrast(ink.hex, hex)));
-    if (ratio < 4.5) issues.push({ role: 'dividerBackground', related: ['dividerBackground', 'titleBackgroundEnd'], ratio, minimum: 4.5, message: `Chapter divider: its automatic ${ink.name} text needs 4.5:1 across the gradient; currently ${ratio.toFixed(2)}:1. Choose a one-color divider or a compatible second title color.` });
-  }
+  const dividerEnd = design.slides.divider.colors === 'gradient' ? 'titleBackgroundEnd' : undefined;
+  textPair('titleText', 'dividerBackground', 3, dividerEnd);
+  textPair('subtitle', 'dividerBackground', 4.5, dividerEnd);
   return issues;
 }
 
@@ -164,11 +162,12 @@ export function cssForDesign(catalog, design, { scope = '.bespoke-slide', fontBa
   rule(`${kind('title')} .slide-logo`, '', 'color: var(--role-title-text);');
   rule(`${kind('title')} .slide-accent`, '', 'width: 5rem; height: .25rem; margin-bottom: 1rem;');
   const dividerBackground = divider.colors === 'gradient' ? 'linear-gradient(135deg,var(--role-divider-background),var(--role-title-background-end))' : 'var(--role-divider-background)';
-  rule(kind('divider'), '.slide-section, .slide-section[data-chapter-num]', `background:${dividerBackground}; color:var(--role-divider-background-ink); text-align:${divider.layout === 'center' || divider.layout === 'band' ? 'center' : 'left'}; align-items:${divider.layout === 'center' || divider.layout === 'band' ? 'center' : 'flex-start'}; position:relative;`);
+  rule(kind('divider'), '.slide-section, .slide-section[data-chapter-num]', `background:${dividerBackground}; color:var(--role-subtitle); text-align:${divider.layout === 'center' || divider.layout === 'band' ? 'center' : 'left'}; align-items:${divider.layout === 'center' || divider.layout === 'band' ? 'center' : 'flex-start'}; position:relative;`);
   rule(kind('divider'), '', 'display:flex; flex-direction:column; justify-content:center;');
-  rule(`${kind('divider')} .slide-heading, ${kind('divider')} .slide-body`, '.slide-section h2, .slide-section .chapter-label', 'color:var(--role-divider-background-ink); position:relative; z-index:1;');
+  rule(`${kind('divider')} .slide-heading`, '.slide-section h2', 'color:var(--role-title-text); position:relative; z-index:1;');
+  rule(`${kind('divider')} .slide-body`, '.slide-section p, .slide-section .chapter-label', 'color:var(--role-subtitle); position:relative; z-index:1;');
   if (divider.layout === 'band') rule(kind('divider'), '.slide-section, .slide-section[data-chapter-num]', `background-color:var(--role-content-background); background-image:${divider.colors === 'gradient' ? dividerBackground : 'linear-gradient(var(--role-divider-background),var(--role-divider-background))'}; background-size:100% 70%; background-position:center; background-repeat:no-repeat;`);
-  rule(selector('.slide-watermark'), '.slide-section::after', `display:${divider.watermark === 'hide' ? 'none' : 'block'}; position:absolute; right:6%; top:5%; font-size:${divider.layout === 'number' ? '12rem' : '9rem'}; line-height:1; color:var(--role-divider-background-ink); opacity:.12; pointer-events:none;`);
+  rule(selector('.slide-watermark'), '.slide-section::after', `display:${divider.watermark === 'hide' ? 'none' : 'block'}; position:absolute; right:6%; top:5%; font-size:${divider.layout === 'number' ? '12rem' : '9rem'}; line-height:1; color:var(--role-title-text); opacity:.12; pointer-events:none;`);
   const patterns = { plain: 'none', 'dot-grid': 'radial-gradient(rgba(var(--role-accent-rgb),.09) 1px,transparent 1px)', diagonal: 'repeating-linear-gradient(45deg,rgba(var(--role-accent-rgb),.06) 0 1px,transparent 1px 18px)', crosshatch: 'linear-gradient(rgba(var(--role-accent-rgb),.04) 1px,transparent 1px),linear-gradient(90deg,rgba(var(--role-accent-rgb),.04) 1px,transparent 1px)', 'soft-gradient': 'linear-gradient(135deg,rgba(var(--role-accent-rgb),.04),transparent 60%)' };
   rule(`${kind('cards')}, ${kind('video')}, ${kind('activity')}`, '.main', `background-color:var(--role-content-background); background-image:${patterns[design.background]}; background-size:${design.background === 'dot-grid' ? '18px 18px' : design.background === 'crosshatch' ? '28px 28px' : 'auto'};`);
   // Text has an opaque chosen surface: decorative texture never reduces its contrast.

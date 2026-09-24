@@ -75,6 +75,8 @@ try {
       const show = (slide) => { for (const s of slides) s.classList.toggle('active', s === slide); };
       color('roles.titleText', '.slide-title h1');
       color('roles.subtitle', '.slide-title .subtitle');
+      color('dividerText.heading', '.slide-section h2');
+      color('dividerText.supporting', '.slide-section .chapter-label, .slide-section p');
       color('roles.heading', `${contentSelector} h2`);
       color('roles.body', `${contentSelector} p, ${contentSelector} li`);
       surface('roles.sidebar', '.sidebar');

@@ -76,6 +76,18 @@
             "rgb(0, 123, 175)"
           ]
         },
+        "dividerText.heading": {
+          "selector": ".slide-section h2",
+          "observed": [
+            "rgb(255, 255, 255)"
+          ]
+        },
+        "dividerText.supporting": {
+          "selector": ".slide-section .chapter-label, .slide-section p",
+          "observed": [
+            "rgb(255, 255, 255)"
+          ]
+        },
         "roles.heading": {
           "selector": ".slide:not(.slide-title):not(.slide-section):not(.slide-closing):not(.slide-video):not(.big-statement) h2",
           "observed": [
@@ -266,6 +278,10 @@
           "observed": [],
           "reason": "This slide role uses custom reference markup; no reliable mapping to the builder option has been measured."
         }
+      },
+      "dividerText": {
+        "heading": "light",
+        "supporting": "light"
       }
     },
     {
@@ -331,6 +347,18 @@
         },
         "roles.subtitle": {
           "selector": ".slide-title .subtitle",
+          "observed": [
+            "rgb(255, 255, 255)"
+          ]
+        },
+        "dividerText.heading": {
+          "selector": ".slide-section h2",
+          "observed": [
+            "rgb(255, 255, 255)"
+          ]
+        },
+        "dividerText.supporting": {
+          "selector": ".slide-section .chapter-label, .slide-section p",
           "observed": [
             "rgb(255, 255, 255)"
           ]
@@ -510,6 +538,10 @@
           "observed": [],
           "reason": "This slide role uses custom reference markup; no reliable mapping to the builder option has been measured."
         }
+      },
+      "dividerText": {
+        "heading": "light",
+        "supporting": "light"
       }
     },
     {
@@ -577,6 +609,18 @@
           "selector": ".slide-title .subtitle",
           "observed": [
             "rgb(96, 99, 107)"
+          ]
+        },
+        "dividerText.heading": {
+          "selector": ".slide-section h2",
+          "observed": [
+            "rgb(255, 255, 255)"
+          ]
+        },
+        "dividerText.supporting": {
+          "selector": ".slide-section .chapter-label, .slide-section p",
+          "observed": [
+            "rgb(211, 178, 87)"
           ]
         },
         "roles.heading": {
@@ -756,6 +800,10 @@
           "observed": [],
           "reason": "This slide role uses custom reference markup; no reliable mapping to the builder option has been measured."
         }
+      },
+      "dividerText": {
+        "heading": "light",
+        "supporting": "gold"
       }
     },
     {
@@ -821,6 +869,18 @@
         },
         "roles.subtitle": {
           "selector": ".slide-title .subtitle",
+          "observed": [
+            "rgb(211, 178, 87)"
+          ]
+        },
+        "dividerText.heading": {
+          "selector": ".slide-section h2",
+          "observed": [
+            "rgb(255, 255, 255)"
+          ]
+        },
+        "dividerText.supporting": {
+          "selector": ".slide-section .chapter-label, .slide-section p",
           "observed": [
             "rgb(211, 178, 87)"
           ]
@@ -992,6 +1052,10 @@
           "observed": [],
           "reason": "This slide role uses custom reference markup; no reliable mapping to the builder option has been measured."
         }
+      },
+      "dividerText": {
+        "heading": "light",
+        "supporting": "gold"
       }
     },
     {
@@ -1059,6 +1123,20 @@
           "selector": ".slide-title .subtitle",
           "observed": [
             "rgba(255, 250, 240, 0.92)"
+          ],
+          "reason": "The colors vary, use transparency, or are outside the eleven exact brand swatches."
+        },
+        "dividerText.heading": {
+          "selector": ".slide-section h2",
+          "observed": [
+            "rgb(6, 23, 53)"
+          ],
+          "reason": "The colors vary, use transparency, or are outside the eleven exact brand swatches."
+        },
+        "dividerText.supporting": {
+          "selector": ".slide-section .chapter-label, .slide-section p",
+          "observed": [
+            "rgb(201, 77, 52)"
           ],
           "reason": "The colors vary, use transparency, or are outside the eleven exact brand swatches."
         },
@@ -1236,6 +1314,10 @@
           "observed": [],
           "reason": "This slide role uses custom reference markup; no reliable mapping to the builder option has been measured."
         }
+      },
+      "dividerText": {
+        "heading": null,
+        "supporting": null
       }
     },
     {
@@ -1304,6 +1386,20 @@
           "selector": ".slide-title .subtitle",
           "observed": [
             "rgba(255, 248, 234, 0.92)"
+          ],
+          "reason": "The colors vary, use transparency, or are outside the eleven exact brand swatches."
+        },
+        "dividerText.heading": {
+          "selector": ".slide-section h2",
+          "observed": [
+            "rgb(16, 32, 51)"
+          ],
+          "reason": "The colors vary, use transparency, or are outside the eleven exact brand swatches."
+        },
+        "dividerText.supporting": {
+          "selector": ".slide-section .chapter-label, .slide-section p",
+          "observed": [
+            "rgb(216, 93, 63)"
           ],
           "reason": "The colors vary, use transparency, or are outside the eleven exact brand swatches."
         },
@@ -1480,6 +1576,10 @@
           "observed": [],
           "reason": "This slide role uses custom reference markup; no reliable mapping to the builder option has been measured."
         }
+      },
+      "dividerText": {
+        "heading": null,
+        "supporting": null
       }
     }
   ]

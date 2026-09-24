@@ -133,3 +133,6 @@
 @media(max-width:760px) {
  #buttonColorInline {display: flex; margin: 0 0 18px;}
 }
+
+/* Explicit divider text controls and contrast repairs remain separate tap targets. */
+.color-edit-links{display:flex;flex-direction:column;align-items:flex-start;margin-bottom:12px}.readability-actions{display:flex;flex-wrap:wrap;gap:4px 20px}.color-edit-links .text-link,.readability-actions .text-link{min-height:44px;text-align:left;line-height:1.4}

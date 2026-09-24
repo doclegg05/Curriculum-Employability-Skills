@@ -1,6 +1,6 @@
 # BeSpoke slide builder spec
 
-Status: draft for Britt's review, 2026-09-23. Nothing here is built yet.
+Status: historical draft for Britt's review, 2026-09-23. This records the proposal at that date. For the implemented builder and September 24 divider text-color correction, see [decisions.md](decisions.md), [builder-handoff.md](builder-handoff.md), and [the current builder guide](../../bespoke/README.md).
 
 Britt's direction (2026-09-23): teams build a lesson's look one small decision at a time, the way a PowerPoint user builds a master slide from a choice of layouts. Each decision offers 3 or 4 samples, changes the preview at once, is listed in a change history, and persists. Choices already made: see the color step as a mockup first (`bespoke/mockups/color-roles.html`), design four slide types, give teams a say in each card's layout, colors and type, and make the builder the wizard rather than a side path. The similarity meter stays and must measure real lessons. Teams won't start from a released lesson's look; most will want theirs to differ.
 
