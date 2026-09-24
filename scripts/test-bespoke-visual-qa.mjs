@@ -56,7 +56,8 @@ async function axe(page,label) {
 async function geometry(page,label) {
   const m=await page.locator('.bespoke-slide,.slide.active').evaluate(el=>{
     const r=el.getBoundingClientRect();
-    const boxes=[...el.querySelectorAll('h1,h2,h3,h4,p,li,.slide-logo,.slide-card,.card,.slide-activity,.slide-video-frame,.slide-video-frame>span')].filter(n=>n.getBoundingClientRect().width).map(n=>{const b=n.getBoundingClientRect();return {name:n.className||n.tagName,x:b.x-r.x,y:b.y-r.y,w:b.width,h:b.height,scrollW:n.scrollWidth,clientW:n.clientWidth};});
+    // Native details can expose layout rectangles for content that is not painted.
+    const boxes=[...el.querySelectorAll('h1,h2,h3,h4,p,li,.slide-logo,.slide-card,.card,.slide-activity,.slide-video-frame,.slide-video-frame>span')].filter(n=>!n.closest('details:not([open])')&&n.getBoundingClientRect().width).map(n=>{const b=n.getBoundingClientRect();return {name:n.className||n.tagName,x:b.x-r.x,y:b.y-r.y,w:b.width,h:b.height,scrollW:n.scrollWidth,clientW:n.clientWidth};});
     const grid=el.querySelector('.slide-cards,.cards-grid');
     return {w:r.width,h:r.height,scrollW:el.scrollWidth,scrollH:el.scrollHeight,canonical:el.matches('.slide.active'),columns:grid?getComputedStyle(grid).gridTemplateColumns:null,boxes};
   });
@@ -123,6 +124,7 @@ try {
       const d=longDesign();d.slides[group.id].layout=option.id;
       await samplePage.setContent(`<html><head><base href="${server.baseUrl}/bespoke/"><link rel="stylesheet" href="builder.css"><style>html{font-size:${view.textScale?200:100}%}body{margin:0;width:${canvas||view.width-48}px;max-width:100%}*{box-sizing:border-box}</style><style>${cssForDesign(catalog,d)}</style></head><body>${renderSlide(catalog,d,group.id)}</body></html>`);
       await samplePage.evaluate(()=>document.fonts.ready);const sampleGeometry=await geometry(samplePage,`${view.width}/${view.textScale||1}/${group.id}/${option.id}/maxcopy`);
+      const sampleContentWidth=group.id==='cards'?await samplePage.locator('.slide-content').evaluate(el=>{const css=getComputedStyle(el);return el.getBoundingClientRect().width-parseFloat(css.paddingLeft)-parseFloat(css.paddingRight);}):null;
       if(output&&['activity','cards','video'].includes(group.id)&&option.id==='side')await samplePage.screenshot({path:path.join(output,`slide-${view.width}-${view.textScale||1}-${group.id}.png`),fullPage:true});
       if(['cards','divider'].includes(group.id)) {
         if(output&&((group.id==='cards'&&option.id==='columns')||(group.id==='divider'&&option.id==='number')))await samplePage.screenshot({path:path.join(output,`fixed-${view.width}-${view.textScale||1}-${group.id}.png`)});
@@ -135,6 +137,9 @@ try {
           }
         },{group:group.id,d});
         await samplePage.evaluate(()=>document.fonts.ready);
+        // The sample now includes the lesson sidebar. Match the available MAIN
+        // content width, not the shell width, for canonical column parity.
+        if(group.id==='cards')await samplePage.locator('.slide.active').evaluate((el,width)=>{const css=getComputedStyle(el);const outer=width+parseFloat(css.paddingLeft)+parseFloat(css.paddingRight);el.style.width=outer+'px';document.body.style.width=outer+'px';},sampleContentWidth);
         const canonicalGeometry=await geometry(samplePage,`${view.width}/${view.textScale||1}/${group.id}/${option.id}/canonical`);canonicalChecks++;
         if(group.id==='cards')assert.equal(canonicalGeometry.columns.split(' ').length,sampleGeometry.columns.split(' ').length,'Canonical and generated samples reflow to the same number of columns');
         else {

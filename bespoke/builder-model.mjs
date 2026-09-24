@@ -192,9 +192,35 @@ export function cssForDesign(catalog, design, { scope = '.bespoke-slide', fontBa
   rule(scope, '', 'position: relative; isolation: isolate; min-height: 360px; padding: clamp(1.35rem, 4vw, 3.5rem); color: var(--role-body); background-color: var(--role-content-background); font-family: var(--font-body); overflow-wrap: anywhere;');
   rule(selector('.slide-body'), 'body, .slide p, .card p, .content-list li, .chapter-label', 'font-family: var(--font-body);');
   rule(`${selector('.slide-heading')}, ${selector('.slide-title-text')}, ${selector('.slide-card h3')}`, '.slide-title h1, .slide h2, .slide h3, .card h4, .smart-content h4, .matrix-action, .slide-section h2', 'font-family: var(--font-heading); font-weight: 400;');
-  rule(selector('.slide-sidebar'), '.sidebar, .sidebar-toggle', 'background: var(--role-sidebar); color: var(--role-sidebar-ink);');
+  rule(selector(':is(.slide-sidebar, .slide-sidebar-drawer, .slide-sidebar-disclosure > summary)'), '.sidebar, .sidebar-toggle', 'background: var(--role-sidebar); color: var(--role-sidebar-ink);');
   if (canonical) blocks.push('.sidebar .sidebar-title, .sidebar .resources-title, .sidebar .chapter-header, .sidebar .slide-item, .sidebar .resource-link { color: var(--role-sidebar-ink); }\n.sidebar .chapter-header:hover, .sidebar .slide-item:hover, .sidebar .resource-link:hover { color: var(--role-sidebar-ink); background: transparent; text-decoration: underline; }\n.sidebar .slide-item.active, .sidebar .chapter-item.active > .chapter-header { color: var(--role-sidebar-ink); background: transparent; border-left-color: var(--role-accent); box-shadow: inset 3px 0 0 var(--role-accent); }');
-  rule(selector('.slide-sidebar'), '', 'padding: .75rem 1rem; margin: -1rem -1rem 1.75rem; font-size: .8rem; display:flex; flex-wrap:wrap; gap:1rem;');
+  // Represent the lesson shell: a 280px left chapter column, never a top header.
+  // Only sample markup uses this grid; the actual template owns its navigation.
+  const contentSlides = ['cards','video','activity'].map(kind).join(', ');
+  rule(contentSlides, '', 'container-type:inline-size; display:grid; grid-template-columns:min(280px,100%) minmax(0,1fr); padding:0; min-height:480px; align-items:stretch; align-content:start;');
+  rule(selector('.slide-content'), '', 'min-width:0; container-type:inline-size; padding:clamp(1.25rem,3cqw,3rem);');
+  rule(selector(':is(.slide-sidebar, .slide-sidebar-drawer)'), '', 'padding:2rem min(1.5rem,24px); font-family:var(--font-body); font-size:.85rem; line-height:1.45; display:flex; flex-direction:column; gap:1rem; min-width:0;');
+  rule(selector('.sample-sidebar-title'), '', 'margin:0; font-size:.875rem; font-weight:600; text-transform:uppercase; letter-spacing:.08em; padding-bottom:1rem; border-bottom:1px solid currentColor;');
+  rule(selector('.sample-sidebar-note'), '', 'font-size:.75rem;');
+  rule(selector('.sample-chapters'), '', 'display:flex; flex-direction:column; gap:.25rem; list-style:none; padding:0; margin:0;');
+  rule(selector('.sample-chapter'), '', 'display:flex; align-items:center; gap:.5rem; padding:.65rem .5rem; border-left:3px solid transparent; border-radius:.5rem; font-size:.85rem;');
+  rule(selector('.sample-chapter[data-current]'), '', 'border-left-color:var(--role-accent); font-weight:700;');
+  rule(selector('.sample-chapter svg'), '', 'width:.6rem; height:.6rem; flex-shrink:0;');
+  rule(selector('.sample-badge'), '', 'font-size:.65rem; font-weight:700; border-radius:.25rem; padding:.15rem .4rem; flex-shrink:0;');
+  for (const [badge, color] of [['w','gold'],['i','primary'],['p','accent'],['e','gold'],['a','dark']]) {
+    rule(selector('.sample-badge[data-badge="'+badge+'"]'), '', 'background:var(--'+color+');color:var(--'+inkFor(catalog,color)+');');
+  }
+  rule(selector('.sample-slide-name'), '', 'display:block; margin:.15rem 0 .5rem 1rem; padding:.4rem .65rem; border-left:3px solid var(--role-accent); font-size:.8rem;');
+  rule(selector('.sample-resources'), '', 'margin-top:auto; padding-top:1rem; border-top:1px solid currentColor; display:grid; gap:.5rem; font-size:.8rem;');
+  rule(selector('.sample-resources strong'), '', 'font-size:.75rem; text-transform:uppercase; letter-spacing:.08em;');
+  rule(selector('.sample-slide-counter'), '', 'padding-top:1rem; border-top:1px solid currentColor; font-size:.75rem;');
+  rule(selector('.slide-sidebar-disclosure'), '', 'display:none; min-width:0;');
+  rule(selector('.slide-sidebar-disclosure > summary'), '', 'list-style:none; display:flex; align-items:center; gap:.5rem; width:fit-content; max-width:100%; min-height:44px; padding:.65rem .8rem; border-radius:.35rem; cursor:pointer; font-size:.85rem;');
+  rule(selector('.slide-sidebar-disclosure > summary::-webkit-details-marker'), '', 'display:none;');
+  rule(selector('.slide-sidebar-disclosure > summary svg'), '', 'width:20px; height:20px; flex-shrink:0;');
+  rule(selector('.slide-sidebar-disclosure > summary:focus-visible'), '', 'outline:3px solid var(--role-sidebar-ink); outline-offset:-5px;');
+  rule(selector('.slide-sidebar-drawer'), '', 'position:absolute; z-index:3; top:3.75rem; left:0; width:min(17.5rem,100%); max-height:calc(100% - 3.75rem); overflow-y:auto; box-shadow:4px 6px 14px rgba(0,0,0,.2);');
+  rule(selector('.slide-sidebar-drawer:focus-visible'), '', 'outline:3px solid var(--role-sidebar-ink); outline-offset:-5px;');
   rule(selector('.slide-heading'), '.slide:not(.slide-title):not(.slide-section) h2, .card h4', 'color: var(--role-heading);');
   rule(selector('.slide-body'), '.slide:not(.slide-title):not(.slide-section) p, .content-list li, .card p', 'color: var(--role-body); line-height: 1.55;');
   rule(selector('.slide-accent'), '.divider', 'background: var(--role-accent);');
@@ -268,6 +294,10 @@ export function cssForDesign(catalog, design, { scope = '.bespoke-slide', fontBa
   const cardGrids = `${selector('.slide-cards')}${canonical ? ', .cards-grid' : ''}`;
   blocks.push(`@container(max-width:38rem){${cardGrids}{grid-template-columns:repeat(${Math.min(columns,2)},minmax(0,1fr));}}`);
   blocks.push(`@container(max-width:22rem){${cardGrids}{grid-template-columns:minmax(0,1fr);}}`);
+  // A narrow preview behaves like collapsed lesson navigation. The native sample
+  // disclosure shows the vertical panel without taking width from the main copy.
+  blocks.push(`@container(max-width:40rem){${selector('.slide-sidebar')}{display:none;}${selector('.slide-sidebar-disclosure')}{display:block;grid-column:1 / -1;margin:1rem 1.25rem 0;}${selector('.slide-content')}{grid-column:1 / -1;}}`);
+  blocks.push(`@container(max-width:30rem){${selector('.slide-video-layout')},${selector('.slide-activity')}{grid-template-columns:minmax(0,1fr);}}`);
   if (canonical && video.layout === 'side') blocks.push('@media(max-width:600px){.slide-video.active{grid-template-columns:minmax(0,1fr);}}');
   return `${blocks.join('\n')}\n`;
 }
@@ -287,7 +317,12 @@ export function renderSlide(catalog, design, kind, options = {}) {
   if (options.logoUrl && (!/^(?:\.\.?\/)*(?:[\w -]+\/)*[\w -]+\.(?:png|svg|webp)$/.test(options.logoUrl))) throw new Error('Use an existing relative local logo asset.');
   const logo = options.logoUrl ? `<img class="slide-logo" src="${escape(options.logoUrl)}" alt="SPOKES" width="80" height="80">` : '<div class="slide-logo" aria-label="SPOKES sample brand">SPOKES</div>';
   const attributes = Object.entries(design.slides[kind]).map(([key, value]) => `data-${kebab(key)}="${escape(value)}"`).join(' ');
-  const sidebar = '<div class="slide-sidebar" aria-label="Sample chapter navigation"><strong>SPOKES</strong><span>Welcome</span><span>Practice</span><span>Next step</span></div>';
+  const currentChapter = kind === 'activity' ? 6 : 2;
+  const currentSlide = {cards:'Build a useful habit',video:'See a skill in action',activity:'Try it together'}[kind];
+  const chapters = [['w','Warm-Up'],['i','Introduction'],['p','Sample chapter 1'],['p','Sample chapter 2'],['p','Sample chapter 3'],['e','Evaluation'],['a','Application']];
+  const arrow = '<svg viewBox="0 0 10 10" aria-hidden="true"><path d="M3 1 7 5 3 9" fill="none" stroke="currentColor" stroke-width="1.5"/></svg>';
+  const navigation = '<div class="sample-sidebar-note">Sample sidebar</div><div class="sample-sidebar-title">'+escape(options.lessonTitle || 'Sample lesson')+'</div><ul class="sample-chapters">'+chapters.map(([badge,label],index)=>'<li><div class="sample-chapter"'+(index===currentChapter?' data-current="true"':'')+'>'+arrow+'<span class="sample-badge" data-badge="'+badge+'">'+badge.toUpperCase()+'</span><span>'+label+'</span></div>'+(index===currentChapter?'<span class="sample-slide-name" aria-current="page">'+currentSlide+'</span>':'')+'</li>').join('')+'</ul><div class="sample-resources"><strong>Resources</strong><span>Sample handout</span></div><div class="sample-slide-counter">Sample slide · preview only</div>';
+  const sidebar = '<aside class="slide-sidebar" aria-label="Sample chapter navigation">'+navigation+'</aside><details class="slide-sidebar-disclosure"><summary aria-label="Open or close the sample sidebar"><svg viewBox="0 0 20 20" aria-hidden="true"><path d="M3 5h14M3 10h14M3 15h14" stroke="currentColor" stroke-width="2"/></svg><span>Sidebar · sample</span></summary><aside class="slide-sidebar-drawer" aria-label="Sample chapter navigation" tabindex="0">'+navigation+'</aside></details>';
   const boxes = design.samples.boxes.slice(0, Number(design.slides.cards.count)).map((text, index) => {
     const lines = text.split(/\n+/).filter(Boolean);
     const treatment = design.slides.cards.treatment;
@@ -297,9 +332,9 @@ export function renderSlide(catalog, design, kind, options = {}) {
   const views = {
     title: `${logo}<h2 class="slide-title-text">${title}</h2><div class="slide-accent" aria-hidden="true"></div><p class="slide-subtitle">${subtitle}</p>`,
     divider: `<span class="slide-watermark" aria-hidden="true">02</span><p class="slide-body">CHAPTER TWO</p><h2 class="slide-heading">Put it into practice</h2><p class="slide-body">One clear step at a time</p>`,
-    cards: `${sidebar}${design.slides.cards.titleBar ? '<header class="slide-title-bar bespoke-title-bar"><h2 class="slide-heading">Build a useful habit</h2></header>' : ''}<div class="slide-cards bespoke-boxes">${boxes}</div>`,
-    video: `${sidebar}<div class="slide-video-layout"><h2 class="slide-heading">See a skill in action</h2><div class="slide-video-frame" role="img" aria-label="Sample video placeholder; no video is loaded"><span>▶ &nbsp; Sample video</span></div></div><p>${renderSampleButton('Sample video action')}</p>`,
-    activity: `${sidebar}<h2 class="slide-heading">Try it together</h2><div class="slide-activity"><span class="slide-activity-label">Partner practice</span><p class="slide-body">Choose one next step. Tell a partner what you will try, and ask what could make it easier.</p></div><p>${renderSampleButton()}</p>`
+    cards: `${sidebar}<div class="slide-content">${design.slides.cards.titleBar ? '<header class="slide-title-bar bespoke-title-bar"><h2 class="slide-heading">Build a useful habit</h2></header>' : ''}<div class="slide-cards bespoke-boxes">${boxes}</div></div>`,
+    video: `${sidebar}<div class="slide-content"><div class="slide-video-layout"><h2 class="slide-heading">See a skill in action</h2><div class="slide-video-frame" role="img" aria-label="Sample video placeholder; no video is loaded"><span>▶ &nbsp; Sample video</span></div></div><p>${renderSampleButton('Sample video action')}</p></div>`,
+    activity: `${sidebar}<div class="slide-content"><h2 class="slide-heading">Try it together</h2><div class="slide-activity"><span class="slide-activity-label">Partner practice</span><p class="slide-body">Choose one next step. Tell a partner what you will try, and ask what could make it easier.</p></div><p>${renderSampleButton()}</p></div>`
   };
   return `<article class="bespoke-slide" data-kind="${kind}" ${attributes} aria-label="${escape(catalog.slideGroups.find(group => group.id === kind).label)} sample">${views[kind]}</article>`;
 }

@@ -198,10 +198,15 @@ Panel padding is 26px 22px 36px; preview padding is 26px 28px. Related fields an
 | 761–1100px | Step navigation becomes a horizontal scrolling strip above the control panel; the preview remains beside it. |
 | At most 760px | A sticky Design / Preview switch shows one workspace region at a time. Step navigation scrolls horizontally, the preview loses sticky positioning, and swatches grow from 38px to 44px. |
 | At most 600px viewport | Generated slide styles reduce padding and collapse video/activity side layouts. |
-| At most 38rem slide container | Text boxes use at most two columns, retaining the selected count, arrangement and text. |
-| At most 22rem slide container | Text boxes reflow to one column so a narrow desktop preview remains readable. |
+| Above 40rem sample canvas | Content samples show the lesson's 280px vertical chapter sidebar beside the main content. |
+| At most 40rem sample canvas | A labeled Sidebar sample menu opens a vertical drawer over the full-width content. |
+| At most 38rem main content container | Text boxes use at most two columns, retaining the selected count, arrangement and text. |
+| At most 30rem main content container | Video and activity samples stack their side-by-side content. |
+| At most 22rem main content container | Text boxes reflow to one column so a narrow desktop preview remains readable. |
 
-The preview stage and shared slide styles declare inline-size containers. Text-box reflow follows the actual slide width; rem thresholds also respond to enlarged text. Viewport queries still control surrounding editor layout, slide padding and video/activity stacking. Divider watermarks use bounded, canvas-relative type on a single decorative line. Generated canonical slides use safe centering so long content begins at a reachable scroll position.
+The preview stage, content samples and their main content region declare inline-size containers. Sidebar disclosure follows the sample canvas width; text-box, video and activity reflow follow the space actually available beside navigation. Rem thresholds also respond to enlarged text. Viewport queries still control surrounding editor layout and canonical slide padding/stacking. Divider watermarks use bounded, canvas-relative type on a single decorative line. Generated canonical slides use safe centering so long content begins at a reachable scroll position.
+
+The sample sidebar follows the six existing lessons: a lesson-name heading, seven WIPPEA badge groups, an indented current slide, resources and a slide footer. Chapter and resource entries are inert and labeled as sample content. Narrow previews use a keyboard-operable native disclosure with a focusable scrolling drawer; its ordinary 280px width scales with text size up to the canvas width, while horizontal padding stays at most 24px. Sidebar paint recolors the visible rail or drawer immediately and keeps an open drawer open. Title and divider remain standalone component samples. The actual lesson template owns its persistent navigation and collapse behavior; this sample shell does not replace it. Source evidence and verification are recorded in [the sidebar preview report](../docs/bespoke/sidebar-preview-2026-09-24.md).
 
 ## Elevation & Depth
 

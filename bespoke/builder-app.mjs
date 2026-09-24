@@ -1469,7 +1469,10 @@ function buttonColorSample(id){
 function updatePreview(design=state.design){
  if(!design)return;
  byId('designStyle').textContent=Model.cssForDesign(catalog,design,{scope:'.bespoke-slide',fontBase:'../fonts',canonical:false});
+ const sidebarSampleOpen=byId('modelStage').querySelector('.slide-sidebar-disclosure')?.open===true;
  byId('modelStage').innerHTML=Model.renderSlide(catalog,design,state.previewView,{title:design.samples.title,subtitle:design.samples.subtitle,lessonTitle:state.meta.lessons.find(l=>l.id===state.lessonId)?.title,logoUrl:'../SPOKES-Logo.png'});
+ const sidebarDisclosure=byId('modelStage').querySelector('.slide-sidebar-disclosure');
+ if(sidebarDisclosure)sidebarDisclosure.open=sidebarSampleOpen;
  // Contextual sample sits outside the slide; cards/title/dividers keep their real structure.
  const buttonSample=byId('buttonColorSample');
  const needsSample=STEPS[state.step].id==='colors'&&ui.activeRole==='button'&&!['video','activity'].includes(state.previewView);

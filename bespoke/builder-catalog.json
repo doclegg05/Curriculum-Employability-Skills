@@ -119,7 +119,7 @@
     {
       "id": "sidebar",
       "label": "Sidebar",
-      "note": "The chapter list on every slide. Its text color is chosen for you.",
+      "note": "The vertical chapter navigation beside lesson content. Open the Sidebar sample menu in narrow previews. Its text color is chosen for you.",
       "kind": "surface",
       "ink": true
     },

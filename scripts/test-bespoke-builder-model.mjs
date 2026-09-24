@@ -160,8 +160,8 @@ check('1–4 boxes, title toggle and treatments drive markup without losing hidd
     const html = renderSlide(catalog, design, 'cards');
     assert.equal((html.match(/class="slide-card bespoke-box"/g) || []).length, Number(count));
     assert.equal(html.includes('bespoke-title-bar'), titleBar);
-    assert.equal(html.includes('<ul '), treatment === 'bullets');
-    assert.equal(html.includes('<ol '), treatment === 'numbered');
+    assert.equal(html.includes('<ul class="slide-body"'), treatment === 'bullets');
+    assert.equal(html.includes('<ol class="slide-body"'), treatment === 'numbered');
     assert.deepEqual(design.samples.boxes, ['First\nSecond', 'Two', 'Three', 'Four']);
   }
 });
