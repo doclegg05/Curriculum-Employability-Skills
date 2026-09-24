@@ -170,7 +170,7 @@ All 11 approved colors stay visible in every role's palette. The catalog's displ
 | `muted` | Mist | `mist` |
 | `light` | White | `paper` |
 
-The 11 editable roles are sidebar, title background, title second color, title text, subtitle, content background, heading, body, accent, button, and divider background. Sidebar, accent, and button surfaces receive automatic readable ink. Divider headings use the explicit titleText role; chapter labels and supporting copy use subtitle. The watermark inherits titleText as decoration. Those shared colors never change when the divider background changes. All eleven brand colors, including Green and Gold, are selectable for every role. A choice below the modeled contrast guideline displays advisory guidance; it is still applied, rendered, saved and generated exactly. The team leader decides whether to retain it. Structural validation and access controls remain separate.
+The 11 shared theme roles are sidebar, title background, title second color, title text, subtitle, content background, heading, body, accent, button, and divider background. Sidebar, accent, and button surfaces receive automatic readable ink. Title, divider, text-box, video and activity editors also provide independent local background and text colors. A local value marked Use shared theme inherits the corresponding theme role; an explicit local value stays independent. Older designs without local settings keep their existing appearance, including the shared title/divider second color, heading, supporting text and decorative watermark. All eleven brand colors, including Green and Gold, are selectable for every applicable field. A choice below the modeled contrast guideline displays advisory guidance; it is still applied, rendered, saved and generated exactly. The team leader decides whether to retain it. Structural validation and access controls remain separate.
 
 **The Two Layers Rule.** Lesson choices change the shared preview model; they never repaint the builder's navigation, fields, or status surfaces.
 
@@ -228,13 +228,19 @@ These chrome shapes do not constrain slide content. Lesson boxes support accent 
 
 Primary buttons use Blue with white text and become Navy on hover. Secondary buttons use Paper with a thin Line border and Mist hover. Base buttons have a 40px minimum height; mobile header actions currently use 38px. Disabled buttons use half opacity. Text links remain underlined with a 3px underline offset. All focusable controls use the Mauve outline (3px, 3px offset); the programmatically focused panel suppresses its own outline.
 
-The header keeps save, open, and review actions visible. Files & recovery uses native disclosure for backup, restore, and original-wizard access. The team-opening dialog is a focused access task, with labeled lesson and private-code fields and explicit Open / Cancel actions. Saving a reusable visual design and authorizing a lesson build are distinct tasks.
+The header keeps How it works, save, open, and review actions visible. Help opens inline and returns focus to its button when closed. The first step explains choosing a start, editing reusable slide types and saving; a disclosure explains the palette, fonts, boxes, logo, contrast, recovery and similarity guardrails. Saving guidance distinguishes the local test service from team saving and design review. Files & recovery uses native disclosure for backup, restore, and original-wizard access. The team-opening dialog is a focused access task, with labeled lesson and private-code fields and explicit Open / Cancel actions. Saving a reusable visual design and authorizing a lesson build are distinct tasks.
 
 ### Fields and decisions
 
 Field labels sit above full-width inputs, selects, and text areas with a 7px gap. Fields use a 1px Input line, 10px padding, and a 43px minimum height. Text areas resize vertically. Decision groups are semantic fieldsets with visible legends; chosen buttons carry `aria-pressed`, a stronger border, a selected surface, and a check mark.
 
 The color-role selector precedes the 11-color palette. A selected circular swatch has both a visible mark and an accessible selected label. All colors are enabled, without strike-throughs. Accessible labels identify a contrast advisory as selectable. The chosen role’s warning explains the text/background difference and why low contrast can be harder to read; it includes the actual ratio, the applicable guideline, and the team leader’s option to keep and save the design. The persistent live region announces advisories after updates.
+
+Each slide-type editor groups its existing Arrangement controls with Background, Texture, Text and Watermark disclosures. Arrangement and Background start open; disclosure choices stay in UI memory, never in a design payload. Stable native controls retain focus after redraw. Local edits show the affected preview while preserving every other role's choices. Shared Paint and Fonts steps explicitly describe defaults and provide a route to local editing.
+
+Background supports an inherited finish, Solid or a two-color gradient, local primary/secondary colors and three gradient directions. The second color stays saved when hidden. Split title panels use the second color in the right panel and omit the inapplicable direction control; Solid colors both panels uniformly. Divider Band retains its colored middle panel and the shared lesson surface above and below it. Texture offers the existing five recipes and three strengths, independently per role. Plain hides the strength control without clearing it.
+
+Text offers local heading/body colors, the twelve curated fonts, size, alignment, visibility and editable sample words. Match arrangement keeps inherited sizing/alignment; explicit choices override them. Chapter and activity labels can be edited and hidden independently. Text boxes retain their four sample strings and existing treatment/count/title-bar controls. The video supporting paragraph starts hidden to preserve the old look. Hiding text retains its words and style. Watermarks offer None or custom text/number, eleven colors, three sizes, four corners and three strengths. Decorative custom marks occupy reserved space apart from reading text and never modify the required title logo. Presets reset visual settings but preserve all sample words.
 
 ### Navigation and continuity
 
@@ -263,7 +269,8 @@ The corner logo occupies a reserved top area independently of title alignment.
 Above-title logos occupy a separate grid row in the text column. All title copy,
 rules and logos stay inside the canvas. Generated sample and canonical title styles
 share this geometry; canonical flex spacer pseudo-elements are replaced by the same
-grid sizing rule. The editor shell and localized title controls are unchanged.
+grid sizing rule. The editor shell retains its identity; the role sections expose
+local title controls using the same cumulative design.
 
 Video frames keep the same outer 16:9 dimensions when switched. Plain removes the
 border, padding, outline and shadow. Accent frame reserves an 8px inset for a 6px

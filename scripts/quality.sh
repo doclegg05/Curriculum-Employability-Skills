@@ -24,6 +24,8 @@ echo "==> bespoke selection schema (generate --check + fixtures + submissions)"
 python3 scripts/generate-selection-schema.py --check
 node scripts/generate-selection-v2-schema.mjs --check
 node scripts/test-bespoke-builder-model.mjs
+node scripts/test-bespoke-role-model.mjs
+node scripts/test-bespoke-role-contracts.mjs
 node scripts/test-bespoke-similarity.mjs
 python3 -m unittest discover -s scripts -p 'test_bespoke*.py' -v
 echo "==> bespoke handoff endpoint"
@@ -60,6 +62,8 @@ if [ -d node_modules/playwright ] && [ -d node_modules/axe-core ]; then
   node scripts/test-bespoke-contract-qa.mjs
   node scripts/test-bespoke-visual-qa.mjs
   node scripts/test-bespoke-sidebar.mjs
+  node scripts/test-bespoke-role-browser.mjs
+  node scripts/test-bespoke-role-rendering.mjs
   node scripts/test-bespoke-title-layouts.mjs
   node scripts/test-bespoke-video-frames.mjs
   node scripts/test-bespoke-patterns.mjs

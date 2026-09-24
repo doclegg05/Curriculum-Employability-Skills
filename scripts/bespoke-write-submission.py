@@ -61,6 +61,8 @@ def build_intake_markdown(payload: dict, date: str) -> str:
             **{f"{role.capitalize()} design": json.dumps(choices, ensure_ascii=False) for role, choices in design["slides"].items()},
             "Recovery": "Original v1 selection preserved verbatim in selection.json" if "legacySelection" in payload else "Native v2 selection",
         })
+        if "roleStyles" in design:
+            rows["Role-specific styles and sample copy"] = json.dumps(design["roleStyles"], ensure_ascii=False)
     else:
         rows.update({
             "Preset": payload["presetId"],

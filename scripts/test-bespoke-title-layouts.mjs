@@ -68,16 +68,36 @@ function distinct(values, label) {
   assert(split.title.x>split.w*.40 && split.subtitle.x>split.w*.40, label+': split copy belongs in the second panel');
   assert(split.background.includes('38%'), label+': split needs a visible panel boundary');
 }
+async function captureTitle(locator) {
+  // Locator screenshots scroll just enough to expose the element, which can put
+  // its top edge underneath the phone's sticky Design/Preview switcher. Keep the
+  // real UI visible and position the whole normal-copy canvas below that bar.
+  await locator.evaluate(el=>{
+    const r=el.getBoundingClientRect(),bar=document.querySelector('#surfaceSwitcher'),barHeight=bar?.getBoundingClientRect().height||0;
+    const inset=barHeight+8,available=innerHeight-inset-8;
+    const top=inset+Math.max(0,(available-r.height)/2);
+    window.scrollBy({top:r.top-top,behavior:'instant'});
+  });
+  const geometry=await locator.evaluate(el=>{
+    const r=el.getBoundingClientRect(),bar=document.querySelector('#surfaceSwitcher')?.getBoundingClientRect();
+    const points=[.365,.395].map(x=>{const hit=document.elementFromPoint(r.x+r.width*x,r.y+r.height*.035);return {x:r.x+r.width*x,y:r.y+r.height*.035,unobstructed:!!hit&&el.contains(hit),hit:hit?.id||hit?.className||hit?.tagName};});
+    return {top:r.top,bottom:r.bottom,height:r.height,viewport:innerHeight,barBottom:bar?.height?bar.bottom:0,points};
+  });
+  assert(geometry.top>=geometry.barBottom && geometry.bottom<=geometry.viewport+1, 'The complete title canvas must fit below the sticky editor controls: '+JSON.stringify(geometry));
+  assert(geometry.points.every(point=>point.unobstructed), 'Title pixel samples must hit the slide, not overlapping editor controls: '+JSON.stringify(geometry));
+  return {png:await locator.screenshot(),geometry};
+}
 async function seam(page, locator) {
-  const png=await locator.screenshot();
-  const delta=await page.evaluate(async encoded=>{
+  const {png,geometry}=await captureTitle(locator);
+  const pixels=await page.evaluate(async encoded=>{
     const bitmap=await createImageBitmap(new Blob([Uint8Array.from(atob(encoded),c=>c.charCodeAt(0))],{type:'image/png'}));
     const canvas=document.createElement('canvas'); canvas.width=bitmap.width;canvas.height=bitmap.height;
     const c=canvas.getContext('2d');c.drawImage(bitmap,0,0);bitmap.close();
     const pixel=x=>c.getImageData(Math.round(canvas.width*x),Math.round(canvas.height*.035),1,1).data;
-    const a=pixel(.365),b=pixel(.395);return Math.max(...[0,1,2].map(i=>Math.abs(a[i]-b[i])));
+    const a=[...pixel(.365)],b=[...pixel(.395)];return {left:a,right:b,delta:Math.max(...[0,1,2].map(i=>Math.abs(a[i]-b[i])))};
   },png.toString('base64'));
-  assert(delta>=12, 'Actual split-panel pixels must show a color boundary');
+  evidence.push({source:'split-pixels',geometry,...pixels});
+  assert(pixels.delta>=12, 'Actual split-panel pixels must show a color boundary: '+JSON.stringify(pixels));
   return png;
 }
 try {
@@ -103,7 +123,7 @@ try {
         assert(await page.evaluate(()=>document.documentElement.scrollWidth<=innerWidth+1), 'Editor stays inside viewport');
         if(logo==='corner')assert(m.logo.y<30, 'Corner logo stays at the top independently of text arrangement');
         else assert(m.logo.y+m.logo.h<m.title.y, 'Above-title logo stays in its own row');
-        const png=layout==='split'?await seam(page,slide):await slide.screenshot();
+        const png=layout==='split'?await seam(page,slide):(await captureTitle(slide)).png;
         if(output && logo==='corner')await fs.writeFile(path.join(output,`title-${width}-${layout}.png`),png);
         if(output && logo==='corner' && layout==='bottom')await page.screenshot({path:path.join(output,`title-page-${width}.png`),fullPage:true});
       }
@@ -116,7 +136,7 @@ try {
     await go(page,'Fonts & background');await go(page,'Title slide');assert.deepEqual(await saved(page),final);
     const response=page.waitForResponse(r=>r.url().endsWith('/api/bespoke')&&r.request().postDataJSON()?.action==='save');
     await page.locator('#btnSave').click();assert.equal((await response).status(),200);
-    await page.locator('#fileStatus').filter({hasText:/Shared design saved|already up to date/}).waitFor();
+    await page.locator('#fileStatus').filter({hasText:/Local test design saved|already up to date/}).waitFor();
     await page.reload();await page.locator('#localPreviewNotice').waitFor();assert.deepEqual(await saved(page),final);
     const reopen=await editor(width);await go(reopen,'Title slide');assert.deepEqual(await saved(reopen),final);
 

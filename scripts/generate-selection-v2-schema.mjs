@@ -5,6 +5,7 @@ import path from 'node:path';
 import { fileURLToPath } from 'node:url';
 import catalog from '../bespoke/builder-catalog.json' with { type: 'json' };
 import original from '../bespoke/selection.schema.json' with { type: 'json' };
+import { roleStylesSchema } from '../bespoke/builder-model.mjs';
 const root = path.resolve(path.dirname(fileURLToPath(import.meta.url)), '..');
 const object = properties => ({ type: 'object', additionalProperties: false, required: Object.keys(properties), properties });
 const choice = values => ({ type: 'string', enum: values });
@@ -18,6 +19,9 @@ const design = object({
   samples: object({ title: boundedText(catalog.sampleLimits.title), subtitle: boundedText(catalog.sampleLimits.subtitle), boxes: { type: 'array', minItems: 4, maxItems: 4, items: boundedText(catalog.sampleLimits.box) } }),
   startingPoint: choice(['custom', ...catalog.presets.map(preset => preset.id)]),
 });
+// Optional extension: old v2 payloads retain their exact appearance. A present
+// role style is closed and complete, using the shared renderer's field contract.
+design.properties.roleStyles = roleStylesSchema(catalog);
 const lesson = structuredClone(original.properties.lesson);
 const team = structuredClone(original.properties.team);
 lesson.properties.title.maxLength = lesson.properties.displayTitle.maxLength = 200;

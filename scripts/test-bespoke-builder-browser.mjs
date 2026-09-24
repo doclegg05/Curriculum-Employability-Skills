@@ -8,7 +8,7 @@ import { fileURLToPath } from 'node:url';
 import { browserType, tabKey, reverseTabKey } from './bespoke-test-browser.mjs';
 import { createDevServer, LOCAL_PREVIEW_CODE } from './bespoke-dev-server.mjs';
 import { compareDesign } from '../bespoke/similarity.mjs';
-import { contrast } from '../bespoke/builder-model.mjs';
+import { contrast, setRoleStyle } from '../bespoke/builder-model.mjs';
 import { pixelDifference } from './bespoke-pixel-check.mjs';
 
 const root = path.resolve(path.dirname(fileURLToPath(import.meta.url)), '..');
@@ -97,7 +97,7 @@ async function save(page) {
   await page.locator('#btnSave').click();
   const result = await response;
   assert.equal(result.status(), 200, await result.text());
-  await page.locator('#fileStatus').filter({ hasText: /Shared design saved|already up to date/ }).waitFor();
+  await page.locator('#fileStatus').filter({ hasText: /Local test design saved|already up to date/ }).waitFor();
 }
 async function download(page, original = false) {
   const control = page.locator(original ? '#stepPanel button' : '#btnDownloadBackup').filter(original ? { hasText: 'Download original v1 design' } : {});
@@ -136,6 +136,7 @@ try {
     assert.equal(await page.locator('[data-preset]').count(), 6);
     await page.locator('[data-preset="professional"]').click();
     await go(page, 'Text boxes');
+    if(!await page.locator('#section-cards-text').evaluate(el=>el.open))await page.locator('#section-cards-text > summary').click();
     await page.getByText('Try your own sample text', { exact: true }).click();
     await page.locator('#sample-box-3').fill('Keep this fourth sample even while it is hidden.');
     await go(page, 'Your starting point');
@@ -216,7 +217,8 @@ try {
     const page = await makePage(); await fillTeam(page);
     const native = []; page.on('dialog', dialog => native.push(dialog.message()));
     await go(page, 'Your starting point'); await page.locator('[data-preset="professional"]').click();
-    await go(page, 'Text boxes'); await page.getByText('Try your own sample text', { exact: true }).click();
+    await go(page, 'Text boxes'); if(!await page.locator('#section-cards-text').evaluate(el=>el.open))await page.locator('#section-cards-text > summary').click();
+    await page.getByText('Try your own sample text', { exact: true }).click();
     await page.locator('#sample-box-3').fill('Retain my hidden sample after every preset.');
     await go(page, 'Your starting point');
     const before = await draft(page);
@@ -413,21 +415,14 @@ try {
       await paint(page, 'titleText', 'light'); await paint(page, 'subtitle', 'light');
       const before = await design(page);
       await go(page, 'Chapter divider');
-      assert(await page.locator('#colorRole').isVisible(), 'Divider colors are directly exposed.');
-      await page.locator('#colorRole').selectOption('dividerBackground');
-      await page.locator('#edit-divider-titleText').click();
-      assert.equal(await page.locator('#colorRole').inputValue(), 'titleText');
-      assert.equal(await page.locator('#previewTabs [aria-selected="true"]').getAttribute('data-view'), 'divider');
-      await page.locator('#colorRole').selectOption('subtitle');
-      assert.equal(await page.locator('#previewTabs [aria-selected="true"]').getAttribute('data-view'), 'divider');
-      await page.locator('#colorRole').selectOption('dividerBackground');
+      assert(await page.locator('#role-divider-primary').isVisible(), 'Local divider background is directly exposed.');
       for (const [id, rgb] of [['accent', 'rgb(55, 181, 80)'], ['light', 'rgb(255, 255, 255)']]) {
-        await page.locator('#paint-dividerBackground-'+id).focus(); await page.keyboard.press('Enter');
-        assert.equal(await page.evaluate(() => document.activeElement.id), 'paint-dividerBackground-'+id);
+        await page.locator('#role-divider-primary').focus(); await page.locator('#role-divider-primary').selectOption(id);
+        assert.equal(await page.evaluate(() => document.activeElement.id), 'role-divider-primary');
         await assertDivider(page, rgb);
-        assert.deepEqual(await design(page), { ...before, roles: { ...before.roles, dividerBackground: id } });
-        assert.match(await page.locator('#readabilityNotes').textContent(), /chapter divider background.*below the/);
-        assert.equal(await page.locator('#repair-divider-dark').count(), 1);
+        assert.deepEqual(await design(page), setRoleStyle(catalog,before,'divider','primary',id));
+        assert.match(await page.locator('#readabilityNotes').textContent(), /Chapter divider.*below the/);
+        assert.equal(await page.locator('.readability-actions button').filter({hasText:/^Change divider colors$/}).count(),1);
         if (id === 'accent' && process.env.BESPOKE_REVIEW_DIR) {
           await fs.mkdir(process.env.BESPOKE_REVIEW_DIR, { recursive: true });
           if (mobile) await page.locator('#surface-preview').click();
@@ -447,20 +442,18 @@ try {
       await page.locator('#btnUndo').click(); await assertDivider(page, 'rgb(55, 181, 80)');
       await page.locator('#btnRedo').click(); await assertDivider(page, 'rgb(255, 255, 255)');
       await go(page, 'Title slide'); await go(page, 'Chapter divider');
-      await page.locator('#colorRole').selectOption('dividerBackground');
-      if (mobile) await page.locator('#surface-preview').click();
-      await page.locator('#repair-divider-dark').focus(); await page.keyboard.press('Enter');
-      assert.equal(await page.locator('#previewTabs [aria-selected="true"]').evaluate(el => el === document.activeElement), true, 'Focus moves to the current preview tab when a resolved warning disappears.');
-      if (mobile) await page.locator('#surface-design').click();
+      await page.locator('#role-divider-primary').focus();await page.locator('#role-divider-primary').selectOption('dark');
+      assert.equal(await page.locator('#role-divider-primary').evaluate(el=>el===document.activeElement),true,'Native color control retains focus after repaint.');
       await assertDivider(page, 'rgb(0, 64, 113)');
       assert.equal(await page.locator('#readabilityNotes').isVisible(), false);
-      await page.locator('#colorRole').selectOption('titleText');
-      await page.locator('#paint-titleText-offwhite').click();
+      await page.locator('#section-divider-text > summary').click();
+      await page.locator('#role-divider-headingColor').selectOption('offwhite');
       assert.equal(await page.locator('#modelStage h2').evaluate(el => getComputedStyle(el).color), 'rgb(209, 211, 212)');
       assert.equal(await page.locator('#modelStage p').first().evaluate(el => getComputedStyle(el).color), 'rgb(255, 255, 255)');
       await page.locator('#btnUndo').click();
       await assertDivider(page, 'rgb(0, 64, 113)');
-      assert.deepEqual(await design(page), { ...before, roles: { ...before.roles, dividerBackground: 'dark' } });
+      assert.deepEqual(await design(page), setRoleStyle(catalog,before,'divider','primary','dark'));
+      assert.equal((await design(page)).roles.titleText,before.roles.titleText,'Local divider text does not mutate title theme color.');
       await axe(page, 'Divider controls '+(mobile?'mobile':'desktop')); await assertNoOverflow(page, 'Divider controls');
       if (mobile) await page.locator('#surface-preview').click();
       await axe(page, 'Divider preview '+(mobile?'mobile':'desktop')); await assertNoOverflow(page, 'Divider preview');
@@ -485,8 +478,8 @@ try {
     backup.design.roles.dividerBackground = 'accent';
     const page = await makePage({ remoteSelection: backup });
     assert.deepEqual(await design(page), backup.design);
-    assert.match(await page.locator('#readabilityNotes').textContent(), /chapter divider background/);
     await go(page, 'Chapter divider');
+    assert.match(await page.locator('#readabilityNotes').textContent(), /chapter divider background/);
     assert.equal(await page.locator('#modelStage h2').evaluate(el => getComputedStyle(el).color), 'rgb(255, 255, 255)');
     await page.reload(); await ready(page);
     assert.deepEqual(await design(page), backup.design);
@@ -548,6 +541,7 @@ try {
   await scenario('text boxes retain hidden words across every count, title bar and text treatment', async ({ makePage }) => {
     const page = await makePage();
     await go(page, 'Text boxes');
+    if(!await page.locator('#section-cards-text').evaluate(el=>el.open))await page.locator('#section-cards-text > summary').click();
     await page.getByText('Try your own sample text', { exact: true }).click();
     await page.locator('#sample-box-0').fill('First meaningful point\nSecond meaningful point');
     await page.locator('#sample-box-3').fill('Recoverable fourth point.');

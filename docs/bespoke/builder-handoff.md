@@ -32,6 +32,18 @@ submission timestamp, plus a complete `design`:
 - Title/subtitle and all four sample-box strings, including currently hidden boxes.
 - The optional preset origin represented by `design.startingPoint` (`custom` after
   individual visual edits).
+- Optional `design.roleStyles` records for title, divider, cards, video and activity:
+  independent background/gradient, texture strength, heading/body typography and
+  visibility, sample words, chapter/activity labels and decorative watermarks.
+  Explicit inherit values follow shared defaults. Hidden choices retain their values.
+
+Each present role record is closed and complete. Designs without the extension
+retain their earlier CSS and sample markup exactly; there is no eager migration of
+stored drafts. Older strict consumers reject the extension instead of discarding
+it. Use the updated schema, model, service and Python bridge together. Presets reset
+visual choices while preserving all sample words. The first step and header help
+explain this workflow and the brand, contrast and comparison guardrails. See the
+[implementation and evidence report](role-customization-2026-09-24.md).
 
 The live preview, CSS and component samples derive from
 `bespoke/builder-model.mjs`. The closed schema is generated from the same catalog
