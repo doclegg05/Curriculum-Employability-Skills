@@ -96,3 +96,154 @@ test('normalizeGuide rejects garbage and repairs out-of-range positions', () => 
   assert.equal(fixed.on, true);
   assert.equal(fixed.done, false);
 });
+
+import * as Model from '../bespoke/builder-model.mjs';
+import { SUGGESTED, applyAnswer, currentValue, optionsFor, readabilityNote, recapLines } from '../bespoke/guide/answers.mjs';
+
+const base = () => Model.defaultDesign(catalog);
+const asked = all.filter((q) => !['team', 'recap'].includes(q.kind));
+
+function everyOption(design, q) {
+  const { options, more } = optionsFor(catalog, design, q);
+  return [...options, ...more];
+}
+
+test('the default design is valid, so the guide starts from something usable', () => {
+  assert.deepEqual(Model.validateDesign(catalog, base()), []);
+});
+
+test('every option of every question yields a valid design that renders its own view', () => {
+  for (const q of asked) {
+    const choices = everyOption(base(), q);
+    assert.ok(choices.length >= 2, `${q.id} offers at least two choices`);
+    for (const option of choices) {
+      const next = applyAnswer(catalog, base(), q, option.id);
+      assert.deepEqual(Model.validateDesign(catalog, next), [], `${q.id} ${option.id}`);
+      assert.doesNotThrow(() => Model.renderSlide(catalog, next, q.view, { title: 'T', subtitle: 'S' }), `${q.id} ${option.id}`);
+    }
+  }
+});
+
+test('a choice other than the current one changes the design', () => {
+  for (const q of asked) {
+    const d = base();
+    const current = currentValue(catalog, d, q);
+    const other = everyOption(d, q).find((o) => o.id !== current);
+    const next = applyAnswer(catalog, d, q, other.id);
+    assert.notDeepEqual(next, d, `${q.id} ${other.id}`);
+  }
+});
+
+test('applyAnswer never mutates the design it is given', () => {
+  const frozen = structuredClone(base());
+  const before = JSON.stringify(frozen);
+  for (const q of asked) applyAnswer(catalog, frozen, q, everyOption(frozen, q)[0].id);
+  assert.equal(JSON.stringify(frozen), before);
+});
+
+test('current value is found for every kind on the default design', () => {
+  assert.equal(currentValue(catalog, base(), byId.get('shared.fonts')), 'dm-serif-display-outfit');
+  assert.equal(currentValue(catalog, base(), byId.get('shared.pattern')), base().background);
+  assert.equal(currentValue(catalog, base(), byId.get('title.layout')), base().slides.title.layout);
+  assert.equal(currentValue(catalog, base(), byId.get('cards.titleBar')), String(base().slides.cards.titleBar));
+  assert.equal(currentValue(catalog, base(), byId.get('title.background')), 'inherit');
+});
+
+test('boolean and numeric decisions round-trip through string ids', () => {
+  const bar = applyAnswer(catalog, base(), byId.get('cards.titleBar'), 'false');
+  assert.equal(bar.slides.cards.titleBar, false);
+  const count = applyAnswer(catalog, base(), byId.get('cards.count'), '3');
+  assert.equal(count.slides.cards.count, '3');
+});
+
+test('color questions offer four suggestions ranked by readability, then the rest under More colors', () => {
+  const q = byId.get('cards.heading');
+  const { options, more } = optionsFor(catalog, base(), q);
+  const colors = options.filter((o) => o.id !== 'inherit');
+  assert.equal(colors.length, SUGGESTED + (colors.some((o) => o.current) ? 1 : 0));
+  for (let i = 1; i < SUGGESTED; i += 1) assert.ok(colors[i - 1].ratio >= colors[i].ratio, 'suggestions run best first');
+  const worstSuggested = Math.min(...colors.slice(0, SUGGESTED).map((o) => o.ratio));
+  assert.ok(more.every((o) => o.ratio <= worstSuggested + 1e-9), 'nothing under More colors beats a suggestion');
+  const ids = [...colors, ...more].map((o) => o.id);
+  assert.equal(new Set(ids).size, catalog.palette.length, 'all eleven colors are reachable, none twice');
+});
+
+test('the first color question option matches the shared look', () => {
+  const { options } = optionsFor(catalog, base(), byId.get('title.heading'));
+  assert.equal(options[0].id, 'inherit');
+  assert.match(options[0].label, /shared look/i);
+});
+
+test('a chosen color that is not in the top four is still shown, marked current', () => {
+  const q = byId.get('cards.heading');
+  const worst = optionsFor(catalog, base(), q).more.at(-1);
+  const next = applyAnswer(catalog, base(), q, worst.id);
+  const { options, more } = optionsFor(catalog, next, q);
+  const shown = options.find((o) => o.id === worst.id);
+  assert.ok(shown && shown.current, 'current color is shown with the suggestions');
+  assert.equal(more.some((o) => o.id === worst.id), false);
+});
+
+test('readability ranking on a gradient slide uses both gradient colors', () => {
+  let d = base();
+  d = Model.setRoleStyle(catalog, d, 'title', 'backgroundMode', 'gradient');
+  d = Model.setRoleStyle(catalog, d, 'title', 'primary', 'dark');
+  d = Model.setRoleStyle(catalog, d, 'title', 'secondary', 'light');
+  const { options, more } = optionsFor(catalog, d, byId.get('title.heading'));
+  const all = [...options, ...more];
+  const ratio = (id) => all.find((o) => o.id === id).ratio;
+  assert.ok(ratio('light') < 1.5, 'white text is unreadable on the white end of a navy to white gradient');
+  assert.ok(ratio('dark') < 1.5, 'navy text is unreadable on the navy end');
+  const middle = all.filter((o) => o.ratio != null && !['light', 'dark'].includes(o.id)).map((o) => o.ratio);
+  assert.ok(Math.max(...middle) > ratio('light'), 'a mid-tone color beats either extreme');
+});
+
+test('readability words are plain and carry the ratio', () => {
+  assert.equal(readabilityNote(7.2, 4.5), 'Easy to read');
+  assert.match(readabilityNote(2.04, 3), /^Hard to read \(2\.0 to 1, aim for 3 to 1\)$/);
+  assert.equal(readabilityNote(3, 0), '');
+});
+
+test('showing the chapter number works even when the design had hidden the watermark', () => {
+  const d = base();
+  d.slides.divider.watermark = 'hide';
+  const next = applyAnswer(catalog, d, byId.get('divider.watermark'), 'inherit');
+  assert.equal(Model.effectiveRoleStyle(catalog, next, 'divider').watermarkMode, 'legacy');
+  assert.equal(Model.effectiveRoleStyle(catalog, applyAnswer(catalog, d, byId.get('divider.watermark'), 'off'), 'divider').watermarkMode, 'off');
+});
+
+test('the guide calls a color hard to read exactly when the model advises against it', () => {
+  const roleFor = (q) => (['title', 'divider'].includes(q.slide)
+    ? (q.field === 'headingColor' ? 'titleText' : 'subtitle')
+    : (q.field === 'headingColor' ? 'heading' : 'body'));
+  for (const id of ['title.heading', 'cards.heading', 'cards.text', 'activity.heading', 'video.heading', 'divider.text']) {
+    const q = byId.get(id);
+    const { options, more } = optionsFor(catalog, base(), q);
+    for (const o of [...options, ...more].filter((x) => x.id !== 'inherit')) {
+      const modelSaysHard = Model.contrastIssues(catalog, applyAnswer(catalog, base(), q, o.id)).some((i) => i.kind === q.slide && i.role === roleFor(q));
+      assert.equal(o.note.startsWith('Hard to read'), modelSaysHard, `${id} ${o.id} (${o.ratio.toFixed(2)})`);
+    }
+  }
+});
+
+test('a hard-to-read color stays selectable and valid', () => {
+  const q = byId.get('cards.heading');
+  const gold = applyAnswer(catalog, base(), q, 'gold');
+  assert.deepEqual(Model.validateDesign(catalog, gold), []);
+  assert.ok(Model.contrastIssues(catalog, gold).length > 0, 'the model reports it as advice, not as an error');
+});
+
+test('applying a preset keeps the team sample text', () => {
+  const d = base();
+  d.samples.title = 'My custom title';
+  const next = applyAnswer(catalog, d, byId.get('preset'), 'fun');
+  assert.equal(next.samples.title, 'My custom title');
+  assert.equal(next.startingPoint, 'fun');
+});
+
+test('recap lines name each asked question with its current choice', () => {
+  const lines = recapLines(catalog, base(), all.filter((q) => q.section === 'title'));
+  assert.ok(lines.length >= 4);
+  assert.ok(lines.every((l) => l.id && l.text.includes(':')));
+  assert.ok(lines.some((l) => l.id === 'title.layout' && /Centered|Left|Bottom|Split/.test(l.text)));
+});
