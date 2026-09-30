@@ -29,7 +29,7 @@ node scripts/test-bespoke-role-contracts.mjs
 node scripts/test-bespoke-similarity.mjs
 python3 -m unittest discover -s scripts -p 'test_bespoke*.py' -v
 echo "==> bespoke handoff endpoint"
-node --test scripts/test-bespoke-dev-server.mjs scripts/test-bespoke-v2-contracts.mjs scripts/test-bespoke-handoff.mjs scripts/test-bespoke-provision.mjs scripts/test-bespoke-brief.mjs
+node --test scripts/test-bespoke-dev-server.mjs scripts/test-bespoke-v2-contracts.mjs scripts/test-bespoke-handoff.mjs scripts/test-bespoke-provision.mjs scripts/test-bespoke-brief.mjs scripts/test-bespoke-guide.mjs
 # Valid fixtures + any docs/phase-2/submissions/**/selection.json (skips *invalid*/*broken*)
 python3 scripts/validate-bespoke-selection.py \
   scripts/test-fixtures/bespoke/selection-money-management.json
@@ -58,6 +58,7 @@ if [ -d node_modules/playwright ] && [ -d node_modules/axe-core ]; then
   echo "==> bespoke browser workflow"
   node scripts/test-bespoke-browser.mjs
   node scripts/test-bespoke-builder-browser.mjs
+  node scripts/test-bespoke-guided-browser.mjs
   node scripts/test-bespoke-workflow-qa.mjs
   node scripts/test-bespoke-streamlined-workflow.mjs
   node scripts/test-bespoke-effective-paint.mjs

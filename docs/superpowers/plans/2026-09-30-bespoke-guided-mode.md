@@ -2036,26 +2036,12 @@ git commit -m "test: cover guided mode language, accessibility and small screens
 **Files:**
 - Modify: `bespoke/team-guide.html`, `bespoke/README.md`, `scripts/quality.sh`
 
-- [ ] **Step 1: Rewrite the team guide**
+- [ ] **Step 1: Add the guide to the team guide**
 
-`bespoke/team-guide.html` still describes the retired 4-question brief and the 11-step wizard (review finding F4). Read it, then rewrite the body for the current builder. Keep its `<head>`, styles, nav, print button, and the sections on the team link, backups, saving, sending to Britt, and troubleshooting. Replace the "Try the design choices" section with:
+The Codex work already rewrote `bespoke/team-guide.html` for the three-stage builder, so nothing about the old brief remains (review finding F4 is done). Make two additive edits:
 
-```html
-<h2>Choose how to work</h2>
-<p>BeSpoke has two ways to build your lesson's look. Both make the same design, and you can switch at any time.</p>
-<ul>
-<li><strong>Guide me step by step.</strong> BeSpoke asks one question at a time, slide by slide: starting look, shared look, then the title slide, chapter divider, text boxes, video slide and activity. Each question shows small pictures of the choices. Point at one to see it on the preview, and click it to choose. Press <strong>Next</strong> to keep what you have. You can skip a slide type, leave the guide and come back with <strong>Continue guide</strong>.</li>
-<li><strong>Build my own.</strong> Open any slide type directly and change whatever you like.</li>
-</ul>
-<h2>Colors and readability</h2>
-<p>Every brand color is always available. Each color question shows four suggestions that are easiest to read on the current background, and <strong>More colors</strong> shows the rest. If a choice may be hard to read, BeSpoke says so and tells you by how much. You can still keep it.</p>
-<h2>Changed your mind</h2>
-<p><strong>Undo</strong> brings back your last change. During the guide it also takes you back to the question where you made it.</p>
-<h2>Watch the closest-lesson line</h2>
-<p>The line under the preview shows how many of your choices match the closest existing lesson. It is a guide, not a score, and it never stops you.</p>
-```
-
-Keep the existing "Saving is automatic", "Send the agreed look to Britt", backup and troubleshooting sections as they are. Remove any sentence about "four quick questions", "Fits your brief", "generated variants", "starting point from a brief", or "seven main choices".
+- In the numbered Start item ("Start. Check your lesson and team details..."), after "Each starts with usable choices." add "Or choose **Guide me step by step** to be asked one question at a time."
+- Before the heading "Shared theme or a custom slide choice?" add a new section "Let BeSpoke guide you". It says that Start offers the guide and describes the slide-by-slide order, the sample pictures with point-to-preview, the four suggested colors with More colors and the hard-to-read marker, Next to keep, Skip this slide type, Exit guide and Continue guide, the recap with Change links and sample lines, and that Undo returns to the question. It ends by saying the guide and the slide editors make the same design. Keep it in plain sentences with no em dashes.
 
 - [ ] **Step 2: Check the guide text**
 
