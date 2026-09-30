@@ -289,3 +289,26 @@ test('a view-only session disables every guide control and never saves guide sta
   assert.doesNotMatch(lock, /btnGuide|guide-choice|guide-section/, 'guide controls are not exempt from the lock');
   assert.match(source, /setGuide:next=>\{ui\.guide=next;if\(isLeadSession\(\)\)saveDraft\(\);\}/, 'guide state is only saved by an editing session');
 });
+
+test('the guide agrees with the model on every background pattern and on a band divider', () => {
+  const variants = catalog.backgrounds.map((b) => ({ label: `pattern ${b.id}`, design: { ...base(), background: b.id } }));
+  const band = base();
+  band.slides.divider.layout = 'band';
+  variants.push({ label: 'band divider', design: band });
+  const roleFor = (q) => (['title', 'divider'].includes(q.slide)
+    ? (q.field === 'headingColor' ? 'titleText' : 'subtitle')
+    : (q.field === 'headingColor' ? 'heading' : 'body'));
+  const ids = ['title.background', 'title.heading', 'title.text', 'divider.background', 'divider.heading', 'divider.text', 'cards.heading', 'cards.text', 'video.background', 'video.heading', 'activity.text'];
+  for (const { label, design } of variants) {
+    for (const id of ids) {
+      const q = byId.get(id);
+      const { options, more } = optionsFor(catalog, design, q);
+      for (const o of [...options, ...more].filter((x) => x.id !== 'inherit')) {
+        const issues = Model.contrastIssues(catalog, applyAnswer(catalog, design, q, o.id))
+          .filter((i) => i.kind === q.slide && (q.kind === 'background' || i.role === roleFor(q)));
+        assert.equal(o.note.startsWith('Hard to read'), issues.length > 0, `${label} ${id} ${o.id}`);
+        if (issues.length) assert.ok(o.note.includes(Math.min(...issues.map((i) => i.ratio)).toFixed(1)), `${label} ${id} ${o.id} shows the model's ratio`);
+      }
+    }
+  }
+});

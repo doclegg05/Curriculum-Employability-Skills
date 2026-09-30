@@ -389,6 +389,49 @@ try {
     await page.keyboard.press('Tab');
     assert.equal(await page.evaluate(() => document.activeElement.closest('.guide-thumb') === null && document.activeElement.matches('.guide-sample, #btnGuideBack, #btnGuideNext, #btnGuideSkip, #btnGuideExit')), true, 'Tab goes to the next control, never into a thumbnail');
   });
+
+  await scenario('the team question fills in, saves, can be returned to, and a draft left there reopens', async ({ makePage }) => {
+    const page = await makePage();
+    await startGuide(page);
+    assert.ok((await page.locator('#lessonSelect option').count()) >= 6, 'the lesson list is filled in');
+    await page.locator('#teamName').fill('Pilot team');
+    await page.locator('#spokespersonName').fill('Pat Teacher');
+    assert.equal((await draft(page)).teamName, 'Pilot team', 'typed names are saved');
+    await next(page);
+    await next(page);
+    assert.equal(await heading(page), 'Fonts');
+    await page.locator('.guide-sample[aria-pressed="false"]').first().click();
+    await page.locator('#btnGuideBack').click();
+    await page.locator('#btnGuideBack').click();
+    assert.equal(await heading(page), 'Your team', 'Back reaches the team question');
+    assert.equal(await page.locator('#teamName').inputValue(), 'Pilot team');
+    await page.reload();
+    await page.locator('#stepList button').first().waitFor();
+    await page.locator('.guide-count').waitFor();
+    assert.equal(await heading(page), 'Your team', 'a draft left on the team question reopens');
+  });
+
+  await scenario('jumping or leaving puts keyboard focus somewhere sensible', async ({ makePage }) => {
+    const page = await makePage();
+    await startGuide(page);
+    await walkTo(page, 'Your title slide');
+    await page.locator('.guide-recap li', { hasText: 'Logo position' }).getByRole('button', { name: /Change/ }).click();
+    assert.equal(await page.evaluate(() => document.activeElement?.tagName), 'H1', 'after Change, focus is on the new question');
+    await page.locator('#btnGuideExit').click();
+    assert.equal(await page.evaluate(() => document.activeElement?.id), 'editor-title', 'after Exit, focus is on the editor tab');
+  });
+
+  await scenario('moving focus across samples does not repeat a preview announcement', async ({ makePage }) => {
+    const page = await makePage();
+    await startGuide(page);
+    await walkTo(page, 'Title layout');
+    await page.waitForTimeout(200);
+    await page.evaluate(() => { document.getElementById('liveRegion').textContent = ''; });
+    await page.locator('.guide-sample').first().focus();
+    await page.keyboard.press('Tab');
+    await page.keyboard.press('Tab');
+    assert.equal(await page.evaluate(() => document.getElementById('liveRegion').textContent), '', 'previewing by focus stays silent');
+  });
 } finally {
   await browser.close();
 }

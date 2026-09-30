@@ -64,13 +64,31 @@ function inheritedName(catalog, design, q) {
   return color(catalog, Model.effectiveRoleStyle(catalog, probe, slide)[field]).name;
 }
 
+const textRole = (q) => (['title', 'divider'].includes(q.slide)
+  ? (q.field === 'headingColor' ? 'titleText' : 'subtitle')
+  : (q.field === 'headingColor' ? 'heading' : 'body'));
+
+// The preview's advisory accounts for textures, gradients and a band divider's outer surface, so on
+// text and background questions the model decides. Passing colors keep the plain contrast ratio for ordering.
+function modelJudge(catalog, design, q, score) {
+  const role = q.kind === 'background' ? null : textRole(q);
+  return (c) => {
+    const issues = Model.contrastIssues(catalog, applyAnswer(catalog, design, q, c.id))
+      .filter((i) => i.kind === q.slide && (role === null || i.role === role));
+    if (!issues.length) return { ratio: score(c), note: 'Easy to read' };
+    const worst = issues.reduce((a, b) => (b.ratio < a.ratio ? b : a));
+    return { ratio: worst.ratio, note: readabilityNote(worst.ratio, worst.minimum) };
+  };
+}
+
 function rankColors(catalog, design, q) {
   const { score, minimum } = scorer(catalog, design, q);
   const current = currentValue(catalog, design, q);
+  const judge = ['background', 'textColor'].includes(q.kind) ? modelJudge(catalog, design, q, score) : null;
   const ranked = catalog.palette
-    .map((c, i) => ({ c, i, ratio: score(c) }))
+    .map((c, i) => ({ c, i, ...(judge ? judge(c) : { ratio: score(c), note: readabilityNote(score(c), minimum) }) }))
     .sort((a, b) => b.ratio - a.ratio || a.i - b.i)
-    .map(({ c, ratio }) => ({ id: c.id, label: c.name, hex: c.hex, ratio, note: readabilityNote(ratio, minimum) }));
+    .map(({ c, ratio, note }) => ({ id: c.id, label: c.name, hex: c.hex, ratio, note }));
   const suggested = ranked.slice(0, SUGGESTED);
   let more = ranked.slice(SUGGESTED);
   if (current !== 'inherit' && !suggested.some((o) => o.id === current)) {

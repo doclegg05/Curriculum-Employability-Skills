@@ -78,11 +78,8 @@ function questionBody(ctx) {
   const { host, q, catalog, actions } = ctx;
   const copy = questionCopy(q);
   const head = [el('h1', { tabindex: '-1' }, copy.title), el('p', { class: 'panel-lead' }, copy.prompt)];
-  if (q.kind === 'team') {
-    const team = el('section', { class: 'start-team' });
-    host.renderTeam(team);
-    return [...head, team];
-  }
+  // The team form finds its fields by document id, so it is filled in by renderGuide once it is attached.
+  if (q.kind === 'team') return [...head, el('section', { class: 'start-team' })];
   const current = currentValue(catalog, host.design, q);
   const { options, more } = optionsFor(catalog, host.design, q);
   const grid = el('div', { class: 'guide-samples', role: 'group', 'aria-label': `${copy.title} choices` });
@@ -148,5 +145,6 @@ function recapBody(ctx) {
 export function renderGuide(panel, ctx) {
   const body = ctx.q.kind === 'recap' ? recapBody(ctx) : questionBody(ctx);
   panel.replaceChildren(progress(ctx), ...body, nav(ctx));
+  if (ctx.q.kind === 'team') ctx.host.renderTeam(panel.querySelector('.start-team'));
   fitThumbnails(panel);
 }

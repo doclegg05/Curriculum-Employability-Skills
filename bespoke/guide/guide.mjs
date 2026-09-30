@@ -10,6 +10,7 @@ export function createGuide(host) {
   const byId = byIdMap(all);
   let lastIndex = -1;
   let moreFor = null;
+  let focusHeading = false;
 
   const set = (guide) => { host.setGuide(guide); };
   const get = () => host.getGuide();
@@ -23,10 +24,10 @@ export function createGuide(host) {
   const actions = {
     next: () => afterMove(advance(get())),
     toggleMore: () => { const q = questionAt(get(), byId); moreFor = moreFor === q.id ? null : q.id; host.rerender(); },
-    back: () => afterMove(back(get())),
+    back: () => { focusHeading = get().index === 1; afterMove(back(get())); },
     skipSection: () => afterMove(skipSection(get(), byId)),
-    jumpSection: (id) => afterMove(jumpToSection(get(), id, byId)),
-    jumpQuestion: (id) => afterMove(jumpToQuestion(get(), id)),
+    jumpSection: (id) => { focusHeading = true; afterMove(jumpToSection(get(), id, byId)); },
+    jumpQuestion: (id) => { focusHeading = true; afterMove(jumpToQuestion(get(), id)); },
     exit: () => {
       const g = get();
       const q = questionAt(g, byId);
@@ -54,6 +55,7 @@ export function createGuide(host) {
       lastIndex = guide.index;
       renderGuide(panel, { guide, q, byId, catalog, host, actions, Model, moreOpen: moreFor === q.id });
       // The preview writes its own live text during render, so announce the question just after it.
+      if (focusHeading) { focusHeading = false; panel.querySelector('h1')?.focus({ preventScroll: true }); }
       if (moved) setTimeout(() => host.announce(`Question ${guide.index + 1} of ${guide.ids.length}: ${questionCopy(q).title}`), 60);
     }
   };
