@@ -320,6 +320,75 @@ try {
     await page.locator('#stepList button').first().waitFor();
     assert.equal(await page.locator('#stepPanel h1').count(), 1);
   });
+  const FORBIDDEN = /\b([Rr]oles?|[Hh]ex|[Cc][Ss][Ss]|[Rr][Gg][Bb][Aa]?|[Tt]oken|[Ss]cope|[Ii]nherit|[Gg]radient stop)\b|#[0-9a-f]{3,6}\b|[a-z][A-Z][a-z]/;
+  async function axe(page, label) {
+    await page.addScriptTag({ content: axeSource });
+    const result = await page.evaluate(() => axe.run('#stepPanel', { runOnly: { type: 'tag', values: ['wcag2a', 'wcag2aa', 'wcag21aa'] }, resultTypes: ['violations'] }));
+    assert.deepEqual(result.violations.map((v) => `${v.id}: ${v.nodes.map((n) => n.target.join(' ')).join(' | ')}`), [], label);
+  }
+
+  await scenario('no guided screen shows design jargon or color codes', async ({ makePage }) => {
+    const page = await makePage();
+    await startGuide(page);
+    const screens = [];
+    for (let guard = 0; guard < 60 && (await page.locator('#btnGuideNext').count()); guard += 1) {
+      if (await page.locator('#btnGuideMore').count()) await page.locator('#btnGuideMore').click();
+      const text = await page.locator('#stepPanel').evaluate((panel) => {
+        const clone = panel.cloneNode(true);
+        clone.querySelectorAll('style, .start-team, .guide-scope, .guide-samples-text').forEach((n) => n.remove());
+        // Join leaf elements one per line. innerText would fuse neighboring buttons into one word.
+        return [...clone.querySelectorAll('*')].filter((n) => !n.children.length).map((n) => n.textContent.trim()).filter(Boolean).join('\n');
+      });
+      screens.push(`${await heading(page)}\n${text}`);
+      await next(page);
+    }
+    assert.ok(screens.length >= 39);
+    for (const text of screens) assert.doesNotMatch(text, FORBIDDEN, text.slice(0, 60));
+  });
+
+  await scenario('guided screens pass the accessibility checks', async ({ makePage }) => {
+    const page = await makePage();
+    await startGuide(page);
+    for (const title of ['Your team', 'Fonts', 'Title layout', 'Title color', 'Your title slide', 'Box layout', 'Your text boxes', 'Video layout', 'Activity layout']) {
+      await walkTo(page, title);
+      await axe(page, `guide screen "${title}"`);
+    }
+  });
+
+  await scenario('the guide fits and stays reachable on a phone', async ({ makePage }) => {
+    const page = await makePage({ mobile: true });
+    await startGuide(page);
+    for (const title of ['Fonts', 'Title layout', 'Title color']) {
+      await walkTo(page, title);
+      const overflow = await page.evaluate(() => document.documentElement.scrollWidth - innerWidth);
+      assert.ok(overflow <= 1, `no sideways scroll on "${title}", saw ${overflow}`);
+      await page.locator('#btnGuideNext').scrollIntoViewIfNeeded();
+      assert.equal(await page.locator('#btnGuideNext').isVisible(), true);
+    }
+    await page.locator('#surface-preview').click();
+    assert.equal(await page.locator('#modelStage .bespoke-slide').count(), 1, 'the preview is one tap away');
+  });
+
+  await scenario('keyboard users can operate the guide', async ({ makePage }) => {
+    const page = await makePage();
+    await startGuide(page);
+    await walkTo(page, 'Title layout');
+    const before = (await design(page)).slides.title.layout;
+    const pick = before === 'split' ? 'center' : 'split';
+    await page.locator(`.guide-sample[data-choice="${pick}"]`).focus();
+    await page.keyboard.press('Enter');
+    assert.equal((await design(page)).slides.title.layout, pick);
+    assert.equal(await page.evaluate(() => document.activeElement?.id), `guide-choice-${pick}`, 'focus stays on the chosen sample after the screen redraws');
+    await page.locator('#btnGuideNext').focus();
+    await page.keyboard.press('Enter');
+    assert.equal(await heading(page), 'Logo position');
+    assert.equal(await page.evaluate(() => document.activeElement?.id), 'btnGuideNext', 'focus stays on Next so the keyboard flow continues');
+    await page.waitForFunction(() => /Question \d+ of \d+: Logo position/.test(document.getElementById('liveRegion').textContent));
+    await walkTo(page, 'Box layout');
+    await page.locator('.guide-sample').first().focus();
+    await page.keyboard.press('Tab');
+    assert.equal(await page.evaluate(() => document.activeElement.closest('.guide-thumb') === null && document.activeElement.matches('.guide-sample, #btnGuideBack, #btnGuideNext, #btnGuideSkip, #btnGuideExit')), true, 'Tab goes to the next control, never into a thumbnail');
+  });
 } finally {
   await browser.close();
 }

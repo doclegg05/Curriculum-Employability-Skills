@@ -1941,7 +1941,8 @@ Insert above `} finally {`:
       const text = await page.locator('#stepPanel').evaluate((panel) => {
         const clone = panel.cloneNode(true);
         clone.querySelectorAll('style, .start-team, .guide-scope, .guide-samples-text').forEach((n) => n.remove());
-        return clone.innerText;
+        // Join leaf elements one per line. innerText would fuse neighboring buttons into one word.
+        return [...clone.querySelectorAll('*')].filter((n) => !n.children.length).map((n) => n.textContent.trim()).filter(Boolean).join('\n');
       });
       screens.push(`${await heading(page)}\n${text}`);
       await next(page);
