@@ -223,6 +223,57 @@ try {
     assert.deepEqual(dead, [], 'every option visibly changes the preview');
     assert.ok(questionsWithSamples >= 30, `swept ${questionsWithSamples} questions`);
   });
+  await scenario('a recap lists the slide choices and Change jumps back to the question', async ({ makePage }) => {
+    const page = await makePage();
+    await startGuide(page);
+    await walkTo(page, 'Your title slide');
+    const lines = await page.locator('.guide-recap li').allInnerTexts();
+    assert.ok(lines.length >= 5, `recap lists each title question, saw ${lines.length}`);
+    assert.ok(lines.some((l) => /^Logo position:/.test(l)));
+    await page.locator('.guide-recap li', { hasText: 'Logo position' }).getByRole('button', { name: /Change/ }).click();
+    assert.equal(await heading(page), 'Logo position');
+  });
+
+  await scenario('the Text boxes recap edits the sample lines and the preview follows', async ({ makePage }) => {
+    const page = await makePage();
+    await startGuide(page);
+    await walkTo(page, 'Your text boxes');
+    await page.locator('#sample-box-0').fill('My first sample line');
+    assert.match(await page.locator('#modelStage').innerText(), /My first sample line/);
+    assert.equal((await design(page)).samples.boxes[0], 'My first sample line');
+  });
+
+  await scenario('Skip this slide type moves to the next section and keeps choices', async ({ makePage }) => {
+    const page = await makePage();
+    await startGuide(page);
+    await walkTo(page, 'Title layout');
+    const before = await design(page);
+    await page.locator('#btnGuideSkip').click();
+    assert.equal(await heading(page), 'Divider layout');
+    assert.deepEqual(await design(page), before);
+  });
+
+  await scenario('teams can jump back to reached sections and not ahead', async ({ makePage }) => {
+    const page = await makePage();
+    await startGuide(page);
+    await walkTo(page, 'Divider layout');
+    assert.equal(await page.locator('.guide-section[data-section="title"]').isEnabled(), true);
+    assert.equal(await page.locator('.guide-section[data-section="video"]').isDisabled(), true);
+    await page.locator('.guide-section[data-section="title"]').click();
+    assert.equal(await heading(page), 'Title layout');
+  });
+
+  await scenario('pressing Next through every question keeps the design and ends on Review', async ({ makePage }) => {
+    const page = await makePage();
+    await startGuide(page);
+    const start = await design(page);
+    for (let guard = 0; guard < 60 && (await page.locator('#btnGuideNext').count()); guard += 1) await next(page);
+    assert.equal(await page.locator('#stage-review').getAttribute('aria-current'), 'step');
+    assert.deepEqual(await design(page), start, 'Next without choosing changes nothing');
+    assert.deepEqual(Model.validateDesign(catalog, await design(page)), []);
+    await page.locator('#stage-start').click();
+    assert.equal(await page.locator('#btnGuideMe').count(), 1, 'a finished guide offers to start again');
+  });
 } finally {
   await browser.close();
 }

@@ -1,4 +1,5 @@
 import { applyAnswer, currentValue, optionsFor } from './answers.mjs';
+import { recapLines } from './answers.mjs';
 import { questionCopy, sectionLabel } from './copy.mjs';
 import { sectionsOf } from './questions.mjs';
 
@@ -110,6 +111,8 @@ function questionBody(ctx) {
 function nav(ctx) {
   const { guide, actions } = ctx;
   const last = guide.index === guide.ids.length - 1;
+  const inSection = ctx.q.kind !== 'team' && ctx.q.kind !== 'preset';
+  const skipLabel = ctx.q.section === 'shared' ? 'Skip shared look' : 'Skip this slide type';
   const button = (id, cls, text, fn, disabled = false) => {
     const b = el('button', { type: 'button', id, class: cls, disabled }, text);
     b.addEventListener('click', fn);
@@ -118,10 +121,32 @@ function nav(ctx) {
   return el('div', { class: 'panel-nav guide-nav' },
     button('btnGuideBack', 'btn btn-secondary', 'Back', actions.back, guide.index === 0),
     button('btnGuideNext', 'btn btn-primary', last ? 'Finish and review' : 'Next', actions.next),
+    inSection ? button('btnGuideSkip', 'text-link', skipLabel, actions.skipSection) : null,
     button('btnGuideExit', 'text-link', 'Exit guide', actions.exit));
 }
 
+function recapBody(ctx) {
+  const { host, q, catalog, byId, guide, actions } = ctx;
+  const copy = questionCopy(q);
+  const slideQuestions = guide.ids.map((id) => byId.get(id)).filter((x) => x.section === q.section);
+  const list = el('ul', { class: 'guide-recap' });
+  for (const line of recapLines(catalog, host.design, slideQuestions)) {
+    const change = el('button', { type: 'button', class: 'text-link' }, `Change ${line.text.split(':')[0].toLowerCase()}`);
+    change.addEventListener('click', () => actions.jumpQuestion(line.id));
+    list.append(el('li', {}, line.text, ' ', change));
+  }
+  const body = [el('h1', { tabindex: '-1' }, copy.title), el('p', { class: 'panel-lead' }, copy.prompt), list];
+  if (q.section === 'cards') {
+    const samples = el('section', { class: 'guide-samples-text' }, el('h2', {}, 'Try your own sample lines'),
+      el('p', { class: 'helper' }, 'Sample words test the design. They are not lesson content.'));
+    host.renderBoxSamples(samples);
+    body.push(samples);
+  }
+  return body;
+}
+
 export function renderGuide(panel, ctx) {
-  panel.replaceChildren(progress(ctx), ...questionBody(ctx), nav(ctx));
+  const body = ctx.q.kind === 'recap' ? recapBody(ctx) : questionBody(ctx);
+  panel.replaceChildren(progress(ctx), ...body, nav(ctx));
   fitThumbnails(panel);
 }

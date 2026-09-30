@@ -22,3 +22,7 @@
 .guide-swatch { width: 28px; height: 28px; border-radius: 50%; border: 1px solid #00133f40; flex: none }
 .guide-more { grid-template-columns: repeat(auto-fill, minmax(170px, 1fr)); margin-top: 10px }
 .guide-scope { margin-top: 14px; font-size: .85rem }
+
+.guide-recap { list-style: none; padding: 0; margin: 14px 0 }
+.guide-recap li { padding: 8px 0; border-bottom: 1px solid var(--line) }
+.guide-samples-text { margin-top: 18px }
