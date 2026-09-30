@@ -1287,7 +1287,11 @@ function undoChange(redo=false){
  fileNotice((redo?'Redid: ':'Undid: ')+entry.label);
 }
 function updateUndo(){
- byId('btnUndo').disabled=!isLeadSession()||!state.changes.length;byId('btnRedo').disabled=!isLeadSession()||!state.redo.length;
+ for(const [id,entries,verb] of [['btnUndo',state.changes,'Undo'],['btnRedo',state.redo,'Redo']]){
+  const button=byId(id),entry=entries.at(-1);button.disabled=!isLeadSession()||!entry;
+  button.title=entry?verb+': '+entry.label:verb+' · no recent choice';
+  button.setAttribute('aria-description',button.title);
+ }
  byId('changeList').innerHTML=state.changes.length?state.changes.slice(-8).reverse().map(c=>'<li>'+escapeHtml(c.label)+'</li>').join(''):'<li>Your next choice will appear here.</li>';
 }
 function choiceGroup(label,options,selected,pick,{mini}={}){
@@ -1340,7 +1344,7 @@ function builderGuidance(compact=false){
   ? 'In this local review preview, Save test design and Open test design use this computer’s test space. Nothing is sent or published.'
   : 'Use Save shared design to save with your team, and Open team design to return. Send to Britt requests a design review; it does not build a lesson.';
  const steps='<ol class="how-to-steps"><li><strong>Start.</strong> Confirm Lesson &amp; team, then choose an editable preset or Build my own. A preset can go straight to Review &amp; save.</li><li><strong>Slide designs · optional.</strong> Edit any of the five slide types directly. Shared theme is optional and supplies defaults; fields marked Custom keep their own choices. Editor tabs change what you edit; preview tabs only change what you see.</li><li><strong>Review &amp; save.</strong> Check the effective appearance and fonts for all five designs, then save. These are sample designs and words, not finished lesson content.</li></ol>';
- const rules='<p><strong>Why eleven colors?</strong> These are the approved SPOKES brand colors. They keep lessons recognizable, and you can mix and match all eleven freely. You are not limited to two or three.</p><p><strong>Type, boxes and branding.</strong> Choose heading and body fonts independently from the twelve curated font families. Up to four text boxes keep a slide manageable. The title keeps the SPOKES logo; its position can change, but a watermark does not replace or edit the logo.</p><p><strong>Readability is your decision.</strong> Contrast compares text with its background. Advisories explain when reading may be harder; the team leader can keep and save any palette choice. A passing measurement is not a whole-design accessibility assessment.</p><p><strong>Keep your work.</strong> Undo and Redo restore recent choices. Previous versions lets you reopen shared saves. Files &amp; recovery downloads or opens a backup. Hiding a subtitle, second color or watermark keeps its settings for later.</p><p><strong>Compare for ideas.</strong> The similarity meter compares supported choices with six known lessons. Unmeasured choices do not count. It does not guarantee uniqueness or compare private team designs.</p><p>'+saving+'</p>';
+ const rules='<p><strong>Why eleven colors?</strong> These are the approved SPOKES brand colors. They keep lessons recognizable, and you can mix and match all eleven freely. You are not limited to two or three.</p><p><strong>Type, boxes and branding.</strong> Choose heading and body fonts independently from the twelve curated font families. Up to four text boxes keep a slide manageable. The title keeps the SPOKES logo; its position can change, but a watermark does not replace or edit the logo.</p><p><strong>Readability is your decision.</strong> Contrast compares text with its background. Advisories explain when reading may be harder; the team leader can keep and save any palette choice. A passing measurement is not a whole-design accessibility assessment.</p><p><strong>Keep your work.</strong> Undo and Redo restore recent choices. Outside text fields, use Ctrl/Cmd+Z to undo and Ctrl/Cmd+Shift+Z to redo. Text fields keep their normal typing shortcuts. Previous versions lets you reopen shared saves. Files &amp; recovery downloads or opens a backup. Hiding a subtitle, second color or watermark keeps its settings for later.</p><p><strong>Compare for ideas.</strong> The similarity meter compares supported choices with six known lessons. Unmeasured choices do not count. It does not guarantee uniqueness or compare private team designs.</p><p>'+saving+'</p>';
  return steps+(compact?'<p class="helper"><strong>Eleven brand colors, freely mixed.</strong> Readability advice never blocks your color choices.</p><details class="inline-details"><summary>Why these choices and guardrails?</summary>'+rules+'</details>':rules);
 }
 function showBuilderHelp(close=false){
@@ -1531,7 +1535,7 @@ function localText(host,kind,key,label,value,{multiline=false,maxLength=200,hint
  const input=document.createElement(multiline?'textarea':'input');input.id='role-'+kind+'-'+key;input.dataset.styleRole=kind;input.dataset.styleField=key;input.value=value??'';input.maxLength=maxLength;if(multiline)input.rows=3;
  let checkpoint=false;input.onfocus=()=>{checkpoint=false;};
  input.oninput=()=>{
-  if(!isLeadSession())return;
+  if(!isLeadSession()||Model.effectiveRoleStyle(catalog,state.design,kind)[key]===input.value)return;
   if(!checkpoint){state.changes.push({label:VIEW_NAMES[kind]+': '+label,design:clone(state.design)});state.changes=state.changes.slice(-40);checkpoint=true;}
   ui.meaningfulDesign=true;state.previewView=kind;ui.previewPinned=false;state.redo=[];state.design=Model.setRoleStyle(catalog,state.design,kind,key,input.value);saveDraft();updatePreview();updateUndo();
  };
@@ -1607,7 +1611,8 @@ function addSampleField(host,key,label,value){
  let checkpoint=false;
  input.addEventListener('focus',()=>{checkpoint=false;});
  input.addEventListener('input',()=>{
-  if(!isLeadSession())return;
+  const current=key.startsWith('box-')?state.design.samples.boxes[Number(key.slice(4))]:state.design.samples[key];
+  if(!isLeadSession()||current===input.value)return;
   if(!checkpoint){state.changes.push({label:label+' edited',design:clone(state.design)});state.changes=state.changes.slice(-40);checkpoint=true;}
   ui.meaningfulDesign=true;state.redo=[];state.design.startingPoint='custom';
   if(key.startsWith('box-'))state.design.samples.boxes[Number(key.slice(4))]=input.value;else state.design.samples[key]=input.value;
@@ -1741,6 +1746,16 @@ async function init(){
  byId('btnLoadLatest').onclick=()=>fetchSharedDesign({replace:true});byId('btnKeepLocal').onclick=()=>fileNotice('Browser draft kept. Download a backup before loading the latest shared version.');
  byId('btnHistory').onclick=loadHistory;byId('btnCheckStatus').onclick=()=>{const pending=pendingSubmission();if(pending?.stage==='receipt')pollSubmission(pending);else if(pending?.stage==='request')cloudSend();};
  byId('btnUndo').onclick=()=>undoChange();byId('btnRedo').onclick=()=>undoChange(true);
+ document.addEventListener('keydown',event=>{
+  // Preserve native editing and modal cancellation; a held key is one action.
+  if(event.defaultPrevented||event.repeat||event.altKey||!(event.ctrlKey||event.metaKey)||!isLeadSession())return;
+  const target=event.target;
+  if(target instanceof Element&&(target.closest('input,textarea,select,[contenteditable]:not([contenteditable="false"])')||document.querySelector('dialog[open]')))return;
+  const key=event.key.toLowerCase(),redo=(key==='z'&&event.shiftKey)||(key==='y'&&event.ctrlKey&&!event.metaKey&&!event.shiftKey);
+  if(key!=='z'&&!redo)return;
+  const entries=redo?state.redo:state.changes;if(!entries.length)return;
+  event.preventDefault();undoChange(redo);
+ });
  byId('openCancel').onclick=()=>byId('openDialog').close();byId('openForm').onsubmit=e=>{e.preventDefault();cloudOpen();};
  byId('presetCancel').onclick=()=>finishPresetConfirmation(false);byId('presetDialog').oncancel=e=>{e.preventDefault();finishPresetConfirmation(false);};byId('presetForm').onsubmit=e=>{e.preventDefault();finishPresetConfirmation(true);};
  byId('presetDialog').onkeydown=e=>{if(e.key!=='Tab')return;const first=byId('presetSkipConfirmation'),last=byId('presetApply');if(e.shiftKey&&document.activeElement===first){e.preventDefault();last.focus();}else if(!e.shiftKey&&document.activeElement===last){e.preventDefault();first.focus();}};
