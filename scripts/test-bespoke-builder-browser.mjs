@@ -129,6 +129,65 @@ async function axe(page, label, { excludePreview = false } = {}) {
 }
 
 try {
+  await scenario('design history shortcuts preserve typing, cancellation, repeated actions and saved state', async ({ makePage }) => {
+    const page = await makePage(); await fillTeam(page);
+    const original = await design(page);
+    await paint(page, 'sidebar', 'mauve');
+    const painted = await design(page);
+    const label = (await draft(page)).changes.at(-1).label;
+    assert.equal(await page.locator('#btnUndo').getAttribute('aria-description'), 'Undo: '+label);
+    // Focus a non-editor control: shortcuts act on the design, not typed words.
+    await page.locator('#btnHelp').focus();
+    await page.keyboard.press('Control+z'); assert.deepEqual(await design(page), original);
+    assert.equal(await page.locator('#btnRedo').getAttribute('aria-description'), 'Redo: '+label);
+    await page.locator('#btnHelp').focus(); await page.keyboard.press('Control+Shift+z');
+    assert.deepEqual(await design(page), painted);
+    await page.locator('#btnHelp').focus(); await page.keyboard.press('Meta+z');
+    assert.deepEqual(await design(page), original);
+    await page.locator('#btnHelp').focus(); await page.keyboard.press('Meta+Shift+z');
+    assert.deepEqual(await design(page), painted);
+    await page.locator('#btnHelp').focus(); await page.keyboard.press('Control+z');
+    await page.locator('#btnHelp').focus(); await page.keyboard.press('Control+y');
+    assert.deepEqual(await design(page), painted);
+    const beforeRepeat = await draft(page);
+    await page.locator('#btnHelp').evaluate(el => el.dispatchEvent(new KeyboardEvent('keydown', {key:'z',ctrlKey:true,repeat:true,bubbles:true,cancelable:true})));
+    assert.deepEqual(await draft(page), beforeRepeat);
+    await go(page, 'Starting look'); await page.locator('[data-preset="modern"]').click();
+    await page.locator('#presetDialog').waitFor({state:'visible'});
+    await page.keyboard.press('Control+z'); assert.deepEqual(await design(page), painted);
+    await page.keyboard.press('Escape'); assert.deepEqual(await design(page), painted);
+    assert.equal(await page.locator('#presetDialog').isVisible(), false);
+    await go(page, 'Title slide');
+    await page.locator('#section-title-text > summary').click();
+    const title = page.locator('#role-title-headingText');
+    await title.fill('Synthetic edited title');
+    const edited = await design(page), afterTyping = await draft(page);
+    await page.keyboard.press('Control+z');
+    assert.deepEqual((await draft(page)).changes, afterTyping.changes, 'Typing undo never consumes design history.');
+    await title.fill('Synthetic edited title');
+    await page.locator('#btnUndo').click(); assert.deepEqual(await design(page), painted);
+    const undone = await draft(page);
+    // Browser input events with the same value must not discard Redo or materialize overrides.
+    await page.locator('#role-title-headingText').dispatchEvent('input');
+    assert.deepEqual(await draft(page), undone);
+    await page.locator('#btnRedo').click(); assert.deepEqual(await design(page), edited);
+    await go(page, 'Text boxes'); await page.locator('#section-cards-text > summary').click();
+    await page.getByText('Try your own sample text', {exact:true}).click();
+    const unchanged = await draft(page); await page.locator('#sample-box-0').dispatchEvent('input');
+    assert.deepEqual(await draft(page), unchanged);
+    await save(page); const saved = await draft(page);
+    await page.reload(); await ready(page);
+    assert.deepEqual(await design(page), edited);
+    assert.deepEqual((await draft(page)).changes, saved.changes);
+    await page.locator('#btnHelp').focus(); await page.keyboard.press('Control+z');
+    assert.deepEqual(await design(page), painted);
+    await page.locator('#btnHelp').focus(); await page.keyboard.press('Control+Shift+z');
+    assert.deepEqual(await design(page), edited);
+    await page.locator('#btnOpen').click();
+    await page.locator('#fileStatus').filter({hasText:/opened|loaded/i}).waitFor();
+    assert.deepEqual(await design(page), edited);
+  });
+
   await scenario('cumulative colors, independent fonts, editable presets, history and v2 file recovery', async ({ makePage }) => {
     const page = await makePage();
     await go(page, 'Starting look');
