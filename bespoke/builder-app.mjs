@@ -1276,12 +1276,17 @@ function applySelectionPayload(payload){
   ui.restoreNote='Converted a copy of the older design. '+migrated.warnings.join(' ')+' The original is included in every backup and can be downloaded on Review. Review this conversion before saving.';
  }else{state.design=nextDesign;state.legacySelection=payload.legacySelection?clone(payload.legacySelection):null;ui.restoreNote='';}
 }
+function recordChange(label,before){
+ const entry={label,design:before};
+ if(ui.guide?.on)entry.guide=ui.guide.index;
+ state.changes.push(entry);state.changes=state.changes.slice(-40);state.redo=[];
+}
 function changeDesign(label,edit,{redraw=true}={}){
  if(!isLeadSession())return;
  const before=clone(state.design), next=clone(state.design);edit(next);
  if(JSON.stringify(before)===JSON.stringify(next))return;
  next.startingPoint='custom';ui.meaningfulDesign=true;
- state.changes.push({label,design:before});state.changes=state.changes.slice(-40);state.redo=[];state.design=next;
+ recordChange(label,before);state.design=next;
  saveDraft();if(redraw)render(false);else{updatePreview();updateUndo();}
  byId('saveLive').textContent=label+'. Browser draft updated.';
 }
@@ -1289,7 +1294,10 @@ function undoChange(redo=false){
  if(!isLeadSession())return;
  const source=redo?state.redo:state.changes,target=redo?state.changes:state.redo;
  const entry=source.pop();if(!entry)return;
- target.push({label:entry.label,design:clone(state.design)});state.design=entry.design;saveDraft();render(false);
+ target.push({label:entry.label,design:clone(state.design),...(Number.isInteger(entry.guide)?{guide:entry.guide}:{})});
+ state.design=entry.design;
+ if(ui.guide?.on&&Number.isInteger(entry.guide)&&entry.guide>=0&&entry.guide<ui.guide.ids.length)ui.guide={...ui.guide,index:entry.guide};
+ saveDraft();render(false);
  fileNotice((redo?'Redid: ':'Undid: ')+entry.label);
 }
 function updateUndo(){
@@ -1322,7 +1330,7 @@ function applyPresetChoice(id){
  if(!isLeadSession())return false;
  const preset=catalog.presets.find(item=>item.id===id);if(!preset)return false;
  ui.meaningfulDesign=true;ui.startingLooksOpen=true;
- const samples=clone(state.design.samples);state.changes.push({label:'Applied '+preset.label,design:clone(state.design)});state.changes=state.changes.slice(-40);state.redo=[];state.design=Model.applyPreset(catalog,preset.id,state.design);state.design.samples=samples;
+ const samples=clone(state.design.samples);recordChange('Applied '+preset.label,clone(state.design));state.design=Model.applyPreset(catalog,preset.id,state.design);state.design.samples=samples;
  render(false);fileNotice(preset.label+' applied. Every choice remains editable.');return true;
 }
 function requestPreset(id){
@@ -1551,7 +1559,7 @@ function localText(host,kind,key,label,value,{multiline=false,maxLength=200,hint
  let checkpoint=false;input.onfocus=()=>{checkpoint=false;};
  input.oninput=()=>{
   if(!isLeadSession()||Model.effectiveRoleStyle(catalog,state.design,kind)[key]===input.value)return;
-  if(!checkpoint){state.changes.push({label:VIEW_NAMES[kind]+': '+label,design:clone(state.design)});state.changes=state.changes.slice(-40);checkpoint=true;}
+  if(!checkpoint){recordChange(VIEW_NAMES[kind]+': '+label,clone(state.design));checkpoint=true;}
   ui.meaningfulDesign=true;state.previewView=kind;ui.previewPinned=false;state.redo=[];state.design=Model.setRoleStyle(catalog,state.design,kind,key,input.value);saveDraft();updatePreview();updateUndo();
  };
  field.append(input);if(hint){const small=document.createElement('small');small.className='helper';small.textContent=hint;field.append(small);}host.append(field);
@@ -1628,7 +1636,7 @@ function addSampleField(host,key,label,value){
  input.addEventListener('input',()=>{
   const current=key.startsWith('box-')?state.design.samples.boxes[Number(key.slice(4))]:state.design.samples[key];
   if(!isLeadSession()||current===input.value)return;
-  if(!checkpoint){state.changes.push({label:label+' edited',design:clone(state.design)});state.changes=state.changes.slice(-40);checkpoint=true;}
+  if(!checkpoint){recordChange(label+' edited',clone(state.design));checkpoint=true;}
   ui.meaningfulDesign=true;state.redo=[];state.design.startingPoint='custom';
   if(key.startsWith('box-'))state.design.samples.boxes[Number(key.slice(4))]=input.value;else state.design.samples[key]=input.value;
   saveDraft();updatePreview();updateUndo();

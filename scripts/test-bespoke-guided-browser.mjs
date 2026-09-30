@@ -274,6 +274,52 @@ try {
     await page.locator('#stage-start').click();
     assert.equal(await page.locator('#btnGuideMe').count(), 1, 'a finished guide offers to start again');
   });
+  await scenario('Undo returns the guide to the question where the change was made', async ({ makePage }) => {
+    const page = await makePage();
+    await startGuide(page);
+    await walkTo(page, 'Title layout');
+    const original = (await design(page)).slides.title.layout;
+    const pick = original === 'split' ? 'center' : 'split';
+    await page.locator(`.guide-sample[data-choice="${pick}"]`).click();
+    assert.equal((await design(page)).slides.title.layout, pick);
+    await next(page);
+    await next(page);
+    assert.notEqual(await heading(page), 'Title layout');
+    await page.locator('#btnUndo').click();
+    assert.equal(await heading(page), 'Title layout', 'the guide is back on the question');
+    assert.equal((await design(page)).slides.title.layout, original, 'the earlier value is back');
+    await page.locator('#btnRedo').click();
+    assert.equal((await design(page)).slides.title.layout, pick);
+    assert.equal(await heading(page), 'Title layout');
+  });
+
+  await scenario('Undo after leaving the guide restores the design and does not reopen the guide', async ({ makePage }) => {
+    const page = await makePage();
+    await startGuide(page);
+    await walkTo(page, 'Title layout');
+    const original = (await design(page)).slides.title.layout;
+    const pick = original === 'split' ? 'center' : 'split';
+    await page.locator(`.guide-sample[data-choice="${pick}"]`).click();
+    await page.locator('#btnGuideExit').click();
+    await page.locator('#btnUndo').click();
+    assert.equal((await design(page)).slides.title.layout, original);
+    assert.equal(await page.locator('.guide-count').count(), 0, 'the guide stays closed');
+    assert.equal(await page.locator('#roleEditorPanel').count(), 1);
+  });
+
+  await scenario('history from the free editor still works and old history entries load', async ({ makePage }) => {
+    const page = await makePage();
+    await page.locator('#stage-slides').click();
+    await page.locator('#editor-title').click();
+    await page.locator('#roleEditorPanel [data-choice][aria-pressed="false"]').first().click();
+    const history = (await draft(page)).changes;
+    assert.ok(history.length >= 1, 'the edit was recorded');
+    assert.equal(history.at(-1).guide, undefined, 'edits outside the guide carry no guide position');
+    await page.locator('#btnUndo').click();
+    await page.reload();
+    await page.locator('#stepList button').first().waitFor();
+    assert.equal(await page.locator('#stepPanel h1').count(), 1);
+  });
 } finally {
   await browser.close();
 }
