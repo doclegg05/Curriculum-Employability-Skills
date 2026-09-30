@@ -247,3 +247,36 @@ test('recap lines name each asked question with its current choice', () => {
   assert.ok(lines.every((l) => l.id && l.text.includes(':')));
   assert.ok(lines.some((l) => l.id === 'title.layout' && /Centered|Left|Bottom|Split/.test(l.text)));
 });
+
+import { FORBIDDEN, questionCopy, sectionLabel } from '../bespoke/guide/copy.mjs';
+
+test('every question has a real title and prompt', () => {
+  for (const q of all) {
+    const c = questionCopy(q);
+    assert.ok(c.title && c.title !== q.id, `${q.id} has a title`);
+    assert.ok(c.prompt && c.prompt.length > 8, `${q.id} has a prompt`);
+  }
+  for (const s of SECTIONS) assert.equal(sectionLabel(s.id), s.label);
+});
+
+test('guide copy and every option label avoid design jargon and color codes', () => {
+  const words = [];
+  for (const q of all) {
+    const c = questionCopy(q);
+    words.push(c.title, c.prompt);
+    const { options, more } = optionsFor(catalog, base(), q);
+    for (const o of [...options, ...more]) words.push(o.label, o.detail ?? '', o.note ?? '');
+  }
+  for (const w of words) {
+    assert.doesNotMatch(w, FORBIDDEN, `"${w}" looks like jargon`);
+  }
+});
+
+test('the forbidden-words rule catches what it should', () => {
+  for (const bad of ['Pick a role', 'titleBackground', '#a7253f', 'Set the CSS', 'rgba(0,0,0,0.5)', 'inherit']) {
+    assert.match(bad, FORBIDDEN, bad);
+  }
+  for (const fine of ['Sidebar color', 'Match shared look', 'Hard to read (2.0 to 1, aim for 3 to 1)', 'DM Serif Display + Outfit']) {
+    assert.doesNotMatch(fine, FORBIDDEN, fine);
+  }
+});
