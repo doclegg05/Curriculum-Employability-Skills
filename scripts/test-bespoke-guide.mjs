@@ -22,11 +22,12 @@ test('sections run start, shared, then one per slide type in lesson order', () =
   assert.deepEqual(seen.slice(2), ['title', 'divider', 'cards', 'video', 'activity']);
 });
 
-test('inside a slide type layout comes first, recap comes last', () => {
+test('inside a slide type layout comes first (after the box count for Text boxes), recap comes last', () => {
   for (const kind of ['title', 'divider', 'cards', 'video', 'activity']) {
     const list = all.filter(q => q.section === kind);
     assert.equal(list[0].kind, 'decision');
-    assert.equal(list[0].decision, 'layout', kind);
+    assert.equal(list[0].decision, kind === 'cards' ? 'count' : 'layout', kind);
+    if (kind === 'cards') assert.equal(list[1].decision, 'layout', 'cards asks layout right after the count');
     assert.equal(list.at(-1).kind, 'recap', kind);
     const firstColor = list.findIndex(q => q.kind === 'background');
     const lastDecision = list.map(q => q.kind).lastIndexOf('decision');

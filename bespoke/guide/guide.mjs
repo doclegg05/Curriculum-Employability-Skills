@@ -1,3 +1,4 @@
+import * as Model from '../builder-model.mjs';
 import { questionCopy } from './copy.mjs';
 import { advance, back, buildQuestions, byIdMap, jumpToQuestion, jumpToSection, normalizeGuide, questionAt, skipSection, startGuide } from './questions.mjs';
 import { applyAnswer } from './answers.mjs';
@@ -8,6 +9,7 @@ export function createGuide(host) {
   const all = buildQuestions(catalog);
   const byId = byIdMap(all);
   let lastIndex = -1;
+  let moreFor = null;
 
   const set = (guide) => { host.setGuide(guide); };
   const get = () => host.getGuide();
@@ -20,6 +22,7 @@ export function createGuide(host) {
 
   const actions = {
     next: () => afterMove(advance(get())),
+    toggleMore: () => { const q = questionAt(get(), byId); moreFor = moreFor === q.id ? null : q.id; host.rerender(); },
     back: () => afterMove(back(get())),
     skipSection: () => afterMove(skipSection(get(), byId)),
     jumpSection: (id) => afterMove(jumpToSection(get(), id, byId)),
@@ -49,7 +52,7 @@ export function createGuide(host) {
       host.setView(q.view);
       const moved = lastIndex !== guide.index;
       lastIndex = guide.index;
-      renderGuide(panel, { guide, q, byId, catalog, host, actions });
+      renderGuide(panel, { guide, q, byId, catalog, host, actions, Model, moreOpen: moreFor === q.id });
       // The preview writes its own live text during render, so announce the question just after it.
       if (moved) setTimeout(() => host.announce(`Question ${guide.index + 1} of ${guide.ids.length}: ${questionCopy(q).title}`), 60);
     }

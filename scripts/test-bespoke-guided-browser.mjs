@@ -20,8 +20,9 @@ async function scenario(name, callback) {
   if (process.env.BESPOKE_GUIDE_SCENARIO && !name.includes(process.env.BESPOKE_GUIDE_SCENARIO)) return;
   const server = await createDevServer({ port: 0 });
   const contexts = [];
-  const makePage = async ({ mobile = false, storageState } = {}) => {
-    const context = await browser.newContext({ viewport: mobile ? { width: 390, height: 844 } : { width: 1440, height: 1000 }, reducedMotion: 'reduce', storageState });
+  const makePage = async ({ mobile = false, wide = false, storageState } = {}) => {
+    const viewport = mobile ? { width: 390, height: 844 } : wide ? { width: 1920, height: 1080 } : { width: 1440, height: 1000 };
+    const context = await browser.newContext({ viewport, reducedMotion: 'reduce', storageState });
     contexts.push(context);
     await context.addInitScript(() => { window.__bespokeAutosave = { enabled: false }; });
     await context.route(/^https?:/, (route) => {
@@ -123,6 +124,104 @@ try {
     await page.locator('#stepList button').first().waitFor();
     assert.equal(await page.locator('.guide-count').count(), 0, 'a corrupt guide is ignored');
     assert.equal(await page.locator('#stepPanel h1').count(), 1, 'the builder still opens');
+  });
+  await scenario('samples are real slide thumbnails and hovering previews without choosing', async ({ makePage }) => {
+    const page = await makePage();
+    await startGuide(page);
+    await walkTo(page, 'Title layout');
+    const samples = page.locator('.guide-sample');
+    assert.equal(await samples.count(), 4);
+    assert.equal(await samples.first().locator('.bespoke-slide').count(), 1, 'each sample draws a slide');
+    const box = await samples.first().locator('.guide-thumb').boundingBox();
+    assert.ok(box.height < box.width * 0.7, `a thumbnail is a 16:9 miniature, not a tall slab (${Math.round(box.width)} x ${Math.round(box.height)})`);
+    assert.equal(await samples.first().locator('.guide-thumb').evaluate((t) => t.inert), true, 'thumbnails are inert');
+    const before = await design(page);
+    const stage = await page.locator('#modelStage').innerHTML();
+    const pick = before.slides.title.layout === 'split' ? 'center' : 'split';
+    await page.locator(`.guide-sample[data-choice="${pick}"]`).hover();
+    assert.notEqual(await page.locator('#modelStage').innerHTML(), stage, 'hovering previews the option');
+    assert.deepEqual(await design(page), before, 'hovering does not save it');
+    await page.mouse.move(0, 0);
+    assert.equal(await page.locator('#modelStage').innerHTML(), stage, 'moving away restores the preview');
+    await page.locator(`.guide-sample[data-choice="${pick}"]`).click();
+    assert.equal((await design(page)).slides.title.layout, pick);
+    assert.equal(await page.locator(`.guide-sample[data-choice="${pick}"]`).getAttribute('aria-pressed'), 'true');
+  });
+
+  await scenario('a color question shows four readable suggestions and More colors reveals the rest', async ({ makePage }) => {
+    const page = await makePage();
+    await startGuide(page);
+    await walkTo(page, 'Title color');
+    const shown = await page.locator('.guide-sample').evaluateAll((els) => els.map((e) => e.dataset.choice));
+    assert.equal(shown[0], 'inherit');
+    assert.ok(shown.length >= 5 && shown.length <= 6, `inherit plus four suggestions (and current), saw ${shown.length}`);
+    await page.locator('#btnGuideMore').click();
+    const all = await page.locator('.guide-sample').evaluateAll((els) => els.map((e) => e.dataset.choice));
+    assert.equal(new Set(all.filter((id) => id !== 'inherit')).size, catalog.palette.length, 'all eleven colors are reachable');
+    await page.locator('#btnGuideMore').click();
+    assert.equal(await page.locator('.guide-sample').count(), shown.length, 'More colors toggles');
+  });
+
+  await scenario('a hard-to-read color is allowed and explained in plain words', async ({ makePage }) => {
+    const page = await makePage();
+    await startGuide(page);
+    await walkTo(page, 'Heading color');
+    await page.locator('#btnGuideMore').click();
+    const risky = page.locator('.guide-sample .guide-note', { hasText: 'Hard to read' }).first();
+    assert.ok(await risky.count(), 'some color is flagged hard to read');
+    assert.match(await risky.innerText(), /^Hard to read \(\d\.\d to 1, aim for (3|4\.5) to 1\)$/);
+    await risky.locator('xpath=ancestor::button').click();
+    assert.deepEqual(Model.validateDesign(catalog, await design(page)), [], 'the design is still valid and saved');
+    assert.equal(await page.locator('#readabilityNotes').isVisible(), true, 'the preview shows the advisory');
+  });
+
+  await scenario('shared-look questions name the slides a change leaves alone', async ({ makePage }) => {
+    const page = await makePage();
+    await startGuide(page);
+    await walkTo(page, 'Background pattern');
+    assert.ok(await page.locator('[data-shared-scope="pattern"]').count(), 'the shared-scope note is shown');
+  });
+
+  // Wide on purpose: at 1440 px the preview is too narrow to tell the Across and Balanced grid box layouts apart.
+  await scenario('every guided sample changes the preview', async ({ makePage }) => {
+    const page = await makePage({ wide: true });
+    await startGuide(page);
+    const dead = [];
+    let questionsWithSamples = 0;
+    const effective = (d) => JSON.stringify({ roles: d.roles, fonts: d.fonts, slides: d.slides, background: d.background, eff: Model.ROLE_STYLE_KINDS.map((k) => Model.effectiveRoleStyle(catalog, d, k)) });
+    for (let guard = 0; guard < 60; guard += 1) {
+      const title = await heading(page);
+      if (await page.locator('.guide-sample').count()) {
+        questionsWithSamples += 1;
+        if (await page.locator('#btnGuideMore').count()) await page.locator('#btnGuideMore').click();
+        const ids = await page.locator('.guide-sample').evaluateAll((els) => els.map((e) => e.dataset.choice));
+        for (const id of ids) {
+          const button = page.locator(`.guide-sample[data-choice="${id}"]`);
+          if ((await button.getAttribute('aria-pressed')) === 'true') continue;
+          await page.mouse.move(0, 0);
+          const beforeDesign = await design(page);
+          const before = await page.locator('#modelStage').screenshot();
+          await button.click();
+          if (await page.locator('#presetDialog[open]').count()) await page.locator('#presetApply').click();
+          await page.mouse.move(0, 0);
+          const after = await page.locator('#modelStage').screenshot();
+          const afterDesign = await design(page);
+          const moved = await pixelDifference(page, before, after).catch((error) => {
+            if (/equal rendered dimensions/.test(error.message)) return { changedFraction: 1 };
+            throw error;
+          });
+          // A faint change (a 6% watermark) stays under the per-pixel threshold, so require exactly no change at all.
+          if (moved.changedFraction === 0 && moved.meanChannelDelta === 0 && effective(beforeDesign) !== effective(afterDesign)) dead.push(`${title}: ${id}`);
+          if (await page.locator('#btnGuideMore').count() && (await page.locator('#btnGuideMore').getAttribute('aria-expanded')) !== 'true') await page.locator('#btnGuideMore').click();
+        }
+      }
+      if (!(await page.locator('#btnGuideNext').count())) break;
+      const last = /Finish/.test(await page.locator('#btnGuideNext').innerText());
+      await next(page);
+      if (last) break;
+    }
+    assert.deepEqual(dead, [], 'every option visibly changes the preview');
+    assert.ok(questionsWithSamples >= 30, `swept ${questionsWithSamples} questions`);
   });
 } finally {
   await browser.close();

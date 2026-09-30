@@ -1699,13 +1699,15 @@ function updateSimilarity(design){
 function buttonColorSample(id){
  return `<section id="${id}" class="bespoke-slide button-color-sample" aria-label="Button color sample"><div><strong>Button color sample</strong><p>Style preview only; no file opens.</p></div>${Model.renderSampleButton()}</section>`;
 }
-function updatePreview(design=state.design){
+function updatePreview(design=state.design,{quick=false}={}){
  if(!design)return;
  byId('designStyle').textContent=Model.cssForDesign(catalog,design,{scope:'.bespoke-slide',fontBase:'../fonts',canonical:false});
  const sidebarSampleOpen=byId('modelStage').querySelector('.slide-sidebar-disclosure')?.open===true;
  byId('modelStage').innerHTML=Model.renderSlide(catalog,design,state.previewView,{title:design.samples.title,subtitle:design.samples.subtitle,lessonTitle:state.meta.lessons.find(l=>l.id===state.lessonId)?.title,logoUrl:'../SPOKES-Logo.png'});
  const sidebarDisclosure=byId('modelStage').querySelector('.slide-sidebar-disclosure');
  if(sidebarDisclosure)sidebarDisclosure.open=sidebarSampleOpen;
+ // A hover preview redraws only the slide. Notes and the meter would change the page height under the pointer.
+ if(quick)return;
  // Contextual sample sits outside the slide; cards/title/dividers keep their real structure.
  const buttonSample=byId('buttonColorSample');
  const needsSample=ui.sharedThemeOpen&&ui.activeRole==='button'&&!['video','activity'].includes(state.previewView);
@@ -1758,7 +1760,7 @@ function guideHost(){
   setGuide:next=>{ui.guide=next;if(isLeadSession())saveDraft();},
   change:(label,edit)=>changeDesign(label,edit),
   requestPreset:id=>requestPreset(id),
-  preview:trial=>updatePreview(trial||state.design),
+  preview:trial=>trial?updatePreview(trial,{quick:true}):updatePreview(),
   setView:view=>{state.previewView=view;ui.previewPinned=false;},
   rerender:()=>render(false),
   openGuide:()=>{state.step=stepIndex('slides');render();},

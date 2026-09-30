@@ -154,11 +154,12 @@ test('sections run start, shared, then one per slide type in lesson order', () =
   assert.deepEqual(seen.slice(2), ['title', 'divider', 'cards', 'video', 'activity']);
 });
 
-test('inside a slide type layout comes first, recap comes last', () => {
+test('inside a slide type layout comes first (after the box count for Text boxes), recap comes last', () => {
   for (const kind of ['title', 'divider', 'cards', 'video', 'activity']) {
     const list = all.filter(q => q.section === kind);
     assert.equal(list[0].kind, 'decision');
-    assert.equal(list[0].decision, 'layout', kind);
+    assert.equal(list[0].decision, kind === 'cards' ? 'count' : 'layout', kind);
+    if (kind === 'cards') assert.equal(list[1].decision, 'layout', 'cards asks layout right after the count');
     assert.equal(list.at(-1).kind, 'recap', kind);
     const firstColor = list.findIndex(q => q.kind === 'background');
     const lastDecision = list.map(q => q.kind).lastIndexOf('decision');
@@ -268,8 +269,9 @@ export function buildQuestions(catalog, { teamComplete = false } = {}) {
   for (const kind of ROLE_STYLE_KINDS) {
     const group = catalog.slideGroups.find((g) => g.id === kind);
     const decisions = group.decisions.filter((x) => !NOT_ASKED.includes(x.id));
-    // Layout is asked first for every slide type. The catalog lists it last for Text boxes.
-    const ordered = [...decisions.filter((d) => d.id === 'layout'), ...decisions.filter((d) => d.id !== 'layout')];
+    // Layout is asked first, except for Text boxes: a box layout only looks different once the number of boxes is set.
+    const first = kind === 'cards' ? ['count', 'layout'] : ['layout'];
+    const ordered = [...first.map((id) => decisions.find((d) => d.id === id)), ...decisions.filter((d) => !first.includes(d.id))];
     for (const d of ordered) {
       add({ id: `${kind}.${d.id}`, section: kind, kind: 'decision', group: kind, decision: d.id, view: kind });
     }
@@ -878,8 +880,9 @@ async function scenario(name, callback) {
   if (process.env.BESPOKE_GUIDE_SCENARIO && !name.includes(process.env.BESPOKE_GUIDE_SCENARIO)) return;
   const server = await createDevServer({ port: 0 });
   const contexts = [];
-  const makePage = async ({ mobile = false, storageState } = {}) => {
-    const context = await browser.newContext({ viewport: mobile ? { width: 390, height: 844 } : { width: 1440, height: 1000 }, reducedMotion: 'reduce', storageState });
+  const makePage = async ({ mobile = false, wide = false, storageState } = {}) => {
+    const viewport = mobile ? { width: 390, height: 844 } : wide ? { width: 1920, height: 1080 } : { width: 1440, height: 1000 };
+    const context = await browser.newContext({ viewport, reducedMotion: 'reduce', storageState });
     contexts.push(context);
     await context.addInitScript(() => { window.__bespokeAutosave = { enabled: false }; });
     await context.route(/^https?:/, (route) => {
@@ -1374,8 +1377,9 @@ Insert these scenarios above the `} finally {` line in `scripts/test-bespoke-gui
     assert.ok(await page.locator('[data-shared-scope="pattern"]').count(), 'the shared-scope note is shown');
   });
 
+  // Wide on purpose: at 1440 px the preview is too narrow to tell the Across and Balanced grid box layouts apart.
   await scenario('every guided sample changes the preview', async ({ makePage }) => {
-    const page = await makePage();
+    const page = await makePage({ wide: true });
     await startGuide(page);
     const dead = [];
     let questionsWithSamples = 0;
@@ -1401,7 +1405,8 @@ Insert these scenarios above the `} finally {` line in `scripts/test-bespoke-gui
             if (/equal rendered dimensions/.test(error.message)) return { changedFraction: 1 };
             throw error;
           });
-          if (moved.changedFraction === 0 && effective(beforeDesign) !== effective(afterDesign)) dead.push(`${title}: ${id}`);
+          // A faint change (a 6% watermark) stays under the per-pixel threshold, so require exactly no change at all.
+          if (moved.changedFraction === 0 && moved.meanChannelDelta === 0 && effective(beforeDesign) !== effective(afterDesign)) dead.push(`${title}: ${id}`);
           if (await page.locator('#btnGuideMore').count() && (await page.locator('#btnGuideMore').getAttribute('aria-expanded')) !== 'true') await page.locator('#btnGuideMore').click();
         }
       }
@@ -1544,6 +1549,14 @@ Append to `bespoke/guide.css`:
 .guide-more { grid-template-columns: repeat(auto-fill, minmax(170px, 1fr)); margin-top: 10px }
 .guide-scope { margin-top: 14px; font-size: .85rem }
 ```
+
+- [ ] **Step 3b: Keep hover previews from changing the page height**
+
+Hovering a hard-to-read color makes the preview's advisory box appear, which grows the page, shifts the scroll position under the pointer, ends the hover, and loops. A hover preview must redraw only the slide. In `bespoke/builder-app.mjs`:
+
+- Change `function updatePreview(design=state.design){` to `function updatePreview(design=state.design,{quick=false}={}){`.
+- After the line `if(sidebarDisclosure)sidebarDisclosure.open=sidebarSampleOpen;` add `if(quick)return;`.
+- In `guideHost()`, change `preview:trial=>updatePreview(trial||state.design),` to `preview:trial=>trial?updatePreview(trial,{quick:true}):updatePreview(),`.
 
 - [ ] **Step 4: Run to verify pass**
 
@@ -2160,7 +2173,8 @@ git commit -m "docs: record guided mode verification"
 2. The spec says Edit freely is today's builder. The plan keeps the existing **Build my own** control as Edit freely, unrenamed, so the ids and text that 14 existing browser scripts pin do not move.
 3. Gradient finish, second color, size, alignment, visibility toggles and custom watermark text stay in the free editor.
 4. The Video slide gets no body-text color question. The model hides video body text by default, so every answer would change nothing visible, which the spec's "every option changes the preview" rule forbids. The spec's Video list therefore ends at Background and Heading color.
-5. Text boxes ask Layout first, then Count, Title bar, Text treatment and Box style. The spec's table listed Count first and its rule said layout first. The plan follows the rule.
+5. Text boxes ask the number of boxes first, then Layout, Title bar, Text treatment and Box style. The spec's rule said layout first, but a box layout such as Balanced grid looks identical to Across at the default of three boxes, so the guided sweep flagged it as a dead option. Every other slide type asks Layout first.
+7. The every-sample sweep runs at 1920 px wide. At 1440 px the preview is 752 px wide and the Across and Balanced grid box layouts both render as two columns, so they look identical. This is existing preview behavior, unchanged by this work, and is reported to Britt as a finding.
 6. The guide's "hard to read" line uses the model's own thresholds: 3 to 1 for headings on title, divider and video slides, and 4.5 to 1 for everything else. A unit test checks the two agree for every color. The guide asks for background color, heading color, text color and, for the divider, whether to show the watermark. Teams can leave the guide at any point to use the rest.
 
 **Placeholder scan.** No TBD or "handle edge cases" remain. Two steps are instructions, not code, because what they do depends on what a run finds: Task 5 Step 5 (dead options from the sweep) and Task 8 Step 3 (failures from the jargon, axe and phone checks). Both give the file to change and the rule for deciding. Task 9 Step 1 rewrites prose in an existing page and Task 10 Step 2 writes a verification note from real output, so neither can be scripted verbatim.

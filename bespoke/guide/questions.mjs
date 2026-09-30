@@ -26,8 +26,9 @@ export function buildQuestions(catalog, { teamComplete = false } = {}) {
   for (const kind of ROLE_STYLE_KINDS) {
     const group = catalog.slideGroups.find((g) => g.id === kind);
     const decisions = group.decisions.filter((x) => !NOT_ASKED.includes(x.id));
-    // Layout is asked first for every slide type. The catalog lists it last for Text boxes.
-    const ordered = [...decisions.filter((d) => d.id === 'layout'), ...decisions.filter((d) => d.id !== 'layout')];
+    // Layout is asked first, except for Text boxes: a box layout only looks different once the number of boxes is set.
+    const first = kind === 'cards' ? ['count', 'layout'] : ['layout'];
+    const ordered = [...first.map((id) => decisions.find((d) => d.id === id)), ...decisions.filter((d) => !first.includes(d.id))];
     for (const d of ordered) {
       add({ id: `${kind}.${d.id}`, section: kind, kind: 'decision', group: kind, decision: d.id, view: kind });
     }

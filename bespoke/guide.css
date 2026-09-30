@@ -14,3 +14,11 @@
 .guide-entry { margin: 18px 0; padding: 16px; border: 1px solid var(--line); border-radius: 8px; background: #f6fafc }
 .guide-entry h2 { margin: 0 0 6px; font-size: 1.05rem }
 .guide-entry .start-actions { display: flex; flex-wrap: wrap; gap: 10px; align-items: center }
+
+.guide-thumb { display: block; position: relative; width: 100%; aspect-ratio: 16 / 9; overflow: hidden; pointer-events: none; border-radius: 4px; background: #dfe7ed }
+.guide-thumb-inner { display: block; position: absolute; top: 0; left: 0; width: 720px; height: 405px; container-type: inline-size; transform: scale(var(--s, .2)); transform-origin: top left }
+.guide-thumb .bespoke-slide { box-shadow: none; min-height: 405px; height: 405px }
+.guide-chip { flex-direction: row; align-items: center; gap: 10px }
+.guide-swatch { width: 28px; height: 28px; border-radius: 50%; border: 1px solid #00133f40; flex: none }
+.guide-more { grid-template-columns: repeat(auto-fill, minmax(170px, 1fr)); margin-top: 10px }
+.guide-scope { margin-top: 14px; font-size: .85rem }
