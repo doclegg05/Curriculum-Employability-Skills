@@ -7,6 +7,7 @@
 - **Repo**: origin = doclegg05/Curriculum-Employability-Skills (dev); publisher = SPOKES-Skills/Employability-Skills-Curriculum (public Pages); t9 = /Volumes/T9 backup mirror
 
 ## Current Status
+- **BeSpoke guided mode (Guide me) built on branch `claude/bespoke-guided-workflow`, 2026-09-30, not merged, not pushed.** Branched from `codex/bespoke-guided-builder` (the 3-stage v2 builder that is NOT in `origin/main`; it came from Codex worktrees and PR #34). Adds an optional slide-by-slide walk-through on the Start stage. Saved design, schema, model, catalog and Netlify service unchanged, so no redeploy. `bash scripts/quality.sh` green; guided suite 23 scenarios. Spec `docs/superpowers/specs/2026-09-30-bespoke-guided-workflow-design.md`, plan `docs/superpowers/plans/2026-09-30-bespoke-guided-mode.md`, evidence `docs/bespoke/verification-2026-09-30-guide.md`. This SUPERSEDES the earlier slide-builder Plans 1-3 (role-components.json / design-model.mjs); the branch `claude/slide-builder-design-model` (Tasks 1-2) is now obsolete.
 (as of 2026-09-23 evening, `origin/main` = `c3da4c0`)
 - **Six existing lessons: OUT OF QA, READY FOR TEACHING** (Britt, 2026-09-23). This supersedes the 2026-09-22 review's "no blanket teaching release" verdict. Registry, Dashboard fallback, README and Project Plan updated to match the same day.
 - **BeSpoke: built, deployed, live-verified 2026-09-22** (`docs/bespoke/verification-2026-09-22.md`). Private per-lesson team links, encrypted shared Save/Open, History, Download/Open backup, Send to Britt → receipt-confirmed draft PR. Scope is visual design only (colors, fonts, layouts, cards); no lesson is built by it.
@@ -18,13 +19,17 @@
 - Quality gate green on `main` after PR #31: 36 Node, 30 Python, 27 BeSpoke browser scenarios, 15/15 title layouts.
 
 ## Last Session
-- **Date**: 2026-09-23 (second session, continued)
-- **What we worked on**: BeSpoke, in order: design brief + UI rework (PR #25, service deploy `6ab3ebad…` first); color lead preview (#27); download-button contrast + title-slide layouts in the library (#28); texture preview (#29); color-roles mockup (#30); per-chapter card picker (#31). Also memory PR #26.
-- **Pattern found**: Britt's "the preview doesn't change" reports all came from one cause. A bundled choice either rendered on a slide where it has no effect, or the preview didn't mirror the template. Fix pattern: open the step on the slide where the choice shows; mirror template markup; scale library px/rem (`--pv-px = 100cqi/1280`); lock with a browser sweep.
-- **What we decided**: see the 2026-09-23 rows in the decision log.
-- **Where we left off**: writing the slide-builder spec and Plan 1 (design model: selection v2, role colors + contrast rules, CSS generation, validators, accurate meter from `theme-registry.json`). Facts gathered (template selectors per slide type, SPOKES-STANDARD CLR/TYP/THM rules, registry, every `bespoke-selection/v1` site). Plans 2 (builder UI) and 3 (migration/rollout) follow Plan 1.
+- **Date**: 2026-09-30
+- **What we worked on**: Britt asked for a more user-friendly, one-step-at-a-time BeSpoke. Brainstormed and diagrammed a slide-by-slide flow, then found the Codex builder already existed (3 stages, roles, Undo/Redo, advisory contrast). Britt chose to extend it: an optional Guide me mode, contrast stays advisory, six presets kept, sample-line editing in the text boxes recap, colors ranked by readability. Built all 11 plan tasks inline, then a Fable 5.1 whole-branch review found 4 Important issues (team question broken, readability disagreeing with the preview on textures and band dividers, focus loss, repeated announcements); all fixed RED to GREEN.
+- **What we decided**: see the 2026-09-30 rows in the decision log.
+- **Where we left off**: branch `claude/bespoke-guided-workflow` has 13 commits, gate green, unpushed. Next: Britt reviews, then the Money Management pilot with a real spokesperson. No PR opened yet.
 
 ## Open Items
+- [ ] **Guided mode: decide whether to open a PR.** Branch `claude/bespoke-guided-workflow` is based on `codex/bespoke-guided-builder`, which itself is not in `origin/main`. Merging the guide means deciding about the Codex builder first (Britt's call). Nothing is pushed.
+- [ ] **Guided mode pilot**: a real spokesperson runs Guide me on Money Management; hosted save, reopen and Send with a guided design have not been exercised.
+- [ ] Deferred minors from the 2026-09-30 review: (a) Undo after "Start the guide again" stores a question index, not an id, and can land one question off; (b) thumbnails are scaled once per render, so narrowing the window leaves them overflowing until the next render; (c) `resetDesignForLesson` keeps the guide when the lesson id is unchanged, so opening a team with no shared design leaves the guide over a default design.
+- [ ] **Preview width finding**: at 1440 px the preview is 752 px wide and the Across and Balanced grid box layouts render identically (free editor too). Britt's call whether to widen the preview or change the layout rule.
+- [ ] Phone layout: the guide question starts below the stacked header, notices and stage list (existing shell), so samples need a scroll.
 - [ ] **Hosted acceptance with a design brief** (PR #25): save with a brief on one computer, reopen on another, Send, confirm the "Design brief" row. Record in a verification note like `docs/bespoke/verification-2026-09-22.md`. Service redeploy (`6ab3ebad…`) and Pages are live; only this end-to-end run is missing.
 - [ ] Hosted acceptance still pending for a design that includes a brief (save → reopen elsewhere → Send → "Design brief" row).
 - [ ] Slide builder: write spec + Plan 1, then Plans 2–3. The per-role color model reopens D6 and the theming guide's "do not rewrite the colorLead model"; it changes the saved-design schema, the Netlify service (redeploy before merge), the submission writer, CSS generation, registry apply and the design checker.
@@ -56,6 +61,10 @@
 ## Key Decisions Log
 | Date | Decision | Rationale |
 |------|----------|-----------|
+| 2026-09-30 | Extend the Codex builder with an optional Guide me walk-through; do not build our own 8-step wizard, role model or palette | The Codex builder already had roles, history and a 3-stage flow chosen by a 2026-09-24 review; a parallel model would collide on file names and data shape |
+| 2026-09-30 | Contrast stays advisory (no switched-off options); the guide shows a plain warning with the ratio | Matches the existing docs, schema and "no disabled swatches" decision; needs no schema or service change |
+| 2026-09-30 | The guide's readability notes come from the model's own advisory, not a separate calculation | A separate calculation disagreed with the preview on textures and band dividers |
+| 2026-09-30 | Text boxes ask the number of boxes before layout; video gets no body-text color question | Balanced grid looks like Across at the default count; video body text is hidden by default |
 | 2026-09-23 | Slide builder replaces the wizard: per-role colors (mockup first), title positions, 4 slide types (chapter divider, video, bullet list, activity), accurate similarity meter | Britt: small decisions, each visible in the preview, tracked and persistent |
 | 2026-09-23 | Preview must mirror the template (real markup, scaled library units) and every option must visibly change it | Britt's repeated "preview doesn't change" reports; guarded by a browser sweep |
 | 2026-09-23 | BeSpoke adds a design brief step; its answers drive a starting design capped at 3–5 of 7 choices shared with any existing lesson | Presets were the six existing lessons' looks, so the default path copied a lesson |

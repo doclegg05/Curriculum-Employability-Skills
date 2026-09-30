@@ -1,5 +1,7 @@
 import * as Model from './builder-model.mjs';
 import { compareDesign } from './similarity.mjs';
+import { createGuide } from './guide/guide.mjs';
+import { buildQuestions, normalizeGuide } from './guide/questions.mjs';
 
 // Keep the established SPOKES identity. A small decision panel operates a large
 // cumulative slide preview; confirmed shared saves remain separate from drafts.
@@ -26,6 +28,8 @@ const STEPS = [
 const LEGACY_STEPS = ['welcome','team','colors','fonts','title','divider','cards','video','activity','review'];
 const state = {step:0,stepId:'start',meta:null,library:null,lessonId:'money-management',teamName:'',spokespersonName:'',spokespersonEmail:'',lessonTitle:'',lessonSubtitle:'',unspoken:'',editCode:'',previewView:'title',design:null,legacySelection:null,changes:[],redo:[]};
 const ui = {mode:'view',renderedStep:null,previewPinned:false,teamSession:null,cloudConflict:null,cloudBusy:false,autosavePaused:false,allowUnload:false,skipNextLocalSave:false,restoreNote:'',restoredFromLink:false,editCodeHash:'',activeRole:'sidebar',paintScope:'slide',themeScope:'slide',localPreview:false,editorRole:'title',sharedThemeOpen:false,startingLooksOpen:false,meaningfulDesign:false};
+ui.guide = null;
+let guide = null;
 let catalog, fingerprints, selectionSchema, handoffApiBase='', handoffBusy=false, lastSavedRaw=null, storageConflict=false;
 // Replacing a draft or team invalidates pending operations against its predecessor.
 let draftGeneration=0;
@@ -1216,6 +1220,7 @@ function restoreStep(saved){
  ui.themeScope=saved.themeScope==='shared'?'shared':'slide';
  ui.meaningfulDesign=saved.meaningfulDesign===true||JSON.stringify(state.design)!==JSON.stringify(Model.defaultDesign(catalog));
  ui.renderedStep=state.step;
+ ui.guide=normalizeGuide(saved.guide,buildQuestions(catalog));
 }
 function loadDraft(){
  try{
@@ -1239,7 +1244,7 @@ function loadDraft(){
 }
 function serializeDraft(){
  const {meta,library,editCode,...saved}=state;
- return JSON.stringify({...saved,stepId:STEPS[state.step].id,activeRole:ui.activeRole,paintScope:ui.paintScope,themeScope:ui.themeScope,editorRole:ui.editorRole,sharedThemeOpen:ui.sharedThemeOpen,meaningfulDesign:ui.meaningfulDesign,autosavePaused:ui.autosavePaused});
+ return JSON.stringify({...saved,stepId:STEPS[state.step].id,activeRole:ui.activeRole,paintScope:ui.paintScope,themeScope:ui.themeScope,editorRole:ui.editorRole,sharedThemeOpen:ui.sharedThemeOpen,meaningfulDesign:ui.meaningfulDesign,autosavePaused:ui.autosavePaused,guide:ui.guide});
 }
 function saveDraft(){
  if(!isLeadSession()||!state.design)return false;
@@ -1252,7 +1257,7 @@ function saveDraft(){
  }catch{setSaveStatus('Browser storage unavailable. Download a backup.');return false;}
 }
 function resetDesignForLesson(lessonId){
- draftGeneration++;resetPresetConfirmation();ui.meaningfulDesign=false;ui.startingLooksOpen=false;ui.editorRole='title';ui.sharedThemeOpen=false;ui.paintScope='slide';ui.themeScope='slide';
+ draftGeneration++;resetPresetConfirmation();ui.meaningfulDesign=false;ui.startingLooksOpen=false;ui.editorRole='title';if(lessonId!==state.lessonId)ui.guide=null;ui.sharedThemeOpen=false;ui.paintScope='slide';ui.themeScope='slide';
  Object.assign(state,{step:0,lessonId,teamName:'',spokespersonName:'',spokespersonEmail:'',unspoken:'',design:Model.defaultDesign(catalog),legacySelection:null,changes:[],redo:[]});
 }
 function applySelectionPayload(payload){
@@ -1263,6 +1268,7 @@ function applySelectionPayload(payload){
  const team=payload.team||{};
  if(state.lessonId!==payload.lesson.id||state.teamName!==(team.name||''))resetPresetConfirmation();
  ui.meaningfulDesign=true;ui.startingLooksOpen=false;
+ if(payload.lesson.id!==state.lessonId||JSON.stringify(nextDesign)!==JSON.stringify(state.design))ui.guide=null;
  draftGeneration++;
  Object.assign(state,{lessonId:payload.lesson.id,teamName:team.name||'',spokespersonName:team.spokesperson?.name||'',spokespersonEmail:team.spokesperson?.email||'',unspoken:payload.unspoken||'',changes:[],redo:[]});
  if(payload.schema==='bespoke-selection/v1'){
@@ -1270,12 +1276,17 @@ function applySelectionPayload(payload){
   ui.restoreNote='Converted a copy of the older design. '+migrated.warnings.join(' ')+' The original is included in every backup and can be downloaded on Review. Review this conversion before saving.';
  }else{state.design=nextDesign;state.legacySelection=payload.legacySelection?clone(payload.legacySelection):null;ui.restoreNote='';}
 }
+function recordChange(label,before){
+ const entry={label,design:before};
+ if(ui.guide?.on)entry.guide=ui.guide.index;
+ state.changes.push(entry);state.changes=state.changes.slice(-40);state.redo=[];
+}
 function changeDesign(label,edit,{redraw=true}={}){
  if(!isLeadSession())return;
  const before=clone(state.design), next=clone(state.design);edit(next);
  if(JSON.stringify(before)===JSON.stringify(next))return;
  next.startingPoint='custom';ui.meaningfulDesign=true;
- state.changes.push({label,design:before});state.changes=state.changes.slice(-40);state.redo=[];state.design=next;
+ recordChange(label,before);state.design=next;
  saveDraft();if(redraw)render(false);else{updatePreview();updateUndo();}
  byId('saveLive').textContent=label+'. Browser draft updated.';
 }
@@ -1283,7 +1294,10 @@ function undoChange(redo=false){
  if(!isLeadSession())return;
  const source=redo?state.redo:state.changes,target=redo?state.changes:state.redo;
  const entry=source.pop();if(!entry)return;
- target.push({label:entry.label,design:clone(state.design)});state.design=entry.design;saveDraft();render(false);
+ target.push({label:entry.label,design:clone(state.design),...(Number.isInteger(entry.guide)?{guide:entry.guide}:{})});
+ state.design=entry.design;
+ if(ui.guide?.on&&Number.isInteger(entry.guide)&&entry.guide>=0&&entry.guide<ui.guide.ids.length)ui.guide={...ui.guide,index:entry.guide};
+ saveDraft();render(false);
  fileNotice((redo?'Redid: ':'Undid: ')+entry.label);
 }
 function updateUndo(){
@@ -1316,7 +1330,7 @@ function applyPresetChoice(id){
  if(!isLeadSession())return false;
  const preset=catalog.presets.find(item=>item.id===id);if(!preset)return false;
  ui.meaningfulDesign=true;ui.startingLooksOpen=true;
- const samples=clone(state.design.samples);state.changes.push({label:'Applied '+preset.label,design:clone(state.design)});state.changes=state.changes.slice(-40);state.redo=[];state.design=Model.applyPreset(catalog,preset.id,state.design);state.design.samples=samples;
+ const samples=clone(state.design.samples);recordChange('Applied '+preset.label,clone(state.design));state.design=Model.applyPreset(catalog,preset.id,state.design);state.design.samples=samples;
  render(false);fileNotice(preset.label+' applied. Every choice remains editable.');return true;
 }
 function requestPreset(id){
@@ -1352,11 +1366,19 @@ function showBuilderHelp(close=false){
  if(close){byId('btnHelp').focus({preventScroll:true});return;}
  byId('builderHelpContent').innerHTML=builderGuidance();byId('builderHelpTitle').focus();
 }
-function goStage(id){state.step=stepIndex(id);render();}
+function goStage(id){if(ui.guide?.on&&id!=='slides')ui.guide={...ui.guide,on:false};state.step=stepIndex(id);render();}
 function renderWelcome(panel){
  heading(panel,'Start','Confirm your team, then keep your current design or choose an editable starting look.');
  const intro=document.createElement('section');intro.className='getting-started';intro.setAttribute('aria-label','Getting started');intro.innerHTML='<p class="helper">Start → optional Slide designs → Review &amp; save. All eleven brand colors and twelve independent fonts stay editable. These previews use sample words, not finished lesson content.</p><details class="inline-details" id="startGuidance"><summary>How to choose and keep your design</summary>'+builderGuidance(true)+'</details>';panel.append(intro);
  const team=document.createElement('section');team.className='start-team';panel.append(team);renderTeam(team);
+ const entry=document.createElement('section');entry.className='guide-entry';entry.setAttribute('aria-label','Guided walk-through');
+ entry.innerHTML='<h2>Not sure where to start?</h2><p class="helper">Guide me asks one question at a time, slide by slide. Skip anything, and leave whenever you like. Your choices are kept.</p>';
+ const entryActions=document.createElement('div');entryActions.className='start-actions';entry.append(entryActions);
+ const inProgress=ui.guide&&!ui.guide.done;
+ const addEntry=(id,text,cls,fn)=>{const b=document.createElement('button');b.type='button';b.id=id;b.className=cls;b.textContent=text;b.onclick=fn;entryActions.append(b);};
+ if(inProgress){addEntry('btnGuideContinue','Continue guide','btn btn-primary',()=>guide.resume());addEntry('btnGuideRestart','Start the guide again','text-link',()=>guide.start());}
+ else addEntry('btnGuideMe','Guide me step by step','btn btn-primary',()=>guide.start());
+ panel.append(entry);
  const looks=document.createElement('section');looks.className='starting-looks';panel.append(looks);
  if(ui.meaningfulDesign){
   const title=document.createElement('h2');title.textContent='Continue your current design';looks.append(title);
@@ -1497,6 +1519,7 @@ function renderFonts(panel){
  if(!local)appendSharedScope(panel,'pattern');
 }
 function showRoleEditor(kind,section='background',field='primary'){
+ if(ui.guide)ui.guide={...ui.guide,on:false};
  ui.roleSections||={};ui.roleSections['section-'+kind+'-'+section]=true;ui.editorRole=kind;ui.focusStyleField=field;state.step=stepIndex('slides');state.previewView=kind;
  byId('workspace').dataset.activeSurface='design';document.querySelectorAll('#surfaceSwitcher [role=tab]').forEach(t=>t.setAttribute('aria-selected',String(t.dataset.surface==='design')));
  render();const sectionId='section-'+kind+'-'+section;ui.roleSections[sectionId]=true;if(byId(sectionId))byId(sectionId).open=true;(byId('role-'+kind+'-'+field)||byId(sectionId)?.querySelector('summary'))?.focus();
@@ -1536,7 +1559,7 @@ function localText(host,kind,key,label,value,{multiline=false,maxLength=200,hint
  let checkpoint=false;input.onfocus=()=>{checkpoint=false;};
  input.oninput=()=>{
   if(!isLeadSession()||Model.effectiveRoleStyle(catalog,state.design,kind)[key]===input.value)return;
-  if(!checkpoint){state.changes.push({label:VIEW_NAMES[kind]+': '+label,design:clone(state.design)});state.changes=state.changes.slice(-40);checkpoint=true;}
+  if(!checkpoint){recordChange(VIEW_NAMES[kind]+': '+label,clone(state.design));checkpoint=true;}
   ui.meaningfulDesign=true;state.previewView=kind;ui.previewPinned=false;state.redo=[];state.design=Model.setRoleStyle(catalog,state.design,kind,key,input.value);saveDraft();updatePreview();updateUndo();
  };
  field.append(input);if(hint){const small=document.createElement('small');small.className='helper';small.textContent=hint;field.append(small);}host.append(field);
@@ -1613,7 +1636,7 @@ function addSampleField(host,key,label,value){
  input.addEventListener('input',()=>{
   const current=key.startsWith('box-')?state.design.samples.boxes[Number(key.slice(4))]:state.design.samples[key];
   if(!isLeadSession()||current===input.value)return;
-  if(!checkpoint){state.changes.push({label:label+' edited',design:clone(state.design)});state.changes=state.changes.slice(-40);checkpoint=true;}
+  if(!checkpoint){recordChange(label+' edited',clone(state.design));checkpoint=true;}
   ui.meaningfulDesign=true;state.redo=[];state.design.startingPoint='custom';
   if(key.startsWith('box-'))state.design.samples.boxes[Number(key.slice(4))]=input.value;else state.design.samples[key]=input.value;
   saveDraft();updatePreview();updateUndo();
@@ -1667,6 +1690,7 @@ function renderEditors(panel){
 }
 function renderPanel(){
  const panel=byId('stepPanel'),id=STEPS[state.step].id;
+ if(id==='slides'&&ui.guide?.on){guide.render(panel);return;}
  if(id==='start')renderWelcome(panel);else if(id==='review')renderReview(panel);else renderEditors(panel);
  renderSharedTheme(panel);panel.insertBefore(byId('sharedTheme'),panel.children[2]||null);
  const nav=document.createElement('div');nav.className='panel-nav';nav.innerHTML='<button class="btn btn-secondary" id="btnBack"'+(state.step===0?' disabled':'')+'>Back'+(state.step>0?': '+escapeHtml(STEPS[state.step-1].label):'')+'</button>'+(state.step<STEPS.length-1?'<button class="btn btn-primary" id="btnNext">'+(state.step===0?'Continue: Slide designs':'Review & save')+'</button>':'');panel.append(nav);
@@ -1683,13 +1707,15 @@ function updateSimilarity(design){
 function buttonColorSample(id){
  return `<section id="${id}" class="bespoke-slide button-color-sample" aria-label="Button color sample"><div><strong>Button color sample</strong><p>Style preview only; no file opens.</p></div>${Model.renderSampleButton()}</section>`;
 }
-function updatePreview(design=state.design){
+function updatePreview(design=state.design,{quick=false}={}){
  if(!design)return;
  byId('designStyle').textContent=Model.cssForDesign(catalog,design,{scope:'.bespoke-slide',fontBase:'../fonts',canonical:false});
  const sidebarSampleOpen=byId('modelStage').querySelector('.slide-sidebar-disclosure')?.open===true;
  byId('modelStage').innerHTML=Model.renderSlide(catalog,design,state.previewView,{title:design.samples.title,subtitle:design.samples.subtitle,lessonTitle:state.meta.lessons.find(l=>l.id===state.lessonId)?.title,logoUrl:'../SPOKES-Logo.png'});
  const sidebarDisclosure=byId('modelStage').querySelector('.slide-sidebar-disclosure');
  if(sidebarDisclosure)sidebarDisclosure.open=sidebarSampleOpen;
+ // A hover preview redraws only the slide. Notes and the meter would change the page height under the pointer.
+ if(quick)return;
  // Contextual sample sits outside the slide; cards/title/dividers keep their real structure.
  const buttonSample=byId('buttonColorSample');
  const needsSample=ui.sharedThemeOpen&&ui.activeRole==='button'&&!['video','activity'].includes(state.previewView);
@@ -1731,10 +1757,34 @@ function setupRecoveryMenu(){
  document.addEventListener('keydown',event=>{if(event.key==='Escape'&&menu.open){event.preventDefault();close(true);}});
  document.addEventListener('focusin',event=>{if(menu.open&&!menu.contains(event.target))close(false);});
 }
+function guideHost(){
+ const slideOptions=design=>({title:design.samples.title,subtitle:design.samples.subtitle,lessonTitle:state.meta.lessons.find(l=>l.id===state.lessonId)?.title,logoUrl:'../SPOKES-Logo.png'});
+ return {
+  catalog,slideOptions,
+  get design(){return state.design;},
+  isLead:()=>isLeadSession(),
+  teamComplete:()=>Boolean(state.teamName.trim()&&state.spokespersonName.trim()),
+  getGuide:()=>ui.guide,
+  setGuide:next=>{ui.guide=next;if(isLeadSession())saveDraft();},
+  change:(label,edit)=>changeDesign(label,edit),
+  requestPreset:id=>requestPreset(id),
+  preview:trial=>updatePreview(trial||state.design,{quick:true}),
+  setView:view=>{state.previewView=view;ui.previewPinned=false;},
+  rerender:()=>render(false),
+  openGuide:()=>{state.step=stepIndex('slides');render();},
+  finish:()=>goStage('review'),
+  exitToEditor:kind=>{ui.editorRole=kind;ui.focusStyleField=null;state.previewView=kind;goStage('slides');byId('editor-'+kind)?.focus({preventScroll:true});},
+  announce:text=>{const live=byId('liveRegion');if(live)live.textContent=text;},
+  renderTeam:el=>renderTeam(el),
+  renderBoxSamples:el=>state.design.samples.boxes.forEach((value,i)=>addSampleField(el,'box-'+i,'Box '+(i+1)+(i>=Number(state.design.slides.cards.count)?' (kept in draft)':''),value)),
+  appendScope:(el,key)=>appendSharedScope(el,key)
+ };
+}
 async function init(){
  const paths=['./catalog.json','../SPOKES%20Builder/bespoke-library-catalog.json','./builder-catalog.json','./lesson-fingerprints.json','./selection-v2.schema.json'];
  const data=await Promise.all(paths.map(async url=>{const r=await fetch(url);if(!r.ok)throw new Error('Could not load '+url);return r.json();}));
  [state.meta,state.library,catalog,fingerprints,selectionSchema]=data;state.design=Model.defaultDesign(catalog);
+ guide=createGuide(guideHost());
  await loadHandoffConfig();const startup=await openShareLink();
  if(ui.localPreview&&!ui.teamSession&&!startup?.snapshot){installTeamSession(state.lessonId,'bespoke-local-preview-synthetic');ui.mode='edit';}
  const mayReplace=Boolean(ui.teamSession)&&(!lastSavedRaw||Boolean(ui.teamSession.baseSelectionKey&&currentSelectionKey()===ui.teamSession.baseSelectionKey));
@@ -1761,7 +1811,7 @@ async function init(){
  byId('presetDialog').onkeydown=e=>{if(e.key!=='Tab')return;const first=byId('presetSkipConfirmation'),last=byId('presetApply');if(e.shiftKey&&document.activeElement===first){e.preventDefault();last.focus();}else if(!e.shiftKey&&document.activeElement===last){e.preventDefault();first.focus();}};
  byId('btnRecoverDraft').onclick=()=>{try{const previous=localStorage.getItem(BACKUP_KEY);if(!previous||!confirm('Restore the previous browser draft? Download a backup first if you need this version.'))return;const raw=localStorage.getItem(STORAGE_KEY),current=lastSavedRaw===null&&raw?raw:serializeDraft();localStorage.setItem(STORAGE_KEY,previous);localStorage.setItem(BACKUP_KEY,current);ui.allowUnload=true;location.reload();}catch{fileNotice('Recovery is unavailable. Open a downloaded backup.');}};
  byId('btnLeaveSession').onclick=()=>{if(!confirm('Leave this session on this browser? Download a backup or save first.'))return;forgetTeamSession();try{localStorage.removeItem(STORAGE_KEY);localStorage.removeItem(BACKUP_KEY);}catch{}ui.allowUnload=true;location.reload();};
- byId('btnClear').onclick=()=>{if(!isLeadSession()||!confirm('Start a new browser draft? A recovery copy will be kept. Shared designs remain unchanged.'))return;if(!keepRecoveryCopy())return;resetPresetConfirmation();lastSavedRaw=localStorage.getItem(STORAGE_KEY);storageConflict=false;resetDesignForLesson(state.lessonId);ui.autosavePaused=true;render();};
+ byId('btnClear').onclick=()=>{if(!isLeadSession()||!confirm('Start a new browser draft? A recovery copy will be kept. Shared designs remain unchanged.'))return;if(!keepRecoveryCopy())return;ui.guide=null;resetPresetConfirmation();lastSavedRaw=localStorage.getItem(STORAGE_KEY);storageConflict=false;resetDesignForLesson(state.lessonId);ui.autosavePaused=true;render();};
  document.querySelectorAll('#previewTabs [role=tab]').forEach(tab=>tab.onclick=()=>showView(tab.dataset.view));bindTablistKeys(byId('previewTabs'));
  const workspace=byId('workspace'),surfacePositions={design:0,preview:0};
  const sizeSurfaceNavigation=()=>{const height=document.querySelector('.surface-navigation').getBoundingClientRect().height;document.documentElement.style.setProperty('--surface-navigation-height',Math.ceil(height)+'px');};

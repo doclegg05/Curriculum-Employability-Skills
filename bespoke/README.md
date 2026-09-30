@@ -136,6 +136,22 @@ private designs. Preset cards show their closest measured reference; another pre
 or individual edits can provide a more distinct starting point without a uniqueness
 guarantee.
 
+## Guide me
+
+The Start stage also offers **Guide me step by step**. The guide asks one question per
+screen, slide by slide: a starting look, a shared look (fonts, pattern, sidebar, accent and
+button colors), then the title slide, chapter divider, text boxes, video slide and activity.
+Each question shows its choices as small pictures drawn from the real slide styles, and
+pointing at one previews it without choosing it. Color questions suggest the four most
+readable colors on the current background and keep all eleven one click away. Readability
+stays advisory. Every question can be skipped with **Next**, a whole slide type can be
+skipped, and the guide can be left and resumed. After each slide type a recap shows the
+choices, with a link back to any question. The guide writes the same saved design the free
+editor writes, so nothing about saving, opening or sending changes. Undo also returns the
+guide to the question where the change was made. The guide's position is kept in the
+browser draft only. The code is in `guide/`; `test-bespoke-guide.mjs` and
+`test-bespoke-guided-browser.mjs` check it.
+
 ## Drafts, recovery and shared work
 
 Forward/back navigation and switching preview roles keep the design. Undo/redo
