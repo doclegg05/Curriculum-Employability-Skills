@@ -45,10 +45,15 @@ function thumbnail(ctx, design) {
   return el('span', { class: 'guide-thumb', 'aria-hidden': 'true', inert: true }, inner);
 }
 
+// One observer for the current screen: it rescales a thumbnail whenever its cell changes width,
+// not only on render. Each render replaces the thumbnails, so the old ones are released.
+let thumbObserver = null;
+const fit = (t) => t.style.setProperty('--s', String(t.clientWidth / THUMB_WIDTH));
+
 export function fitThumbnails(panel) {
-  requestAnimationFrame(() => {
-    panel.querySelectorAll('.guide-thumb').forEach((t) => t.style.setProperty('--s', String(t.clientWidth / THUMB_WIDTH)));
-  });
+  thumbObserver?.disconnect();
+  thumbObserver = new ResizeObserver((entries) => entries.forEach((e) => fit(e.target)));
+  panel.querySelectorAll('.guide-thumb').forEach((t) => { fit(t); thumbObserver.observe(t); });
 }
 
 function trialFor(ctx, option) {

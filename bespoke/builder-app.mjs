@@ -1,6 +1,7 @@
 import * as Model from './builder-model.mjs';
 import { compareDesign } from './similarity.mjs';
 import { createGuide } from './guide/guide.mjs';
+import { guideMark, indexForMark, keepsGuide } from './guide/questions.mjs';
 import { buildQuestions, normalizeGuide } from './guide/questions.mjs';
 
 // Keep the established SPOKES identity. A small decision panel operates a large
@@ -1257,8 +1258,8 @@ function saveDraft(){
  }catch{setSaveStatus('Browser storage unavailable. Download a backup.');return false;}
 }
 function resetDesignForLesson(lessonId){
- draftGeneration++;resetPresetConfirmation();ui.meaningfulDesign=false;ui.startingLooksOpen=false;ui.editorRole='title';if(lessonId!==state.lessonId)ui.guide=null;ui.sharedThemeOpen=false;ui.paintScope='slide';ui.themeScope='slide';
- Object.assign(state,{step:0,lessonId,teamName:'',spokespersonName:'',spokespersonEmail:'',unspoken:'',design:Model.defaultDesign(catalog),legacySelection:null,changes:[],redo:[]});
+ draftGeneration++;resetPresetConfirmation();ui.meaningfulDesign=false;ui.startingLooksOpen=false;ui.editorRole='title';const nextDesign=Model.defaultDesign(catalog);if(!keepsGuide({fromLesson:state.lessonId,toLesson:lessonId,fromDesign:state.design,toDesign:nextDesign}))ui.guide=null;ui.sharedThemeOpen=false;ui.paintScope='slide';ui.themeScope='slide';
+ Object.assign(state,{step:0,lessonId,teamName:'',spokespersonName:'',spokespersonEmail:'',unspoken:'',design:nextDesign,legacySelection:null,changes:[],redo:[]});
 }
 function applySelectionPayload(payload){
  validateSelectionPayload(payload,{draft:true});
@@ -1268,7 +1269,7 @@ function applySelectionPayload(payload){
  const team=payload.team||{};
  if(state.lessonId!==payload.lesson.id||state.teamName!==(team.name||''))resetPresetConfirmation();
  ui.meaningfulDesign=true;ui.startingLooksOpen=false;
- if(payload.lesson.id!==state.lessonId||JSON.stringify(nextDesign)!==JSON.stringify(state.design))ui.guide=null;
+ if(!keepsGuide({fromLesson:state.lessonId,toLesson:payload.lesson.id,fromDesign:state.design,toDesign:nextDesign}))ui.guide=null;
  draftGeneration++;
  Object.assign(state,{lessonId:payload.lesson.id,teamName:team.name||'',spokespersonName:team.spokesperson?.name||'',spokespersonEmail:team.spokesperson?.email||'',unspoken:payload.unspoken||'',changes:[],redo:[]});
  if(payload.schema==='bespoke-selection/v1'){
@@ -1278,7 +1279,7 @@ function applySelectionPayload(payload){
 }
 function recordChange(label,before){
  const entry={label,design:before};
- if(ui.guide?.on)entry.guide=ui.guide.index;
+ const mark=guideMark(ui.guide);if(mark!==undefined)entry.guide=mark;
  state.changes.push(entry);state.changes=state.changes.slice(-40);state.redo=[];
 }
 function changeDesign(label,edit,{redraw=true}={}){
@@ -1294,9 +1295,9 @@ function undoChange(redo=false){
  if(!isLeadSession())return;
  const source=redo?state.redo:state.changes,target=redo?state.changes:state.redo;
  const entry=source.pop();if(!entry)return;
- target.push({label:entry.label,design:clone(state.design),...(Number.isInteger(entry.guide)?{guide:entry.guide}:{})});
+ target.push({label:entry.label,design:clone(state.design),...(entry.guide!==undefined?{guide:entry.guide}:{})});
  state.design=entry.design;
- if(ui.guide?.on&&Number.isInteger(entry.guide)&&entry.guide>=0&&entry.guide<ui.guide.ids.length)ui.guide={...ui.guide,index:entry.guide};
+ const index=ui.guide?.on?indexForMark(ui.guide,entry.guide):null;if(index!==null)ui.guide={...ui.guide,index};
  saveDraft();render(false);
  fileNotice((redo?'Redid: ':'Undid: ')+entry.label);
 }

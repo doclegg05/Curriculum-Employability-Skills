@@ -2,8 +2,8 @@ import assert from 'node:assert/strict';
 import fs from 'node:fs';
 import test from 'node:test';
 import {
-  SECTIONS, advance, back, buildQuestions, byIdMap, jumpToQuestion, jumpToSection,
-  normalizeGuide, questionAt, sectionsOf, skipSection, startGuide
+  SECTIONS, advance, back, buildQuestions, byIdMap, guideMark, indexForMark, jumpToQuestion, jumpToSection,
+  keepsGuide, normalizeGuide, questionAt, sectionsOf, skipSection, startGuide
 } from '../bespoke/guide/questions.mjs';
 
 export const catalog = JSON.parse(fs.readFileSync(new URL('../bespoke/builder-catalog.json', import.meta.url), 'utf8'));
@@ -310,5 +310,37 @@ test('the guide agrees with the model on every background pattern and on a band 
         if (issues.length) assert.ok(o.note.includes(Math.min(...issues.map((i) => i.ratio)).toFixed(1)), `${label} ${id} ${o.id} shows the model's ratio`);
       }
     }
+  }
+});
+
+test('an Undo mark names the question, so it still finds it after the guide restarts without the team question', () => {
+  const first = { ...startGuide(buildQuestions(catalog)), index: 0 };
+  const atLayout = { ...first, index: first.ids.indexOf('title.layout') };
+  const mark = guideMark(atLayout);
+  assert.equal(mark, 'title.layout');
+  const restarted = startGuide(buildQuestions(catalog, { teamComplete: true }));
+  assert.equal(restarted.ids[indexForMark(restarted, mark)], 'title.layout');
+  assert.equal(guideMark({ ...atLayout, on: false }), undefined, 'no mark while the guide is closed');
+  assert.equal(indexForMark(restarted, 'not.a.question'), null);
+  assert.equal(indexForMark(restarted, 3), 3, 'history saved before this change, with a number, still loads');
+  assert.equal(indexForMark(restarted, 99), null);
+  assert.equal(indexForMark(null, mark), null);
+});
+
+test('the guide survives only when neither the lesson nor the design changes', () => {
+  const design = base();
+  const changed = { ...base(), background: catalog.backgrounds.find((b) => b.id !== design.background).id };
+  assert.equal(keepsGuide({ fromLesson: 'a', toLesson: 'a', fromDesign: design, toDesign: base() }), true);
+  assert.equal(keepsGuide({ fromLesson: 'a', toLesson: 'b', fromDesign: design, toDesign: base() }), false);
+  assert.equal(keepsGuide({ fromLesson: 'a', toLesson: 'a', fromDesign: changed, toDesign: design }), false);
+});
+
+test('both ways of replacing the design decide about the guide with the same rule', () => {
+  const source = fs.readFileSync(new URL('../bespoke/builder-app.mjs', import.meta.url), 'utf8');
+  const reset = source.slice(source.indexOf('function resetDesignForLesson('), source.indexOf('function applySelectionPayload('));
+  const apply = source.slice(source.indexOf('function applySelectionPayload('), source.indexOf('function recordChange('));
+  for (const [name, body] of [['resetDesignForLesson', reset], ['applySelectionPayload', apply]]) {
+    assert.match(body, /keepsGuide\(/, `${name} uses keepsGuide`);
+    assert.doesNotMatch(body, /lessonId!==state\.lessonId\)ui\.guide=null/, `${name} has no lesson-only rule left`);
   }
 });

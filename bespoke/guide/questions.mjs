@@ -58,6 +58,21 @@ export function normalizeGuide(raw, allQuestions) {
 
 export const questionAt = (guide, byId) => byId.get(guide.ids[guide.index]);
 
+// History marks the question by id: a restarted guide can drop the team question and shift every index.
+export const guideMark = (guide) => (guide?.on ? guide.ids[guide.index] : undefined);
+
+export function indexForMark(guide, mark) {
+  if (!guide) return null;
+  // Numbers come from history saved before marks were ids.
+  if (Number.isInteger(mark)) return mark >= 0 && mark < guide.ids.length ? mark : null;
+  const index = guide.ids.indexOf(mark);
+  return index < 0 ? null : index;
+}
+
+// A guide's answers describe one design; when the lesson or the design is replaced, they no longer apply.
+export const keepsGuide = ({ fromLesson, toLesson, fromDesign, toDesign }) =>
+  fromLesson === toLesson && JSON.stringify(fromDesign) === JSON.stringify(toDesign);
+
 export function advance(guide) {
   if (guide.index >= guide.ids.length - 1) return { ...guide, on: false, done: true };
   const index = guide.index + 1;
