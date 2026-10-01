@@ -1,0 +1,13 @@
+# GitHub Pages runs Jekyll over this repo. Plans and specs in docs/superpowers/
+# quote code full of {{ }} that Liquid tries to parse, which failed every Pages
+# build from 2026-09-23 to 2026-10-01. Nothing on the site links to them.
+# Setting exclude replaces Jekyll's defaults, so they are listed again here.
+exclude:
+  - docs/superpowers/
+  - Gemfile
+  - Gemfile.lock
+  - node_modules/
+  - vendor/bundle/
+  - vendor/cache/
+  - vendor/gems/
+  - vendor/ruby/
