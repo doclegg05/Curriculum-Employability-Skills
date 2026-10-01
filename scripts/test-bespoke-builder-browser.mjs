@@ -1,7 +1,7 @@
 #!/usr/bin/env node
 // End-to-end checks use a fresh loopback-only server, synthetic people and memory drafts.
 // Nothing here uses provisioned team codes, a hosted API, Send, or released lessons.
-import { builderDestination, EDITOR_DESTINATIONS, recoveryMenu } from './bespoke-test-navigation.mjs';
+import { builderDestination, EDITOR_DESTINATIONS, recoveryMenu, switchSurface } from './bespoke-test-navigation.mjs';
 import assert from 'node:assert/strict';
 import fs from 'node:fs/promises';
 import path from 'node:path';
@@ -440,15 +440,15 @@ try {
       await checkPaint(sample, 'rgb(55, 181, 80)', 'rgb(0, 19, 63)');
       assert.equal(await page.locator('#modelStage .slide-button').count(), 0, 'No permanent button added to text-box markup.');
       await axe(page, 'Button color controls '+(mobile?'mobile':'desktop'));
-      if (mobile) await page.locator('#surface-preview').click();
+      if (mobile) await switchSurface(page,'preview');
       assert(await page.locator('#buttonColorSample button').isVisible());
       await assertNoOverflow(page, 'Button color preview');
       for (const view of ['title', 'divider', 'video', 'activity']) {
         await page.locator(`#previewTabs [data-view="${view}"]`).click();
-        if (mobile) await page.locator('#surface-design').click();
+        if (mobile) await switchSurface(page,'design');
         await page.locator('#colorRole').selectOption('button');
         assert.equal(await page.locator('#previewTabs [aria-selected="true"]').getAttribute('data-view'), view);
-        if (mobile) await page.locator('#surface-preview').click();
+        if (mobile) await switchSurface(page,'preview');
         const native = ['video', 'activity'].includes(view);
         const button = page.locator(native ? '#modelStage .slide-button' : '#buttonColorSample button');
         assert(await button.isVisible());
@@ -459,7 +459,7 @@ try {
       // A non-default preview survives refresh, too; changing roles removes the contextual aid.
       await page.reload(); await ready(page);
       assert.equal(await page.locator('#previewTabs [aria-selected="true"]').getAttribute('data-view'), 'activity');
-      if (mobile) await page.locator('#surface-design').click();
+      if (mobile) await switchSurface(page,'design');
       await page.locator('#colorRole').selectOption('sidebar');
       assert.equal(await page.locator('#buttonColorSample').count(), 0);
       assert.equal(await page.locator('#buttonColorInline').count(), 0);
@@ -490,9 +490,9 @@ try {
         assert.equal(await page.locator('.readability-actions button').filter({hasText:/^Change divider colors$/}).count(),1);
         if (id === 'accent' && process.env.BESPOKE_REVIEW_DIR) {
           await fs.mkdir(process.env.BESPOKE_REVIEW_DIR, { recursive: true });
-          if (mobile) await page.locator('#surface-preview').click();
+          if (mobile) await switchSurface(page,'preview');
           await page.screenshot({ path: path.join(process.env.BESPOKE_REVIEW_DIR, 'divider-green-'+(mobile?'mobile':'desktop')+'.png'), fullPage: true });
-          if (mobile) await page.locator('#surface-design').click();
+          if (mobile) await switchSurface(page,'design');
         }
       }
       const invalid = await draft(page), saves = actions.filter(a => a.action === 'save').length;
@@ -520,7 +520,7 @@ try {
       assert.deepEqual(await design(page), setRoleStyle(catalog,before,'divider','primary','dark'));
       assert.equal((await design(page)).roles.titleText,before.roles.titleText,'Local divider text does not mutate title theme color.');
       await axe(page, 'Divider controls '+(mobile?'mobile':'desktop')); await assertNoOverflow(page, 'Divider controls');
-      if (mobile) await page.locator('#surface-preview').click();
+      if (mobile) await switchSurface(page,'preview');
       await axe(page, 'Divider preview '+(mobile?'mobile':'desktop')); await assertNoOverflow(page, 'Divider preview');
       await save(page);
       const saved = await draft(page);
@@ -562,9 +562,9 @@ try {
       await go(page, 'Shared typography');
       await page.locator('#font-heading').selectOption('raleway');
       await page.locator('#font-body').selectOption('source-sans-3');
-      if (mobile) await page.locator('#surface-preview').click();
+      if (mobile) await switchSurface(page,'preview');
       await page.locator('#previewTabs [data-view="divider"]').click();
-      if (mobile) await page.locator('#surface-design').click();
+      if (mobile) await switchSurface(page,'design');
       assert.equal(await page.locator('.pattern-mini').count(), 5);
       await choose(page, 'Background pattern', 'plain');
       const original = await design(page), shots = new Map();
@@ -574,9 +574,9 @@ try {
         assert.equal(await button.evaluate(el => el === document.activeElement), true);
         assert.equal(await page.locator('#previewTabs [aria-selected="true"]').getAttribute('data-view'), 'divider');
         assert.deepEqual(await design(page), { ...original, background: pattern.id });
-        if (mobile) await page.locator('#surface-preview').click();
+        if (mobile) await switchSurface(page,'preview');
         shots.set(pattern.id, await page.locator('#modelStage .bespoke-slide').screenshot());
-        if (mobile) await page.locator('#surface-design').click();
+        if (mobile) await switchSurface(page,'design');
       }
       for (const pattern of catalog.backgrounds.slice(1)) {
         const pixels = await pixelDifference(page, shots.get('plain'), shots.get(pattern.id));

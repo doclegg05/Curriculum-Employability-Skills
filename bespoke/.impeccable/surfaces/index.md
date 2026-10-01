@@ -11,7 +11,7 @@ Mode: **Operate**. Scope: the guided builder in this directory only. This is an 
 
 Audience: curriculum teams who may not know design terminology. Job: choose and compare a lesson's reusable visual model, save the agreed model, and request review. The sample artifact makes each choice concrete before a lesson is built.
 
-**THESIS:** Novice decisions sit beside a cumulative artifact preview. The controls expose one manageable group of choices while preserving the entire design.
+**THESIS:** A large cumulative preview is the editing surface: select visible text, boxes or background, then use a compact contextual toolbar. Live slide thumbnails provide navigation; detailed choices remain under More options. The controls expose one manageable group of choices while preserving the entire design.
 
 **OWN-WORLD:** Existing SPOKES navy, blue, white, bridge logo, and Outfit UI. The preview uses the 11 approved role colors and 12 independently selectable existing lesson fonts. Its chosen palette and type do not repaint chrome.
 

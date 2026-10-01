@@ -1,6 +1,6 @@
 #!/usr/bin/env node
 // Real editor controls and inert generated/canonical media; never touches user state.
-import { builderDestination } from './bespoke-test-navigation.mjs';
+import { builderDestination, switchSurface } from './bespoke-test-navigation.mjs';
 import assert from 'node:assert/strict';
 import fs from 'node:fs/promises';
 import path from 'node:path';
@@ -48,7 +48,7 @@ const saved = page=>page.evaluate(()=>JSON.parse(localStorage.getItem('bespoke-d
 async function designSurface(page) {if(await page.locator('#surface-design').isVisible())await page.locator('#surface-design').click();}
 const go = builderDestination;
 async function choose(page,label,value) {await designSurface(page);await page.getByRole('group',{name:new RegExp(label)}).locator(`[data-choice="${value}"]`).click();}
-async function preview(page,width) {if(width===390)await page.locator('#surface-preview').click();await page.evaluate(()=>document.fonts.ready);}
+async function preview(page,width) {if(width===390)await switchSurface(page,'preview');await page.evaluate(()=>document.fonts.ready);}
 async function measure(frame) {
   return frame.evaluate(el=>{
     const b=el.getBoundingClientRect(), child=el.firstElementChild, c=child.getBoundingClientRect(), s=getComputedStyle(el), cs=getComputedStyle(child);

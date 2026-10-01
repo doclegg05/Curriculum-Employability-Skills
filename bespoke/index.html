@@ -8,10 +8,10 @@
 </head>
 <body>
 <!--
-THESIS: A focused decision panel operates one cumulative, reusable slide design.
+THESIS: Select visible elements on a cumulative slide preview, then format them with a compact contextual toolbar.
 OWN-WORLD: Extend SPOKES navy, blue and white; Outfit controls frame independently selected lesson typography.
 STORY: Begin with guidance or a preset, adjust individual choices, review and save the design.
-FIRST VIEWPORT: Sequential navigation and controls sit beside a larger preview and advisory comparison; mobile uses Design and Preview surfaces.
+FIRST VIEWPORT: Live slide thumbnails sit left of a large central preview; detailed customization opens through More options.
 FORM: Operate editor extending the established SPOKES identity and user-specified controls; no replacement visual world.
 FINISH: unreviewed and undocumented is unfinished; this build ends with the finish review, the verdict, and DESIGN.md
 -->
@@ -29,14 +29,19 @@ FINISH: unreviewed and undocumented is unfinished; this build ends with the fini
 </section>
 <section id="teamSessionBar" class="team-session" aria-label="Design session" hidden><p id="teamSessionStatus"></p><div class="session-actions"><button class="text-link" id="btnLoadLatest" hidden>Load latest shared design</button><button class="text-link" id="btnKeepLocal" hidden>Keep this browser draft</button><button class="text-link" id="btnHistory" aria-expanded="false" aria-controls="historyPanel">Previous versions</button><button class="text-link" id="btnCheckStatus" hidden>Check review status</button><button class="text-link" id="btnLeaveSession">Leave session</button></div><div id="historyPanel" class="history-panel" hidden></div></section>
 <nav aria-label="Workspace views" class="surface-navigation"><div class="surface-switcher" role="tablist" aria-label="Workspace surface" id="surfaceSwitcher"><button type="button" role="tab" id="surface-design" data-surface="design" aria-selected="true" aria-controls="chromeRail">Design</button><button type="button" role="tab" id="surface-preview" data-surface="preview" aria-selected="false" aria-controls="previewPane">Preview</button></div></nav>
+<div class="editor-stages" id="editorStages"></div>
 <main class="workspace" id="workspace" data-active-surface="design" aria-label="Design and preview workspace" tabindex="0">
+ <aside class="slide-rail" id="slideRail" aria-label="Reusable slide designs"><h2>Slides</h2><p>Five reusable designs</p></aside>
  <div class="chrome-rail" id="chromeRail">
   <nav class="stepper" aria-label="Design stages"><ol id="stepList"></ol><div class="history-local"><div class="undo-actions"><button class="btn btn-secondary" id="btnUndo" aria-keyshortcuts="Control+Z Meta+Z" type="button">Undo</button><button class="btn btn-secondary" id="btnRedo" aria-keyshortcuts="Control+Shift+Z Meta+Shift+Z Control+Y" type="button">Redo</button></div><details><summary>Recent choices</summary><ol id="changeList"></ol></details></div></nav>
-  <section class="controls" aria-label="Design controls"><p class="stage-count" id="stepCount"></p><section id="stepPanel" tabindex="-1" aria-label="Current design stage"><h1>Opening your design…</h1></section></section>
+  <section class="controls" id="detailControls" aria-label="Design controls"><button id="btnCloseOptions" class="text-link" type="button">Close options</button><p class="stage-count" id="stepCount"></p><section id="stepPanel" tabindex="-1" aria-label="Current design stage"><h1>Opening your design…</h1></section></section>
  </div>
  <section class="preview-pane" id="previewPane" aria-label="Cumulative design preview">
   <div class="preview-heading"><div><h2 id="previewName">Title slide</h2></div><span class="sample-label">Sample content</span></div>
   <div class="preview-tabs" id="previewTabs" role="tablist" aria-label="Slide preview"><button type="button" role="tab" data-view="title" aria-selected="true" aria-controls="modelStage">Title</button><button type="button" role="tab" data-view="divider" aria-selected="false" aria-controls="modelStage">Divider</button><button type="button" role="tab" data-view="cards" aria-selected="false" aria-controls="modelStage">Text boxes</button><button type="button" role="tab" data-view="video" aria-selected="false" aria-controls="modelStage">Video</button><button type="button" role="tab" data-view="activity" aria-selected="false" aria-controls="modelStage">Activity</button></div>
+  <section id="contextToolbar" class="context-toolbar" aria-label="Selected element formatting"></section>
+  <p id="editScope" class="edit-scope" role="status"></p>
+  <p id="selectionHelp" class="selection-help">Click an element to format it. Tab to an element and press Enter to select it; Escape selects the background. Sample words are edited in More options.</p>
   <div class="preview-frame"><div id="modelStage" role="tabpanel" aria-label="Slide preview"></div></div>
   <div id="readabilityNotes" class="readability-warning" hidden></div>
   <section class="similarity" aria-labelledby="similarityTitle"><div class="comparison-heading"><h2 id="similarityTitle">Make it feel distinct</h2><span>Advisory comparison</span></div><div id="distinctMeter" class="distinct-meter"></div><details><summary>What matches the existing lessons?</summary><div id="similarityDetails"></div></details><p class="comparison-note">A guide to variety, not a score to pass. Private team designs are not compared or reserved.</p></section>

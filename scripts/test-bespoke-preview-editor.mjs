@@ -1,0 +1,90 @@
+#!/usr/bin/env node
+import assert from 'node:assert/strict';
+import fs from 'node:fs/promises';
+import path from 'node:path';
+import {fileURLToPath} from 'node:url';
+import {createDevServer} from './bespoke-dev-server.mjs';
+import {defaultDesign} from '../bespoke/builder-model.mjs';
+import catalog from '../bespoke/builder-catalog.json' with {type:'json'};
+import {browserType} from './bespoke-test-browser.mjs';
+let server;
+const browser=await browserType.launch({headless:true});
+const errors=[];
+const axeSource=await fs.readFile(path.resolve(path.dirname(fileURLToPath(import.meta.url)),'../node_modules/axe-core/axe.min.js'),'utf8');
+const draft=page=>page.evaluate(()=>JSON.parse(localStorage.getItem('bespoke-draft-v2')));
+const current=async page=>(await draft(page)).design;
+try{
+ for(const width of [1440,768,390,320]){
+  server=await createDevServer({port:0});
+  const context=await browser.newContext({viewport:{width,height:1000},reducedMotion:'reduce'});
+  await context.addInitScript(()=>{window.__bespokeAutosave={enabled:false};});
+  const page=await context.newPage();page.on('pageerror',e=>errors.push(e.message));
+  await page.goto(server.baseUrl+'/bespoke/');await page.locator('#localPreviewNotice').waitFor({state:'visible'});
+  const before=await current(page);
+  if(width<=760)await page.locator('#surface-preview').click();
+  await page.locator('#modelStage .slide-title-text').click();
+  assert.equal(await page.locator('#workspace').getAttribute('data-editor'),'true');
+  assert.equal(await page.locator('#detailControls').isVisible(),false);
+  assert.match(await page.locator('#editScope').textContent(),/Title slide only/);
+  for(const control of await page.locator('#contextToolbar select, #contextToolbar button').all())assert((await control.boundingBox()).height>=44,'Contextual controls have a 44px target on every engine');
+  await page.addScriptTag({content:axeSource});
+  const accessibility=await page.evaluate(()=>axe.run({include:[['#contextToolbar'],['#modelStage']]},{runOnly:{type:'tag',values:['wcag2a','wcag2aa','wcag21aa']},rules:{'color-contrast':{enabled:false}}}));
+  assert.deepEqual(accessibility.violations.map(v=>({id:v.id,targets:v.nodes.map(n=>n.target)})),[],'Editor selection semantics at '+width);
+  await page.locator('#context-font').selectOption('inter');
+  assert.equal((await current(page)).roleStyles.title.headingFont,'inter');
+  assert.deepEqual((await current(page)).roles,before.roles);
+  await page.locator('#context-size').selectOption('large');
+  const edited=await current(page);
+  assert.equal((await page.locator('#modelStage .editor-selected').count()),1);
+  await page.locator('#btnUndo').click();assert.equal((await current(page)).roleStyles.title.headingSize,'default');
+  await page.locator('#btnRedo').click();assert.deepEqual(await current(page),edited);
+  // Native form keyboard history does not consume design history.
+  const count=(await draft(page)).changes.length;await page.locator('#context-font').focus();await page.keyboard.press('Control+z');assert.equal((await draft(page)).changes.length,count);
+  await page.locator('#previewTabs [data-view=title]').focus();await page.keyboard.press(width>760?'ArrowDown':'ArrowRight');
+  assert.equal(await page.locator('#previewTabs [aria-selected=true]').getAttribute('data-view'),'divider');
+  await page.keyboard.press('Home');assert.deepEqual(await current(page),edited,'Thumbnail keyboard navigation is not a design mutation');
+  await page.locator('#previewTabs [data-view=cards]').click();
+  await page.locator('#modelStage .slide-card').first().focus();await page.keyboard.press('Enter');
+  assert.match(await page.locator('#editScope').textContent(),/ALL boxes/);
+  await page.locator('#context-look').selectOption('outline');await page.locator('#context-layout').selectOption('grid');
+  const cards=await current(page);assert.equal(cards.slides.cards.look,'outline');assert.equal(cards.slides.cards.layout,'grid');
+  assert.deepEqual(cards.roleStyles.title,edited.roleStyles.title);
+  await page.locator('#modelStage .slide-card').first().focus();await page.keyboard.press('Escape');
+  assert.equal(await page.locator('#selectedElement').inputValue(),'background');
+  await page.locator('#context-finish').selectOption('solid');await page.locator('#context-background').selectOption('light');
+  await page.locator('#btnMoreOptions').click();assert.equal(await page.locator('#detailControls').isVisible(),true);
+  await page.locator('#btnCloseOptions').click();assert.equal(await page.locator('#detailControls').isVisible(),false);
+  // Picker is the native keyboard equivalent of clicking visible text.
+  await page.locator('#selectedElement').selectOption('heading-1');assert.equal(await page.locator('#context-font').isVisible(),true);
+  assert.match(await page.locator('#editScope').textContent(),/ALL box headings/);
+  await page.locator('#context-color').selectOption('royal');
+  const saved=await current(page);await page.reload();await page.locator('#selectedElement').waitFor();assert.deepEqual(await current(page),saved);
+  await page.locator('#stage-start').click();
+  if(width<=760)await page.locator('#surface-design').click();
+  await page.locator('#teamName').fill('Preview editor test');await page.locator('#spokespersonName').fill('Sample Instructor');await page.locator('#spokespersonEmail').fill('sample@example.org');
+  const save=page.waitForResponse(r=>r.url().endsWith('/api/bespoke')&&r.request().postDataJSON()?.action==='save');await page.locator('#btnSave').click();assert.equal((await (await save).json()).ok,true);
+  const session=await context.storageState();
+  for(const origin of session.origins)origin.localStorage=origin.localStorage.filter(item=>!['bespoke-draft-v2','bespoke-previous-draft-v2'].includes(item.name));
+  const reopenedContext=await browser.newContext({storageState:session,viewport:{width,height:1000}});
+  await reopenedContext.addInitScript(()=>{window.__bespokeAutosave={enabled:false};});
+  const reopened=await reopenedContext.newPage();await reopened.goto(server.baseUrl+'/bespoke/');
+  await reopened.waitForFunction(()=>JSON.parse(localStorage.getItem('bespoke-draft-v2'))?.design.roleStyles?.title?.headingSize==='large');assert.deepEqual(await current(reopened),saved);await reopenedContext.close();
+  assert.equal(await page.evaluate(()=>document.documentElement.scrollWidth<=innerWidth+1),true,'page overflow at '+width);
+  await page.locator('#stage-slides').click();await page.locator('#previewTabs [data-view=title]').click();await page.locator('#modelStage .slide-title-text').click();
+  if(process.env.BESPOKE_REVIEW_DIR){await fs.mkdir(process.env.BESPOKE_REVIEW_DIR,{recursive:true});await page.screenshot({path:process.env.BESPOKE_REVIEW_DIR+'/editor-'+width+'.png',fullPage:true});}
+  await context.close();await server.close();server=null;console.log('PASS preview selection, scopes, history, persistence and layout at '+width+'px');
+ }
+ server=await createDevServer({port:0});
+ const fixture=JSON.parse(await fs.readFile(path.resolve(path.dirname(fileURLToPath(import.meta.url)),'test-fixtures/bespoke/selection-money-management.json'),'utf8'));
+ const payload={schema:'bespoke-selection/v2',date:'2026-10-01',lesson:fixture.lesson,team:{name:'Synthetic snapshot',spokesperson:{name:'Sample Instructor',email:'sample@example.org'}},design:defaultDesign(catalog)};
+ const viewContext=await browser.newContext({viewport:{width:1440,height:1000}}),view=await viewContext.newPage();
+ await view.goto(server.baseUrl+'/bespoke/#s='+encodeURIComponent(Buffer.from(JSON.stringify(payload)).toString('base64')));
+ await view.locator('body[data-access=view]').waitFor();await view.locator('#stage-slides').click();
+ const styleBefore=await view.locator('#designStyle').textContent();await view.locator('#modelStage .slide-title-text').click();
+ for(const control of await view.locator('#contextToolbar select').all())assert(await control.isDisabled(),'View snapshots cannot mutate through the toolbar');
+ assert.match(await view.locator('.toolbar-readonly').textContent(),/View only/);
+ await view.keyboard.press('Control+z');assert.equal(await view.locator('#designStyle').textContent(),styleBefore);
+ assert.equal(await view.evaluate(()=>localStorage.getItem('bespoke-draft-v2')),null,'Inspecting a view snapshot cannot replace a browser draft');
+ await viewContext.close();await server.close();server=null;console.log('PASS read-only snapshot selection and mutation boundaries');
+ assert.deepEqual(errors,[]);
+}finally{await browser.close();if(server)await server.close();}

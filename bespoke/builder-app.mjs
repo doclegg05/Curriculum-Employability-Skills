@@ -1,11 +1,12 @@
 import * as Model from './builder-model.mjs';
 import { compareDesign } from './similarity.mjs';
+import { createPreviewEditor } from './preview-editor.mjs';
 import { createGuide } from './guide/guide.mjs';
 import { guideMark, indexForMark, keepsGuide } from './guide/questions.mjs';
 import { buildQuestions, normalizeGuide } from './guide/questions.mjs';
 
-// Keep the established SPOKES identity. A small decision panel operates a large
-// cumulative slide preview; confirmed shared saves remain separate from drafts.
+// Keep the established SPOKES identity. Preview selection edits the cumulative
+// design model; confirmed shared saves remain separate from browser drafts.
 const STORAGE_KEY = 'bespoke-draft-v2';
 const BACKUP_KEY = 'bespoke-previous-draft-v2';
 const TEAM_SESSION_KEY = 'bespoke-team-session-v2';
@@ -31,6 +32,8 @@ const state = {step:0,stepId:'start',meta:null,library:null,lessonId:'money-mana
 const ui = {mode:'view',renderedStep:null,previewPinned:false,teamSession:null,cloudConflict:null,cloudBusy:false,autosavePaused:false,allowUnload:false,skipNextLocalSave:false,restoreNote:'',restoredFromLink:false,editCodeHash:'',activeRole:'sidebar',paintScope:'slide',themeScope:'slide',localPreview:false,editorRole:'title',sharedThemeOpen:false,startingLooksOpen:false,meaningfulDesign:false};
 ui.guide = null;
 let guide = null;
+let previewEditor = null;
+ui.moreOptions = false;
 let catalog, fingerprints, selectionSchema, handoffApiBase='', handoffBusy=false, lastSavedRaw=null, storageConflict=false;
 // Replacing a draft or team invalidates pending operations against its predecessor.
 let draftGeneration=0;
@@ -1108,8 +1111,8 @@ const findOption=(family,slug)=>state.library?.families?.[family]?.options.find(
       tab.addEventListener("keydown", (e) => {
         let target = null;
         if (e.key === "Enter" || e.key === " ") target = tab;
-        else if (e.key === "ArrowRight") target = tabs[(i + 1) % tabs.length];
-        else if (e.key === "ArrowLeft") target = tabs[(i - 1 + tabs.length) % tabs.length];
+        else if (e.key === "ArrowRight" || (e.key === "ArrowDown" && tablist.getAttribute("aria-orientation") === "vertical")) target = tabs[(i + 1) % tabs.length];
+        else if (e.key === "ArrowLeft" || (e.key === "ArrowUp" && tablist.getAttribute("aria-orientation") === "vertical")) target = tabs[(i - 1 + tabs.length) % tabs.length];
         else if (e.key === "Home") target = tabs[0];
         else if (e.key === "End") target = tabs[tabs.length - 1];
         if (!target) return;
@@ -1215,6 +1218,7 @@ function restoreStep(saved){
  state.step=stepIndex(legacyId);
  ui.editorRole=Object.hasOwn(VIEW_NAMES,saved.editorRole)?saved.editorRole:Object.hasOwn(VIEW_NAMES,legacyId)?legacyId:'title';
  ui.sharedThemeOpen=saved.sharedThemeOpen===true||['colors','fonts'].includes(legacyId);
+ ui.moreOptions=saved.moreOptions===true||ui.sharedThemeOpen;
  state.previewView=Object.hasOwn(VIEW_NAMES,saved.previewView)?saved.previewView:state.step===1?ui.editorRole:'title';
  if(catalog.roles.some(role=>role.id===saved.activeRole))ui.activeRole=saved.activeRole;
  ui.paintScope=saved.paintScope==='shared'?'shared':'slide';
@@ -1245,7 +1249,7 @@ function loadDraft(){
 }
 function serializeDraft(){
  const {meta,library,editCode,...saved}=state;
- return JSON.stringify({...saved,stepId:STEPS[state.step].id,activeRole:ui.activeRole,paintScope:ui.paintScope,themeScope:ui.themeScope,editorRole:ui.editorRole,sharedThemeOpen:ui.sharedThemeOpen,meaningfulDesign:ui.meaningfulDesign,autosavePaused:ui.autosavePaused,guide:ui.guide});
+ return JSON.stringify({...saved,stepId:STEPS[state.step].id,activeRole:ui.activeRole,paintScope:ui.paintScope,themeScope:ui.themeScope,editorRole:ui.editorRole,sharedThemeOpen:ui.sharedThemeOpen,moreOptions:ui.moreOptions,meaningfulDesign:ui.meaningfulDesign,autosavePaused:ui.autosavePaused,guide:ui.guide});
 }
 function saveDraft(){
  if(!isLeadSession()||!state.design)return false;
@@ -1520,6 +1524,7 @@ function renderFonts(panel){
  if(!local)appendSharedScope(panel,'pattern');
 }
 function showRoleEditor(kind,section='background',field='primary'){
+ ui.moreOptions=true;
  if(ui.guide)ui.guide={...ui.guide,on:false};
  ui.roleSections||={};ui.roleSections['section-'+kind+'-'+section]=true;ui.editorRole=kind;ui.focusStyleField=field;state.step=stepIndex('slides');state.previewView=kind;
  byId('workspace').dataset.activeSurface='design';document.querySelectorAll('#surfaceSwitcher [role=tab]').forEach(t=>t.setAttribute('aria-selected',String(t.dataset.surface==='design')));
@@ -1715,6 +1720,7 @@ function updatePreview(design=state.design,{quick=false}={}){
  byId('modelStage').innerHTML=Model.renderSlide(catalog,design,state.previewView,{title:design.samples.title,subtitle:design.samples.subtitle,lessonTitle:state.meta.lessons.find(l=>l.id===state.lessonId)?.title,logoUrl:'../SPOKES-Logo.png'});
  const sidebarDisclosure=byId('modelStage').querySelector('.slide-sidebar-disclosure');
  if(sidebarDisclosure)sidebarDisclosure.open=sidebarSampleOpen;
+ previewEditor?.refresh({thumbnails:!quick});
  // A hover preview redraws only the slide. Notes and the meter would change the page height under the pointer.
  if(quick)return;
  // Contextual sample sits outside the slide; cards/title/dividers keep their real structure.
@@ -1739,16 +1745,19 @@ function updatePreview(design=state.design,{quick=false}={}){
  if(issues.length&&!dividerIssues){const repair=document.createElement('button');repair.className='text-link';repair.textContent='Edit '+VIEW_NAMES[state.previewView].toLowerCase()+' colors';repair.onclick=()=>showRoleEditor(state.previewView,'text',issues[0]?.role==='body'||issues[0]?.role==='subtitle'?'bodyColor':'headingColor');repairs.append(repair);}
  byId('liveRegion').textContent=VIEW_NAMES[state.previewView]+' preview updated.'+(issues.length?' Contrast advisory: '+issues.map(issue=>issue.message).join(' ')+' The team leader can keep this choice and save the design.':'');
 }
-function showView(view){state.previewView=view;ui.previewPinned=true;if(ui.sharedThemeOpen)render(false);else{updatePreview();saveDraft();}}
+function showView(view){if(state.step===1){ui.editorRole=view;}state.previewView=view;ui.previewPinned=true;if(ui.sharedThemeOpen||state.step===1)render(false);else{updatePreview();saveDraft();}}
 function render(focus=true){
  if(byId('sharedTheme'))ui.sharedThemeOpen=byId('sharedTheme').open;
  const changed=ui.renderedStep!==state.step;if(changed){ui.renderedStep=state.step;if(state.step===1)state.previewView=ui.editorRole;ui.previewPinned=false;}
  const active=document.activeElement,activeId=active?.id;
  ui.roleSections||={};byId('stepPanel').querySelectorAll('[data-role-section]').forEach(d=>{ui.roleSections[d.id]=d.open;});
  const openDetails=new Map(Array.from(byId('stepPanel').querySelectorAll('details[id]')).map(d=>[d.id,d.open]));
+ byId('workspace').dataset.editor=String(state.step===1&&!ui.guide?.on);
+ byId('workspace').dataset.options=String(ui.moreOptions||state.step!==1||Boolean(ui.guide?.on));
+ byId('btnCloseOptions').hidden=state.step!==1||Boolean(ui.guide?.on);
  buildStepper();renderPanel();byId('stepPanel').querySelectorAll('details[id]').forEach(d=>{if(!d.dataset.roleSection&&d.id!=='sharedTheme'&&openDetails.has(d.id))d.open=openDetails.get(d.id);});syncAccessChrome();lockViewControls();updatePreview();updateUndo();
  if(isLeadSession()){if(ui.skipNextLocalSave)ui.skipNextLocalSave=false;else saveDraft();if(changed)scheduleAutosave(AUTOSAVE.stepMs);}
- if(focus&&changed)byId('stepPanel').focus({preventScroll:true});else if(activeId)byId(activeId)?.focus({preventScroll:true});
+ if(focus&&changed)(byId('workspace').dataset.options==='false'?byId('selectedElement'):byId('stepPanel'))?.focus({preventScroll:true});else if(activeId)byId(activeId)?.focus({preventScroll:true});
 }
 function setupRecoveryMenu(){
  const menu=byId('filesRecovery'),trigger=menu.querySelector('summary');
@@ -1774,7 +1783,7 @@ function guideHost(){
   rerender:()=>render(false),
   openGuide:()=>{state.step=stepIndex('slides');render();},
   finish:()=>goStage('review'),
-  exitToEditor:kind=>{ui.editorRole=kind;ui.focusStyleField=null;state.previewView=kind;goStage('slides');byId('editor-'+kind)?.focus({preventScroll:true});},
+  exitToEditor:kind=>{ui.moreOptions=true;ui.editorRole=kind;ui.focusStyleField=null;state.previewView=kind;goStage('slides');byId('editor-'+kind)?.focus({preventScroll:true});},
   announce:text=>{const live=byId('liveRegion');if(live)live.textContent=text;},
   renderTeam:el=>renderTeam(el),
   renderBoxSamples:el=>state.design.samples.boxes.forEach((value,i)=>addSampleField(el,'box-'+i,'Box '+(i+1)+(i>=Number(state.design.slides.cards.count)?' (kept in draft)':''),value)),
@@ -1786,6 +1795,20 @@ async function init(){
  const data=await Promise.all(paths.map(async url=>{const r=await fetch(url);if(!r.ok)throw new Error('Could not load '+url);return r.json();}));
  [state.meta,state.library,catalog,fingerprints,selectionSchema]=data;state.design=Model.defaultDesign(catalog);
  guide=createGuide(guideHost());
+ byId('editorStages').append(byId('chromeRail').querySelector('.stepper'));
+ byId('slideRail').append(byId('previewTabs'));
+ const thumbnailMedia=matchMedia('(max-width:760px)');
+ const orientThumbnails=()=>byId('previewTabs').setAttribute('aria-orientation',thumbnailMedia.matches?'horizontal':'vertical');
+ thumbnailMedia.addEventListener('change',orientThumbnails);orientThumbnails();
+ previewEditor=createPreviewEditor({
+  catalog, model:Model,
+  context:()=>({design:state.design,kind:state.previewView,editable:isLeadSession(),optionsOpen:ui.moreOptions}),
+  activate:()=>{if(ui.guide)ui.guide={...ui.guide,on:false};ui.editorRole=state.previewView;state.step=1;ui.sharedThemeOpen=false;render(false);},
+  change:(label,edit)=>changeDesign(label,edit),
+  more:target=>{ui.moreOptions=!ui.moreOptions;if(ui.moreOptions)showRoleEditor(state.previewView,target==='background'?'background':target.startsWith('box')?'arrangement':'text',target.startsWith('body')?'bodyFont':target==='background'?'primary':'headingFont');else{render(false);byId('btnMoreOptions').focus();}},
+  thumbnail:kind=>Model.renderSlide(catalog,state.design,kind,{title:state.design.samples.title,subtitle:state.design.samples.subtitle,logoUrl:'../SPOKES-Logo.png'})
+ });
+ byId('btnCloseOptions').onclick=()=>{ui.moreOptions=false;render(false);byId('btnMoreOptions').focus();};
  await loadHandoffConfig();const startup=await openShareLink();
  if(ui.localPreview&&!ui.teamSession&&!startup?.snapshot){installTeamSession(state.lessonId,'bespoke-local-preview-synthetic');ui.mode='edit';}
  const mayReplace=Boolean(ui.teamSession)&&(!lastSavedRaw||Boolean(ui.teamSession.baseSelectionKey&&currentSelectionKey()===ui.teamSession.baseSelectionKey));
@@ -1817,7 +1840,7 @@ async function init(){
  const workspace=byId('workspace'),surfacePositions={design:0,preview:0};
  const sizeSurfaceNavigation=()=>{const height=document.querySelector('.surface-navigation').getBoundingClientRect().height;document.documentElement.style.setProperty('--surface-navigation-height',Math.ceil(height)+'px');};
  new ResizeObserver(sizeSurfaceNavigation).observe(document.querySelector('.surface-navigation'));sizeSurfaceNavigation();
- document.querySelectorAll('#surfaceSwitcher [role=tab]').forEach(tab=>tab.onclick=()=>{surfacePositions[workspace.dataset.activeSurface]=workspace.scrollTop;workspace.dataset.activeSurface=tab.dataset.surface;workspace.scrollTop=surfacePositions[tab.dataset.surface];document.querySelectorAll('#surfaceSwitcher [role=tab]').forEach(t=>t.setAttribute('aria-selected',String(t===tab)));});bindTablistKeys(byId('surfaceSwitcher'));
+ document.querySelectorAll('#surfaceSwitcher [role=tab]').forEach(tab=>tab.onclick=()=>{surfacePositions[workspace.dataset.activeSurface]=workspace.scrollTop;workspace.dataset.activeSurface=tab.dataset.surface;workspace.scrollTop=surfacePositions[tab.dataset.surface];document.querySelectorAll('#surfaceSwitcher [role=tab]').forEach(t=>t.setAttribute('aria-selected',String(t===tab)));previewEditor.refresh();});bindTablistKeys(byId('surfaceSwitcher'));
  window.addEventListener('storage',event=>{if((event.key===STORAGE_KEY||event.key===null)&&isLeadSession()){storageConflict=true;setSaveStatus('Another tab changed this draft');fileNotice('This tab’s draft is kept. Download a backup before reopening the latest version.');}});
  window.addEventListener('beforeunload',event=>{if(ui.allowUnload||!isLeadSession()||!hasUnsavedTeamWork())return;runAutosave();event.preventDefault();event.returnValue='';});
  window.addEventListener('hashchange',()=>openShareLink().then(()=>render()).catch(e=>fileNotice(e.message)));
