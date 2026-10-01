@@ -54,7 +54,7 @@ async function scenario(name, run) {
     if (output) for (const [i, page] of pages.entries()) if (!page.isClosed()) await page.screenshot({ path: path.join(output, `${browserName}-failed-${name.replace(/\W+/g, '-')}-${i}.png`) }).catch(() => {});
   } finally { for (const context of contexts) await context.close(); await server.close(); }
 }
-async function ready(page) { await page.locator('#localPreviewNotice').waitFor(); await page.locator('#btnSave').filter({ hasText: 'Save test design' }).waitFor(); }
+async function ready(page) { await page.locator('#localPreviewNotice').waitFor(); await page.locator('#btnSave').filter({ hasText: 'Save test design' }).waitFor(); await page.locator('#stepList [aria-current]').click(); }
 async function surface(page, view) { const tab = page.locator('#surface-' + view); if (await tab.isVisible()) await tab.click(); }
 async function shared(page) {
   await surface(page, 'design');

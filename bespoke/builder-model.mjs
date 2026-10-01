@@ -161,6 +161,11 @@ export function designSchema(catalog) {
     startingPoint: enumeration(['custom', ...catalog.presets.map(item => item.id)])
   });
   schema.properties.roleStyles=roleStylesSchema(catalog);
+  schema.properties.boxStyles={type:'array',minItems:4,maxItems:4,items:record({
+    fill:enumeration(['inherit',...catalog.palette.map(c=>c.id)]),
+    border:enumeration(['inherit',...catalog.palette.map(c=>c.id)]),
+    look:enumeration(['inherit',...catalog.slideGroups.find(g=>g.id==='cards').decisions.find(d=>d.id==='look').options.map(o=>o.id)])
+  })};
   return schema;
 }
 
@@ -173,7 +178,7 @@ export function structuralErrors(catalog, design) {
     for (const key of allowed) if (!optional.includes(key) && !own(value, key)) errors.push(`${label}: missing ${key}.`);
     return true;
   };
-  if (!keys(design, ['version', 'roles', 'fonts', 'slides', 'background', 'samples', 'startingPoint', 'roleStyles'], 'Design',['roleStyles'])) return errors;
+  if (!keys(design, ['version', 'roles', 'fonts', 'slides', 'background', 'samples', 'startingPoint', 'roleStyles', 'boxStyles'], 'Design',['roleStyles','boxStyles'])) return errors;
   if (design.version !== '2') errors.push('Design version must be 2.');
   if (keys(design.roles, catalog.roles.map(role => role.id), 'Colors')) {
     for (const role of catalog.roles) if (!findColor(catalog, design.roles[role.id])) errors.push(`${role.label}: choose a brand color.`);
@@ -190,6 +195,13 @@ export function structuralErrors(catalog, design) {
   if (keys(design.samples, ['title', 'subtitle', 'boxes'], 'Sample text')) {
     for (const key of ['title', 'subtitle']) if (typeof design.samples[key] !== 'string' || design.samples[key].length > catalog.sampleLimits[key]) errors.push(`Sample ${key} must be text with at most ${catalog.sampleLimits[key]} characters.`);
     if (!Array.isArray(design.samples.boxes) || design.samples.boxes.length !== 4 || design.samples.boxes.some(text => typeof text !== 'string' || text.length > catalog.sampleLimits.box)) errors.push(`Keep four sample text boxes, each with at most ${catalog.sampleLimits.box} characters. Hidden boxes remain recoverable.`);
+  }
+  if(own(design,'boxStyles')) {
+    const spec=designSchema(catalog).properties.boxStyles.items.properties;
+    if(!Array.isArray(design.boxStyles)||design.boxStyles.length!==4) errors.push('Keep four box style records, including hidden boxes.');
+    else design.boxStyles.forEach((box,i)=>{
+      if(keys(box,Object.keys(spec),'Box '+(i+1))) for(const [key,rule] of Object.entries(spec)) if(!rule.enum.includes(box[key])) errors.push('Box '+(i+1)+': invalid '+key+'.');
+    });
   }
   if(own(design,'roleStyles')&&keys(design.roleStyles,ROLE_STYLE_KINDS,'Role styles',ROLE_STYLE_KINDS)) {
     const schema=roleStylesSchema(catalog);
@@ -284,6 +296,15 @@ export function contrastIssues(catalog, design) {
   const dividerEnd = design.slides.divider.colors === 'gradient' ? 'titleBackgroundEnd' : undefined;
   if(!design.roleStyles?.divider) { textPair('titleText', 'dividerBackground', 3, dividerEnd, true); textPair('subtitle', 'dividerBackground', 4.5, dividerEnd, true); }
   for(const kind of Object.keys(design.roleStyles||{})) issues.push(...roleContrastIssues(catalog,design,kind));
+  for(const [i,box] of (design.boxStyles||[]).entries()) {
+    if(i>=Number(design.slides.cards.count)||box.fill==='inherit') continue;
+    const style=effectiveRoleStyle(catalog,design,'cards');
+    for(const type of ['heading','body']) {
+      if(!style[type+'Visible']) continue;
+      const ratio=contrast(findColor(catalog,style[type+'Color']).hex,findColor(catalog,box.fill).hex),minimum=4.5;
+      if(ratio<minimum) issues.push({kind:'cards',role:type,surface:'contentBackground',ratio,minimum,related:['boxStyles'],message:`Box ${i+1} ${type} text has ${ratio.toFixed(2)}:1 contrast against its fill, below 4.5:1.`});
+    }
+  }
   return issues;
 }
 
@@ -501,6 +522,18 @@ export function cssForDesign(catalog, design, { scope = '.bespoke-slide', fontBa
   blocks.push(`@container(max-width:30rem){${selector('.slide-video-layout')},${selector('.slide-activity')}{grid-template-columns:minmax(0,1fr);}}`);
   if (canonical && video.layout === 'side') blocks.push('@media(max-width:600px){.slide-video.active{grid-template-columns:minmax(0,1fr);}}');
   blocks.push(...roleStyleCss(catalog,design,scope,canonical));
+  for(const [i,box] of (design.boxStyles||[]).entries()) {
+    const preview=`${kind('cards')} .slide-card:nth-child(${i+1})`,lesson=`.cards-grid > .card:nth-child(${i+1})`;
+    if(box.fill!=='inherit') {
+      const fill=findColor(catalog,box.fill).hex;
+      rule(preview,lesson,`background-color:${fill};background-image:none;`);
+      if(canonical) blocks.push(`${lesson} :is(h3,h4,p,li){background-color:transparent;}`);
+    }
+    if(box.look!=='inherit'||box.border!=='inherit') {
+      const look=box.look==='inherit'?cards.look:box.look,ink=box.border==='inherit'?'var(--role-accent)':findColor(catalog,box.border).hex;
+      rule(preview,lesson,`border:0;border-radius:${look==='filled'?'1rem':'.3rem'};box-shadow:none;${look==='rail'?`border-left:5px solid ${ink};`:look==='band'?`border-top:8px solid ${ink};`:look==='outline'?`border:2px solid ${ink};`:`box-shadow:inset 0 0 0 2px ${ink};`}`);
+    }
+  }
   return `${blocks.join('\n')}\n`;
 }
 

@@ -1,6 +1,6 @@
 ---
-name: BeSpoke guided builder
-description: SPOKES controls around an editable, cumulative lesson design preview.
+name: BeSpoke direct editor
+description: A SPOKES document editor with slide thumbnails, contextual controls, and a cumulative lesson canvas.
 colors:
   navy: "#00133f"
   blue: "#004071"
@@ -10,11 +10,11 @@ colors:
   line: "#cad5df"
   paper: "#fff"
   focus: "#a7253f"
-  canvas: "#f4f6f8"
-  rail: "#f7f9fa"
+  canvas: "#f2f4f6"
+  rail: "#fafbfc"
   selected: "#edf5fa"
   input-line: "#8f9eaf"
-  preview-mat: "#dfe7ed"
+  preview-mat: "#e1e6ec"
   notice: "#fff5d7"
   readability: "#fff4f0"
   readability-ink: "#6d2434"
@@ -26,7 +26,7 @@ colors:
 typography:
   headline:
     fontFamily: "Outfit, system-ui, sans-serif"
-    fontSize: "1.8rem"
+    fontSize: "1.2rem"
     fontWeight: 600
     lineHeight: 1.15
     letterSpacing: "-0.04em"
@@ -36,11 +36,11 @@ typography:
     lineHeight: 1.2
   preview-title:
     fontFamily: "Outfit, system-ui, sans-serif"
-    fontSize: "1.35rem"
-    letterSpacing: "-0.02em"
+    fontSize: "1.05rem"
+    letterSpacing: "0"
   body:
     fontFamily: "Outfit, system-ui, sans-serif"
-    fontSize: "0.94rem"
+    fontSize: "0.85rem"
     lineHeight: 1.5
   label:
     fontFamily: "Outfit, system-ui, sans-serif"
@@ -50,12 +50,20 @@ typography:
     fontFamily: "Outfit, system-ui, sans-serif"
     fontSize: "0.875rem"
     lineHeight: 1.5
-  stage-count:
+  toolbar-label:
     fontFamily: "Outfit, system-ui, sans-serif"
-    fontSize: "0.875rem"
-    fontWeight: 500
-    lineHeight: 1.45
+    fontSize: "0.74rem"
+  toolbar-value:
+    fontFamily: "Outfit, system-ui, sans-serif"
+    fontSize: "0.88rem"
+  editor-meta:
+    fontFamily: "Outfit, system-ui, sans-serif"
+    fontSize: "0.8rem"
+  mobile-meta:
+    fontFamily: "Outfit, system-ui, sans-serif"
+    fontSize: "0.75rem"
 rounded:
+  mat: "2px"
   field: "5px"
   control: "6px"
   feature: "8px"
@@ -75,7 +83,7 @@ components:
     backgroundColor: "{colors.blue}"
     textColor: "{colors.paper}"
     rounded: "{rounded.control}"
-    padding: "9px 14px"
+    padding: "8px 12px"
   button-primary-hover:
     backgroundColor: "{colors.navy}"
     textColor: "{colors.paper}"
@@ -83,7 +91,7 @@ components:
     backgroundColor: "{colors.paper}"
     textColor: "{colors.navy}"
     rounded: "{rounded.control}"
-    padding: "9px 14px"
+    padding: "8px 12px"
   button-secondary-hover:
     backgroundColor: "{colors.mist}"
   text-link:
@@ -103,7 +111,7 @@ components:
     backgroundColor: "{colors.blue}"
     textColor: "{colors.paper}"
     rounded: "{rounded.field}"
-    padding: "10px 8px"
+    padding: "8px 12px"
   choice-selected:
     backgroundColor: "{colors.selected}"
     textColor: "{colors.navy}"
@@ -119,8 +127,16 @@ components:
     rounded: "{rounded.control}"
     padding: "0 0 12px"
   preview-tab-selected:
-    textColor: "{colors.blue}"
-    padding: "11px 12px"
+    backgroundColor: "{colors.selected}"
+    textColor: "{colors.navy}"
+    rounded: "{rounded.field}"
+    padding: "5px"
+  contextual-select:
+    backgroundColor: "{colors.paper}"
+    textColor: "{colors.navy}"
+    rounded: "{rounded.field}"
+    padding: "7px 24px 7px 9px"
+    height: "40px"
   editor-tab-selected:
     backgroundColor: "{colors.mist}"
     textColor: "{colors.blue}"
@@ -128,23 +144,24 @@ components:
     padding: "11px 12px"
 ---
 
-# Design System: BeSpoke guided builder
+# Design System: BeSpoke direct editor
 
 ## Overview
 
-**Creative North Star: "The guided design workbench"**
+**Creative North Star: "The SPOKES document editor"**
 
-This is the code-defined design system for the guided builder at `bespoke/index.html`. Its working surfaces use the existing SPOKES navy, blue, white, bridge logo, and locally hosted Outfit type. Readable controls with a 44px minimum target frame the lesson preview and the user's expressive choices. Three stages organize the task; optional slide editors and Shared theme keep detailed decisions available without requiring a walkthrough.
+This is the code-defined design system for the editor at `bespoke/index.html`. The explicit form is **Operate**: choose a slide thumbnail, select a visible element, adjust its native contextual controls, and save the complete design. The prescribed document-editor geometry uses the existing SPOKES navy, blue, white, bridge logo, and locally hosted Outfit type. Compact application chrome leaves the cumulative lesson canvas central; More options opens the detailed inspector.
 
-The interface and the authored lesson design are separate layers. `builder.css` governs the builder chrome; `builder-catalog.json` supplies the editable choices; `builder-model.mjs` renders the shared lesson model. This document applies to the guided builder only. It does not restyle the dashboard, the original wizard, or any released lesson. Root `PRODUCT.md` describes the dashboard and is not a surface brief for this builder.
+The interface and the authored lesson design are separate layers. `builder.css` and `guide.css` provide the inherited controls; `direct-editor.css` supplies the current workspace overrides; `direct-editor.mjs` owns transient element selection and contextual controls. `builder-catalog.json` supplies editable choices and `builder-model.mjs` renders the shared lesson model. This document applies to BeSpoke only. It does not restyle the dashboard, original wizard, or released lessons. Root `PRODUCT.md` describes the dashboard and supplies durable SPOKES brand commitments, not this editor's composition. The requested interface was precise; no alternative composition or quality-bar tournament was required.
 
 **Key Characteristics:**
 
-- Stable SPOKES controls surround a visibly changing lesson artifact.
-- Labels and sample previews explain choices before specialist vocabulary is needed.
-- Color roles and heading/body fonts remain independently editable.
-- Shared defaults and custom slide fields state their scope beside the controls and in Review.
-- State, recovery, readability, and comparison information sit near the task they explain.
+- Stable SPOKES controls surround a visibly changing, cumulative lesson artifact.
+- A slide thumbnail rail and selectable canvas make the current design tangible.
+- Native contextual controls state the affected element and linked editing scope.
+- More options exposes existing detailed controls, shared defaults, and review.
+- Mobile retains the canvas with horizontal thumbnail and toolbar scrolling.
+- State, recovery, readability, and advisory comparison remain near the task they explain.
 
 ## Colors
 
@@ -194,7 +211,9 @@ The 11 shared theme roles are sidebar, title background, title second color, tit
 
 ## Typography
 
-**UI font:** locally hosted Outfit (`system-ui, sans-serif` fallback), with font synthesis disabled. The chrome hierarchy in frontmatter records the current panel heading, section heading, preview label, explanatory body, field label, helper, and stage-count roles. The brand name is larger than control text (1.6rem desktop, 1.4rem mobile). Supporting text, save/session status, recovery summaries and preset comparison captions use the helper size; header/navigation actions use the same 0.875rem size. Field labels remain 0.87rem and role editor tabs use 0.9rem. Paint labels use 0.8rem with a 1.3 line-height.
+**UI font:** locally hosted Outfit (`system-ui, sans-serif` fallback), with font synthesis disabled. The current hierarchy is deliberately compact: inspector heading and section headings use the frontmatter title sizes, while the preview heading remains subordinate to the lesson itself. The brand is 1.45rem on desktop and 1.1rem on phones; the rail heading is 0.95rem. Contextual labels use the toolbar-label token, values use toolbar-value, and contextual actions use 0.85rem. Scope, canvas hints and desktop thumbnail labels use editor-meta. Inspector helper and caption text retain the inherited helper token.
+
+At widths up to 760px, header actions, save/session status, scope, and Undo/Redo use mobile-meta; stage actions use 0.78rem, contextual select values use 0.82rem, and thumbnail captions use 0.7rem. The comparison count is 1.45rem with a 0.9rem denominator. These sizes describe the existing compact editor, not a general scale for lesson text or future reading surfaces. Contextual labels and thumbnail captions need to stay short; enlarged-text checks and actual target dimensions remain necessary. Advisory type-scale notices do not establish an accessibility pass.
 
 **Lesson fonts:** either heading or body can use any of the 12 existing local families: DM Serif Display, Outfit, Playfair Display, Inter, Merriweather, Source Sans 3, Vollkorn, Fira Sans, Crimson Pro, Work Sans, Bitter, or Raleway. There is no required pairing and no serif/sans role restriction. Presets populate the two independent selectors; they do not constrain later choices.
 
@@ -204,15 +223,16 @@ The model gives lesson title text a canvas-relative scale (`clamp(1.5rem, 4.8cqw
 
 ## Layout
 
-Desktop uses a two-region workspace: a control rail and a larger preview region. The control rail itself has a stage-navigation column (172px) and the current panel. The base workspace columns are `minmax(465px, .95fr)` and `minmax(450px, 1.3fr)`. The preview stays at the top of the viewport while the current controls scroll.
+Desktop places a slide-thumbnail rail (180px) to the left of the cumulative canvas (`minmax(0, 1fr)`). More options adds an inspector on the right (`minmax(320px, 380px)`), with a canvas minimum of 320px while open. The workspace grows with its content, uses a minimum height of `calc(100dvh - 200px)`, and has no bounded internal scroll viewport. The inspector is sticky at the top with a 100dvh maximum height and its own overflow; the canvas is in normal flow. The contextual toolbar is sticky at the top (z-index 6).
 
-Panel padding is 26px 22px 36px; preview padding is 26px 28px. Related fields and choices use small gaps (7–12px), while decision groups and major regions separate by roughly 20–30px. Choices and presets use two columns. Color choices use four columns, growing to six on wide screens. Optional role editor tabs wrap with an 8px gap and a 120px flex basis; Shared theme is a full-width disclosure above the stage's primary content.
+Desktop canvas padding is 0 24px 24px; its mat has 22px padding and a maximum width of 1080px centered in the region. The inspector uses 18px padding. The toolbar wraps with 10px gaps and an 88px minimum height; labeled controls have a 5px gap. Thumbnail windows have a 16:10 proportion and render the same design model at a 960px source width, scaled to fit. Stage controls, Edit slide, and history sit in the command strip above the workspace.
 
 | Viewport | Implemented composition |
 | --- | --- |
-| At least 1500px | Control region is 530–640px, preview has at least 650px, stage navigation is 190px, and preview padding grows to 30px 40px. |
-| 761–1100px | Stage navigation becomes a horizontal scrolling strip above the control panel; the preview remains beside it. |
-| At most 760px | Design / Preview sits above a bounded scrolling workspace and shows one region at a time. The workspace uses the dynamic viewport height minus the measured switch height, so controls never scroll underneath the switch. Each view retains its scroll position. Stage navigation scrolls horizontally, the preview loses sticky positioning, and control-panel padding is 24px 16px. Role editor tabs wrap with a 110px flex basis. Presets fit columns of at least 140px and paint choices at least 62px, bounded by the available width. Circular swatches are 44px at every viewport. |
+| At least 1600px | Canvas inline padding becomes 40px; the direct canvas slide minimum height becomes 560px. |
+| Above 1150px | Rail and canvas remain side by side; opening More options adds the right inspector. The direct canvas slide minimum height is 460px. |
+| At most 1150px, above 760px | Rail narrows to 145px; inspector moves below the canvas in column two with static positioning. Canvas inline padding is 18px and mat padding is 16px. Recent choices is hidden; Undo/Redo remains available. |
+| At most 760px | Workspace becomes an unbounded vertical flex layout. The top thumbnail strip scrolls horizontally with 90px-wide items, followed by the always-visible canvas. The static contextual toolbar is a single horizontal scrolling row with 110px fields, 8px gaps, 10px vertical padding, and no minimum row height; expanded sample words occupy 300px. The inspector opens below the canvas at `calc(100% - 24px)` width. Header padding is 8px 12px, logo dimensions are 28px, and brand/header actions have 44px minimum heights. Canvas padding is 0 12px 18px, mat padding is 12px, and the direct canvas slide minimum height is 340px. Contextual selects and buttons have 44px minimum heights. The old Design / Preview switch is hidden. |
 | At most 600px viewport | Generated slide styles reduce padding and collapse video/activity side layouts. |
 | Above 40rem sample canvas | Content samples show the lesson's 280px vertical chapter sidebar beside the main content. |
 | At most 40rem sample canvas | A labeled Sidebar sample menu opens a vertical drawer over the full-width content. |
@@ -234,7 +254,7 @@ The chrome is mostly flat, separated by cool surface tones and thin borders. Sha
 
 ## Shapes
 
-Controls have modest corners: fields, swatches' button containers, stage controls, and editor tabs use the field radius; buttons, choices, presets, and the preview mat use the control radius. Build my own and the floating file menu use the feature radius. The access dialog uses the dialog radius. Swatches and small stage numbers are circular.
+Controls have modest corners: fields, swatches' button containers, stage controls, and editor tabs use the field radius; buttons, choices, and presets use the control radius. The canvas mat uses the mat radius. Build my own and the floating file menu use the feature radius. The access dialog uses the dialog radius. Swatches are circular; the inherited small stage numbers are hidden in the command strip.
 
 These chrome shapes do not constrain slide content. Lesson boxes support accent rails, outlines, filled treatments, and top bands; activities support boxes, callouts, banners, and side labels. Those catalog-backed variations belong to the artifact model and are preserved even where the chrome uses a quieter form language.
 
@@ -242,13 +262,13 @@ These chrome shapes do not constrain slide content. Lesson boxes support accent 
 
 ### Actions and recovery
 
-Primary buttons use Blue with white text and become Navy on hover. Secondary buttons use Paper with a thin Line border and Mist hover. Buttons, text-link buttons, choices, stage navigation, preview tabs and mobile surface tabs have a 44px minimum height. Disabled buttons use half opacity. Text links remain underlined with a 3px underline offset. All focusable controls use the Mauve outline (3px, 3px offset); the programmatically focused panel suppresses its own outline.
+Primary buttons use Blue with white text and become Navy on hover. Secondary buttons use Paper with a thin Line border and Mist hover. Desktop header buttons, stage navigation and contextual buttons use a 40px minimum height; contextual selects are 40px tall. Inherited general buttons, Undo/Redo, choices, thumbnail tabs, fields and text links retain a 44px minimum. On phones, header buttons, stage navigation, contextual buttons and selects also have a 44px minimum. Selectable canvas button targets have a 24px minimum width and height; group selections keep their content geometry. Disabled buttons use half opacity. Text links remain underlined with a 3px underline offset. Chrome controls use the Mauve outline (3px, 3px offset); selected canvas elements use Action blue (3px, 4px offset), hover uses a dashed Action blue outline (2px, 3px offset), and canvas keyboard focus uses Mauve (3px, 4px offset). The video frame instead uses a dashed pseudo-element inset 12px to preserve its authored frame; the programmatically focused panel suppresses its own outline.
 
 The header keeps How it works, save, open, and connected review actions visible; the local test preview hides Send and labels Save/Open as test actions. Help opens inline and returns focus to its button when closed. Start explains choosing a look, optional slide editing and saving; a disclosure explains the palette, fonts, boxes, logo, contrast, recovery and similarity guardrails. Saving guidance distinguishes the local test service from team saving and design review. Files & recovery uses native disclosure for backup, restore, and original-wizard access. The menu closes after a file action, on outside pointer interaction, or with Escape; Escape returns focus to its trigger. On phones the menu fits between 16px viewport insets. The team-opening dialog is a focused access task, with labeled lesson and private-code fields and explicit Open / Cancel actions. Saving a reusable visual design and authorizing a lesson build are distinct tasks.
 
 ### Fields and decisions
 
-Field labels sit above full-width inputs, selects, and text areas with a 7px gap. Inputs and text areas use a 1px Input line and the field padding; all fields have a 44px minimum height. Selects retain native selection behavior with the field-select padding, a 1.5 line-height, an authored arrow, and platform appearance disabled so WebKit does not force a shallow control. Text areas resize vertically. Decision groups are semantic fieldsets with visible legends; chosen buttons carry `aria-pressed`, a stronger border, a selected surface, and a check mark.
+Detailed inspector field labels sit above full-width inputs, selects, and text areas with a 7px gap. Contextual toolbar fields use the compact dimensions recorded under Layout. Inputs and text areas use a 1px Input line and the field padding; inspector fields have a 44px minimum height. Selects retain native selection behavior with the field-select padding, a 1.5 line-height, an authored arrow, and platform appearance disabled so WebKit does not force a shallow control. Text areas resize vertically. Decision groups are semantic fieldsets with visible legends; chosen buttons carry `aria-pressed`, a stronger border, a selected surface, and a check mark.
 
 The color-role selector and Apply color to selector precede the 11-color palette. Choosing an element starts in This slide scope: the selected swatch reflects its effective local color, and painting writes only that field on the visible slide. Shared default is an explicit separate scope; it writes the global default and retains local exceptions. Sidebar, Accent and Buttons have only shared scope. Preview tabs retain the equivalent element on the new slide, and selecting an element retains a compatible current preview. Scope persists only in the browser UI draft. A selected circular swatch has both a visible mark and an accessible selected label. All colors are enabled, without strike-throughs. Accessible labels identify a contrast advisory as selectable, calculated for the selected scope. The warning explains the text/background difference and why low contrast can be harder to read; it includes the actual ratio, the applicable guideline, and the team leader’s option to keep and save the design. The persistent live region announces advisories after updates.
 
@@ -262,13 +282,15 @@ Text offers local heading/body colors, the twelve curated fonts, size, alignment
 
 ### Navigation and continuity
 
-Three named stages are **Start**, **Slide designs**, and **Review & save**. Start combines Lesson & team with Build my own or six editable presets. A preset can go directly to Review & save. Current stage navigation uses `aria-current="step"`, an accessible Stage N of 3 name, and a visible stage counter; Back and Continue controls name the destination. Undo, Redo, and Recent choices remain adjacent to navigation. Returning teams get Continue editing and Review & save; Change starting look deliberately exposes replacement choices instead of requiring a new preset.
+Edit slide closes the inspector and restores attention to the canvas. Three stage commands remain available: **Start**, **Slide designs**, and **Review & save**. Their current-stage semantics remain, but the step numbers and visible stage counter are hidden. When the inspector is closed, stage styling becomes neutral and Edit slide is highlighted. Undo and Redo remain beside stage commands; Recent choices is available only above 1150px. Opening a stage exposes its existing controls in the inspector. Back to slide closes it and focuses Edit slide.
 
-Within Slide designs, the distinct Slide design editors tablist offers **Title slide**, **Chapter divider**, **Text boxes**, **Video slide**, and **Activity**. All are optional. Selected editor tabs use Mist, a Blue border and a 3px inset bottom rule; the corresponding editor has a named tabpanel. Next slide type is a convenience action, with Review & save after Activity.
+Five thumbnail tabs expose **Title slide**, **Chapter divider**, **Text boxes**, **Video slide**, and **Activity**. The selected thumbnail uses an Action blue border, Selected fill, and Navy text. Each inert miniature renders the shared model in an isolated shadow tree; it adds no duplicate interactive canvas targets. Tabs support arrows, Home, End, Enter, and Space. Changing slides resets direct selection to Background. The workspace remains the named keyboard-focusable main landmark; the canvas remains visible at every breakpoint. Detailed role tabs and stage navigation stay available inside the inspector.
 
-Five separate preview tabs expose Title, Divider, Text boxes, Video, and Activity. These change the visible sample, not the editor or saved design. The selected preview tab has a blue underline and text; tablists support arrows, Home, End, Enter, and Space. Mobile Design / Preview tabs switch the visible region and retain separate scroll positions. The workspace is the single named, keyboard-focusable main landmark, with editor and preview sections inside it. The switch height is remeasured when text size or viewport changes. Stage changes move focus to the current panel. Dynamic choices, palettes, fonts, and preset controls have stable IDs so the rendering pass can restore focus after a same-stage change; open inline disclosures remain open. Design status and the mobile surface switch are contained in named landmarks.
+Clicking a canvas target selects it. Tab reaches targets, Enter or Space moves to its contextual selection control, and Escape returns selection to Background. The Selected native menu provides the equivalent non-pointer path. Scope text appears immediately below the toolbar and is announced after selection. Typography edits are role-level: box headings and title bar are linked; all box body text is linked; divider chapter label and supporting text are linked; activity heading and activity label are linked. The toolbar names these relationships explicitly. Sample words remain independently editable where supported, including each box's own body copy; fixed box headings do not offer sample editing.
 
-Review lists all five effective slide designs. Each has resolved colors, fonts and texture labeled Shared or Custom, retained second-color wording when unused, arrangement and local detail, plus direct Preview and Edit actions. Shared typography is explicitly identified as defaults rather than every slide's effective typography. Rows use top borders and 20px vertical padding. Definition lists stack below 1200px and pair labels with values in two columns from 1200px upward; long values wrap. On phones, Preview actions open the Preview surface, while Edit returns to Design. Readability advice, notes, saving and recovery follow the summary.
+Selecting a box exposes its saved local Fill, Border color and Box style, each with Use slide default. Optional `boxStyles` stores exactly four fill/border/look records, including hidden boxes; absent records preserve older designs. Layout and count apply to all boxes and the scope line says so. Role typography continues to use `roleStyles`, not per-element font records. The selected target, open sample editor, selection outlines and inspector visibility are UI state only and do not enter saved designs. Edits continue through the existing history, validation, draft and shared-save pipeline. Text edits preserve native caret/selection and group a typing session into the existing undo checkpoint.
+
+Review retains the five effective designs, Shared/Custom fields, direct Preview/Edit actions, readability advice, notes, saving and recovery. Preview selects the cumulative canvas; Edit opens the appropriate detailed inspector. Definition lists stack below 1200px and use paired columns above it. Stable control IDs retain focus after redraw, and disclosures retain their existing UI state.
 
 ### Editable presets
 
@@ -278,8 +300,8 @@ Replacing an existing look uses a native HTML dialog styled like the existing ac
 
 ### Cumulative preview and comparison
 
-Title arrangements use a shared grid canvas with a 16:9 minimum proportion and a
-420px minimum height. A nonvisual grid sizing item reserves space while real text
+The generated model gives title arrangements a shared grid canvas with a 16:9 minimum proportion and a
+420px base minimum height; the direct editor overrides the slide minimums as recorded in Layout. A nonvisual grid sizing item reserves space while real text
 rows can grow beyond it; fixed-height cropping is avoided. Centered and Left aligned
 share vertical centering with distinct horizontal alignment. Bottom left allocates
 remaining space above the text. Split panels places the title/subtitle in the right
@@ -305,7 +327,7 @@ share the treatment; the canonical side arrangement also stacks below 600px.
 
 The preview is a rendered reusable slide design with explicitly labeled sample content. It takes colors, fonts, arrangements, text, and backgrounds from the same model used by the reusable artifact and template override. It supports the five slide types, including one to four text boxes with paragraph, bullet, or numbered treatment. Hidden box samples remain in the draft.
 
-Readability notes name the problematic text/background pair and provide a path back to colors. The model checks title/heading pairs at 3:1 and subtitle/body pairs at 4.5:1, including sampled gradient surfaces and composited pattern ink; this is a modeled check, not a claim of whole-page accessibility certification.
+Readability notes name the problematic text/background pair and provide a path back to colors. The model uses a 3:1 guideline for non-small title, divider and video headings, and 4.5:1 for the other modeled text roles, including sampled gradient surfaces, composited pattern ink and local box fills; this is a modeled check, not a claim of whole-page accessibility certification.
 
 Comparison is advisory: it shows exact matching comparable choices against six released references, with matches, differences, and unknowns disclosed. It is not a perceptual percentage, a passing score, or a reservation of private team designs. Save/recovery and preview updates use status/live regions, including an explicit local-test label when that mode is active.
 
@@ -333,7 +355,7 @@ Comparison is advisory: it shows exact matching comparable choices against six r
 While Shared theme is open and the Buttons color role is active, show a clearly labeled temporary sample
 below a buttonless slide, without changing the selected preview tab or adding a
 permanent button to that slide's structure. At phone widths, also show the sample
-inside the controls so its paint change is visible without switching surfaces.
+inside the inspector so its paint change remains near the shared controls.
 Video and Activity retain their own inert sample actions. All examples reuse the
 model's button background, automatic ink, body font and 44px minimum target height.
 

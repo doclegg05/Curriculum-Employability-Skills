@@ -1,0 +1,66 @@
+#!/usr/bin/env node
+import assert from 'node:assert/strict';
+import fs from 'node:fs/promises';
+import {browserType} from './bespoke-test-browser.mjs';
+import {createDevServer} from './bespoke-dev-server.mjs';
+import * as Model from '../bespoke/builder-model.mjs';
+const catalog=JSON.parse(await fs.readFile(new URL('../bespoke/builder-catalog.json',import.meta.url),'utf8'));
+const server=await createDevServer({port:0}),browser=await browserType.launch();
+const context=await browser.newContext({viewport:{width:1440,height:1000},reducedMotion:'reduce'});
+await context.addInitScript(()=>{window.__bespokeAutosave={enabled:false};});
+const page=await context.newPage(),errors=[];
+page.setDefaultTimeout(10000);page.on('pageerror',e=>errors.push(e.message));page.on('dialog',d=>d.accept());
+const design=()=>page.evaluate(()=>JSON.parse(localStorage.getItem('bespoke-draft-v2')).design);
+const clickView=kind=>page.locator('#previewTabs [data-view='+kind+']').click();
+try{
+ await page.goto(server.baseUrl+'/bespoke/');await page.locator('#localPreviewNotice').waitFor({state:'visible'});
+ assert.equal(await page.locator('#chromeRail').isVisible(),false);
+ await page.locator('#canvas-heading').click();
+ assert.equal(await page.locator('#canvas-heading').getAttribute('aria-pressed'),'true');
+ const original=await design();
+ await page.locator('#edit-headingFont').selectOption('inter');
+ await page.locator('#edit-headingSize').selectOption('large');
+ await page.locator('#edit-headingColor').selectOption('gold');
+ let changed=await design();assert.equal(changed.roleStyles.title.headingFont,'inter');assert.equal(changed.roleStyles.title.headingSize,'large');assert.equal(changed.roleStyles.title.headingColor,'gold');assert.deepEqual(changed.fonts,original.fonts);
+ await page.locator('#btnSampleText').click();await page.locator('#editorSampleText').fill('Synthetic direct editor sample');
+ assert.equal((await design()).samples.title,'Synthetic direct editor sample');
+ await page.locator('#editorSampleText').press('Control+z');assert.equal((await design()).roleStyles.title.headingColor,'gold','native typing undo must not undo design color');
+ await page.locator('#btnCanvas').click();await page.locator('#btnUndo').click();assert.equal((await design()).samples.title,original.samples.title);
+ await page.locator('#btnRedo').click();
+ await clickView('cards');
+ await page.locator('#editTarget').selectOption('card-0');
+ await page.locator('#edit-box-fill').selectOption('gold');await page.locator('#edit-box-border').selectOption('royal');await page.locator('#edit-box-look').selectOption('outline');
+ changed=await design();assert.equal(changed.boxStyles[0].fill,'gold');assert.equal(changed.boxStyles[1].fill,'inherit');
+ assert.equal(await page.locator('#canvas-card-0').evaluate(e=>getComputedStyle(e).backgroundColor),'rgb(211, 178, 87)');
+ assert.notEqual(await page.locator('#canvas-card-1').evaluate(e=>getComputedStyle(e).backgroundColor),'rgb(211, 178, 87)');
+ await page.locator('#edit-count').selectOption('1');assert.equal((await design()).boxStyles.length,4);
+ await page.locator('#edit-count').selectOption('3');await clickView('title');await clickView('cards');assert.deepEqual((await design()).boxStyles,changed.boxStyles);
+ await page.locator('#canvas-card-body-0').focus();await page.keyboard.press('Enter');assert.equal(await page.locator('#editTarget').inputValue(),'card-body-0');assert.equal(await page.locator('#editTarget').evaluate(e=>e===document.activeElement),true);
+ await page.locator('#edit-bodyFont').selectOption('work-sans');assert.match(await page.locator('#editScope').innerText(),/All box text/);
+ await page.locator('#btnCanvas').focus();await page.keyboard.press('Control+z');assert.notEqual((await design()).roleStyles.cards?.bodyFont,'work-sans');await page.keyboard.press('Control+Shift+z');assert.equal((await design()).roleStyles.cards.bodyFont,'work-sans');
+ await page.locator('#btnMoreOptions').click();assert.equal(await page.locator('#chromeRail').isVisible(),true);await page.locator('#btnCloseOptions').click();
+ await page.locator('#stage-start').click();await page.locator('#teamName').fill('Synthetic editor team');await page.locator('#spokespersonName').fill('Sample Instructor');await page.locator('#spokespersonEmail').fill('sample@example.org');await page.locator('#btnCanvas').click();
+ const beforeSave=await design();const saved=page.waitForResponse(r=>r.url().endsWith('/api/bespoke')&&r.request().postDataJSON()?.action==='save');await page.locator('#btnSave').click();assert.equal((await saved).status(),200);
+ await clickView('title');await page.locator('#canvas-heading').click();await page.locator('#edit-headingColor').selectOption('mauve');await page.locator('#btnOpen').click();await page.locator('#btnLoadLatest').waitFor({state:'visible'});await page.locator('#btnLoadLatest').click();await page.waitForFunction(expected=>JSON.stringify(JSON.parse(localStorage.getItem('bespoke-draft-v2')).design)===expected,JSON.stringify(beforeSave));
+ await page.reload();await page.locator('#editTarget').waitFor();assert.deepEqual(await design(),beforeSave);
+ const generated=Model.cssForDesign(catalog,beforeSave,{canonical:true});assert.match(generated,/\.cards-grid > \.card:nth-child\(1\)/);assert.deepEqual(Model.structuralErrors(catalog,beforeSave),[]);
+ const canonical=await context.newPage();
+ await canonical.setContent('<style>'+generated+'</style><section class="slide active"><div class="cards-grid"><div class="card"><h4>First</h4><p>Sample</p></div><div class="card"><h4>Second</h4><p>Sample</p></div></div></section>');
+ assert.equal(await canonical.locator('.card').first().evaluate(e=>getComputedStyle(e).backgroundColor),'rgb(211, 178, 87)');
+ assert.equal(await canonical.locator('.card').first().evaluate(e=>getComputedStyle(e).borderTopColor),'rgb(0, 19, 63)');
+ assert.notEqual(await canonical.locator('.card').nth(1).evaluate(e=>getComputedStyle(e).backgroundColor),'rgb(211, 178, 87)');
+ assert.equal(await canonical.locator('.card h4').first().evaluate(e=>getComputedStyle(e).backgroundColor),'rgba(0, 0, 0, 0)');await canonical.close();
+ const invalid=structuredClone(beforeSave);invalid.boxStyles[0].fill='url(evil)';assert(Model.structuralErrors(catalog,invalid).length);
+ const hidden=structuredClone(beforeSave);hidden.slides.cards.count='1';assert.equal(hidden.boxStyles.length,4);
+ const preset=Model.applyPreset(catalog,catalog.presets[0].id,beforeSave);assert.equal(preset.boxStyles,undefined);assert.deepEqual(preset.samples,beforeSave.samples);
+ await page.addScriptTag({path:'node_modules/axe-core/axe.min.js'});
+ const violations=await page.evaluate(async()=> (await axe.run({exclude:[['#modelStage'],['.thumbnail-window']]},{runOnly:{type:'tag',values:['wcag2a','wcag2aa','wcag21aa']}})).violations.map(v=>({id:v.id,nodes:v.nodes.map(n=>n.target)})));assert.deepEqual(violations,[]);
+ for(const width of [1440,1024,760,390]){
+  await page.setViewportSize({width,height:900});await clickView('cards');
+  assert(await page.evaluate(()=>document.documentElement.scrollWidth<=innerWidth+1),'overflow at '+width);
+  await page.locator('#editTarget').selectOption('card-0');await page.locator('#edit-box-border').selectOption('dark');
+  await page.locator('#btnMoreOptions').click();assert(await page.locator('#roleEditorPanel').isVisible());await page.locator('#btnCloseOptions').click();
+ }
+ await page.evaluate(()=>document.documentElement.style.fontSize='200%');assert(await page.evaluate(()=>document.documentElement.scrollWidth<=innerWidth+1),'enlarged text overflow');
+ assert.deepEqual(errors,[]);console.log('PASS direct editor: selection, scoped controls, native typing, Undo/Redo, independent boxes, hidden recovery, navigation, More options, Save/Open/reload, model/CSS, accessibility and responsive layouts');
+}finally{await context.close();await browser.close();await server.close();}

@@ -3,19 +3,19 @@
 <head>
 <meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1">
 <title>BeSpoke · Make the lesson yours</title>
-<link rel="icon" href="../SPOKES-Logo.png"><link rel="stylesheet" href="./builder.css"><link rel="stylesheet" href="./guide.css">
+<link rel="icon" href="../SPOKES-Logo.png"><link rel="stylesheet" href="./builder.css"><link rel="stylesheet" href="./guide.css"><link rel="stylesheet" href="./direct-editor.css">
 <style id="designStyle"></style>
 </head>
 <body>
 <!--
-THESIS: A focused decision panel operates one cumulative, reusable slide design.
-OWN-WORLD: Extend SPOKES navy, blue and white; Outfit controls frame independently selected lesson typography.
-STORY: Begin with guidance or a preset, adjust individual choices, review and save the design.
-FIRST VIEWPORT: Sequential navigation and controls sit beside a larger preview and advisory comparison; mobile uses Design and Preview surfaces.
-FORM: Operate editor extending the established SPOKES identity and user-specified controls; no replacement visual world.
+THESIS: Select visible elements, then change them using a familiar contextual toolbar.
+OWN-WORLD: SPOKES navy and white, quiet gray workspace, blue selection outlines, native controls.
+STORY: Pick a slide, select an element, adjust its look, save the complete design.
+FIRST VIEWPORT: Thumbnail rail left, large cumulative slide center, toolbar above, optional detail inspector right.
+FORM: Operate. User-specified document editor geometry; preserve the supported visual design model.
 FINISH: unreviewed and undocumented is unfinished; this build ends with the finish review, the verdict, and DESIGN.md
 -->
-<a class="skip-link" href="#stepPanel">Skip to design controls</a>
+<a class="skip-link" href="#contextToolbar">Skip to design controls</a>
 <div id="liveRegion" class="sr-only" aria-live="polite"></div><span id="saveLive" class="sr-only" aria-live="polite"></span>
 <header class="app-header">
  <a class="brand" href="./"><img src="../SPOKES-Logo.png" alt="" width="42" height="42"><span><strong>BeSpoke</strong><small>A look that belongs to your lesson.</small></span></a>
@@ -39,7 +39,7 @@ FINISH: unreviewed and undocumented is unfinished; this build ends with the fini
   <div class="preview-tabs" id="previewTabs" role="tablist" aria-label="Slide preview"><button type="button" role="tab" data-view="title" aria-selected="true" aria-controls="modelStage">Title</button><button type="button" role="tab" data-view="divider" aria-selected="false" aria-controls="modelStage">Divider</button><button type="button" role="tab" data-view="cards" aria-selected="false" aria-controls="modelStage">Text boxes</button><button type="button" role="tab" data-view="video" aria-selected="false" aria-controls="modelStage">Video</button><button type="button" role="tab" data-view="activity" aria-selected="false" aria-controls="modelStage">Activity</button></div>
   <div class="preview-frame"><div id="modelStage" role="tabpanel" aria-label="Slide preview"></div></div>
   <div id="readabilityNotes" class="readability-warning" hidden></div>
-  <section class="similarity" aria-labelledby="similarityTitle"><div class="comparison-heading"><h2 id="similarityTitle">Make it feel distinct</h2><span>Advisory comparison</span></div><div id="distinctMeter" class="distinct-meter"></div><details><summary>What matches the existing lessons?</summary><div id="similarityDetails"></div></details><p class="comparison-note">A guide to variety, not a score to pass. Private team designs are not compared or reserved.</p></section>
+  <section class="similarity" aria-labelledby="similarityTitle"><div class="comparison-heading"><h2 id="similarityTitle">Make it feel distinct</h2><span>Advisory comparison</span></div><div id="distinctMeter" class="distinct-meter"></div><details><summary>What matches the existing lessons?</summary><div id="similarityDetails"></div></details><p class="comparison-note">A guide to variety, not a score to pass. Private team designs are not compared or reserved. Individual box overrides are not included.</p></section>
   <p class="preview-caption">Every preview uses your current colors, fonts and arrangements. These are reusable slide designs, not finished lesson pages.</p>
  </section>
 </main>

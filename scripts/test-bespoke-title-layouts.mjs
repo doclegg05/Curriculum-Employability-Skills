@@ -37,7 +37,7 @@ async function editor(width) {
 const saved = page => page.evaluate(() => JSON.parse(localStorage.getItem('bespoke-draft-v2')).design);
 const go = builderDestination;
 async function choice(page, group, value) {
-  if(await page.locator('#surface-design').isVisible()) await page.locator('#surface-design').click();
+  if(await page.locator('#surface-design').isVisible()) if (await page.locator('#surface-design').isVisible()) await page.locator('#surface-design').click();
   await page.getByRole('group', {name:new RegExp(group)}).locator('[data-choice="'+value+'"]').click();
 }
 async function measure(locator, canonical = false) {
@@ -111,7 +111,7 @@ try {
       for(const layout of layouts) {
         await choice(page,'Arrangement',layout);
         assert.deepEqual(await saved(page), {...initial,startingPoint:'custom',slides:{...initial.slides,title:{...initial.slides.title,layout,logo}}});
-        if(width===390)await page.locator('#surface-preview').click();
+        if(width===390)if (await page.locator('#surface-preview').isVisible()) await page.locator('#surface-preview').click();
         await page.evaluate(()=>document.fonts.ready);
         const slide=page.locator('#modelStage [data-kind="title"]'), m=await measure(slide);canvasWidth=m.w;
         contained(m, `editor ${width}/${logo}/${layout}`);values[layout]=m;
@@ -128,7 +128,7 @@ try {
       distinct(values,`editor ${width}/${logo}`);evidence.push({source:'editor',width,logo,values});
     }
     const final=await saved(page);
-    if(await page.locator('#surface-design').isVisible())await page.locator('#surface-design').click();
+    if(await page.locator('#surface-design').isVisible()) await page.locator('#surface-design').click();
     await page.locator('#btnUndo').click(); assert.equal((await saved(page)).slides.title.layout,'bottom');
     await page.locator('#btnRedo').click(); assert.deepEqual(await saved(page),final);
     await go(page,'Shared typography');await go(page,'Title slide');assert.deepEqual(await saved(page),final);

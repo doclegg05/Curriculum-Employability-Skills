@@ -13,6 +13,7 @@ export async function builderDestination(page, destination) {
   const designSurface = page.locator('#surface-design');
   if (await designSurface.isVisible()) await designSurface.click();
   if (destination === 'Shared colors' || destination === 'Shared typography') {
+    if (!await page.locator('#chromeRail').isVisible()) await page.locator('#stage-start').click();
     const theme = page.locator('#sharedTheme');
     if (!await theme.evaluate(el => el.open)) await theme.locator(':scope > summary').click();
     await page.locator(destination === 'Shared colors' ? '#colorRole' : '#font-heading').waitFor({state:'visible'});

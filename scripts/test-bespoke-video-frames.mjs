@@ -45,10 +45,10 @@ async function editor(width) {
   await page.locator('#btnSave').filter({hasText:'Save test design'}).waitFor();return page;
 }
 const saved = page=>page.evaluate(()=>JSON.parse(localStorage.getItem('bespoke-draft-v2')).design);
-async function designSurface(page) {if(await page.locator('#surface-design').isVisible())await page.locator('#surface-design').click();}
+async function designSurface(page) {if(await page.locator('#surface-design').isVisible()) await page.locator('#surface-design').click();}
 const go = builderDestination;
 async function choose(page,label,value) {await designSurface(page);await page.getByRole('group',{name:new RegExp(label)}).locator(`[data-choice="${value}"]`).click();}
-async function preview(page,width) {if(width===390)await page.locator('#surface-preview').click();await page.evaluate(()=>document.fonts.ready);}
+async function preview(page,width) {if(width===390)if (await page.locator('#surface-preview').isVisible()) await page.locator('#surface-preview').click();await page.evaluate(()=>document.fonts.ready);}
 async function measure(frame) {
   return frame.evaluate(el=>{
     const b=el.getBoundingClientRect(), child=el.firstElementChild, c=child.getBoundingClientRect(), s=getComputedStyle(el), cs=getComputedStyle(child);

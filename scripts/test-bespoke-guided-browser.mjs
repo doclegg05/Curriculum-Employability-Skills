@@ -401,7 +401,7 @@ try {
       await page.locator('#btnGuideNext').scrollIntoViewIfNeeded();
       assert.equal(await page.locator('#btnGuideNext').isVisible(), true);
     }
-    await page.locator('#surface-preview').click();
+    if (await page.locator('#surface-preview').isVisible()) await page.locator('#surface-preview').click();
     assert.equal(await page.locator('#modelStage .bespoke-slide').count(), 1, 'the preview is one tap away');
   });
 

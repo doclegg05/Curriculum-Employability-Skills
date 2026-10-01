@@ -73,6 +73,7 @@ async function ready(page) {
 async function surface(page, name = 'design') {
   const button = page.locator('#surface-' + name);
   if (await button.isVisible()) await button.click();
+  else if (name === 'design' && !await page.locator('#chromeRail').isVisible()) await page.locator('#stepList [aria-current]').click();
 }
 async function stage(page, id) {
   await surface(page);
@@ -456,8 +457,8 @@ try {
       await preview(page, 'title'); await page.locator('#previewTabs [data-view=title]').focus(); await page.keyboard.press('End');
       assert.equal(await page.locator('#previewTabs [data-view=activity]').getAttribute('aria-selected'), 'true');
       if (width <= 390) {
-        await page.locator('#surface-preview').focus(); await page.keyboard.press('Home');
-        assert.equal(await page.locator('#surface-design').getAttribute('aria-selected'), 'true');
+        await page.locator('#btnCanvas').focus(); await page.keyboard.press('Enter');
+        assert.equal(await page.locator('#chromeRail').isVisible(), false);
       }
       await stage(page, 'review'); await shot(page, label + '-review'); await axe(page, label + ' Review');
       evidence.push({ label, measurements, nativeTitleSelect: font });

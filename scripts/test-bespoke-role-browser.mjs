@@ -195,7 +195,7 @@ try{
   }
 
   const allLocal=await design(page);
-  await go(page,'title');await preview(page,'activity');await setStyle(page,'title','headingColor','light');
+  await go(page,'title');await preview(page,'activity');assert.equal(await page.locator('#editor-activity').getAttribute('aria-selected'),'true','The slide rail keeps the detailed editor on the visible role');await go(page,'title');await setStyle(page,'title','headingColor','light');
   assert.equal(await slide(page).getAttribute('data-kind'),'title','Editing a local control reveals the relevant role even after selecting another preview tab');
   await page.locator('#btnUndo').click();assert.deepEqual(await design(page),allLocal);
   await go(page,'Shared typography');await page.locator('#font-heading').selectOption('inter');

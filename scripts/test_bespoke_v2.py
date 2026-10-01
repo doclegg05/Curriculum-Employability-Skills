@@ -39,6 +39,10 @@ class V2SubmissionTests(unittest.TestCase):
         self.payload["design"]["samples"]["boxes"][3] = "Hidden but recoverable 🎓 <script>alert(1)</script>"
         self.payload["design"]["slides"]["cards"]["count"] = "1"
         self.payload["design"]["fonts"] = {"heading": "outfit", "body": "merriweather"}
+        self.payload["design"]["boxStyles"] = [
+            {"fill": "gold", "border": "royal", "look": "outline"},
+            *[{"fill": "inherit", "border": "inherit", "look": "inherit"} for _ in range(3)],
+        ]
         with tempfile.TemporaryDirectory() as tmp:
             destination = writer.write_submission(self.payload, Path(tmp))
             (Path(tmp) / "fonts").symlink_to(ROOT / "fonts")

@@ -1929,6 +1929,63 @@
               }
             }
           }
+        },
+        "boxStyles": {
+          "type": "array",
+          "minItems": 4,
+          "maxItems": 4,
+          "items": {
+            "type": "object",
+            "additionalProperties": false,
+            "required": [
+              "fill",
+              "border",
+              "look"
+            ],
+            "properties": {
+              "fill": {
+                "enum": [
+                  "inherit",
+                  "primary",
+                  "dark",
+                  "royal",
+                  "accent",
+                  "gold",
+                  "muted-gold",
+                  "mauve",
+                  "gray",
+                  "offwhite",
+                  "muted",
+                  "light"
+                ]
+              },
+              "border": {
+                "enum": [
+                  "inherit",
+                  "primary",
+                  "dark",
+                  "royal",
+                  "accent",
+                  "gold",
+                  "muted-gold",
+                  "mauve",
+                  "gray",
+                  "offwhite",
+                  "muted",
+                  "light"
+                ]
+              },
+              "look": {
+                "enum": [
+                  "inherit",
+                  "rail",
+                  "outline",
+                  "filled",
+                  "band"
+                ]
+              }
+            }
+          }
         }
       }
     },

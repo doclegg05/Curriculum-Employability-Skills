@@ -1,4 +1,6 @@
 import * as Model from './builder-model.mjs';
+import { createDirectEditor } from './direct-editor.mjs';
+let directEditor=null;
 import { compareDesign } from './similarity.mjs';
 import { createGuide } from './guide/guide.mjs';
 import { guideMark, indexForMark, keepsGuide } from './guide/questions.mjs';
@@ -201,8 +203,8 @@ const findOption=(family,slug)=>state.library?.families?.[family]?.options.find(
     status.textContent = ui.localPreview
       ? `${lesson?.title || session.lessonId} · Local test session. ${session.savedAt ? 'Saved '+new Date(session.savedAt).toLocaleString()+'.' : 'No test save yet.'} ${session.revision && hasUnsavedTeamWork() ? 'Browser changes are waiting to save.' : ''}`
       : `${lesson?.title || session.lessonId} team session.${saved}${dirty}`;
-    byId("btnLoadLatest")?.toggleAttribute("hidden", !ui.cloudConflict);
-    byId("btnKeepLocal")?.toggleAttribute("hidden", !ui.cloudConflict);
+    byId("btnLoadLatest")?.toggleAttribute("hidden", !ui.cloudConflict && !ui.reopenAvailable);
+    byId("btnKeepLocal")?.toggleAttribute("hidden", !ui.cloudConflict && !ui.reopenAvailable);
     byId("btnCheckStatus")?.toggleAttribute("hidden", !pendingSubmission());
   }
 
@@ -675,11 +677,12 @@ const findOption=(family,slug)=>state.library?.families?.[family]?.options.find(
       const dirty = hasUnsavedTeamWork();
       const remoteChanged = result.revision !== session.revision;
       if (dirty && (!replace || openingKey !== currentSelectionKey())) {
+        ui.reopenAvailable = true;
         if (remoteChanged) {
           ui.cloudConflict = { revision: result.revision, savedAt: result.savedAt };
           fileNotice("A newer shared version exists. This browser draft was kept. Download a backup, then load the latest shared design before recovering any local choices.");
         } else {
-          fileNotice("This browser has unsaved changes, so the shared design was not loaded. Save them or download a backup first.");
+          fileNotice("This browser has unsaved changes, so the saved design was not loaded. Save or download them, or choose Load latest shared design to reopen your save. A browser recovery copy will be kept.");
         }
         updateCloudChrome();
         return false;
@@ -694,6 +697,7 @@ const findOption=(family,slug)=>state.library?.families?.[family]?.options.find(
       session.pendingSave = null;
       session.baseSelectionKey = result.selection?.schema === "bespoke-selection/v1" ? selectionKey(result.selection) : currentSelectionKey();
       ui.cloudConflict = null;
+      ui.reopenAvailable = false;
       ui.autosavePaused = ui.autosavePaused || Boolean(state.legacySelection);
       persistTeamSession();
       storageConflict = false;
@@ -1358,7 +1362,7 @@ function builderGuidance(compact=false){
  const saving=ui.localPreview
   ? 'In this local review preview, Save test design and Open test design use this computer’s test space. Nothing is sent or published.'
   : 'Use Save shared design to save with your team, and Open team design to return. Send to Britt requests a design review; it does not build a lesson.';
- const steps='<ol class="how-to-steps"><li><strong>Start.</strong> Confirm Lesson &amp; team, then choose an editable preset or Build my own. A preset can go straight to Review &amp; save.</li><li><strong>Slide designs · optional.</strong> Edit any of the five slide types directly. Shared theme is optional and supplies defaults; fields marked Custom keep their own choices. Editor tabs change what you edit; preview tabs only change what you see.</li><li><strong>Review &amp; save.</strong> Check the effective appearance and fonts for all five designs, then save. These are sample designs and words, not finished lesson content.</li></ol>';
+ const steps='<p>Select a slide thumbnail, then click its title, text, box or background. The toolbar shows the choices for that selection and names their scope. More options opens the full editor. Box fill, border and style can be independent; box typography is shared within this slide type. Sample words use a normal text field. Start holds team details, editable presets and the optional guide.</p><ol class="how-to-steps"><li><strong>Start.</strong> Confirm Lesson &amp; team, then choose an editable preset or Build my own. A preset can go straight to Review &amp; save.</li><li><strong>Slide designs · optional.</strong> Edit any of the five slide types directly. Shared theme is optional and supplies defaults; fields marked Custom keep their own choices. Slide thumbnails select the design you see and edit.</li><li><strong>Review &amp; save.</strong> Check the effective appearance and fonts for all five designs, then save. These are sample designs and words, not finished lesson content.</li></ol>';
  const rules='<p><strong>Why eleven colors?</strong> These are the approved SPOKES brand colors. They keep lessons recognizable, and you can mix and match all eleven freely. You are not limited to two or three.</p><p><strong>Type, boxes and branding.</strong> Choose heading and body fonts independently from the twelve curated font families. Up to four text boxes keep a slide manageable. The title keeps the SPOKES logo; its position can change, but a watermark does not replace or edit the logo.</p><p><strong>Readability is your decision.</strong> Contrast compares text with its background. Advisories explain when reading may be harder; the team leader can keep and save any palette choice. A passing measurement is not a whole-design accessibility assessment.</p><p><strong>Keep your work.</strong> Undo and Redo restore recent choices. Outside text fields, use Ctrl/Cmd+Z to undo and Ctrl/Cmd+Shift+Z to redo. Text fields keep their normal typing shortcuts. Previous versions lets you reopen shared saves. Files &amp; recovery downloads or opens a backup. Hiding a subtitle, second color or watermark keeps its settings for later.</p><p><strong>Compare for ideas.</strong> The similarity meter compares supported choices with six known lessons. Unmeasured choices do not count. It does not guarantee uniqueness or compare private team designs.</p><p>'+saving+'</p>';
  return steps+(compact?'<p class="helper"><strong>Eleven brand colors, freely mixed.</strong> Readability advice never blocks your color choices.</p><details class="inline-details"><summary>Why these choices and guardrails?</summary>'+rules+'</details>':rules);
 }
@@ -1367,7 +1371,7 @@ function showBuilderHelp(close=false){
  if(close){byId('btnHelp').focus({preventScroll:true});return;}
  byId('builderHelpContent').innerHTML=builderGuidance();byId('builderHelpTitle').focus();
 }
-function goStage(id){if(ui.guide?.on&&id!=='slides')ui.guide={...ui.guide,on:false};state.step=stepIndex(id);render();}
+function goStage(id){directEditor?.open();if(ui.guide?.on&&id!=='slides')ui.guide={...ui.guide,on:false};state.step=stepIndex(id);render();}
 function renderWelcome(panel){
  heading(panel,'Start','Confirm your team, then keep your current design or choose an editable starting look.');
  const intro=document.createElement('section');intro.className='getting-started';intro.setAttribute('aria-label','Getting started');intro.innerHTML='<p class="helper">Start → optional Slide designs → Review &amp; save. All eleven brand colors and twelve independent fonts stay editable. These previews use sample words, not finished lesson content.</p><details class="inline-details" id="startGuidance"><summary>How to choose and keep your design</summary>'+builderGuidance(true)+'</details>';panel.append(intro);
@@ -1520,6 +1524,7 @@ function renderFonts(panel){
  if(!local)appendSharedScope(panel,'pattern');
 }
 function showRoleEditor(kind,section='background',field='primary'){
+ directEditor?.open();
  if(ui.guide)ui.guide={...ui.guide,on:false};
  ui.roleSections||={};ui.roleSections['section-'+kind+'-'+section]=true;ui.editorRole=kind;ui.focusStyleField=field;state.step=stepIndex('slides');state.previewView=kind;
  byId('workspace').dataset.activeSurface='design';document.querySelectorAll('#surfaceSwitcher [role=tab]').forEach(t=>t.setAttribute('aria-selected',String(t.dataset.surface==='design')));
@@ -1661,6 +1666,13 @@ function renderReview(panel){
    const dt=document.createElement('dt');dt.textContent=label;const dd=document.createElement('dd');dd.dataset.reviewField=key;dd.textContent=value+' · '+(saved[key]==='inherit'?'Shared':'Custom');dl.append(dt,dd);
   }
   row.append(dl);
+  if(kind==='cards'&&state.design.boxStyles){
+   const custom=document.createElement('p');custom.className='helper';custom.dataset.boxOverrides='true';
+   custom.textContent=state.design.boxStyles.map((box,i)=>{
+    const fields=[box.fill==='inherit'?'':'fill '+color(box.fill),box.border==='inherit'?'':'border '+color(box.border),box.look==='inherit'?'':'style '+catalog.slideGroups.find(g=>g.id==='cards').decisions.find(d=>d.id==='look').options.find(o=>o.id===box.look).label].filter(Boolean);
+    return fields.length?'Box '+(i+1)+(i>=Number(state.design.slides.cards.count)?' (hidden, kept in design)':'')+': '+fields.join(', '):'';
+   }).filter(Boolean).join(' · ');if(custom.textContent)row.append(custom);
+  }
   const details=document.createElement('p');details.className='helper';details.textContent=[effective.backgroundMode==='gradient'?'Two-color gradient · '+({right:'left to right',down:'top to bottom',diagonal:'diagonal'}[effective.direction]):'Solid background',...group.decisions.filter(d=>!['colors','watermark'].includes(d.id)).map(d=>d.label+': '+d.options.find(o=>o.id===state.design.slides[kind][d.id])?.label),!effective.headingVisible?'Heading hidden':'',!effective.bodyVisible?'Supporting / box text hidden':'',effective.watermarkMode==='text'?'Custom watermark: '+effective.watermarkText+' · '+color(effective.watermarkColor)+' · '+effective.watermarkPlacement.replaceAll('-',' ')+' · '+effective.watermarkSize+' · '+effective.watermarkOpacity+' strength':effective.watermarkMode==='legacy'?'Arrangement watermark':'No watermark','Texture strength: '+({subtle:'Subtle',normal:'Standard',bold:'Stronger'}[effective.patternStrength]),'Heading: '+({default:'Match arrangement',small:'Smaller',large:'Larger'}[effective.headingSize])+', '+effective.headingAlignment+' aligned','Supporting / box text: '+({default:'Match arrangement',small:'Smaller',large:'Larger'}[effective.bodySize])+', '+effective.bodyAlignment+' aligned',kind==='divider'&&state.design.slides.divider.layout==='band'?'Band outer surface: '+color(state.design.roles.contentBackground)+' · Shared':''].filter(Boolean).join(' · ');row.append(details);
   const actions=document.createElement('div');actions.className='review-role-actions';
   for(const [action,label] of [['preview','Preview'],['edit','Edit']]){const button=document.createElement('button');button.type='button';button.className='text-link';button.id='review-'+action+'-'+kind;button.textContent=label+' '+VIEW_NAMES[kind];button.onclick=()=>{if(action==='edit')showRoleEditor(kind);else{showView(kind);if(matchMedia('(max-width:760px)').matches)byId('surface-preview').click();byId('previewTabs').querySelector('[data-view="'+kind+'"]').focus({preventScroll:true});}};actions.append(button);}row.append(actions);summary.append(row);
@@ -1716,6 +1728,7 @@ function updatePreview(design=state.design,{quick=false}={}){
  const sidebarDisclosure=byId('modelStage').querySelector('.slide-sidebar-disclosure');
  if(sidebarDisclosure)sidebarDisclosure.open=sidebarSampleOpen;
  // A hover preview redraws only the slide. Notes and the meter would change the page height under the pointer.
+ directEditor?.update({quick});
  if(quick)return;
  // Contextual sample sits outside the slide; cards/title/dividers keep their real structure.
  const buttonSample=byId('buttonColorSample');
@@ -1739,7 +1752,7 @@ function updatePreview(design=state.design,{quick=false}={}){
  if(issues.length&&!dividerIssues){const repair=document.createElement('button');repair.className='text-link';repair.textContent='Edit '+VIEW_NAMES[state.previewView].toLowerCase()+' colors';repair.onclick=()=>showRoleEditor(state.previewView,'text',issues[0]?.role==='body'||issues[0]?.role==='subtitle'?'bodyColor':'headingColor');repairs.append(repair);}
  byId('liveRegion').textContent=VIEW_NAMES[state.previewView]+' preview updated.'+(issues.length?' Contrast advisory: '+issues.map(issue=>issue.message).join(' ')+' The team leader can keep this choice and save the design.':'');
 }
-function showView(view){state.previewView=view;ui.previewPinned=true;if(ui.sharedThemeOpen)render(false);else{updatePreview();saveDraft();}}
+function showView(view){state.previewView=view;ui.previewPinned=true;if(state.step===1&&!ui.guide?.on){ui.editorRole=view;render(false);}else if(ui.sharedThemeOpen)render(false);else{updatePreview();saveDraft();}}
 function render(focus=true){
  if(byId('sharedTheme'))ui.sharedThemeOpen=byId('sharedTheme').open;
  const changed=ui.renderedStep!==state.step;if(changed){ui.renderedStep=state.step;if(state.step===1)state.previewView=ui.editorRole;ui.previewPinned=false;}
@@ -1786,6 +1799,18 @@ async function init(){
  const data=await Promise.all(paths.map(async url=>{const r=await fetch(url);if(!r.ok)throw new Error('Could not load '+url);return r.json();}));
  [state.meta,state.library,catalog,fingerprints,selectionSchema]=data;state.design=Model.defaultDesign(catalog);
  guide=createGuide(guideHost());
+ directEditor=createDirectEditor({
+  catalog:()=>catalog,design:()=>state.design,lessonTitle:()=>state.meta.lessons.find(l=>l.id===state.lessonId)?.title,view:()=>state.previewView,editable:isLeadSession,guiding:()=>ui.guide?.on,
+  change:changeDesign,
+  details:(kind,type)=>showRoleEditor(kind,['heading','body'].includes(type)?'text':['card','video','logo','activity'].includes(type)?'arrangement':'background',type==='body'?'bodyFont':type==='heading'?'headingFont':'primary'),
+  textChange:(index,key,value,checkpoint)=>{
+   if(!isLeadSession())return;
+   if(checkpoint)recordChange(VIEW_NAMES[state.previewView]+': sample words',clone(state.design));
+   if(index!==undefined)state.design.samples.boxes[index]=value;
+   else state.design=Model.setRoleStyle(catalog,state.design,state.previewView,key,value);
+   state.design.startingPoint='custom';state.redo=[];ui.meaningfulDesign=true;saveDraft();updatePreview();updateUndo();
+  }
+ });
  await loadHandoffConfig();const startup=await openShareLink();
  if(ui.localPreview&&!ui.teamSession&&!startup?.snapshot){installTeamSession(state.lessonId,'bespoke-local-preview-synthetic');ui.mode='edit';}
  const mayReplace=Boolean(ui.teamSession)&&(!lastSavedRaw||Boolean(ui.teamSession.baseSelectionKey&&currentSelectionKey()===ui.teamSession.baseSelectionKey));
