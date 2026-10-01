@@ -293,6 +293,42 @@ try {
     assert.equal(await heading(page), 'Title layout');
   });
 
+  await scenario('Undo after Start the guide again returns to the same question even though the team question is gone', async ({ makePage }) => {
+    const page = await makePage();
+    await startGuide(page);
+    await page.locator('#teamName').fill('Pilot team');
+    await page.locator('#spokespersonName').fill('Pat Teacher');
+    await walkTo(page, 'Title layout');
+    const original = (await design(page)).slides.title.layout;
+    await page.locator(`.guide-sample[data-choice="${original === 'split' ? 'center' : 'split'}"]`).click();
+    await page.locator('#btnGuideExit').click();
+    await page.locator('#stage-start').click();
+    await page.locator('#btnGuideRestart').click();
+    await page.locator('.guide-count').waitFor();
+    assert.match(await count(page), /of 39\b/, 'the restarted guide no longer asks the team question');
+    await page.locator('#btnUndo').click();
+    assert.equal(await heading(page), 'Title layout', 'Undo lands on the question where the change was made');
+    assert.equal((await design(page)).slides.title.layout, original);
+  });
+
+  await scenario('sample thumbnails rescale when the window is resized', async ({ makePage }) => {
+    const page = await makePage();
+    await startGuide(page);
+    await walkTo(page, 'Title layout');
+    const fit = () => page.locator('.guide-thumb').first().evaluate((t) => {
+      const scale = parseFloat(getComputedStyle(t).getPropertyValue('--s'));
+      return { scale, expected: t.clientWidth / 720 };
+    });
+    await page.waitForFunction(() => document.querySelector('.guide-thumb')?.style.getPropertyValue('--s'));
+    const wide = await fit();
+    assert.ok(Math.abs(wide.scale - wide.expected) < 0.005, `fits at first: ${JSON.stringify(wide)}`);
+    await page.setViewportSize({ width: 1000, height: 1000 });
+    await page.waitForTimeout(300);
+    const narrow = await fit();
+    assert.notEqual(narrow.expected.toFixed(3), wide.expected.toFixed(3), 'the cell really changed width');
+    assert.ok(Math.abs(narrow.scale - narrow.expected) < 0.005, `refits after the resize: ${JSON.stringify(narrow)}`);
+  });
+
   await scenario('Undo after leaving the guide restores the design and does not reopen the guide', async ({ makePage }) => {
     const page = await makePage();
     await startGuide(page);
