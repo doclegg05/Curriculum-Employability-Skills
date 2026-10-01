@@ -22,15 +22,16 @@
 - **Date**: 2026-10-01
 - **What we worked on**: Checked how far the last BeSpoke plan got. Guide me (Sept 30 plan) was complete and merged into `codex/bespoke-guided-builder` (PR #35), not `main`. Ran `quality.sh` on that branch head (green), opened PR #36 to `main` with the deploy order first, staged the service at `~/bespoke-stages/2026-10-01-builder-8fa1e5b` (byte-matched the branch, v1 fixture accepted), Britt deployed it, Claude ran the post-deploy checks, CI passed, Britt merged.
 - **What we decided**: see the 2026-10-01 rows in the decision log.
-- **Where we left off**: v2 builder is live on Pages after PR #38 fixed a Pages build that had failed since 2026-09-23. PR #39 (three Guide me bug fixes) is open. Next: hosted round trip with a real team link (v2 design, a Guide me design, and an old v1 draft), then the Money Management pilot.
+- **Where we left off**: v2 builder is live on Pages after PR #38 fixed a Pages build that had failed since 2026-09-23. PR #39 (three Guide me bug fixes) merged as `b4eb377` and is live. Next: hosted round trip with a real team link (v2 design, a Guide me design, and an old v1 draft), then the Money Management pilot.
 
 ## Open Items
 - [x] Guided mode and the Codex builder merged to `main` 2026-10-01 (PR #36), after the service redeploy.
 - [x] PR #38 merged 2026-10-01; Pages deployed `4dfba98` and the builder is live.
-- [ ] Merge PR #39: Guide me Undo after restart, thumbnail resizing, guide cleared when the design is replaced. The phone layout minor from #35 is still open (shell layout, Britt's call).
+- [x] PR #39 merged 2026-10-01 (`b4eb377`, live on Pages): Guide me Undo after restart, thumbnail resizing, guide cleared when the design is replaced.
+- [ ] Guide me on a phone: the question starts below the stacked header, so samples need a scroll (shell layout, Britt's call).
 - [ ] **Hosted v2 round trip** with a private team link: build, Save, reopen on another computer, Send; confirm the draft PR carries the v2 selection, CSS and contract. Repeat with a Guide me design and with an existing v1 draft (conversion). Record in a dated verification note.
 - [ ] **Guided mode pilot**: a real spokesperson runs Guide me on Money Management; hosted save, reopen and Send with a guided design have not been exercised.
-- [ ] Deferred minors from the 2026-09-30 review, (a) to (c) fixed in PR #39: (a) Undo after "Start the guide again" stores a question index, not an id, and can land one question off; (b) thumbnails are scaled once per render, so narrowing the window leaves them overflowing until the next render; (c) `resetDesignForLesson` keeps the guide when the lesson id is unchanged, so opening a team with no shared design leaves the guide over a default design.
+- [x] Deferred minors from the 2026-09-30 review, (a) to (c) fixed in PR #39: (a) Undo after "Start the guide again" stores a question index, not an id, and can land one question off; (b) thumbnails are scaled once per render, so narrowing the window leaves them overflowing until the next render; (c) `resetDesignForLesson` keeps the guide when the lesson id is unchanged, so opening a team with no shared design leaves the guide over a default design.
 - [ ] **Preview width finding**: at 1440 px the preview is 752 px wide and the Across and Balanced grid box layouts render identically (free editor too). Britt's call whether to widen the preview or change the layout rule.
 - [ ] Phone layout: the guide question starts below the stacked header, notices and stage list (existing shell), so samples need a scroll.
 - [ ] **Hosted acceptance with a design brief** (PR #25): save with a brief on one computer, reopen on another, Send, confirm the "Design brief" row. Record in a verification note like `docs/bespoke/verification-2026-09-22.md`. Service redeploy (`6ab3ebad…`) and Pages are live; only this end-to-end run is missing.
