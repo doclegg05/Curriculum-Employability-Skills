@@ -7,7 +7,7 @@
 - **Repo**: origin = doclegg05/Curriculum-Employability-Skills (dev); publisher = SPOKES-Skills/Employability-Skills-Curriculum (public Pages); t9 = /Volumes/T9 backup mirror
 
 ## Current Status
-- **BeSpoke v2 builder + Guide me merged to `main` 2026-10-01** (PR #36, merge `7d482d2`). The 3-stage builder (Start, Slide designs, Review & save) replaces the 10-step wizard; the old wizard stays at `bespoke/legacy.html`. Saved designs are `bespoke-selection/v2`; v1 drafts open converted, with the original kept inside. Netlify service redeployed from `8fa1e5b` before the merge (deploy `6abe7363c429c582590174ac`); OPTIONS 204 and bogus-code 403 checked. Rules: `docs/bespoke/decisions.md`. Hosted v2 save/reopen/Send not yet exercised.
+- **BeSpoke v2 builder + Guide me merged to `main` 2026-10-01** (PR #36, merge `7d482d2`). The 3-stage builder (Start, Slide designs, Review & save) replaces the 10-step wizard; the old wizard stays at `bespoke/legacy.html`. Saved designs are `bespoke-selection/v2`; v1 drafts open converted, with the original kept inside. Netlify service redeployed from `8fa1e5b` before the merge (deploy `6abe7363c429c582590174ac`); OPTIONS 204 and bogus-code 403 checked. Rules: `docs/bespoke/decisions.md`. **Not live on Pages yet:** every Pages build since 2026-09-23 failed on Liquid in the Plan 1 doc, so Pages still serves `7fc2ef3` (old wizard). Fix is PR #38 (`_config.yml` excludes `docs/superpowers/`). Hosted v2 save/reopen/Send not yet exercised.
 (as of 2026-10-01, `origin/main` = `7d482d2`)
 - **Six existing lessons: OUT OF QA, READY FOR TEACHING** (Britt, 2026-09-23). This supersedes the 2026-09-22 review's "no blanket teaching release" verdict. Registry, Dashboard fallback, README and Project Plan updated to match the same day.
 - **BeSpoke: built, deployed, live-verified 2026-09-22** (`docs/bespoke/verification-2026-09-22.md`). Private per-lesson team links, encrypted shared Save/Open, History, Download/Open backup, Send to Britt → receipt-confirmed draft PR. Scope is visual design only (colors, fonts, layouts, cards); no lesson is built by it.
@@ -22,10 +22,11 @@
 - **Date**: 2026-10-01
 - **What we worked on**: Checked how far the last BeSpoke plan got. Guide me (Sept 30 plan) was complete and merged into `codex/bespoke-guided-builder` (PR #35), not `main`. Ran `quality.sh` on that branch head (green), opened PR #36 to `main` with the deploy order first, staged the service at `~/bespoke-stages/2026-10-01-builder-8fa1e5b` (byte-matched the branch, v1 fixture accepted), Britt deployed it, Claude ran the post-deploy checks, CI passed, Britt merged.
 - **What we decided**: see the 2026-10-01 rows in the decision log.
-- **Where we left off**: v2 builder is on `main`. Next: hosted round trip with a real team link (v2 design, a Guide me design, and an old v1 draft), then the Money Management pilot.
+- **Where we left off**: v2 builder is on `main` but not live: Pages builds fail (found after the merge). PR #38 fixes the build; merge it and confirm `/bespoke/legacy.html` returns 200. Then: hosted round trip with a real team link (v2 design, a Guide me design, and an old v1 draft), then the Money Management pilot.
 
 ## Open Items
 - [x] Guided mode and the Codex builder merged to `main` 2026-10-01 (PR #36), after the service redeploy.
+- [ ] **Merge PR #38 so Pages builds again**, then check the `pages-build-deployment` run, `/bespoke/legacy.html` (200) and the new builder at `/bespoke/`. Pages has not deployed since `7fc2ef3`.
 - [ ] **Hosted v2 round trip** with a private team link: build, Save, reopen on another computer, Send; confirm the draft PR carries the v2 selection, CSS and contract. Repeat with a Guide me design and with an existing v1 draft (conversion). Record in a dated verification note.
 - [ ] **Guided mode pilot**: a real spokesperson runs Guide me on Money Management; hosted save, reopen and Send with a guided design have not been exercised.
 - [ ] Deferred minors from the 2026-09-30 review: (a) Undo after "Start the guide again" stores a question index, not an id, and can land one question off; (b) thumbnails are scaled once per render, so narrowing the window leaves them overflowing until the next render; (c) `resetDesignForLesson` keeps the guide when the lesson id is unchanged, so opening a team with no shared design leaves the guide over a default design.
@@ -102,6 +103,7 @@
 - Dashboard.html fetches lesson-registry.json with a hardcoded FALLBACK_LESSONS array for file:// use — keep both in sync when editing the registry.
 
 ## Known Issues
+- GitHub Pages runs Jekyll, so Liquid parses every `.md` file. A doc quoting `{{` breaks the whole Pages build, and nothing in `quality.sh` catches it. PR #38 excludes `docs/superpowers/`; other `.md` paths are still exposed.
 - UNVERIFIED: Chrome may block `<track>` caption files over file:// (per-file opaque origins). Captions confirmed fine over http. Spot-check before promising captions on the double-click path.
 - Two live Pages sites (publisher + dev repo), and they have diverged (publisher 46 commits behind as of 2026-09-23).
 - a11y ratchet in quality.sh permits existing baseline violations — green gate is not a clean accessibility bill of health. Verification record flags lesson readability scores "below grade 8" as a caveat (wording ambiguous; check `readability-gate.mjs` output before citing).
