@@ -111,7 +111,7 @@ const staticServer = http.createServer(async (req, res) => {
   } catch { res.writeHead(404).end(); }
 });
 await new Promise(resolve => staticServer.listen(0, "127.0.0.1", resolve));
-staticBase = "http://127.0.0.1:" + staticServer.address().port + "/bespoke/";
+staticBase = "http://127.0.0.1:" + staticServer.address().port + "/bespoke/legacy.html";
 const teamUrl = staticBase + "#team=money-management." + accessCode;
 
 const browser = await chromium.launch({ headless:true });

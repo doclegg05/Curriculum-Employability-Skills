@@ -11,11 +11,16 @@ design** and **Open team design** to save and resume their shared choices across
 computers. One spokesperson operates BeSpoke during the call; OneDrive can hold
 optional files from **Download backup**. No lesson-writing form, coding or GitHub
 account is required for this workflow.
-Start with the [BeSpoke visual design guide](bespoke/team-guide.html).
+The current local builder uses **Start → Slide designs → Review & save**. Choose a
+preset or Build my own, use Shared theme and any slide editors optionally, then
+review the effective design. Start with the [BeSpoke visual design guide](bespoke/team-guide.html).
 Britt/builders follow [the handoff and design verification procedure](docs/bespoke/builder-handoff.md).
 Administrators follow [shared service setup and hosted acceptance](docs/bespoke/auto-handoff-setup.md).
-The hosted Save/Open/Send flow passed [live acceptance](docs/bespoke/verification-2026-09-22.md),
-including two browser sessions and a real review proposal.
+The earlier v1 hosted Save/Open/Send flow passed
+[live acceptance](docs/bespoke/verification-2026-09-22.md), including two browser
+sessions and a real review proposal. The current v2 builder is for local review;
+its synthetic tests do not establish hosted v2 acceptance. In that local preview,
+Save test design and Open test design use a local test service, and Send is disabled.
 The six Phase 1 lessons are out of QA and ready for teaching (September 23, 2026).
 Phase 2 (Round 2) builds six new lessons with instructor teams: Goal Setting,
 Money Management - Budget, Professionalism and Diversity, Knowing Your Rights in
@@ -41,7 +46,7 @@ Earlier review evidence:
 - `SPOKES-Project-Plan.md` — phased project delivery plan
 - `SPOKES-Master-Action-Plan.md` — consolidated issue register + sprint plan
 - `Dashboard.html` — curriculum launcher/dashboard (`index.html` redirects here)
-- `bespoke/` — BeSpoke instructor design wizard (GitHub Pages at `/bespoke/`; shared Save/Open and review receipts verified)
+- `bespoke/` — BeSpoke instructor visual design builder; v2 is under local review, with the earlier v1 hosted acceptance recorded separately
 - `netlify/` — private-team Save/Open and review handoff service; deploy the staged service package
 - `docs/bespoke/decisions.md` — greenlit Bespoke lock decisions
 - `lesson-registry.json` — per-lesson status, theme, and quality-gate registry

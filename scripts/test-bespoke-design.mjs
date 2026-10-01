@@ -19,7 +19,7 @@ try {
 import copy,json,pathlib,re,shutil,sys
 root,temporary=map(pathlib.Path,sys.argv[1:])
 sys.path.insert(0,str(root/'scripts'))
-from bespoke_design import build_design
+from bespoke_design import build_design, component_sample_html
 payload=json.loads((root/'scripts/test-fixtures/bespoke/selection-money-management.json').read_text())
 meta=json.loads((root/'bespoke/catalog.json').read_text())
 template=(root/'SPOKES Builder/template.html').read_text()
@@ -35,6 +35,16 @@ scenarios.append(('base-design',base))
 alternative=copy.deepcopy(base)
 alternative['theme'].update(colorLead='mauve',sidebarColor='royal',backgroundTexture='dot-grid',titleSlide='framed-center',dividerStyle='framed-gold',cards={'lessonWide':'stamp-frame','varyByChapter':False,'chapterStyles':None})
 scenarios.append(('alternative-design',alternative))
+for background in ('dark','mauve'):
+    current={'schema':'bespoke-selection/v2','date':'2026-09-24','submittedAt':'2026-09-24T16:30:00.000Z','lesson':copy.deepcopy(payload['lesson']),'team':copy.deepcopy(payload['team']),'design':json.loads((root/'bespoke/builder-catalog.json').read_text())['defaults']}
+    current['design']['roles'].update(titleText='offwhite',subtitle='light',dividerBackground=background)
+    current['design']['background']='crosshatch'
+    scenarios.append(('v2-'+background,current))
+advisory=copy.deepcopy(current)
+advisory['design']['roles'].update(titleBackground='mauve',titleBackgroundEnd='accent',titleText='light',subtitle='light',dividerBackground='accent',heading='accent',body='gold')
+advisory['design']['slides']['title']['colors']='gradient'
+scenarios.append(('v2-advisory',advisory))
+
 for name,current in scenarios:
     css,contract=build_design(current)
     folder=temporary/name
@@ -44,6 +54,10 @@ for name,current in scenarios:
     html=html.replace('</head>','<meta name="bespoke-selection-sha256" content="'+contract['selectionSha256']+'"></head>')
     (folder/'index.html').write_text(html)
     (folder/'build-contract.json').write_text(json.dumps(contract))
+    if current.get('schema') == 'bespoke-selection/v2':
+        samples=component_sample_html(css,contract).replace('<base href="../../../../../bespoke/">','<base href="./">')
+        (folder/'component-samples.html').write_text(samples)
+
 `, root, temporary], { cwd: root, stdio: 'pipe' });
 
   browser = await chromium.launch({ headless: true });
@@ -69,6 +83,42 @@ for name,current in scenarios:
     for (const target of ['body', 'chapterLabel']) assert.ok(fonts[target].includes(pair.body), `${pair.id}: ${target} used ${fonts[target]}`);
     console.log(`PASS generated fonts: ${pair.id}`);
   }
+
+  for (const [background, rgb] of [['dark', 'rgb(0, 64, 113)'], ['mauve', 'rgb(167, 37, 63)']]) {
+    const folder = path.join(temporary, 'v2-'+background);
+    execFileSync(python, [path.join(root, 'scripts/bespoke-check-design.py'), path.join(folder, 'build-contract.json'), path.join(folder, 'component-samples.html')], { cwd: root, stdio: 'pipe' });
+    for (const file of ['index.html', 'component-samples.html']) {
+      await page.goto(pathToFileURL(path.join(folder, file)).href);
+      const canonical = file === 'index.html';
+      const styles = await page.evaluate(canonical => {
+        const root = document.querySelector(canonical ? '.slide-section' : '[data-kind="divider"]');
+        if (canonical) root.insertAdjacentHTML('beforeend', '<p>Supporting copy uses the subtitle role.</p>');
+        return { pattern: getComputedStyle(root).backgroundImage, background: getComputedStyle(root).backgroundColor, heading: getComputedStyle(root.querySelector('h2')).color, supporting: [...root.querySelectorAll('p, .chapter-label')].map(el => getComputedStyle(el).color) };
+      }, canonical);
+      assert.equal(styles.background, rgb);
+      assert.equal((styles.pattern.match(/linear-gradient/g) || []).length, 2, `${file}: both pattern directions are layered above the chosen base`);
+      assert.equal(styles.heading, 'rgb(209, 211, 212)', `${file}: selected heading color`);
+      assert(styles.supporting.length >= 2 && styles.supporting.every(color => color === 'rgb(255, 255, 255)'), `${file}: selected subtitle color applies to labels and supporting copy`);
+    }
+  }
+  console.log('PASS v2 artifact and canonical divider colors follow the explicit heading/supporting roles');
+
+  const advisoryFolder = path.join(temporary, 'v2-advisory');
+  const advisoryContract = JSON.parse(await fs.readFile(path.join(advisoryFolder, 'build-contract.json'), 'utf8'));
+  assert(advisoryContract.contrastAdvisories.some(message => /Mauve to Green.*Crosshatch.*below the 3:1/.test(message)));
+  execFileSync(python, [path.join(root, 'scripts/bespoke-check-design.py'), path.join(advisoryFolder, 'build-contract.json'), path.join(advisoryFolder, 'component-samples.html')], { cwd: root, stdio: 'pipe' });
+  for (const file of ['index.html', 'component-samples.html']) {
+    await page.goto(pathToFileURL(path.join(advisoryFolder, file)).href);
+    const actual = await page.evaluate(canonical => {
+      const color = selector => getComputedStyle(document.querySelector(selector)).color;
+      const title = document.querySelector(canonical ? '.slide-title' : '[data-kind="title"]');
+      return { title: color(canonical ? '.slide-title h1' : '.slide-title-text'), divider: color(canonical ? '.slide-section h2' : '[data-kind="divider"] h2'), subtitle: color(canonical ? '.slide-section .chapter-label' : '[data-kind="divider"] .slide-body'), heading: color(canonical ? '.card h4' : '.slide-card h3'), body: color(canonical ? '.card p' : '.slide-card .slide-body'), background: getComputedStyle(title).backgroundImage };
+    }, file === 'index.html');
+    assert.deepEqual({ title: actual.title, divider: actual.divider, subtitle: actual.subtitle, heading: actual.heading, body: actual.body }, { title:'rgb(255, 255, 255)', divider:'rgb(255, 255, 255)', subtitle:'rgb(255, 255, 255)', heading:'rgb(55, 181, 80)', body:'rgb(211, 178, 87)' });
+    assert(actual.background.includes('rgb(167, 37, 63)') && actual.background.includes('rgb(55, 181, 80)'));
+    if(file === 'component-samples.html') assert.match(await page.locator('.contrast-advisory').textContent(), /team leader can keep this choice/);
+  }
+  console.log('PASS low-contrast title/divider/body/heading colors remain exact in generated and canonical output, with advisory guidance');
 
   async function appearance(name) {
     await page.goto(pathToFileURL(path.join(temporary, name, 'index.html')).href);
