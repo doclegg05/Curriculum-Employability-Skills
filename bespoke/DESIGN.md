@@ -211,7 +211,7 @@ Panel padding is 26px 22px 36px; preview padding is 26px 28px. Related fields an
 | Viewport | Implemented composition |
 | --- | --- |
 | At least 1500px | Live thumbnails use a 170px rail. The central preview fills the remaining area with a 1080px canvas cap; More options opens a 380px detail panel. Stage navigation and history sit above the workspace. |
-| 761–1100px | A 140px thumbnail rail stays beside the preview; More options opens below the preview. |
+| 761–1100px | Thumbnails form a strip across the top. More options and Guide me open in a 280px column beside the preview, so the slide stays in view while choices change. |
 | At most 760px | Thumbnails form a horizontal scrolling strip. The preview editor and toolbar stay together; More options opens below. Start, Review and Guide me retain the Design / Preview switch. Touch controls have 44px targets. |
 | At most 600px viewport | Generated slide styles reduce padding and collapse video/activity side layouts. |
 | Above 40rem sample canvas | Content samples show the lesson's 280px vertical chapter sidebar beside the main content. |
@@ -390,3 +390,9 @@ Shared default controls. The scope line names the actual model boundary: a slide
 role, all matching text on that role, or all Text boxes. Selection markings are
 UI only. Browser reload restores the options disclosure; saved designs retain the
 existing model contract. Guide me and Start/Review remain available.
+
+Only the Slide designs stage edits through the preview. While Guide me runs it owns
+the preview, so the toolbar is hidden and slide elements are not selectable. On Start
+and Review the slide is for looking at; one Edit this slide button opens the editor.
+Selectable text keeps its visible words as its accessible name; the background and
+boxes are labeled groups, and the selected element carries `aria-current="true"`.

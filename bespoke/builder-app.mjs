@@ -1797,12 +1797,12 @@ async function init(){
  guide=createGuide(guideHost());
  byId('editorStages').append(byId('chromeRail').querySelector('.stepper'));
  byId('slideRail').append(byId('previewTabs'));
- const thumbnailMedia=matchMedia('(max-width:760px)');
+ const thumbnailMedia=matchMedia('(max-width:1100px)');
  const orientThumbnails=()=>byId('previewTabs').setAttribute('aria-orientation',thumbnailMedia.matches?'horizontal':'vertical');
  thumbnailMedia.addEventListener('change',orientThumbnails);orientThumbnails();
  previewEditor=createPreviewEditor({
   catalog, model:Model,
-  context:()=>({design:state.design,kind:state.previewView,editable:isLeadSession(),optionsOpen:ui.moreOptions}),
+  context:()=>({design:state.design,kind:state.previewView,editable:isLeadSession(),optionsOpen:ui.moreOptions,mode:ui.guide?.on?'guide':state.step===1?'edit':'browse'}),
   activate:()=>{if(ui.guide)ui.guide={...ui.guide,on:false};ui.editorRole=state.previewView;state.step=1;ui.sharedThemeOpen=false;render(false);},
   change:(label,edit)=>changeDesign(label,edit),
   more:target=>{ui.moreOptions=!ui.moreOptions;if(ui.moreOptions)showRoleEditor(state.previewView,target==='background'?'background':target.startsWith('box')?'arrangement':'text',target.startsWith('body')?'bodyFont':target==='background'?'primary':'headingFont');else{render(false);byId('btnMoreOptions').focus();}},

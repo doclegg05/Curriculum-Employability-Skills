@@ -13,7 +13,7 @@ export function createPreviewEditor(host) {
  }
  function refreshSelection(){
   const {kind}=host.context();
-  for(const t of targets){t.node.classList.toggle('editor-selected',t.id===selected);t.node.setAttribute('aria-describedby','selectionHelp');}
+  for(const t of targets){const on=t.id===selected;t.node.classList.toggle('editor-selected',on);t.node.setAttribute('aria-describedby','selectionHelp');if(on)t.node.setAttribute('aria-current','true');else t.node.removeAttribute('aria-current');}
   const picker=document.getElementById('selectedElement');if(picker)picker.value=selected;
   document.getElementById('editScope').textContent=scope(kind,selected);
   renderToolbar();
@@ -38,8 +38,17 @@ export function createPreviewEditor(host) {
  function renderToolbar(){
   const activeId=toolbar.contains(document.activeElement)?document.activeElement.id:null;
   toolbar.replaceChildren();
-  const {design,kind,editable,optionsOpen}=host.context();
+  const {design,kind,editable,optionsOpen,mode}=host.context();
   if(!design)return;
+  // Guide me owns the preview while it runs; Start and Review offer one explicit way into editing.
+  toolbar.hidden=mode==='guide';
+  for(const id of ['editScope','selectionHelp'])document.getElementById(id).hidden=mode!=='edit';
+  if(mode==='guide')return;
+  if(mode==='browse'){
+   const edit=document.createElement('button');edit.id='btnEditSlide';edit.type='button';edit.className='btn btn-primary';edit.textContent='Edit this slide';
+   edit.onclick=()=>{host.activate();document.getElementById('selectedElement')?.focus({preventScroll:true});};
+   toolbar.append(edit);return;
+  }
   field('element','Selected element',selected,targets.map(t=>({id:t.id,label:t.label})),value=>select(value,{focus:true}));
   document.getElementById('context-element').id='selectedElement';
   const saved={...host.model.roleStyleDefaults(host.catalog,design,kind),...design.roleStyles?.[kind]};
@@ -66,7 +75,9 @@ export function createPreviewEditor(host) {
  function refresh({thumbnails=true}={}){
   const {kind}=host.context();if(lastKind!==kind){selected='background';lastKind=kind;}
   targets=[];
-  const add=(id,label,node)=>{if(!node||getComputedStyle(node).display==='none'||!node.getClientRects().length)return;targets.push({id,label,node});node.dataset.editTarget=id;node.tabIndex=0;node.setAttribute('aria-label',`${label}. Select to format.`);};
+  const editing=host.context().mode==='edit';
+  // Text keeps its visible words as its name; the background and boxes are labeled groups.
+  const add=(id,label,node)=>{if(!node||getComputedStyle(node).display==='none'||!node.getClientRects().length)return;targets.push({id,label,node});if(!editing)return;node.dataset.editTarget=id;node.tabIndex=0;if(node.matches('.bespoke-slide,.slide-card')){node.setAttribute('role','group');node.setAttribute('aria-label',label);}};
   add('background','Background',stage.querySelector('.bespoke-slide'));
   stage.querySelectorAll('.slide-title-text,.slide-heading,.slide-card h3,.slide-activity-label').forEach((node,i)=>add('heading-'+i,node.closest('.slide-card')?'Box '+(Array.from(stage.querySelectorAll('.slide-card')).indexOf(node.closest('.slide-card'))+1)+' heading':node.classList.contains('slide-activity-label')?'Activity label':'Heading',node));
   stage.querySelectorAll('.slide-subtitle,.slide-body').forEach((node,i)=>add('body-'+i,node.closest('.slide-card')?'Box '+(Array.from(stage.querySelectorAll('.slide-card')).indexOf(node.closest('.slide-card'))+1)+' text':'Supporting text',node));
@@ -80,11 +91,11 @@ export function createPreviewEditor(host) {
   }
  }
  stage.addEventListener('click',event=>{
-  if(event.target.closest('summary,a,input,select,textarea,button'))return;
+  if(host.context().mode!=='edit'||event.target.closest('summary,a,input,select,textarea,button'))return;
   const node=event.target.closest('[data-edit-target]');if(node)select(node.dataset.editTarget,{focus:true});
  });
  stage.addEventListener('keydown',event=>{
-  if(event.target.closest('summary,a,input,select,textarea,button'))return;
+  if(host.context().mode!=='edit'||event.target.closest('summary,a,input,select,textarea,button'))return;
   if(event.key==='Escape'){event.preventDefault();select('background',{focus:true});}
   else if(event.key==='Enter'||event.key===' '){const node=event.target.closest('[data-edit-target]');if(node){event.preventDefault();select(node.dataset.editTarget,{focus:true});}}
  });
