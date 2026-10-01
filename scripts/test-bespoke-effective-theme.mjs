@@ -217,7 +217,7 @@ try {
     const expected = structuredClone(before); expected.startingPoint = 'custom'; expected.roleStyles = { video: { ...roleStyleDefaults(catalog, before, 'video'), bodyFont: 'source-sans-3' } };
     assert.deepEqual(await design(page), expected); assert.equal(await page.locator('#modelStage .slide-body').count(), 0, 'Changing a hidden font does not show text');
     assert.match(await page.locator('#font-body-help').textContent(), /Custom.*hidden.*kept/s);
-    await page.locator('#stage-slides').click(); await page.locator('#editor-video').click();
+    await page.locator('#stage-slides').click(); if (!await page.locator('#roleEditorTabs').isVisible()) await page.locator('#btnMoreOptions').click(); await page.locator('#editor-video').click();
     const text = page.locator('#section-video-text'); if (!await text.evaluate(el => el.open)) await text.locator(':scope > summary').click();
     await page.locator('#role-video-bodyVisible').check(); expected.roleStyles.video.bodyVisible = true; assert.deepEqual(await design(page), expected);
     await surface(page, 'preview'); await checkFont(page, 'video', 'body', 'source-sans-3'); await start(page);

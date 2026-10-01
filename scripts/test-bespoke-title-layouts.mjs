@@ -1,6 +1,6 @@
 #!/usr/bin/env node
 // Actual editor geometry plus generated/canonical title layouts. Synthetic state only.
-import { builderDestination } from './bespoke-test-navigation.mjs';
+import { builderDestination, switchSurface } from './bespoke-test-navigation.mjs';
 import assert from 'node:assert/strict';
 import fs from 'node:fs/promises';
 import path from 'node:path';
@@ -111,7 +111,7 @@ try {
       for(const layout of layouts) {
         await choice(page,'Arrangement',layout);
         assert.deepEqual(await saved(page), {...initial,startingPoint:'custom',slides:{...initial.slides,title:{...initial.slides.title,layout,logo}}});
-        if(width===390)await page.locator('#surface-preview').click();
+        if(width===390)await switchSurface(page,'preview');
         await page.evaluate(()=>document.fonts.ready);
         const slide=page.locator('#modelStage [data-kind="title"]'), m=await measure(slide);canvasWidth=m.w;
         contained(m, `editor ${width}/${logo}/${layout}`);values[layout]=m;

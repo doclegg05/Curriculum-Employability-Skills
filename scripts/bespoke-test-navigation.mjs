@@ -13,6 +13,7 @@ export async function builderDestination(page, destination) {
   const designSurface = page.locator('#surface-design');
   if (await designSurface.isVisible()) await designSurface.click();
   if (destination === 'Shared colors' || destination === 'Shared typography') {
+    if (!await page.locator('#detailControls').isVisible()) await page.locator('#btnMoreOptions').click();
     const theme = page.locator('#sharedTheme');
     if (!await theme.evaluate(el => el.open)) await theme.locator(':scope > summary').click();
     await page.locator(destination === 'Shared colors' ? '#colorRole' : '#font-heading').waitFor({state:'visible'});
@@ -22,6 +23,7 @@ export async function builderDestination(page, destination) {
   }
   if (roles[destination]) {
     await page.locator('#stage-slides').click();
+    if (!await page.locator('#roleEditorTabs').isVisible()) await page.locator('#btnMoreOptions').click();
     await page.locator('#editor-'+roles[destination]).click();
     return;
   }
@@ -42,4 +44,9 @@ export async function builderDestination(page, destination) {
 export async function recoveryMenu(page, open) {
   const menu = page.locator('.more-menu');
   if (await menu.evaluate(el => el.open) !== open) await menu.locator(':scope > summary').click();
+}
+
+export async function switchSurface(page, surface) {
+  const tab=page.locator('#surface-'+surface);
+  if(await tab.isVisible())await tab.click();
 }

@@ -346,6 +346,7 @@ try {
   await scenario('history from the free editor still works and old history entries load', async ({ makePage }) => {
     const page = await makePage();
     await page.locator('#stage-slides').click();
+    await page.locator('#btnMoreOptions').click();
     await page.locator('#editor-title').click();
     await page.locator('#roleEditorPanel [data-choice][aria-pressed="false"]').first().click();
     const history = (await draft(page)).changes;

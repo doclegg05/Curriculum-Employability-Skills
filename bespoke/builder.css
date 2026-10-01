@@ -174,7 +174,7 @@
 /* Comfortable editor targets and supporting text; authored slide styles remain independent. */
 .btn,.header-actions .btn,.panel-nav .btn,.choice,.text-link,.stepper #stepList button,.preview-tabs button,.surface-switcher button{min-height:44px}
 .field input,.field select,.field textarea{min-height:44px;min-width:0;max-width:100%}
-.field select{appearance:none;-webkit-appearance:none;height:auto;padding:11px 34px 11px 10px;line-height:1.5;background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='8' viewBox='0 0 12 8'%3E%3Cpath d='m1 1 5 5 5-5' fill='none' stroke='%2300133f' stroke-width='1.6'/%3E%3C/svg%3E");background-repeat:no-repeat;background-position:right 12px center}
+.field select,.toolbar-field select{appearance:none;-webkit-appearance:none;height:auto;padding:11px 34px 11px 10px;line-height:1.5;background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='8' viewBox='0 0 12 8'%3E%3Cpath d='m1 1 5 5 5-5' fill='none' stroke='%2300133f' stroke-width='1.6'/%3E%3C/svg%3E");background-repeat:no-repeat;background-position:right 12px center}
 .helper,.status-strip,.team-session,.team-session>p,.history-local details,.preset-choice small,.preset-choice>span:not(.preset-sample),.role-section>summary>span,.comparison-note,.preview-caption,.similarity details,.comparison-heading>span,.sample-label{font-size:.875rem;line-height:1.5}
 .history-local summary,.inline-details summary,.similarity summary{min-height:44px;padding-block:10px}
 .paint-chip{font-size:.8rem;line-height:1.3}.paint-swatch{width:44px;height:44px}.step-num{font-size:.8rem;min-width:22px;height:22px}.panel-nav{flex-wrap:wrap}.header-actions .btn,.panel-nav .btn,.undo-actions .btn{font-size:.875rem}
@@ -186,3 +186,34 @@
 @media(min-width:1200px){.review-role dl{grid-template-columns:minmax(0,1fr) minmax(0,1fr);gap:8px 12px}.review-role dd{margin-bottom:0}}
 /* The phone workspace scrolls below its surface bar, never underneath it. */
 @media(max-width:760px){.workspace{max-height:calc(100dvh - var(--surface-navigation-height,61px));overflow:auto;scroll-padding-block:12px}.surface-navigation{position:relative;top:auto}}
+
+/* Preview-first editor: incumbent SPOKES colors and native formatting controls. */
+.editor-stages .stepper{display:flex;align-items:center;justify-content:space-between;gap:16px;border:0;border-block:1px solid var(--line);padding:10px 24px;background:white}
+.editor-stages #stepList{display:flex;gap:8px;margin:0}.editor-stages #stepList button{width:auto;min-width:130px;padding:8px 12px}
+.editor-stages .history-local{display:flex;gap:16px;align-items:center;padding:0;margin:0;border:0}.editor-stages .history-local details{position:relative;margin:0}.editor-stages .history-local details[open] ol{position:absolute;z-index:10;right:0;width:220px;background:white;border:1px solid var(--line);padding:12px}
+.workspace{grid-template-columns:154px minmax(0,1fr) 360px;align-items:start;min-height:0}
+.slide-rail{grid-column:1;grid-row:1;padding:20px 12px;min-width:0}.slide-rail h2{font-size:1rem;margin:0 0 4px}.slide-rail>p{font-size:.75rem;color:var(--muted);margin:0 0 16px}
+#previewTabs{display:flex;flex-direction:column;gap:12px;border:0;overflow:visible;margin:0}
+#previewTabs button{display:flex;flex-direction:column;gap:6px;align-items:center;border:2px solid transparent;border-radius:4px;background:white;padding:4px;color:var(--navy);white-space:normal;min-width:0;width:100%;font-size:.8rem}
+#previewTabs button[aria-selected=true]{border-color:var(--blue);background:var(--mist)}
+.slide-thumbnail{display:block;width:122px;height:69px;overflow:hidden;pointer-events:none;position:relative;container-type:inline-size}
+.slide-thumbnail>.bespoke-slide{width:640px;min-height:360px;transform:scale(.19);transform-origin:top left;pointer-events:none;box-shadow:none}
+.chrome-rail{grid-column:3;grid-row:1;display:block;border-left:1px solid var(--line);border-right:0;min-width:0}.controls{padding:20px}.preview-pane{grid-column:2;grid-row:1;padding:20px;position:static}.workspace[data-options=false] .chrome-rail{display:none}.workspace[data-options=false]{grid-template-columns:154px minmax(0,1fr)}
+.context-toolbar{display:flex;align-items:end;flex-wrap:wrap;gap:10px;padding:12px;border:1px solid var(--line);border-radius:5px;background:white}.toolbar-field{display:flex;flex-direction:column;gap:5px;font-size:.75rem;font-weight:500;flex:1 1 130px;max-width:220px;min-width:0}.toolbar-field select{font:inherit;font-size:.875rem;min-height:44px;width:100%;padding:8px 34px 8px 10px;border:1px solid #8fa2b3;border-radius:4px;background-color:white;color:var(--navy)}.context-toolbar .btn{margin-left:auto}.toolbar-readonly{font-size:.8rem}
+.edit-scope{font-size:.85rem;font-weight:500;margin:12px 0 6px;line-height:1.5}.selection-help{font-size:.75rem;color:var(--muted);line-height:1.5;margin:0 0 12px}
+#modelStage [data-edit-target]{cursor:pointer}#modelStage [data-edit-target]:hover:not(:has([data-edit-target]:hover)){outline:2px dashed var(--blue);outline-offset:3px}#modelStage .editor-selected{outline:3px solid var(--blue)!important;outline-offset:4px;box-shadow:0 0 0 2px white!important}#modelStage [data-edit-target]:focus-visible{outline:3px solid var(--blue);outline-offset:4px}.preview-frame{padding:14px}
+#btnCloseOptions{margin-bottom:16px}
+@media(min-width:1500px){.workspace{grid-template-columns:170px minmax(0,1fr) 380px}.workspace[data-options=false]{grid-template-columns:170px minmax(0,1fr)}}
+/* Smaller laptops: thumbnails run across the top so options and Guide me stay beside a preview
+   wide enough for the real slide layouts; below the preview, the teacher would edit blind. */
+@media(max-width:1100px) and (min-width:761px){.workspace{grid-template-columns:minmax(0,1fr) 280px;grid-template-rows:auto minmax(0,1fr)}.slide-rail{grid-column:1;grid-row:1;padding:12px 20px 0}.slide-rail h2,.slide-rail>p{display:none}#previewTabs{flex-direction:row;overflow:auto;padding:3px}#previewTabs button{width:136px;flex:none}.preview-pane{grid-column:1;grid-row:2}.chrome-rail{grid-column:2;grid-row:1 / span 2}.workspace[data-options=false]{grid-template-columns:minmax(0,1fr)}.editor-stages .history-local details{display:none}}
+@media(max-width:760px){
+ .editor-stages .stepper{display:block;padding:10px 12px}.editor-stages #stepList{overflow:auto}.editor-stages #stepList button{min-width:110px}.editor-stages .history-local{margin-top:8px;justify-content:space-between;flex-wrap:wrap}.editor-stages .history-local details{display:none}
+ .workspace,.workspace[data-options=false]{display:flex;flex-direction:column;max-height:none;overflow:visible}.slide-rail{width:100%;padding:12px}.slide-rail h2,.slide-rail>p{display:none}#previewTabs{flex-direction:row;overflow:auto;gap:8px;padding:3px}#previewTabs button{min-width:110px;width:110px;flex:none}.slide-thumbnail{width:98px;height:56px}.slide-thumbnail>.bespoke-slide{transform:scale(.153)}
+ .preview-pane{width:100%;padding:12px;order:2}.chrome-rail{width:100%;border-left:0;order:3}.context-toolbar{gap:8px}.toolbar-field{flex-basis:120px;max-width:none}.context-toolbar .btn{width:100%;margin:0}.workspace[data-editor=true] .preview-pane,.workspace[data-editor=true] .chrome-rail{display:block}.workspace[data-editor=true][data-options=false] .chrome-rail{display:none}
+ .workspace[data-editor=true] .slide-rail{display:block}.surface-navigation:has(+ .editor-stages + .workspace[data-editor=true]){display:none}
+}
+
+
+/* Keep the whole composition manageable on the iMac’s wide display. */
+.preview-frame{max-width:1080px;margin-inline:auto}

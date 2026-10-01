@@ -195,7 +195,10 @@ try{
   }
 
   const allLocal=await design(page);
-  await go(page,'title');await preview(page,'activity');await setStyle(page,'title','headingColor','light');
+  await go(page,'title');await preview(page,'activity');
+  assert.equal(await page.locator('#editor-activity').getAttribute('aria-selected'),'true','Thumbnail navigation keeps detailed controls aligned with the visible slide');
+  assert.deepEqual(await design(page),allLocal,'Navigating thumbnails does not change any visual choices');
+  await go(page,'title');await setStyle(page,'title','headingColor','light');
   assert.equal(await slide(page).getAttribute('data-kind'),'title','Editing a local control reveals the relevant role even after selecting another preview tab');
   await page.locator('#btnUndo').click();assert.deepEqual(await design(page),allLocal);
   await go(page,'Shared typography');await page.locator('#font-heading').selectOption('inter');

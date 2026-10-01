@@ -82,6 +82,7 @@ async function stage(page, id) {
 async function editor(page, kind) {
   await surface(page);
   if (!await page.locator('#roleEditorTabs').isVisible()) await stage(page, 'slides');
+  if (!await page.locator('#roleEditorTabs').isVisible()) await page.locator('#btnMoreOptions').click();
   await page.locator('#editor-' + kind).click();
   assert.equal(await page.locator('#editor-' + kind).getAttribute('aria-selected'), 'true');
 }
@@ -92,6 +93,7 @@ async function preview(page, kind) {
 }
 async function shared(page, open = true) {
   await surface(page);
+  if (!await page.locator('#detailControls').isVisible()) await page.locator('#btnMoreOptions').click();
   const details = page.locator('#sharedTheme');
   if (await details.evaluate(el => el.open) !== open) await details.locator(':scope > summary').click();
 }
@@ -429,6 +431,7 @@ try {
       const label = `${width}x${height}-${scale * 100}percent`;
       await axe(page, label + ' Start');
       await page.locator('#btnBuildOwn').click();
+      await page.locator('#btnMoreOptions').click();
       await page.locator('#editor-title').focus(); await page.keyboard.press('ArrowRight');
       assert.equal(await page.locator('#editor-divider').getAttribute('aria-selected'), 'true');
       assert.equal(await page.evaluate(() => document.activeElement.id), 'editor-divider');

@@ -210,9 +210,9 @@ Panel padding is 26px 22px 36px; preview padding is 26px 28px. Related fields an
 
 | Viewport | Implemented composition |
 | --- | --- |
-| At least 1500px | Control region is 530–640px, preview has at least 650px, stage navigation is 190px, and preview padding grows to 30px 40px. |
-| 761–1100px | Stage navigation becomes a horizontal scrolling strip above the control panel; the preview remains beside it. |
-| At most 760px | Design / Preview sits above a bounded scrolling workspace and shows one region at a time. The workspace uses the dynamic viewport height minus the measured switch height, so controls never scroll underneath the switch. Each view retains its scroll position. Stage navigation scrolls horizontally, the preview loses sticky positioning, and control-panel padding is 24px 16px. Role editor tabs wrap with a 110px flex basis. Presets fit columns of at least 140px and paint choices at least 62px, bounded by the available width. Circular swatches are 44px at every viewport. |
+| At least 1500px | Live thumbnails use a 170px rail. The central preview fills the remaining area with a 1080px canvas cap; More options opens a 380px detail panel. Stage navigation and history sit above the workspace. |
+| 761–1100px | Thumbnails form a strip across the top. More options and Guide me open in a 280px column beside the preview, so the slide stays in view while choices change. |
+| At most 760px | Thumbnails form a horizontal scrolling strip. The preview editor and toolbar stay together; More options opens below. Start, Review and Guide me retain the Design / Preview switch. Touch controls have 44px targets. |
 | At most 600px viewport | Generated slide styles reduce padding and collapse video/activity side layouts. |
 | Above 40rem sample canvas | Content samples show the lesson's 280px vertical chapter sidebar beside the main content. |
 | At most 40rem sample canvas | A labeled Sidebar sample menu opens a vertical drawer over the full-width content. |
@@ -380,3 +380,19 @@ Plain keeps the saved Subtle, Standard or Stronger strength for a later pattern;
 there is no zero-strength setting. Font selections likewise read the effective local
 font in This slide scope; a hidden text field keeps its font without being revealed,
 with that state explained beside the selector.
+
+### Preview editor interaction
+
+The cumulative slide is the primary editing surface. Five live thumbnails sit to
+its left; selecting visible text, a box or background exposes native formatting
+controls above it. More options retains the complete existing editor and explicit
+Shared default controls. The scope line names the actual model boundary: a slide
+role, all matching text on that role, or all Text boxes. Selection markings are
+UI only. Browser reload restores the options disclosure; saved designs retain the
+existing model contract. Guide me and Start/Review remain available.
+
+Only the Slide designs stage edits through the preview. While Guide me runs it owns
+the preview, so the toolbar is hidden and slide elements are not selectable. On Start
+and Review the slide is for looking at; one Edit this slide button opens the editor.
+Selectable text keeps its visible words as its accessible name; the background and
+boxes are labeled groups, and the selected element carries `aria-current="true"`.
