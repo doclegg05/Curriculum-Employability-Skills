@@ -322,7 +322,7 @@ try {
     await page.waitForFunction(() => document.querySelector('.guide-thumb')?.style.getPropertyValue('--s'));
     const wide = await fit();
     assert.ok(Math.abs(wide.scale - wide.expected) < 0.005, `fits at first: ${JSON.stringify(wide)}`);
-    await page.setViewportSize({ width: 390, height: 1000 });
+    await page.setViewportSize({ width: 1000, height: 1000 });
     await page.waitForTimeout(300);
     const narrow = await fit();
     assert.notEqual(narrow.expected.toFixed(3), wide.expected.toFixed(3), 'the cell really changed width');
