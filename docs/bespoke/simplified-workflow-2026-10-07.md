@@ -6,7 +6,7 @@ Implemented locally on `codex/bespoke-simple-layouts`, based on `13a808d`
 
 ## What changed
 
-- Choose a layout → Customize → Review & save is the primary path.
+- Color & layout → Customize → Review & save is the primary path.
 - Exactly twelve distinct title compositions: Editorial, Split stage, Centered,
   Grounded, Framed, Headline, Side rule, Horizon, Corner, Masthead, Two columns,
   and Inset. Each thumbnail renders the actual model/CSS at a scaled slide size.
@@ -85,3 +85,29 @@ Local and synthetic evidence does not establish hosted acceptance. This work was
 not merged, pushed or deployed and did not build curriculum. Deployment requires
 the compatible catalog, model and schema alongside the service, followed by hosted
 acceptance checks. Instructor review of the visual experience remains separate.
+
+## Color-first preset follow-up
+
+The starting gallery now leads with twelve named palettes and labeled color swatches.
+The existing layouts span green, gold, white, silver, graphite, berry and blue,
+with eight solid backgrounds and four gradients. Coordinated dividers, content
+headings, navigation and accents use the same palette. All preset text passes
+the shared model's contrast checks. The approved eleven colors remain editable.
+
+Only new preset selections use these combinations. Existing saved designs retain
+their full color values; a gallery card is marked selected only when it matches
+the current design. Color names also appear in confirmation and history.
+
+Follow-up verification: Chromium and WebKit completed the simple workflow at
+1440, 768, 390 and 320 px, including all twelve layouts, text editing, history,
+reload, save/reopen and handoff. Desktop and phone gallery axe scans found no
+violations. An existing local mauve/blue saved design reopened unchanged, and
+canceling the newly named preset confirmation preserved it exactly.
+
+Color review artifacts are in the `color/` subfolder of the artifact directory
+above: `presets.png`, `gallery-1440.png` and `gallery-390.png`.
+
+The complete `bash scripts/quality.sh` passed for this follow-up in one run
+(including the repository's existing lesson accessibility baseline). The current
+BeSpoke visual QA recorded 48 editor axe scans, 112 viewport checks and 256 slide
+checks with zero findings. Evidence: `color/quality.log` and `color/webkit.log`.

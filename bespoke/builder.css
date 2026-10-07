@@ -245,3 +245,11 @@
 @media(max-width:380px){.preset-grid{grid-template-columns:1fr}}
 
 .surface-navigation:has(+ .editor-stages + .workspace[data-stage=start]){display:none}
+
+/* Let the palette lead each starting look; layout stays visible as a separate choice. */
+.preset-choice>span.preset-colors{display:flex;gap:5px;margin-top:14px}
+.preset-colors i{display:block;width:25px;height:12px;border-radius:3px;box-shadow:inset 0 0 0 1px #00133f26}
+.preset-choice>span.preset-layout{color:var(--navy);font-weight:600;margin-top:2px}
+.preset-choice>span.preset-description{margin-top:0}
+
+.preset-choice>span.preset-slide{margin:0}

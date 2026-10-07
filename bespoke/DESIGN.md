@@ -411,3 +411,11 @@ the gradient direction. Detailed choices remain in More options.
 New role fields are optional when opening earlier v2 saves. The shared model
 validates and renders them for browser drafts, shared saves and generated design
 contracts. This is a local review implementation, not a hosted release.
+
+### Color-first starting gallery — October 7, 2026
+
+Lead with named palettes and visible, text-labeled swatches above each layout name.
+Use the approved palette across light and dark surfaces, strong green and gold,
+neutral silver and graphite, white, berry and ocean blue. Eight solids and four
+gradients distinguish twelve compositions without adding another workflow step.
+Keep readable text on every starter and preserve full saved-design colors.

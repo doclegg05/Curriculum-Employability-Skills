@@ -23,7 +23,7 @@ const HANDOFF_TIMEOUT_MS = 20000;
 const HANDOFF_CONFIG_URL = './handoff-config.json';
 const VIEW_NAMES = {title:'Title slide',divider:'Chapter divider',cards:'Text boxes',video:'Video slide',activity:'Activity'};
 const STEPS = [
- {id:'start',label:'Choose a layout',view:'title'},
+ {id:'start',label:'Color & layout',view:'title'},
  {id:'slides',label:'Customize',view:'title'},
  {id:'review',label:'Review & save',view:'title'}
 ];
@@ -1331,12 +1331,13 @@ function resetPresetConfirmation(){
  try{sessionStorage.removeItem(PRESET_CONFIRM_KEY);}catch{/* Private mode: in-memory preference is already cleared. */}
  if(pendingPreset)finishPresetConfirmation(false);
 }
+function presetName(preset){return preset.colorLabel+' · '+preset.label;}
 function applyPresetChoice(id){
  if(!isLeadSession())return false;
  const preset=catalog.presets.find(item=>item.id===id);if(!preset)return false;
  ui.meaningfulDesign=true;ui.startingLooksOpen=true;
- const samples=clone(state.design.samples);recordChange('Applied '+preset.label,clone(state.design));state.design=Model.applyPreset(catalog,preset.id,state.design);state.design.samples=samples;
- state.step=1;ui.editorRole='title';state.previewView='title';ui.moreOptions=false;render(false);fileNotice(preset.label+' applied. Every choice remains editable.');byId('selectedElement')?.focus({preventScroll:true});return true;
+ const samples=clone(state.design.samples);recordChange('Applied '+presetName(preset),clone(state.design));state.design=Model.applyPreset(catalog,preset.id,state.design);state.design.samples=samples;
+ state.step=1;ui.editorRole='title';state.previewView='title';ui.moreOptions=false;render(false);fileNotice(presetName(preset)+' applied. Every choice remains editable.');byId('selectedElement')?.focus({preventScroll:true});return true;
 }
 function requestPreset(id){
  if(!isLeadSession())return;
@@ -1344,7 +1345,7 @@ function requestPreset(id){
  if(!ui.meaningfulDesign||skipPresetConfirmation){applyPresetChoice(id);return;}
  const preset=catalog.presets.find(item=>item.id===id);if(!preset)return;
  pendingPreset=id;
- byId('presetDialogTitle').textContent='Apply '+preset.label+' preset?';
+ byId('presetDialogTitle').textContent='Apply '+presetName(preset)+' preset?';
  byId('presetSkipConfirmation').checked=false;
  byId('presetDialog').showModal();byId('presetCancel').focus();
 }
@@ -1362,7 +1363,7 @@ function builderGuidance(compact=false){
  const saving=ui.localPreview
   ? 'In this local review preview, Save test design and Open test design use this computer’s test space. Nothing is sent or published.'
   : 'Use Save shared design to save with your team, and Open team design to return. Send to Britt requests a design review; it does not build a lesson.';
- const steps='<ol class="how-to-steps"><li><strong>Choose a layout.</strong> Open Lesson &amp; team when needed, then choose one of twelve editable layout thumbnails. A preset can go straight to Review &amp; save.</li><li><strong>Customize.</strong> Edit any of the five slide types directly. Shared theme is optional and supplies defaults; fields marked Custom keep their own choices. Editor tabs change what you edit; preview tabs only change what you see.</li><li><strong>Review &amp; save.</strong> Check the effective appearance and fonts for all five designs, then save. These are sample designs and words, not finished lesson content.</li></ol>';
+ const steps='<ol class="how-to-steps"><li><strong>Color &amp; layout.</strong> Start with a color combination and one of twelve editable layouts. Open Lesson &amp; team when needed. A preset can go straight to Review &amp; save.</li><li><strong>Customize.</strong> Edit any of the five slide types directly. Shared theme is optional and supplies defaults; fields marked Custom keep their own choices. Editor tabs change what you edit; preview tabs only change what you see.</li><li><strong>Review &amp; save.</strong> Check the effective appearance and fonts for all five designs, then save. These are sample designs and words, not finished lesson content.</li></ol>';
  const rules='<p><strong>Why eleven colors?</strong> These are the approved SPOKES brand colors. They keep lessons recognizable, and you can mix and match all eleven freely. You are not limited to two or three.</p><p><strong>Type, boxes and branding.</strong> Choose heading and body fonts independently from the twelve curated font families. Up to four text boxes keep a slide manageable. The title keeps the SPOKES logo; its position can change, but a watermark does not replace or edit the logo.</p><p><strong>Readability is your decision.</strong> Contrast compares text with its background. Advisories explain when reading may be harder; the team leader can keep and save any palette choice. A passing measurement is not a whole-design accessibility assessment.</p><p><strong>Keep your work.</strong> Undo and Redo restore recent choices. Outside text fields, use Ctrl/Cmd+Z to undo and Ctrl/Cmd+Shift+Z to redo. Text fields keep their normal typing shortcuts. Previous versions lets you reopen shared saves. Files &amp; recovery downloads or opens a backup. Hiding a subtitle, second color or watermark keeps its settings for later.</p><p><strong>Compare for ideas.</strong> The similarity meter compares supported choices with six known lessons. Unmeasured choices do not count. It does not guarantee uniqueness or compare private team designs.</p><p>'+saving+'</p>';
  return steps+(compact?'<p class="helper"><strong>Eleven brand colors, freely mixed.</strong> Readability advice never blocks your color choices.</p><details class="inline-details"><summary>Why these choices and guardrails?</summary>'+rules+'</details>':rules);
 }
@@ -1373,7 +1374,7 @@ function showBuilderHelp(close=false){
 }
 function goStage(id){if(ui.guide?.on&&id!=='slides')ui.guide={...ui.guide,on:false};state.step=stepIndex(id);render();}
 function renderWelcome(panel){
- heading(panel,'Choose your starting layout','Twelve different arrangements. Choose one, then make it yours in the live preview.');
+ heading(panel,'Start with color','Fresh greens, warm golds, crisp whites and deep darks. Twelve editable starting looks—choose the colors that feel right, then make the layout yours.');
  const team=document.createElement('details');team.className='start-team';team.innerHTML='<summary>Lesson &amp; team</summary>';const teamFields=document.createElement('div');team.append(teamFields);panel.append(team);renderTeam(teamFields);
  const looks=document.createElement('section');looks.className='starting-looks';panel.append(looks);
  if(ui.meaningfulDesign){
@@ -1386,12 +1387,20 @@ function renderWelcome(panel){
  const choices=document.createElement('div');choices.id='startingLookChoices';choices.hidden=false;looks.append(choices);
  const grid=document.createElement('div');grid.className='preset-grid';
  for(const preset of catalog.presets){
-  const b=document.createElement('button');b.type='button';b.className='preset-choice';b.id='preset-'+preset.id;b.dataset.preset=preset.id;b.setAttribute('aria-pressed',String(state.design.startingPoint===preset.id));
+  const b=document.createElement('button');b.type='button';b.className='preset-choice';b.id='preset-'+preset.id;b.dataset.preset=preset.id;b.setAttribute('aria-pressed',String(JSON.stringify(Model.applyPreset(catalog,preset.id,state.design))===JSON.stringify(state.design)));
   const d=preset.design;
   const thumb=document.createElement('span');thumb.className='preset-slide';thumb.setAttribute('aria-hidden','true');thumb.inert=true;
   const shadow=thumb.attachShadow({mode:'closed'});
   shadow.innerHTML='<style>'+Model.cssForDesign(catalog,d,{canonical:false})+'.preset-canvas{width:800px;transform:scale(var(--thumbnail-scale,.32));transform-origin:top left}.bespoke-slide{width:800px!important;max-width:none!important}</style><div class="preset-canvas">'+Model.renderSlide(catalog,d,'title',{logoUrl:'../SPOKES-Logo.png'})+'</div>';
-  b.append(thumb);const name=document.createElement('strong');name.textContent=preset.label;b.append(name);const description=document.createElement('span');description.textContent=preset.blurb;b.append(description);
+  b.append(thumb);
+  const palette=document.createElement('span');palette.className='preset-colors';palette.setAttribute('role','img');
+  const colorIds=[...new Set([d.roles.titleBackground,...(d.slides.title.colors==='gradient'?[d.roles.titleBackgroundEnd]:[]),d.roles.titleText,d.roles.accent])];
+  const colors=colorIds.map(id=>catalog.palette.find(color=>color.id===id));
+  palette.setAttribute('aria-label','Palette: '+colors.map(color=>color.name).join(', '));
+  for(const color of colors){const swatch=document.createElement('i');swatch.style.backgroundColor=color.hex;swatch.title=color.name;swatch.setAttribute('aria-hidden','true');palette.append(swatch);}b.append(palette);
+  const name=document.createElement('strong');name.textContent=preset.colorLabel;b.append(name);
+  const layout=document.createElement('span');layout.className='preset-layout';layout.textContent=preset.label+' layout';b.append(layout);
+  const description=document.createElement('span');description.className='preset-description';description.textContent=preset.blurb;b.append(description);
   b.onclick=()=>requestPreset(preset.id);grid.append(b);
  }choices.append(grid);
  const resize=new ResizeObserver(entries=>{for(const {target,contentRect} of entries)target.style.setProperty('--thumbnail-scale',contentRect.width/800);});
