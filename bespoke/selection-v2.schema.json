@@ -372,7 +372,15 @@
                     "center",
                     "left",
                     "bottom",
-                    "split"
+                    "split",
+                    "frame",
+                    "headline",
+                    "sidebar",
+                    "horizon",
+                    "corner",
+                    "masthead",
+                    "columns",
+                    "plaque"
                   ]
                 },
                 "logo": {
@@ -585,7 +593,13 @@
             "serious",
             "light-hearted",
             "fun",
-            "outspoken"
+            "outspoken",
+            "sidebar",
+            "horizon",
+            "corner",
+            "masthead",
+            "columns",
+            "plaque"
           ]
         },
         "roleStyles": {
@@ -782,6 +796,78 @@
                     "center",
                     "right"
                   ]
+                },
+                "headingPlacement": {
+                  "enum": [
+                    "layout",
+                    "top",
+                    "middle",
+                    "bottom"
+                  ]
+                },
+                "bodyPlacement": {
+                  "enum": [
+                    "layout",
+                    "top",
+                    "middle",
+                    "bottom"
+                  ]
+                },
+                "extraText": {
+                  "type": [
+                    "string",
+                    "null"
+                  ],
+                  "maxLength": 500
+                },
+                "extraColor": {
+                  "enum": [
+                    "inherit",
+                    "primary",
+                    "dark",
+                    "royal",
+                    "accent",
+                    "gold",
+                    "muted-gold",
+                    "mauve",
+                    "gray",
+                    "offwhite",
+                    "muted",
+                    "light"
+                  ]
+                },
+                "extraSize": {
+                  "enum": [
+                    "small",
+                    "default",
+                    "large"
+                  ]
+                },
+                "extraAlignment": {
+                  "enum": [
+                    "left",
+                    "center",
+                    "right"
+                  ]
+                },
+                "extraPlacement": {
+                  "enum": [
+                    "top",
+                    "middle",
+                    "bottom"
+                  ]
+                },
+                "boxHeadings": {
+                  "type": [
+                    "array",
+                    "null"
+                  ],
+                  "minItems": 4,
+                  "maxItems": 4,
+                  "items": {
+                    "type": "string",
+                    "maxLength": 100
+                  }
                 },
                 "headingVisible": {
                   "type": "boolean"
@@ -1042,6 +1128,78 @@
                     "center",
                     "right"
                   ]
+                },
+                "headingPlacement": {
+                  "enum": [
+                    "layout",
+                    "top",
+                    "middle",
+                    "bottom"
+                  ]
+                },
+                "bodyPlacement": {
+                  "enum": [
+                    "layout",
+                    "top",
+                    "middle",
+                    "bottom"
+                  ]
+                },
+                "extraText": {
+                  "type": [
+                    "string",
+                    "null"
+                  ],
+                  "maxLength": 500
+                },
+                "extraColor": {
+                  "enum": [
+                    "inherit",
+                    "primary",
+                    "dark",
+                    "royal",
+                    "accent",
+                    "gold",
+                    "muted-gold",
+                    "mauve",
+                    "gray",
+                    "offwhite",
+                    "muted",
+                    "light"
+                  ]
+                },
+                "extraSize": {
+                  "enum": [
+                    "small",
+                    "default",
+                    "large"
+                  ]
+                },
+                "extraAlignment": {
+                  "enum": [
+                    "left",
+                    "center",
+                    "right"
+                  ]
+                },
+                "extraPlacement": {
+                  "enum": [
+                    "top",
+                    "middle",
+                    "bottom"
+                  ]
+                },
+                "boxHeadings": {
+                  "type": [
+                    "array",
+                    "null"
+                  ],
+                  "minItems": 4,
+                  "maxItems": 4,
+                  "items": {
+                    "type": "string",
+                    "maxLength": 100
+                  }
                 },
                 "headingVisible": {
                   "type": "boolean"
@@ -1315,6 +1473,78 @@
                     "right"
                   ]
                 },
+                "headingPlacement": {
+                  "enum": [
+                    "layout",
+                    "top",
+                    "middle",
+                    "bottom"
+                  ]
+                },
+                "bodyPlacement": {
+                  "enum": [
+                    "layout",
+                    "top",
+                    "middle",
+                    "bottom"
+                  ]
+                },
+                "extraText": {
+                  "type": [
+                    "string",
+                    "null"
+                  ],
+                  "maxLength": 500
+                },
+                "extraColor": {
+                  "enum": [
+                    "inherit",
+                    "primary",
+                    "dark",
+                    "royal",
+                    "accent",
+                    "gold",
+                    "muted-gold",
+                    "mauve",
+                    "gray",
+                    "offwhite",
+                    "muted",
+                    "light"
+                  ]
+                },
+                "extraSize": {
+                  "enum": [
+                    "small",
+                    "default",
+                    "large"
+                  ]
+                },
+                "extraAlignment": {
+                  "enum": [
+                    "left",
+                    "center",
+                    "right"
+                  ]
+                },
+                "extraPlacement": {
+                  "enum": [
+                    "top",
+                    "middle",
+                    "bottom"
+                  ]
+                },
+                "boxHeadings": {
+                  "type": [
+                    "array",
+                    "null"
+                  ],
+                  "minItems": 4,
+                  "maxItems": 4,
+                  "items": {
+                    "type": "string",
+                    "maxLength": 100
+                  }
+                },
                 "headingVisible": {
                   "type": "boolean"
                 },
@@ -1578,6 +1808,78 @@
                     "center",
                     "right"
                   ]
+                },
+                "headingPlacement": {
+                  "enum": [
+                    "layout",
+                    "top",
+                    "middle",
+                    "bottom"
+                  ]
+                },
+                "bodyPlacement": {
+                  "enum": [
+                    "layout",
+                    "top",
+                    "middle",
+                    "bottom"
+                  ]
+                },
+                "extraText": {
+                  "type": [
+                    "string",
+                    "null"
+                  ],
+                  "maxLength": 500
+                },
+                "extraColor": {
+                  "enum": [
+                    "inherit",
+                    "primary",
+                    "dark",
+                    "royal",
+                    "accent",
+                    "gold",
+                    "muted-gold",
+                    "mauve",
+                    "gray",
+                    "offwhite",
+                    "muted",
+                    "light"
+                  ]
+                },
+                "extraSize": {
+                  "enum": [
+                    "small",
+                    "default",
+                    "large"
+                  ]
+                },
+                "extraAlignment": {
+                  "enum": [
+                    "left",
+                    "center",
+                    "right"
+                  ]
+                },
+                "extraPlacement": {
+                  "enum": [
+                    "top",
+                    "middle",
+                    "bottom"
+                  ]
+                },
+                "boxHeadings": {
+                  "type": [
+                    "array",
+                    "null"
+                  ],
+                  "minItems": 4,
+                  "maxItems": 4,
+                  "items": {
+                    "type": "string",
+                    "maxLength": 100
+                  }
                 },
                 "headingVisible": {
                   "type": "boolean"
@@ -1846,6 +2148,78 @@
                     "center",
                     "right"
                   ]
+                },
+                "headingPlacement": {
+                  "enum": [
+                    "layout",
+                    "top",
+                    "middle",
+                    "bottom"
+                  ]
+                },
+                "bodyPlacement": {
+                  "enum": [
+                    "layout",
+                    "top",
+                    "middle",
+                    "bottom"
+                  ]
+                },
+                "extraText": {
+                  "type": [
+                    "string",
+                    "null"
+                  ],
+                  "maxLength": 500
+                },
+                "extraColor": {
+                  "enum": [
+                    "inherit",
+                    "primary",
+                    "dark",
+                    "royal",
+                    "accent",
+                    "gold",
+                    "muted-gold",
+                    "mauve",
+                    "gray",
+                    "offwhite",
+                    "muted",
+                    "light"
+                  ]
+                },
+                "extraSize": {
+                  "enum": [
+                    "small",
+                    "default",
+                    "large"
+                  ]
+                },
+                "extraAlignment": {
+                  "enum": [
+                    "left",
+                    "center",
+                    "right"
+                  ]
+                },
+                "extraPlacement": {
+                  "enum": [
+                    "top",
+                    "middle",
+                    "bottom"
+                  ]
+                },
+                "boxHeadings": {
+                  "type": [
+                    "array",
+                    "null"
+                  ],
+                  "minItems": 4,
+                  "maxItems": 4,
+                  "items": {
+                    "type": "string",
+                    "maxLength": 100
+                  }
                 },
                 "headingVisible": {
                   "type": "boolean"

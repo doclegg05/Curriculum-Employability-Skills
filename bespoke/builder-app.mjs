@@ -23,8 +23,8 @@ const HANDOFF_TIMEOUT_MS = 20000;
 const HANDOFF_CONFIG_URL = './handoff-config.json';
 const VIEW_NAMES = {title:'Title slide',divider:'Chapter divider',cards:'Text boxes',video:'Video slide',activity:'Activity'};
 const STEPS = [
- {id:'start',label:'Start',view:'title'},
- {id:'slides',label:'Slide designs',view:'title'},
+ {id:'start',label:'Choose a layout',view:'title'},
+ {id:'slides',label:'Customize',view:'title'},
  {id:'review',label:'Review & save',view:'title'}
 ];
 const LEGACY_STEPS = ['welcome','team','colors','fonts','title','divider','cards','video','activity','review'];
@@ -862,7 +862,7 @@ const findOption=(family,slug)=>state.library?.families?.[family]?.options.find(
     const session = requireTeamSession();
     if (!session) return;
     if (!state.spokespersonName.trim()) {
-      fileNotice("Add the spokesperson's name on Lesson & team before sending.");
+      goStage('start');const team=byId('stepPanel').querySelector('.start-team');if(team)team.open=true;byId('spokespersonName')?.focus();fileNotice("Add the spokesperson's name on Lesson & team before sending.");
       return;
     }
     if (ui.cloudConflict || !session.revision || hasUnsavedTeamWork()) {
@@ -1215,7 +1215,7 @@ function buildSelectionPayload(){
 }
 function restoreStep(saved){
  const legacyId=saved.stepId||(Number.isInteger(saved.step)?LEGACY_STEPS[saved.step]:null)||'start';
- state.step=stepIndex(legacyId);
+ state.step=['colors','fonts'].includes(legacyId)?1:stepIndex(legacyId);
  ui.editorRole=Object.hasOwn(VIEW_NAMES,saved.editorRole)?saved.editorRole:Object.hasOwn(VIEW_NAMES,legacyId)?legacyId:'title';
  ui.sharedThemeOpen=saved.sharedThemeOpen===true||['colors','fonts'].includes(legacyId);
  ui.moreOptions=saved.moreOptions===true||ui.sharedThemeOpen;
@@ -1286,12 +1286,12 @@ function recordChange(label,before){
  const mark=guideMark(ui.guide);if(mark!==undefined)entry.guide=mark;
  state.changes.push(entry);state.changes=state.changes.slice(-40);state.redo=[];
 }
-function changeDesign(label,edit,{redraw=true}={}){
+function changeDesign(label,edit,{redraw=true,checkpoint=true}={}){
  if(!isLeadSession())return;
  const before=clone(state.design), next=clone(state.design);edit(next);
  if(JSON.stringify(before)===JSON.stringify(next))return;
  next.startingPoint='custom';ui.meaningfulDesign=true;
- recordChange(label,before);state.design=next;
+ if(checkpoint)recordChange(label,before);else state.redo=[];state.design=next;
  saveDraft();if(redraw)render(false);else{updatePreview();updateUndo();}
  byId('saveLive').textContent=label+'. Browser draft updated.';
 }
@@ -1336,11 +1336,11 @@ function applyPresetChoice(id){
  const preset=catalog.presets.find(item=>item.id===id);if(!preset)return false;
  ui.meaningfulDesign=true;ui.startingLooksOpen=true;
  const samples=clone(state.design.samples);recordChange('Applied '+preset.label,clone(state.design));state.design=Model.applyPreset(catalog,preset.id,state.design);state.design.samples=samples;
- render(false);fileNotice(preset.label+' applied. Every choice remains editable.');return true;
+ state.step=1;ui.editorRole='title';state.previewView='title';ui.moreOptions=false;render(false);fileNotice(preset.label+' applied. Every choice remains editable.');byId('selectedElement')?.focus({preventScroll:true});return true;
 }
 function requestPreset(id){
  if(!isLeadSession())return;
- if(JSON.stringify(Model.applyPreset(catalog,id,state.design))===JSON.stringify(state.design))return;
+ if(JSON.stringify(Model.applyPreset(catalog,id,state.design))===JSON.stringify(state.design)){goStage('slides');return;}
  if(!ui.meaningfulDesign||skipPresetConfirmation){applyPresetChoice(id);return;}
  const preset=catalog.presets.find(item=>item.id===id);if(!preset)return;
  pendingPreset=id;
@@ -1356,13 +1356,13 @@ function finishPresetConfirmation(apply){
   skipPresetConfirmation=true;
   try{sessionStorage.setItem(PRESET_CONFIRM_KEY,'1');}catch{/* Keep the opt-out only in this page when tab storage is unavailable. */}
  }
- byId('preset-'+id)?.focus({preventScroll:true});
+ (apply?byId('selectedElement'):byId('preset-'+id))?.focus({preventScroll:true});
 }
 function builderGuidance(compact=false){
  const saving=ui.localPreview
   ? 'In this local review preview, Save test design and Open test design use this computer’s test space. Nothing is sent or published.'
   : 'Use Save shared design to save with your team, and Open team design to return. Send to Britt requests a design review; it does not build a lesson.';
- const steps='<ol class="how-to-steps"><li><strong>Start.</strong> Confirm Lesson &amp; team, then choose an editable preset or Build my own. A preset can go straight to Review &amp; save.</li><li><strong>Slide designs · optional.</strong> Edit any of the five slide types directly. Shared theme is optional and supplies defaults; fields marked Custom keep their own choices. Editor tabs change what you edit; preview tabs only change what you see.</li><li><strong>Review &amp; save.</strong> Check the effective appearance and fonts for all five designs, then save. These are sample designs and words, not finished lesson content.</li></ol>';
+ const steps='<ol class="how-to-steps"><li><strong>Choose a layout.</strong> Open Lesson &amp; team when needed, then choose one of twelve editable layout thumbnails. A preset can go straight to Review &amp; save.</li><li><strong>Customize.</strong> Edit any of the five slide types directly. Shared theme is optional and supplies defaults; fields marked Custom keep their own choices. Editor tabs change what you edit; preview tabs only change what you see.</li><li><strong>Review &amp; save.</strong> Check the effective appearance and fonts for all five designs, then save. These are sample designs and words, not finished lesson content.</li></ol>';
  const rules='<p><strong>Why eleven colors?</strong> These are the approved SPOKES brand colors. They keep lessons recognizable, and you can mix and match all eleven freely. You are not limited to two or three.</p><p><strong>Type, boxes and branding.</strong> Choose heading and body fonts independently from the twelve curated font families. Up to four text boxes keep a slide manageable. The title keeps the SPOKES logo; its position can change, but a watermark does not replace or edit the logo.</p><p><strong>Readability is your decision.</strong> Contrast compares text with its background. Advisories explain when reading may be harder; the team leader can keep and save any palette choice. A passing measurement is not a whole-design accessibility assessment.</p><p><strong>Keep your work.</strong> Undo and Redo restore recent choices. Outside text fields, use Ctrl/Cmd+Z to undo and Ctrl/Cmd+Shift+Z to redo. Text fields keep their normal typing shortcuts. Previous versions lets you reopen shared saves. Files &amp; recovery downloads or opens a backup. Hiding a subtitle, second color or watermark keeps its settings for later.</p><p><strong>Compare for ideas.</strong> The similarity meter compares supported choices with six known lessons. Unmeasured choices do not count. It does not guarantee uniqueness or compare private team designs.</p><p>'+saving+'</p>';
  return steps+(compact?'<p class="helper"><strong>Eleven brand colors, freely mixed.</strong> Readability advice never blocks your color choices.</p><details class="inline-details"><summary>Why these choices and guardrails?</summary>'+rules+'</details>':rules);
 }
@@ -1373,39 +1373,35 @@ function showBuilderHelp(close=false){
 }
 function goStage(id){if(ui.guide?.on&&id!=='slides')ui.guide={...ui.guide,on:false};state.step=stepIndex(id);render();}
 function renderWelcome(panel){
- heading(panel,'Start','Confirm your team, then keep your current design or choose an editable starting look.');
- const intro=document.createElement('section');intro.className='getting-started';intro.setAttribute('aria-label','Getting started');intro.innerHTML='<p class="helper">Start → optional Slide designs → Review &amp; save. All eleven brand colors and twelve independent fonts stay editable. These previews use sample words, not finished lesson content.</p><details class="inline-details" id="startGuidance"><summary>How to choose and keep your design</summary>'+builderGuidance(true)+'</details>';panel.append(intro);
- const team=document.createElement('section');team.className='start-team';panel.append(team);renderTeam(team);
- const entry=document.createElement('section');entry.className='guide-entry';entry.setAttribute('aria-label','Guided walk-through');
- entry.innerHTML='<h2>Not sure where to start?</h2><p class="helper">Guide me asks one question at a time, slide by slide. Skip anything, and leave whenever you like. Your choices are kept.</p>';
- const entryActions=document.createElement('div');entryActions.className='start-actions';entry.append(entryActions);
- const inProgress=ui.guide&&!ui.guide.done;
- const addEntry=(id,text,cls,fn)=>{const b=document.createElement('button');b.type='button';b.id=id;b.className=cls;b.textContent=text;b.onclick=fn;entryActions.append(b);};
- if(inProgress){addEntry('btnGuideContinue','Continue guide','btn btn-primary',()=>guide.resume());addEntry('btnGuideRestart','Start the guide again','text-link',()=>guide.start());}
- else addEntry('btnGuideMe','Guide me step by step','btn btn-primary',()=>guide.start());
- panel.append(entry);
+ heading(panel,'Choose your starting layout','Twelve different arrangements. Choose one, then make it yours in the live preview.');
+ const team=document.createElement('details');team.className='start-team';team.innerHTML='<summary>Lesson &amp; team</summary>';const teamFields=document.createElement('div');team.append(teamFields);panel.append(team);renderTeam(teamFields);
  const looks=document.createElement('section');looks.className='starting-looks';panel.append(looks);
  if(ui.meaningfulDesign){
   const title=document.createElement('h2');title.textContent='Continue your current design';looks.append(title);
   const note=document.createElement('p');note.className='helper';note.textContent='Your choices are kept. Edit any slide type, or review and save them together.';looks.append(note);
   const actions=document.createElement('div');actions.className='start-actions';looks.append(actions);
   for(const [id,label,stage] of [['btnContinueEditing','Continue editing','slides'],['btnQuickReview','Review & save','review']]){const b=document.createElement('button');b.id=id;b.type='button';b.className='btn '+(stage==='review'?'btn-primary':'btn-secondary');b.textContent=label;b.onclick=()=>goStage(stage);actions.append(b);}
-  const change=document.createElement('button');change.id='btnChangeStartingLook';change.type='button';change.className='text-link';change.textContent='Change starting look';change.setAttribute('aria-expanded',String(ui.startingLooksOpen));change.setAttribute('aria-controls','startingLookChoices');change.onclick=()=>{ui.startingLooksOpen=!ui.startingLooksOpen;render(false);};looks.append(change);
+  const change=document.createElement('button');change.id='btnChangeStartingLook';change.type='button';change.className='text-link';change.textContent='Change starting look';change.setAttribute('aria-controls','startingLookChoices');change.onclick=()=>{byId('startingLookChoices').scrollIntoView({block:'start'});byId('startingLookChoices').querySelector('button')?.focus({preventScroll:true});};looks.append(change);
  }
- const choices=document.createElement('div');choices.id='startingLookChoices';choices.hidden=ui.meaningfulDesign&&!ui.startingLooksOpen;looks.append(choices);
- const custom=document.createElement('button');custom.className='custom-path';custom.id='btnBuildOwn';custom.type='button';custom.innerHTML='<strong>Build my own</strong><span>Keep the current look and edit the slide types you need. Shared theme is optional.</span>';custom.onclick=()=>goStage('slides');choices.append(custom);
- const h=document.createElement('h2');h.textContent='Choose a starting look';choices.append(h);
- const note=document.createElement('p');note.className='helper';note.textContent='Every preset supplies a complete design. You can review and save it now, or change any choice.';choices.append(note);
+ const choices=document.createElement('div');choices.id='startingLookChoices';choices.hidden=false;looks.append(choices);
  const grid=document.createElement('div');grid.className='preset-grid';
  for(const preset of catalog.presets){
   const b=document.createElement('button');b.type='button';b.className='preset-choice';b.id='preset-'+preset.id;b.dataset.preset=preset.id;b.setAttribute('aria-pressed',String(state.design.startingPoint===preset.id));
-  const d=preset.design, color=id=>catalog.palette.find(c=>c.id===id)?.hex;
-  const closest=compareDesign(fingerprints,d,catalog)[0];
-  const previewFont=catalog.fonts.find(f=>f.id===d.fonts.heading);
-  b.innerHTML='<span class="preset-sample" style="--ps-font:'+escapeHtml(previewFont.family)+';--ps-bg:'+color(d.roles.titleBackground)+';--ps-sidebar:'+color(d.roles.sidebar)+';--ps-ink:'+color(d.roles.titleText)+';--ps-accent:'+color(d.roles.accent)+'"><i></i><span>Aa</span><b></b></span><strong>'+escapeHtml(preset.label)+'</strong><span>'+escapeHtml(preset.blurb)+'</span><small>'+escapeHtml(closest?`${closest.shared} of ${closest.total} comparable choices match ${closest.title}`:'Comparison available in preview')+'</small>';
+  const d=preset.design;
+  const thumb=document.createElement('span');thumb.className='preset-slide';thumb.setAttribute('aria-hidden','true');thumb.inert=true;
+  const shadow=thumb.attachShadow({mode:'closed'});
+  shadow.innerHTML='<style>'+Model.cssForDesign(catalog,d,{canonical:false})+'.preset-canvas{width:800px;transform:scale(var(--thumbnail-scale,.32));transform-origin:top left}.bespoke-slide{width:800px!important;max-width:none!important}</style><div class="preset-canvas">'+Model.renderSlide(catalog,d,'title',{logoUrl:'../SPOKES-Logo.png'})+'</div>';
+  b.append(thumb);const name=document.createElement('strong');name.textContent=preset.label;b.append(name);const description=document.createElement('span');description.textContent=preset.blurb;b.append(description);
   b.onclick=()=>requestPreset(preset.id);grid.append(b);
  }choices.append(grid);
+ const resize=new ResizeObserver(entries=>{for(const {target,contentRect} of entries)target.style.setProperty('--thumbnail-scale',contentRect.width/800);});
+ grid.querySelectorAll('.preset-slide').forEach(node=>resize.observe(node));
+ // Disconnect when navigation removes this gallery.
+ requestAnimationFrame(()=>{const observer=new MutationObserver(()=>{if(!grid.isConnected){resize.disconnect();observer.disconnect();}});observer.observe(panel,{childList:true});});
+ const advanced=document.createElement('details');advanced.className='inline-details';advanced.id='otherStartingPaths';advanced.innerHTML='<summary>Other ways to start</summary><p>Keep your current design, or use the detailed guide.</p>';
+ for(const [id,label,fn] of [['btnBuildOwn','Use current design',()=>goStage('slides')],['btnGuideMe','Guide me step by step',()=>guide.start()]]){const button=document.createElement('button');button.id=id;button.type='button';button.className='btn btn-secondary';button.textContent=label;button.onclick=fn;advanced.append(button);}if(ui.guide&&!ui.guide.done){const restart=advanced.querySelector('#btnGuideMe');restart.id='btnGuideRestart';restart.textContent='Start the guide again';const resume=document.createElement('button');resume.type='button';resume.id='btnGuideContinue';resume.className='btn btn-secondary';resume.textContent='Continue guide';resume.onclick=()=>guide.resume();advanced.append(resume);}panel.append(advanced);
 }
+
 const SHARED_FIELDS = ['primary','secondary','headingColor','bodyColor','headingFont','bodyFont','pattern'];
 const FIELD_LABELS = {primary:'Main background',secondary:'Second background',headingColor:'Heading color',bodyColor:'Supporting / box text color',headingFont:'Heading font',bodyFont:'Supporting / box text font',pattern:'Texture'};
 function savedRoleStyle(kind){return {...Model.roleStyleDefaults(catalog,state.design,kind),...state.design.roleStyles?.[kind]};}
@@ -1591,7 +1587,7 @@ function renderSlideChoices(panel,kind){
   localSelect(bg,kind,'secondary','Second background color',colorOptions('secondary'),saved.secondary,{color:effective.secondary});
   if(kind==='title'&&state.design.slides.title.layout==='split'){
    const note=document.createElement('p');note.className='helper';note.textContent='Split panels uses the second color on the right panel. Choose Solid for one color across both panels.';bg.append(note);
-  }else localSelect(bg,kind,'direction','Gradient direction',choices([['right','Left to right'],['down','Top to bottom'],['diagonal','Diagonal']]),saved.direction);
+  }
  }else{const note=document.createElement('p');note.className='helper';note.textContent='The second color is kept for when you choose two colors again.';bg.append(note);}
  const texture=roleSection(panel,kind,'texture','Texture',catalog.backgrounds.find(b=>b.id===effective.pattern).label);
  localSelect(texture,kind,'pattern','Background texture',[{id:'inherit',label:'Use shared theme · '+catalog.backgrounds.find(b=>b.id===state.design.background).label},...catalog.backgrounds.map(b=>({id:b.id,label:b.id==='plain'?'Plain · no texture':b.label}))],saved.pattern);
@@ -1666,7 +1662,7 @@ function renderReview(panel){
    const dt=document.createElement('dt');dt.textContent=label;const dd=document.createElement('dd');dd.dataset.reviewField=key;dd.textContent=value+' · '+(saved[key]==='inherit'?'Shared':'Custom');dl.append(dt,dd);
   }
   row.append(dl);
-  const details=document.createElement('p');details.className='helper';details.textContent=[effective.backgroundMode==='gradient'?'Two-color gradient · '+({right:'left to right',down:'top to bottom',diagonal:'diagonal'}[effective.direction]):'Solid background',...group.decisions.filter(d=>!['colors','watermark'].includes(d.id)).map(d=>d.label+': '+d.options.find(o=>o.id===state.design.slides[kind][d.id])?.label),!effective.headingVisible?'Heading hidden':'',!effective.bodyVisible?'Supporting / box text hidden':'',effective.watermarkMode==='text'?'Custom watermark: '+effective.watermarkText+' · '+color(effective.watermarkColor)+' · '+effective.watermarkPlacement.replaceAll('-',' ')+' · '+effective.watermarkSize+' · '+effective.watermarkOpacity+' strength':effective.watermarkMode==='legacy'?'Arrangement watermark':'No watermark','Texture strength: '+({subtle:'Subtle',normal:'Standard',bold:'Stronger'}[effective.patternStrength]),'Heading: '+({default:'Match arrangement',small:'Smaller',large:'Larger'}[effective.headingSize])+', '+effective.headingAlignment+' aligned','Supporting / box text: '+({default:'Match arrangement',small:'Smaller',large:'Larger'}[effective.bodySize])+', '+effective.bodyAlignment+' aligned',kind==='divider'&&state.design.slides.divider.layout==='band'?'Band outer surface: '+color(state.design.roles.contentBackground)+' · Shared':''].filter(Boolean).join(' · ');row.append(details);
+  const details=document.createElement('p');details.className='helper';details.textContent=[effective.backgroundMode==='gradient'?'Two-color gradient · '+({right:'left to right',down:'top to bottom',diagonal:'diagonal'}[effective.direction]):'Solid background',...group.decisions.filter(d=>!['colors','watermark'].includes(d.id)).map(d=>d.label+': '+d.options.find(o=>o.id===state.design.slides[kind][d.id])?.label),!effective.headingVisible?'Heading hidden':'',!effective.bodyVisible?'Supporting / box text hidden':'',effective.watermarkMode==='text'?'Custom watermark: '+effective.watermarkText+' · '+color(effective.watermarkColor)+' · '+effective.watermarkPlacement.replaceAll('-',' ')+' · '+effective.watermarkSize+' · '+effective.watermarkOpacity+' strength':effective.watermarkMode==='legacy'?'Arrangement watermark':'No watermark','Texture strength: '+({subtle:'Subtle',normal:'Standard',bold:'Stronger'}[effective.patternStrength]),'Heading: '+({default:'Match arrangement',small:'Smaller',large:'Larger'}[effective.headingSize])+', '+effective.headingAlignment+' aligned, '+effective.headingPlacement+' placement','Supporting / box text: '+({default:'Match arrangement',small:'Smaller',large:'Larger'}[effective.bodySize])+', '+effective.bodyAlignment+' aligned, '+effective.bodyPlacement+' placement',effective.extraText!==null?'Added text: '+effective.extraText:'',kind==='divider'&&state.design.slides.divider.layout==='band'?'Band outer surface: '+color(state.design.roles.contentBackground)+' · Shared':''].filter(Boolean).join(' · ');row.append(details);
   const actions=document.createElement('div');actions.className='review-role-actions';
   for(const [action,label] of [['preview','Preview'],['edit','Edit']]){const button=document.createElement('button');button.type='button';button.className='text-link';button.id='review-'+action+'-'+kind;button.textContent=label+' '+VIEW_NAMES[kind];button.onclick=()=>{if(action==='edit')showRoleEditor(kind);else{showView(kind);if(matchMedia('(max-width:760px)').matches)byId('surface-preview').click();byId('previewTabs').querySelector('[data-view="'+kind+'"]').focus({preventScroll:true});}};actions.append(button);}row.append(actions);summary.append(row);
  }
@@ -1698,8 +1694,8 @@ function renderPanel(){
  const panel=byId('stepPanel'),id=STEPS[state.step].id;
  if(id==='slides'&&ui.guide?.on){guide.render(panel);return;}
  if(id==='start')renderWelcome(panel);else if(id==='review')renderReview(panel);else renderEditors(panel);
- renderSharedTheme(panel);panel.insertBefore(byId('sharedTheme'),panel.children[2]||null);
- const nav=document.createElement('div');nav.className='panel-nav';nav.innerHTML='<button class="btn btn-secondary" id="btnBack"'+(state.step===0?' disabled':'')+'>Back'+(state.step>0?': '+escapeHtml(STEPS[state.step-1].label):'')+'</button>'+(state.step<STEPS.length-1?'<button class="btn btn-primary" id="btnNext">'+(state.step===0?'Continue: Slide designs':'Review & save')+'</button>':'');panel.append(nav);
+ if(id!=='start'){renderSharedTheme(panel);panel.insertBefore(byId('sharedTheme'),panel.children[2]||null);}
+ const nav=document.createElement('div');nav.className='panel-nav';nav.innerHTML='<button class="btn btn-secondary" id="btnBack"'+(state.step===0?' disabled':'')+'>Back'+(state.step>0?': '+escapeHtml(STEPS[state.step-1].label):'')+'</button>'+(state.step<STEPS.length-1?'<button class="btn btn-primary" id="btnNext">'+(state.step===0?'Customize current design':'Review & save')+'</button>':'');panel.append(nav);
  byId('btnBack').onclick=()=>{state.step=Math.max(0,state.step-1);render();};if(byId('btnNext'))byId('btnNext').onclick=()=>{state.step++;render();};
 }
 function updateSimilarity(design){
@@ -1752,6 +1748,7 @@ function render(focus=true){
  const active=document.activeElement,activeId=active?.id;
  ui.roleSections||={};byId('stepPanel').querySelectorAll('[data-role-section]').forEach(d=>{ui.roleSections[d.id]=d.open;});
  const openDetails=new Map(Array.from(byId('stepPanel').querySelectorAll('details[id]')).map(d=>[d.id,d.open]));
+ byId('workspace').dataset.stage=STEPS[state.step].id;
  byId('workspace').dataset.editor=String(state.step===1&&!ui.guide?.on);
  byId('workspace').dataset.options=String(ui.moreOptions||state.step!==1||Boolean(ui.guide?.on));
  byId('btnCloseOptions').hidden=state.step!==1||Boolean(ui.guide?.on);
@@ -1777,6 +1774,7 @@ function guideHost(){
   getGuide:()=>ui.guide,
   setGuide:next=>{ui.guide=next;if(isLeadSession())saveDraft();},
   change:(label,edit)=>changeDesign(label,edit),
+  textChange:(label,edit,checkpoint)=>changeDesign(label,edit,{redraw:false,checkpoint}),
   requestPreset:id=>requestPreset(id),
   preview:trial=>updatePreview(trial||state.design,{quick:true}),
   setView:view=>{state.previewView=view;ui.previewPinned=false;},
@@ -1805,6 +1803,7 @@ async function init(){
   context:()=>({design:state.design,kind:state.previewView,editable:isLeadSession(),optionsOpen:ui.moreOptions,mode:ui.guide?.on?'guide':state.step===1?'edit':'browse'}),
   activate:()=>{if(ui.guide)ui.guide={...ui.guide,on:false};ui.editorRole=state.previewView;state.step=1;ui.sharedThemeOpen=false;render(false);},
   change:(label,edit)=>changeDesign(label,edit),
+  textChange:(label,edit,checkpoint)=>changeDesign(label,edit,{redraw:false,checkpoint}),
   more:target=>{ui.moreOptions=!ui.moreOptions;if(ui.moreOptions)showRoleEditor(state.previewView,target==='background'?'background':target.startsWith('box')?'arrangement':'text',target.startsWith('body')?'bodyFont':target==='background'?'primary':'headingFont');else{render(false);byId('btnMoreOptions').focus();}},
   thumbnail:kind=>Model.renderSlide(catalog,state.design,kind,{title:state.design.samples.title,subtitle:state.design.samples.subtitle,logoUrl:'../SPOKES-Logo.png'})
  });

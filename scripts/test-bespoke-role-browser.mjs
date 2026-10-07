@@ -131,7 +131,7 @@ try{
   await focusedRegressions();
   if(!focusOnly){
   const page=await pageFor();await upload(page,payload(defaultDesign(catalog)));await go(page,'Starting look');
-  assert(await page.locator('.getting-started').isVisible(),'Beginner introduction is on the first step');
+  assert(await page.locator('#startingLookChoices').isVisible(),'Beginner introduction is on the first step');
   const beforeHelp=await design(page);await page.locator('#btnHelp').click();
   const help=await page.locator('#builderHelp').textContent();
   for(const pattern of [/editable/i,/sample/i,/eleven/i,/two or three/i,/twelve/i,/four/i,/logo/i,/leader/i,/Undo/i,/Previous versions/i,/six/i,/unmeasured/i,/private/i,/test space/i])assert.match(help,pattern);
@@ -145,9 +145,9 @@ try{
     await setStyle(page,kind,'pattern','plain');
     for(const color of ['primary','light','mauve']){await setStyle(page,kind,'primary',color);assert.equal(await layer(page,kind).evaluate(el=>getComputedStyle(el).backgroundColor),rgb(color));stats.paintChecks++;}
     await setStyle(page,kind,'primary','inherit');assert.equal(await layer(page).evaluate(el=>getComputedStyle(el).backgroundColor),rgb((await design(page)).roles[kind==='title'?'titleBackground':kind==='divider'?'dividerBackground':'contentBackground']));
-    await setStyle(page,kind,'primary','dark');await setStyle(page,kind,'backgroundMode','inherit');await setStyle(page,kind,'backgroundMode','gradient');await options(page,kind,'secondary');await options(page,kind,'direction');
+    await setStyle(page,kind,'primary','dark');await setStyle(page,kind,'backgroundMode','inherit');await setStyle(page,kind,'backgroundMode','gradient');await options(page,kind,'secondary');assert.equal(await page.locator(`#role-${kind}-direction`).count(),0,'Direction belongs to the preset');
     await setStyle(page,kind,'secondary','light');await setStyle(page,kind,'secondary','inherit');await setStyle(page,kind,'secondary','gold');
-    for(const direction of ['right','down','diagonal']){await setStyle(page,kind,'direction',direction);const image=await layer(page,kind).evaluate(el=>getComputedStyle(el).backgroundImage);assert(image.includes(rgb('dark'))&&image.includes(rgb('gold')));assert.match(image,new RegExp({right:'90deg',down:'linear-gradient\\((?:180deg, )?rgb',diagonal:'135deg'}[direction]));stats.paintChecks++;}
+    const gradient=await layer(page,kind).evaluate(el=>getComputedStyle(el).backgroundImage);assert(gradient.includes(rgb('dark'))&&gradient.includes(rgb('gold')));stats.paintChecks++;
     await setStyle(page,kind,'backgroundMode','solid');assert(!await page.locator(`#role-${kind}-secondary`).isVisible(),'Second color hides for a solid background');
     assert.equal((await design(page)).roleStyles[kind].secondary,'gold');await setStyle(page,kind,'backgroundMode','gradient');assert.equal(await page.locator(`#role-${kind}-secondary`).inputValue(),'gold');
     let plain;

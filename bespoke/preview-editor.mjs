@@ -2,7 +2,7 @@
 export function createPreviewEditor(host) {
  const stage=document.getElementById('modelStage'),toolbar=document.getElementById('contextToolbar');
  const names={title:'Title slide',divider:'Chapter divider',cards:'Text boxes',video:'Video slide',activity:'Activity'};
- let selected='background',targets=[],lastKind;
+ let selected='background',targets=[],lastKind,editingText=false;
  // Decorative slide DOM stays isolated from selection, focus and sample controls.
  const thumbnailRoots=new WeakMap();
  const label=(id)=>targets.find(t=>t.id===id)?.label||'Background';
@@ -36,6 +36,7 @@ export function createPreviewEditor(host) {
   wrapper.append(select);toolbar.append(wrapper);
  }
  function renderToolbar(){
+  if(editingText)return;
   const activeId=toolbar.contains(document.activeElement)?document.activeElement.id:null;
   toolbar.replaceChildren();
   const {design,kind,editable,optionsOpen,mode}=host.context();
@@ -54,20 +55,41 @@ export function createPreviewEditor(host) {
   const saved={...host.model.roleStyleDefaults(host.catalog,design,kind),...design.roleStyles?.[kind]};
   const effective=host.model.effectiveRoleStyle(host.catalog,design,kind);
   const apply=(key,value)=>host.change(`${names[kind]}: ${key.replace(/([A-Z])/g,' $1').toLowerCase()}`,d=>Object.assign(d,host.model.setRoleStyle(host.catalog,d,kind,key,value)));
-  const colors=key=>[{id:'inherit',label:'Use shared theme'},...host.catalog.palette.map(c=>({id:c.id,label:c.name}))];
-  if(selected.startsWith('heading')||selected.startsWith('body')){
-   const type=selected.startsWith('heading')?'heading':'body';
-   field('font','Font',saved[type+'Font'],[{id:'inherit',label:'Use shared font'},...host.catalog.fonts.map(f=>({id:f.id,label:f.label}))],v=>apply(type+'Font',v));
-   field('size','Size',saved[type+'Size'],[{id:'small',label:'Smaller'},{id:'default',label:'Match arrangement'},{id:'large',label:'Larger'}],v=>apply(type+'Size',v));
-   field('color','Text color',saved[type+'Color'],colors(type+'Color'),v=>apply(type+'Color',v));
+  const colors=()=>host.catalog.palette.map(c=>({id:c.id,label:c.name}));
+  const colorField=(id,title,value,callback)=>{field(id,title,value,colors(),callback);const input=document.getElementById('context-'+id);input.style.borderLeft='12px solid '+host.catalog.palette.find(c=>c.id===value).hex;};
+  if(selected.startsWith('heading')||selected.startsWith('body')||selected==='extra'){
+   const type=selected==='extra'?'extra':selected.startsWith('heading')?'heading':'body';
+   if(type!=='extra')field('font','Font',effective[type+'Font'],host.catalog.fonts.map(f=>({id:f.id,label:f.label})),v=>apply(type+'Font',v));
+   field('size','Size',saved[type+'Size'],[{id:'small',label:'Smaller'},{id:'default',label:'Medium'},{id:'large',label:'Larger'}],v=>apply(type+'Size',v));
+   colorField('color','Text color',effective[type+'Color'],v=>apply(type+'Color',v));
+   field('align','Align',effective[type+'Alignment'],['left','center','right'].map(id=>({id,label:id[0].toUpperCase()+id.slice(1)})),v=>apply(type+'Alignment',v));
+   field('placement','Place in text area',saved[type+'Placement']==='layout'?(kind==='title'&&design.slides.title.layout==='bottom'?'bottom':kind==='title'&&['corner','headline','masthead'].includes(design.slides.title.layout)?'top':'middle'):saved[type+'Placement'],['top','middle','bottom'].map(id=>({id,label:id[0].toUpperCase()+id.slice(1)})),v=>apply(type+'Placement',v));
+   const target=targets.find(t=>t.id===selected)?.node;
+   const box=target?.closest('.slide-card'),boxIndex=box?[...stage.querySelectorAll('.slide-card')].indexOf(box):-1;
+   const isLabel=kind==='activity'&&target?.classList.contains('slide-activity-label')||kind==='divider'&&target?.matches('.slide-body:first-of-type');
+   const copyKey=isLabel?'labelText':type+'Text';
+   const wrapper=document.createElement('label');wrapper.className='toolbar-copy';wrapper.textContent='Sample text';
+   const input=document.createElement('textarea');input.id='context-text';input.rows=2;
+   input.maxLength=boxIndex>=0?(type==='heading'?100:host.catalog.sampleLimits.box):isLabel?80:kind==='title'&&type!=='extra'?host.catalog.sampleLimits[type==='heading'?'title':'subtitle']:type==='heading'?200:type==='extra'?500:1200;
+   input.value=boxIndex>=0?(type==='heading'?(saved.boxHeadings?.[boxIndex]??`Step ${boxIndex+1}`):design.samples.boxes[boxIndex]):effective[copyKey]??'';
+   input.disabled=!editable;let checkpoint=true;
+   input.onfocus=()=>{editingText=true;checkpoint=true;};input.onblur=()=>{editingText=false;};
+   input.oninput=()=>{if(!editable)return;host.textChange('Edit sample text',d=>{
+    if(boxIndex>=0&&type==='body')d.samples.boxes[boxIndex]=input.value;
+    else if(boxIndex>=0){const headings=saved.boxHeadings?.slice()??['Step 1','Step 2','Step 3','Step 4'];headings[boxIndex]=input.value;Object.assign(d,host.model.setRoleStyle(host.catalog,d,kind,'boxHeadings',headings));}
+    else Object.assign(d,host.model.setRoleStyle(host.catalog,d,kind,copyKey,input.value));
+   },checkpoint);checkpoint=false;};wrapper.append(input);toolbar.append(wrapper);
+   if(type==='extra'){const remove=document.createElement('button');remove.type='button';remove.className='text-link';remove.textContent='Remove added text';remove.disabled=!editable;remove.onclick=()=>{selected='background';apply('extraText',null);};toolbar.append(remove);}
+
   }else if(selected.startsWith('box')){
    const decisions=host.catalog.slideGroups.find(g=>g.id==='cards').decisions;
    for(const key of ['look','layout']){const decision=decisions.find(d=>d.id===key);field(key,key==='look'?'Fill & border style':'Box arrangement',design.slides.cards[key],decision.options,v=>host.change('Text boxes: '+decision.label,d=>{d.slides.cards[key]=v;}));}
   }else{
-   field('finish','Background finish',saved.backgroundMode,[{id:'inherit',label:'Match arrangement'},{id:'solid',label:'Solid'},{id:'gradient',label:'Two-color gradient'}],v=>apply('backgroundMode',v));
-   field('background','Background color',saved.primary,colors('primary'),v=>apply('primary',v));
-   if(effective.backgroundMode==='gradient')field('second','Second color',saved.secondary,colors('secondary'),v=>apply('secondary',v));
+   field('finish','Background',effective.backgroundMode,[{id:'solid',label:'Solid'},{id:'gradient',label:'Gradient'}],v=>apply('backgroundMode',v));
+   colorField('background',effective.backgroundMode==='gradient'?'Start color':'Background color',effective.primary,v=>apply('primary',v));
+   if(effective.backgroundMode==='gradient')colorField('second','End color',effective.secondary,v=>apply('secondary',v));
   }
+  const addText=document.createElement('button');addText.type='button';addText.id='btnAddText';addText.className='btn btn-secondary';addText.textContent=effective.extraText===null?'Add text':'Select added text';addText.disabled=!editable;addText.onclick=()=>{selected='extra';if(effective.extraText===null)apply('extraText','Your text here');else refreshSelection();document.getElementById('context-text')?.focus();};toolbar.append(addText);
   const more=document.createElement('button');more.id='btnMoreOptions';more.type='button';more.className='btn btn-secondary';more.textContent=optionsOpen?'Hide options':'More options';more.setAttribute('aria-expanded',String(optionsOpen));more.setAttribute('aria-controls','detailControls');more.onclick=()=>host.more(selected);toolbar.append(more);
   if(!editable){const note=document.createElement('span');note.className='toolbar-readonly';note.textContent='View only · open your team design to edit.';toolbar.append(note);}
   if(activeId)document.getElementById(activeId)?.focus({preventScroll:true});
@@ -79,6 +101,7 @@ export function createPreviewEditor(host) {
   // Text keeps its visible words as its name; the background and boxes are labeled groups.
   const add=(id,label,node)=>{if(!node||getComputedStyle(node).display==='none'||!node.getClientRects().length)return;targets.push({id,label,node});if(!editing)return;node.dataset.editTarget=id;node.tabIndex=0;if(node.matches('.bespoke-slide,.slide-card')){node.setAttribute('role','group');node.setAttribute('aria-label',label);}};
   add('background','Background',stage.querySelector('.bespoke-slide'));
+  add('extra','Added text',stage.querySelector('.slide-extra-text'));
   stage.querySelectorAll('.slide-title-text,.slide-heading,.slide-card h3,.slide-activity-label').forEach((node,i)=>add('heading-'+i,node.closest('.slide-card')?'Box '+(Array.from(stage.querySelectorAll('.slide-card')).indexOf(node.closest('.slide-card'))+1)+' heading':node.classList.contains('slide-activity-label')?'Activity label':'Heading',node));
   stage.querySelectorAll('.slide-subtitle,.slide-body').forEach((node,i)=>add('body-'+i,node.closest('.slide-card')?'Box '+(Array.from(stage.querySelectorAll('.slide-card')).indexOf(node.closest('.slide-card'))+1)+' text':'Supporting text',node));
   stage.querySelectorAll('.slide-card').forEach((node,i)=>add('box-'+i,'Box '+(i+1),node));

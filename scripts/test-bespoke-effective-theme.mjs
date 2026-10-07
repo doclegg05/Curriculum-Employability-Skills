@@ -54,11 +54,13 @@ async function scenario(name, run) {
 async function ready(page) { await page.locator('#localPreviewNotice').waitFor(); await page.locator('#btnSave').filter({ hasText: 'Save test design' }).waitFor(); }
 async function surface(page, view) { const tab = page.locator('#surface-' + view); if (await tab.isVisible()) await tab.click(); }
 async function shared(page) {
+  if(!await page.locator('#sharedTheme').count())await page.locator('#stage-slides').click();
+  if(!await page.locator('#detailControls').isVisible())await page.locator('#btnMoreOptions').click();
   await surface(page, 'design');
   const d = page.locator('#sharedTheme'); if (!await d.evaluate(el => el.open)) await d.locator(':scope > summary').click();
 }
 async function start(page) { await surface(page, 'design'); await page.locator('#stage-start').click(); await shared(page); }
-async function view(page, kind) { await surface(page, 'preview'); await page.locator(`#previewTabs [data-view="${kind}"]`).click(); await page.evaluate(() => document.fonts.ready); }
+async function view(page, kind) {if(await page.locator('#workspace').getAttribute('data-stage')==='start'){await page.locator('#stage-slides').click();if(!await page.locator('#detailControls').isVisible())await page.locator('#btnMoreOptions').click();} await surface(page, 'preview'); await page.locator(`#previewTabs [data-view="${kind}"]`).click(); await page.evaluate(() => document.fonts.ready); }
 async function importDesign(page, d) {
   await page.locator('#teamFileInput').setInputFiles({ name: 'synthetic-effective-theme.json', mimeType: 'application/json', buffer: Buffer.from(JSON.stringify(payload(d))) });
   await page.locator('#fileStatus').filter({ hasText: 'Opened synthetic-effective-theme.json.' }).waitFor();

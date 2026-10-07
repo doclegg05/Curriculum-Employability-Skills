@@ -396,3 +396,18 @@ the preview, so the toolbar is hidden and slide elements are not selectable. On 
 and Review the slide is for looking at; one Edit this slide button opens the editor.
 Selectable text keeps its visible words as its accessible name; the background and
 boxes are labeled groups, and the selected element carries `aria-current="true"`.
+
+
+## Simplified workflow — October 7, 2026
+
+Mode: Operate. Retain the SPOKES typography, navy controls and neutral workspace.
+The first stage is a full-width gallery of twelve real slide compositions, with
+team details and alternate paths disclosed only when needed. Choosing a preset
+opens the large live preview. The compact toolbar follows the selected element,
+including sample text, color, three sizes, alignment and placement. Background
+controls offer Solid or Gradient and one or two brand-color pickers. Presets own
+the gradient direction. Detailed choices remain in More options.
+
+New role fields are optional when opening earlier v2 saves. The shared model
+validates and renders them for browser drafts, shared saves and generated design
+contracts. This is a local review implementation, not a hosted release.

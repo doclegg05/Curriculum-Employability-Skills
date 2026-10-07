@@ -75,7 +75,7 @@ export const ROLE_STYLE_KINDS = ['title', 'divider', 'cards', 'video', 'activity
 /** Inheritance is saved explicitly; sample sources are never duplicated. */
 export function roleStyleDefaults(catalog, design, kind) {
   if (!ROLE_STYLE_KINDS.includes(kind)) throw new Error(`Unknown slide role: ${kind}`);
-  return { backgroundMode:'inherit', primary:'inherit', secondary:'inherit', direction:'diagonal', pattern:'inherit', patternStrength:'normal', headingColor:'inherit', bodyColor:'inherit', headingFont:'inherit', bodyFont:'inherit', headingSize:'default', bodySize:'default', headingAlignment:'layout', bodyAlignment:'layout', headingVisible:true, bodyVisible:kind!=='video', headingText:null, bodyText:null, labelText:null, labelVisible:true, watermarkMode:'inherit', watermarkText:kind==='divider'?'02':'SPOKES', watermarkColor:'inherit', watermarkSize:'medium', watermarkPlacement:'bottom-right', watermarkOpacity:'low' };
+  return { backgroundMode:'inherit', primary:'inherit', secondary:'inherit', direction:'diagonal', pattern:'inherit', patternStrength:'normal', headingColor:'inherit', bodyColor:'inherit', headingFont:'inherit', bodyFont:'inherit', headingSize:'default', bodySize:'default', headingAlignment:'layout', bodyAlignment:'layout', headingPlacement:'layout', bodyPlacement:'layout', extraText:null, extraColor:'inherit', extraSize:'default', extraAlignment:'left', extraPlacement:'bottom', boxHeadings:null, headingVisible:true, bodyVisible:kind!=='video', headingText:null, bodyText:null, labelText:null, labelVisible:true, watermarkMode:'inherit', watermarkText:kind==='divider'?'02':'SPOKES', watermarkColor:'inherit', watermarkSize:'medium', watermarkPlacement:'bottom-right', watermarkOpacity:'low' };
 }
 
 export function roleStylesSchema(catalog) {
@@ -88,12 +88,14 @@ export function roleStylesSchema(catalog) {
       backgroundMode:enumeration(['inherit','solid','gradient']), primary:color(), secondary:color(), direction:enumeration(['right','down','diagonal']),
       pattern:enumeration(['inherit',...catalog.backgrounds.map(item=>item.id)]), patternStrength:enumeration(['subtle','normal','bold']),
       headingColor:color(),bodyColor:color(),headingFont:font(),bodyFont:font(),headingSize:enumeration(['small','default','large']),bodySize:enumeration(['small','default','large']),
-      headingAlignment:enumeration(['layout','left','center','right']),bodyAlignment:enumeration(['layout','left','center','right']),headingVisible:{type:'boolean'},bodyVisible:{type:'boolean'},
+      headingAlignment:enumeration(['layout','left','center','right']),bodyAlignment:enumeration(['layout','left','center','right']),
+      headingPlacement:enumeration(['layout','top','middle','bottom']),bodyPlacement:enumeration(['layout','top','middle','bottom']),
+      extraText:text(500),extraColor:color(),extraSize:enumeration(['small','default','large']),extraAlignment:enumeration(['left','center','right']),extraPlacement:enumeration(['top','middle','bottom']),boxHeadings:{type:['array','null'],minItems:4,maxItems:4,items:{type:'string',maxLength:100}},headingVisible:{type:'boolean'},bodyVisible:{type:'boolean'},
       headingText:kind==='title'?{const:null}:text(200),bodyText:['title','cards'].includes(kind)?{const:null}:text(1200),
       labelText:['divider','activity'].includes(kind)?text(80):{const:null},labelVisible:{type:'boolean'},
       watermarkMode:enumeration(['inherit','off','text']),watermarkText:{type:'string',maxLength:40},watermarkColor:color(),watermarkSize:enumeration(['small','medium','large']),watermarkPlacement:enumeration(['top-left','top-right','bottom-left','bottom-right']),watermarkOpacity:enumeration(['low','medium','high'])
     };
-    return [kind,{type:'object',additionalProperties:false,required:Object.keys(fields),properties:fields}];
+    return [kind,{type:'object',additionalProperties:false,required:Object.keys(fields).filter(key=>!['headingPlacement','bodyPlacement','extraText','extraColor','extraSize','extraAlignment','extraPlacement','boxHeadings'].includes(key)),properties:fields}];
   }));
   return {type:'object',additionalProperties:false,properties};
 }
@@ -102,9 +104,9 @@ export function effectiveRoleStyle(catalog, design, kind) {
   const style = {...roleStyleDefaults(catalog,design,kind),...design.roleStyles?.[kind]};
   const special = kind==='title'||kind==='divider';
   const background = kind==='title'?'titleBackground':kind==='divider'?'dividerBackground':'contentBackground';
-  for (const [key,value] of Object.entries({primary:design.roles[background],secondary:design.roles.titleBackgroundEnd,headingColor:design.roles[special?'titleText':'heading'],bodyColor:design.roles[special?'subtitle':'body'],headingFont:design.fonts.heading,bodyFont:design.fonts.body,pattern:design.background,watermarkColor:design.roles[special?'titleText':'heading']})) if(style[key]==='inherit') style[key]=value;
+  for (const [key,value] of Object.entries({primary:design.roles[background],secondary:design.roles.titleBackgroundEnd,headingColor:design.roles[special?'titleText':'heading'],bodyColor:design.roles[special?'subtitle':'body'],extraColor:design.roles[special?'subtitle':'body'],headingFont:design.fonts.heading,bodyFont:design.fonts.body,pattern:design.background,watermarkColor:design.roles[special?'titleText':'heading']})) if(style[key]==='inherit') style[key]=value;
   if(style.backgroundMode==='inherit') style.backgroundMode=special&&(design.slides[kind].colors==='gradient'||kind==='title'&&design.slides.title.layout==='split')?'gradient':'solid';
-  const centered=kind==='title'?design.slides.title.layout==='center':kind==='divider'?['center','band'].includes(design.slides.divider.layout):false;
+  const centered=kind==='title'?['center','frame','horizon'].includes(design.slides.title.layout):kind==='divider'?['center','band'].includes(design.slides.divider.layout):false;
   for(const key of ['headingAlignment','bodyAlignment']) if(style[key]==='layout') style[key]=centered?'center':'left';
   if(style.watermarkMode==='inherit') style.watermarkMode=kind==='divider'&&design.slides.divider.watermark!=='hide'?'legacy':'off';
   const copy={title:[design.samples.title,design.samples.subtitle],divider:['Put it into practice','One clear step at a time'],cards:['Build a useful habit',null],video:['See a skill in action','Watch for one action you could try.'],activity:['Try it together','Choose one next step. Tell a partner what you will try, and ask what could make it easier.']}[kind];
@@ -140,8 +142,8 @@ export function applyPreset(catalog, id, currentDesign) {
   if (currentDesign?.samples && !structuralErrors(catalog, currentDesign).length) {
     design.samples = clone(currentDesign.samples);
     for(const [kind,style] of Object.entries(currentDesign.roleStyles||{})) {
-      const copy=Object.fromEntries(['headingText','bodyText','labelText','watermarkText'].filter(key=>style[key]!==roleStyleDefaults(catalog,design,kind)[key]).map(key=>[key,style[key]]));
-      if(Object.keys(copy).length) { design.roleStyles||={}; design.roleStyles[kind]={...roleStyleDefaults(catalog,design,kind),...copy}; }
+      const copy=Object.fromEntries(['headingText','bodyText','labelText','watermarkText','extraText','boxHeadings'].filter(key=>style[key]!==undefined&&style[key]!==roleStyleDefaults(catalog,design,kind)[key]).map(key=>[key,style[key]]));
+      if(Object.keys(copy).length) { design.roleStyles||={}; design.roleStyles[kind]={...roleStyleDefaults(catalog,design,kind),...design.roleStyles?.[kind],...copy}; }
     }
   }
   return design;
@@ -195,9 +197,11 @@ export function structuralErrors(catalog, design) {
     const schema=roleStylesSchema(catalog);
     for(const [kind,style] of Object.entries(design.roleStyles)) {
       const fields=schema.properties[kind]?.properties;
-      if(!fields||!keys(style,Object.keys(fields),`${kind} style`)) continue;
+      if(!fields||!keys(style,Object.keys(fields),`${kind} style`,Object.keys(fields).filter(key=>!schema.properties[kind].required.includes(key)))) continue;
       for(const [key,definition] of Object.entries(fields)) {
+        if(!own(style,key))continue;
         const value=style[key];
+        if(key==='boxHeadings'){if(value!==null&&(!Array.isArray(value)||value.length!==4||value.some(v=>typeof v!=='string'||v.length>100||(v.isWellFormed&&!v.isWellFormed()))))errors.push(`${kind} style: invalid boxHeadings.`);continue;}
         const valid=own(definition,'const')?value===definition.const:definition.enum?definition.enum.includes(value):definition.type==='boolean'?typeof value==='boolean':value===null&&Array.isArray(definition.type)||typeof value==='string'&&value.length<=definition.maxLength&&(!value.isWellFormed||value.isWellFormed());
         if(!valid) errors.push(`${kind} style: invalid ${key}.`);
       }
@@ -255,8 +259,8 @@ function roleContrastIssues(catalog,design,kind) {
     surfaces=patternedSurfaces(catalog,design,surface,gradient?gradientSamples(base,findColor(catalog,design.roles.titleBackgroundEnd).hex):[base]);
     if(kind==='divider'&&design.slides.divider.layout==='band') surfaces.push(findColor(catalog,design.roles.contentBackground).hex);
   } else surfaces=[findColor(catalog,design.roles.contentBackground).hex];
-  return ['heading','body'].flatMap(type=>{
-    if(!style[type+'Visible']&&!(style.labelVisible&&(kind==='divider'&&type==='body'||kind==='activity'&&type==='heading'))) return [];
+  return ['heading','body',...(style.extraText!==null?['extra']:[])].flatMap(type=>{
+    if(type!=='extra'&&!style[type+'Visible']&&!(style.labelVisible&&(kind==='divider'&&type==='body'||kind==='activity'&&type==='heading'))) return [];
     const fg=findColor(catalog,style[type+'Color']),ratio=Math.min(...surfaces.map(bg=>contrast(fg.hex,bg)));
     // Small headings and card/activity labels can be normal-sized text. Use the
     // stricter text guideline instead of assuming every heading is large/bold.
@@ -310,7 +314,8 @@ function roleStyleCss(catalog,design,scope,canonical) {
   const lessonRoots={title:'.slide-title',divider:'.slide.slide-section',cards:'.slide:not(.slide-video):not(.slide-section):has(.cards-grid)',video:'.slide.slide-video:not(.slide-title):not(.slide-section)',activity:'.slide:not(.slide-section):has(.activity-box)'};
   const previewText={title:['.slide-title-text','.slide-subtitle'],divider:['.slide-heading','.slide-body'],cards:[':is(.slide-heading,.slide-card h3)','.slide-card .slide-body'],video:['.slide-heading','.slide-body'],activity:[':is(.slide-heading,.slide-activity-label)','.slide-body']};
   const lessonText={title:['h1',':is(.subtitle,.copyright)'],divider:['h2',':is(p,.chapter-label)'],cards:[':is(h2,h3,h4)',':is(p,li)'],video:['h2','p:not(:has(.video-btn)):not(:has(.download-btn))'],activity:[':is(h2,h3,.activity-label)',':is(p,li)']};
-  for(const [kind,saved] of Object.entries(design.roleStyles||{})) {
+  for(const [kind,stored] of Object.entries(design.roleStyles||{})) {
+    const saved={...roleStyleDefaults(catalog,design,kind),...stored};
     const style=effectiveRoleStyle(catalog,design,kind), preview=`${scope}[data-kind="${kind}"]`, lesson=lessonRoots[kind];
     const rule=(p,l,css)=>{if(css) blocks.push(`${p}${canonical?`, ${l}`:''}{${css}}`);};
     if(canonical&&kind==='activity'&&design.slides.activity.layout==='side') blocks.push(`@container(max-width:30rem){${lesson} .activity-box{grid-template-columns:minmax(0,1fr);}}`);
@@ -336,6 +341,9 @@ function roleStyleCss(catalog,design,scope,canonical) {
         declarations.push(`text-align:${style[type+'Alignment']}!important`);
         if(['title','divider'].includes(kind)) declarations.push(`align-self:stretch;justify-self:${{left:'start',center:'center',right:'end'}[style[type+'Alignment']]};width:100%`);
       }
+      if(style[type+'Placement']!=='layout') {
+        declarations.push(`min-height:${type==='heading'?'10':'8'}rem;display:block;align-content:${{top:'start',middle:'center',bottom:'end'}[style[type+'Placement']]}`);
+      }
       if(!style[type+'Visible']) {
         const pVisibility=kind==='divider'&&type==='body'?`${preview} .slide-body:not(:first-of-type)`:kind==='activity'&&type==='heading'?`${preview} .slide-heading`:p;
         const lVisibility=kind==='divider'&&type==='body'?`${lesson} p:not(.chapter-label)`:kind==='activity'&&type==='heading'?`${lesson} :is(h2,h3)`:l;
@@ -349,6 +357,7 @@ function roleStyleCss(catalog,design,scope,canonical) {
       if(saved[type+'Size']!=='default') descendants.push('font-size:inherit!important');
       rule(`${p} :is(li,span,strong,em)`,`${l} :is(li,span,strong,em)`,descendants.join(';'));
     }
+    if(style.extraText!==null)rule(`${preview} .slide-extra-text`,`${lesson} .slide-extra-text`,`grid-column:1 / -1;grid-row:8;position:relative;z-index:1;min-height:8rem;width:100%;margin:1rem 0 0;align-content:${{top:'start',middle:'center',bottom:'end'}[style.extraPlacement]};text-align:${style.extraAlignment}!important;color:${findColor(catalog,style.extraColor).hex}!important;font-family:var(--font-body)!important;font-size:${{small:'.85rem',default:'1rem',large:'1.3rem'}[style.extraSize]}!important;white-space:normal;overflow-wrap:anywhere;`);
     if(!style.labelVisible&&['divider','activity'].includes(kind)) rule(`${preview} ${kind==='divider'?'.slide-body:first-of-type':'.slide-activity-label'}`,`${lesson} ${kind==='divider'?'.chapter-label':'.activity-label'}`,'display:none!important');
     if(saved.watermarkMode!=='inherit') {
       if(kind==='divider') rule(`${preview} .slide-watermark`,`${lesson}::after`,'display:none;');
@@ -500,6 +509,23 @@ export function cssForDesign(catalog, design, { scope = '.bespoke-slide', fontBa
   blocks.push(`@container(max-width:40rem){${selector('.slide-sidebar')}{display:none;}${selector('.slide-sidebar-disclosure')}{display:block;grid-column:1 / -1;margin:1rem 1.25rem 0;}${selector('.slide-content')}{grid-column:1 / -1;}}`);
   blocks.push(`@container(max-width:30rem){${selector('.slide-video-layout')},${selector('.slide-activity')}{grid-template-columns:minmax(0,1fr);}}`);
   if (canonical && video.layout === 'side') blocks.push('@media(max-width:600px){.slide-video.active{grid-template-columns:minmax(0,1fr);}}');
+  const layouts = {
+    frame: {root:'border:2px solid var(--role-accent);outline:12px solid var(--role-title-background);outline-offset:-14px;padding-inline:12%;justify-items:center;text-align:center;',heading:'max-width:18ch;',accent:'width:32px;height:3px;'},
+    headline: {root:'justify-items:start;grid-template-rows:0 auto auto auto auto auto 1fr;',heading:'font-size:clamp(2rem,8cqw,6rem);max-width:12ch;line-height:1;letter-spacing:-.03em;',accent:'width:100%;height:2px;'},
+    sidebar: {root:'padding-left:20%;',heading:'max-width:18ch;',accent:'position:absolute;grid-area:auto;left:10%;top:24%;height:52%;width:5px;'},
+    horizon: {root:'justify-items:center;text-align:center;grid-template-rows:1fr auto auto auto auto auto 1fr;',heading:'max-width:24ch;',accent:'width:100%;height:2px;margin-block:16px 28px;'},
+    corner: {root:'grid-template-rows:0 auto auto auto auto auto 1fr;justify-items:start;padding-top:48px;',heading:'max-width:13ch;font-size:clamp(1.5rem,4cqw,3rem);',accent:'width:40px;'},
+    masthead: {root:'grid-template-rows:0 auto auto auto auto auto 1fr;padding-top:140px;',heading:'max-width:24ch;',accent:'position:absolute;grid-area:auto;top:110px;left:6%;width:88%;height:6px;'},
+    columns: {root:'grid-template-columns:minmax(0,1fr) minmax(0,1fr);column-gap:10%;',heading:'grid-column:1;grid-row:3 / 6;max-width:12ch;',body:'grid-column:2;grid-row:3 / 6;align-self:center;max-width:24ch;',accent:'position:absolute;grid-area:auto;left:50%;top:28%;height:44%;width:2px;'},
+    plaque: {root:'padding-inline:16%;justify-items:start;',heading:'border:2px solid var(--role-accent);padding:24px;max-width:22ch;',body:'padding-inline:24px;',accent:'display:none;'}
+  };
+  const composition=layouts[title.layout];
+  if(composition){
+    rule(kind('title'),'.slide-title',composition.root);
+    rule(`${kind('title')} .slide-title-text`,'.slide-title h1',composition.heading);
+    rule(`${kind('title')} .slide-subtitle`,'.slide-title .subtitle',composition.body||'');
+    rule(`${kind('title')} .slide-accent`,'.slide-title .divider',composition.accent);
+  }
   blocks.push(...roleStyleCss(catalog,design,scope,canonical));
   return `${blocks.join('\n')}\n`;
 }
@@ -529,7 +555,7 @@ export function renderSlide(catalog, design, kind, options = {}) {
     const lines = text.split(/\n+/).filter(Boolean);
     const treatment = design.slides.cards.treatment;
     const copy = treatment === 'paragraph' ? `<p class="slide-body">${escape(text).replace(/\n/g, '<br>')}</p>` : `<${treatment === 'bullets' ? 'ul' : 'ol'} class="slide-body">${lines.map(line => `<li>${escape(line)}</li>`).join('')}</${treatment === 'bullets' ? 'ul' : 'ol'}>`;
-    return `<section class="slide-card bespoke-box"><h3>Step ${index + 1}</h3>${copy}</section>`;
+    return `<section class="slide-card bespoke-box"><h3>${escape(design.roleStyles?.cards?.boxHeadings?.[index]??`Step ${index + 1}`)}</h3>${copy}</section>`;
   }).join('');
   const views = {
     title: `${logo}<h2 class="slide-title-text">${title}</h2><div class="slide-accent" aria-hidden="true"></div><p class="slide-subtitle">${subtitle}</p>`,
@@ -555,6 +581,12 @@ export function renderSlide(catalog, design, kind, options = {}) {
       else if(style.watermarkPlacement.startsWith('top')) views[kind]=views[kind].replace('<div class="slide-content">',()=>'<div class="slide-content">'+watermark);
       else views[kind]=views[kind].replace(/<\/div>$/,()=>watermark+'</div>');
     }
+  }
+  const extra=effectiveRoleStyle(catalog,design,kind);
+  if(extra.extraText!==null) {
+    const text=`<p class="slide-extra-text">${escape(extra.extraText).replace(/\n/g,'<br>')}</p>`;
+    if(['title','divider'].includes(kind))views[kind]+=text;
+    else views[kind]=views[kind].replace(/<\/div>$/,()=>text+'</div>');
   }
   return `<article class="bespoke-slide" data-kind="${kind}" ${attributes} aria-label="${escape(catalog.slideGroups.find(group => group.id === kind).label)} sample">${views[kind]}</article>`;
 }

@@ -217,3 +217,31 @@
 
 /* Keep the whole composition manageable on the iMac’s wide display. */
 .preview-frame{max-width:1080px;margin-inline:auto}
+
+/* Choose → customize → review. The gallery is the opening workspace. */
+.workspace[data-stage=start]{display:block;max-width:1380px;margin:auto}
+.workspace[data-stage=start] .slide-rail,.workspace[data-stage=start] .preview-pane{display:none}
+.workspace[data-stage=start] .chrome-rail{border:0;width:100%;display:block!important}
+.workspace[data-stage=start] .controls{padding:32px clamp(16px,4vw,56px)}
+.workspace[data-stage=start] .panel-lead{max-width:65ch}
+.workspace[data-stage=start] .stage-count{display:none}
+.start-team{margin-block:16px 24px;padding-block:8px;border-block:1px solid var(--line)}
+.start-team>summary{min-height:44px;padding-block:10px;cursor:pointer;font-weight:500}
+.start-team>div{max-width:700px;padding-top:16px}
+.preset-grid{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:24px 20px}
+.preset-choice{padding:0 0 14px;overflow:hidden;text-align:left;border:1px solid var(--line);border-radius:8px;background:var(--paper)}
+.preset-choice:hover{border-color:var(--blue);background:var(--mist)}
+.preset-choice[aria-pressed=true]{outline:3px solid var(--blue);outline-offset:3px}
+.preset-choice>strong,.preset-choice>span:not(.preset-slide){display:block;margin:10px 14px 0}
+.preset-choice>strong{font-size:1.05rem}
+.preset-choice>span:not(.preset-slide){font-size:.875rem;color:var(--muted);line-height:1.4}
+.preset-slide{display:block;aspect-ratio:16 / 9;width:100%;overflow:hidden;pointer-events:none;background:var(--mist)}
+.toolbar-copy{display:flex;flex-direction:column;gap:5px;flex:1 0 100%;font-size:.8rem;font-weight:500;order:2}
+.toolbar-copy textarea{width:100%;resize:vertical;min-height:64px;max-height:200px;font:inherit;font-size:1rem;line-height:1.5;padding:10px 12px;border:1px solid var(--input-line,#8f9eaf);border-radius:4px;color:var(--navy);background:white}
+.context-toolbar .toolbar-field{flex-basis:112px;max-width:190px}
+#contextToolbar .btn{margin-left:0}
+@media(max-width:1000px){.preset-grid{grid-template-columns:repeat(3,minmax(0,1fr))}}
+@media(max-width:700px){.preset-grid{grid-template-columns:repeat(2,minmax(0,1fr));gap:20px 12px}.workspace[data-stage=start] .controls{padding:20px 16px}.workspace[data-stage=start] .preset-choice>strong{font-size:1rem}.workspace[data-stage=start] .preset-choice>span:not(.preset-slide){font-size:.8rem}.context-toolbar .toolbar-field{max-width:none}}
+@media(max-width:380px){.preset-grid{grid-template-columns:1fr}}
+
+.surface-navigation:has(+ .editor-stages + .workspace[data-stage=start]){display:none}
