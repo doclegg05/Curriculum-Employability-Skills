@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""Verify a downloaded/checked-out immutable review package before human or AI review."""
+"""Verify a downloaded/checked-out immutable review package before review."""
 import argparse
 import hashlib
 import json
@@ -30,7 +30,7 @@ def verify_package(folder):
             "chosenOption": selection.get("alternatives", {}).get("active"),
             "visualArtifact": str(folder / "review.html") if selection["schema"] == "bespoke-selection/v2" else None,
             "contrastAdvisories": contract.get("contrastAdvisories", []),
-            "status": "Verified package; human and AI review have not been inferred."}
+            "status": "Package integrity verified; review and approval are separate."}
 
 
 if __name__ == "__main__":

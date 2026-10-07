@@ -157,7 +157,7 @@ def write_submission(payload: dict, repo_root: Path) -> Path:
                     "selectionSha256": selection_digest(payload),
                     "chosenOption": payload.get("alternatives", {}).get("active"),
                     "files": {name: hashlib.sha256((staging / name).read_bytes()).hexdigest() for name in files},
-                    "reviewStatus": "Ready for Britt to review; no automatic AI review is triggered."}
+                    "reviewStatus": "Ready for review on request."}
         (staging / "review-package.json").write_text(json.dumps(manifest, indent=2) + "\n", encoding="utf-8")
         os.rename(staging, dest)
     finally:

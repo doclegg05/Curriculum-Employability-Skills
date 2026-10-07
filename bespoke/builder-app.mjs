@@ -217,7 +217,7 @@ const findOption=(family,slug)=>state.library?.families?.[family]?.options.find(
         if(typeof value!=='string'||!value.startsWith('https://github.com/doclegg05/Curriculum-Employability-Skills/'))continue;
         const link=document.createElement('a');link.href=value;link.textContent=label;link.target='_blank';link.rel='noopener';delivered.append(link,document.createTextNode(' · '));
       }
-      delivered.append(document.createTextNode('Ready for review; this does not confirm that Britt or an AI has reviewed it.'));
+      delivered.append(document.createTextNode('Ready for review; delivery does not confirm that the package has been reviewed.'));
     }
     byId("btnLoadLatest")?.toggleAttribute("hidden", !ui.cloudConflict);
     byId("btnKeepLocal")?.toggleAttribute("hidden", !ui.cloudConflict);
