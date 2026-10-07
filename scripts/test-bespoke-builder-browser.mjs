@@ -122,9 +122,9 @@ async function assertNoOverflow(page, label) {
 }
 async function axe(page, label, { excludePreview = false } = {}) {
   await page.addScriptTag({ content: axeSource });
-  // The watermark is intentionally faint decoration, hidden from assistive tech;
-  // the visible chapter label supplies the information and stays in this scan.
-  const violations = await page.evaluate(async excludePreview => (await window.axe.run({ exclude: [['.slide-watermark[aria-hidden="true"]'], ...(excludePreview ? [['#modelStage']] : [])] }, { runOnly: { type: 'tag', values: ['wcag2a', 'wcag2aa', 'wcag21aa'] } })).violations.map(item => ({ id: item.id, impact: item.impact, nodes: item.nodes.map(node => ({ target: node.target, message: node.failureSummary })) })), excludePreview);
+  // Only faint decorative artwork is excluded. The named, focusable editor
+  // wrapper and visible chapter label stay in the scan.
+  const violations = await page.evaluate(async excludePreview => (await window.axe.run({ exclude: [['.slide-watermark[aria-hidden="true"]'], ['.slide-watermark > [aria-hidden="true"]'], ['.role-watermark > [aria-hidden="true"]'], ...(excludePreview ? [['#modelStage']] : [])] }, { runOnly: { type: 'tag', values: ['wcag2a', 'wcag2aa', 'wcag21aa'] } })).violations.map(item => ({ id: item.id, impact: item.impact, nodes: item.nodes.map(node => ({ target: node.target, message: node.failureSummary })) })), excludePreview);
   assert.deepEqual(violations, [], `${label}: ${JSON.stringify(violations, null, 2)}`);
 }
 

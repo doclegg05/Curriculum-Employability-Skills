@@ -419,3 +419,21 @@ Use the approved palette across light and dark surfaces, strong green and gold,
 neutral silver and graphite, white, berry and ocean blue. Eight solids and four
 gradients distinguish twelve compositions without adding another workflow step.
 Keep readable text on every starter and preserve full saved-design colors.
+
+### Feature inspector — October 7, 2026
+
+Keep the approved color-first gallery. During Customize, the right editor sidebar
+shows controls for the clicked preview feature, with a visible selection outline
+and scope description. Text, backgrounds, navigation, action buttons, box surfaces,
+title bars, logo, accent rule, video frame, activity panel and watermark are
+selectable with pointer or keyboard. The Selected element menu is an equivalent
+entry point. On phones the inspector follows the preview and selection brings
+it into view; on tablets it stays beside the preview. More slide options remains
+optional. Guide and Review keep their separate behavior.
+
+Navigation and buttons have independent fill, text color and font. Box surfaces,
+title bars, video frames and activity panels have independent fills and borders.
+Shared defaults remain an explicit reset, with Undo/Redo and full saved restore.
+Added text and watermarks have independent font choices. Decorative watermark
+artwork is exposed as a named image during editing, with its text editable in the
+inspector, rather than treating its intentionally faint ink as body text.

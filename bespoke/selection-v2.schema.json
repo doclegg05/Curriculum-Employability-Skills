@@ -820,6 +820,23 @@
                   ],
                   "maxLength": 500
                 },
+                "extraFont": {
+                  "enum": [
+                    "inherit",
+                    "dm-serif-display",
+                    "outfit",
+                    "playfair-display",
+                    "inter",
+                    "merriweather",
+                    "source-sans-3",
+                    "vollkorn",
+                    "fira-sans",
+                    "crimson-pro",
+                    "work-sans",
+                    "bitter",
+                    "raleway"
+                  ]
+                },
                 "extraColor": {
                   "enum": [
                     "inherit",
@@ -912,6 +929,23 @@
                     "offwhite",
                     "muted",
                     "light"
+                  ]
+                },
+                "watermarkFont": {
+                  "enum": [
+                    "inherit",
+                    "dm-serif-display",
+                    "outfit",
+                    "playfair-display",
+                    "inter",
+                    "merriweather",
+                    "source-sans-3",
+                    "vollkorn",
+                    "fira-sans",
+                    "crimson-pro",
+                    "work-sans",
+                    "bitter",
+                    "raleway"
                   ]
                 },
                 "watermarkSize": {
@@ -1152,6 +1186,23 @@
                   ],
                   "maxLength": 500
                 },
+                "extraFont": {
+                  "enum": [
+                    "inherit",
+                    "dm-serif-display",
+                    "outfit",
+                    "playfair-display",
+                    "inter",
+                    "merriweather",
+                    "source-sans-3",
+                    "vollkorn",
+                    "fira-sans",
+                    "crimson-pro",
+                    "work-sans",
+                    "bitter",
+                    "raleway"
+                  ]
+                },
                 "extraColor": {
                   "enum": [
                     "inherit",
@@ -1256,6 +1307,23 @@
                     "offwhite",
                     "muted",
                     "light"
+                  ]
+                },
+                "watermarkFont": {
+                  "enum": [
+                    "inherit",
+                    "dm-serif-display",
+                    "outfit",
+                    "playfair-display",
+                    "inter",
+                    "merriweather",
+                    "source-sans-3",
+                    "vollkorn",
+                    "fira-sans",
+                    "crimson-pro",
+                    "work-sans",
+                    "bitter",
+                    "raleway"
                   ]
                 },
                 "watermarkSize": {
@@ -1496,6 +1564,23 @@
                   ],
                   "maxLength": 500
                 },
+                "extraFont": {
+                  "enum": [
+                    "inherit",
+                    "dm-serif-display",
+                    "outfit",
+                    "playfair-display",
+                    "inter",
+                    "merriweather",
+                    "source-sans-3",
+                    "vollkorn",
+                    "fira-sans",
+                    "crimson-pro",
+                    "work-sans",
+                    "bitter",
+                    "raleway"
+                  ]
+                },
                 "extraColor": {
                   "enum": [
                     "inherit",
@@ -1592,6 +1677,23 @@
                     "offwhite",
                     "muted",
                     "light"
+                  ]
+                },
+                "watermarkFont": {
+                  "enum": [
+                    "inherit",
+                    "dm-serif-display",
+                    "outfit",
+                    "playfair-display",
+                    "inter",
+                    "merriweather",
+                    "source-sans-3",
+                    "vollkorn",
+                    "fira-sans",
+                    "crimson-pro",
+                    "work-sans",
+                    "bitter",
+                    "raleway"
                   ]
                 },
                 "watermarkSize": {
@@ -1832,6 +1934,23 @@
                   ],
                   "maxLength": 500
                 },
+                "extraFont": {
+                  "enum": [
+                    "inherit",
+                    "dm-serif-display",
+                    "outfit",
+                    "playfair-display",
+                    "inter",
+                    "merriweather",
+                    "source-sans-3",
+                    "vollkorn",
+                    "fira-sans",
+                    "crimson-pro",
+                    "work-sans",
+                    "bitter",
+                    "raleway"
+                  ]
+                },
                 "extraColor": {
                   "enum": [
                     "inherit",
@@ -1932,6 +2051,23 @@
                     "offwhite",
                     "muted",
                     "light"
+                  ]
+                },
+                "watermarkFont": {
+                  "enum": [
+                    "inherit",
+                    "dm-serif-display",
+                    "outfit",
+                    "playfair-display",
+                    "inter",
+                    "merriweather",
+                    "source-sans-3",
+                    "vollkorn",
+                    "fira-sans",
+                    "crimson-pro",
+                    "work-sans",
+                    "bitter",
+                    "raleway"
                   ]
                 },
                 "watermarkSize": {
@@ -2172,6 +2308,23 @@
                   ],
                   "maxLength": 500
                 },
+                "extraFont": {
+                  "enum": [
+                    "inherit",
+                    "dm-serif-display",
+                    "outfit",
+                    "playfair-display",
+                    "inter",
+                    "merriweather",
+                    "source-sans-3",
+                    "vollkorn",
+                    "fira-sans",
+                    "crimson-pro",
+                    "work-sans",
+                    "bitter",
+                    "raleway"
+                  ]
+                },
                 "extraColor": {
                   "enum": [
                     "inherit",
@@ -2278,6 +2431,23 @@
                     "light"
                   ]
                 },
+                "watermarkFont": {
+                  "enum": [
+                    "inherit",
+                    "dm-serif-display",
+                    "outfit",
+                    "playfair-display",
+                    "inter",
+                    "merriweather",
+                    "source-sans-3",
+                    "vollkorn",
+                    "fira-sans",
+                    "crimson-pro",
+                    "work-sans",
+                    "bitter",
+                    "raleway"
+                  ]
+                },
                 "watermarkSize": {
                   "enum": [
                     "small",
@@ -2298,6 +2468,300 @@
                     "low",
                     "medium",
                     "high"
+                  ]
+                }
+              }
+            }
+          }
+        },
+        "featureStyles": {
+          "type": "object",
+          "additionalProperties": false,
+          "properties": {
+            "sidebar": {
+              "type": "object",
+              "additionalProperties": false,
+              "required": [
+                "background",
+                "color",
+                "font"
+              ],
+              "properties": {
+                "background": {
+                  "enum": [
+                    "inherit",
+                    "primary",
+                    "dark",
+                    "royal",
+                    "accent",
+                    "gold",
+                    "muted-gold",
+                    "mauve",
+                    "gray",
+                    "offwhite",
+                    "muted",
+                    "light"
+                  ]
+                },
+                "color": {
+                  "enum": [
+                    "inherit",
+                    "primary",
+                    "dark",
+                    "royal",
+                    "accent",
+                    "gold",
+                    "muted-gold",
+                    "mauve",
+                    "gray",
+                    "offwhite",
+                    "muted",
+                    "light"
+                  ]
+                },
+                "font": {
+                  "enum": [
+                    "inherit",
+                    "dm-serif-display",
+                    "outfit",
+                    "playfair-display",
+                    "inter",
+                    "merriweather",
+                    "source-sans-3",
+                    "vollkorn",
+                    "fira-sans",
+                    "crimson-pro",
+                    "work-sans",
+                    "bitter",
+                    "raleway"
+                  ]
+                }
+              }
+            },
+            "button": {
+              "type": "object",
+              "additionalProperties": false,
+              "required": [
+                "background",
+                "color",
+                "font"
+              ],
+              "properties": {
+                "background": {
+                  "enum": [
+                    "inherit",
+                    "primary",
+                    "dark",
+                    "royal",
+                    "accent",
+                    "gold",
+                    "muted-gold",
+                    "mauve",
+                    "gray",
+                    "offwhite",
+                    "muted",
+                    "light"
+                  ]
+                },
+                "color": {
+                  "enum": [
+                    "inherit",
+                    "primary",
+                    "dark",
+                    "royal",
+                    "accent",
+                    "gold",
+                    "muted-gold",
+                    "mauve",
+                    "gray",
+                    "offwhite",
+                    "muted",
+                    "light"
+                  ]
+                },
+                "font": {
+                  "enum": [
+                    "inherit",
+                    "dm-serif-display",
+                    "outfit",
+                    "playfair-display",
+                    "inter",
+                    "merriweather",
+                    "source-sans-3",
+                    "vollkorn",
+                    "fira-sans",
+                    "crimson-pro",
+                    "work-sans",
+                    "bitter",
+                    "raleway"
+                  ]
+                }
+              }
+            },
+            "box": {
+              "type": "object",
+              "additionalProperties": false,
+              "required": [
+                "background",
+                "border"
+              ],
+              "properties": {
+                "background": {
+                  "enum": [
+                    "inherit",
+                    "primary",
+                    "dark",
+                    "royal",
+                    "accent",
+                    "gold",
+                    "muted-gold",
+                    "mauve",
+                    "gray",
+                    "offwhite",
+                    "muted",
+                    "light"
+                  ]
+                },
+                "border": {
+                  "enum": [
+                    "inherit",
+                    "primary",
+                    "dark",
+                    "royal",
+                    "accent",
+                    "gold",
+                    "muted-gold",
+                    "mauve",
+                    "gray",
+                    "offwhite",
+                    "muted",
+                    "light"
+                  ]
+                }
+              }
+            },
+            "titlebar": {
+              "type": "object",
+              "additionalProperties": false,
+              "required": [
+                "background",
+                "border"
+              ],
+              "properties": {
+                "background": {
+                  "enum": [
+                    "inherit",
+                    "primary",
+                    "dark",
+                    "royal",
+                    "accent",
+                    "gold",
+                    "muted-gold",
+                    "mauve",
+                    "gray",
+                    "offwhite",
+                    "muted",
+                    "light"
+                  ]
+                },
+                "border": {
+                  "enum": [
+                    "inherit",
+                    "primary",
+                    "dark",
+                    "royal",
+                    "accent",
+                    "gold",
+                    "muted-gold",
+                    "mauve",
+                    "gray",
+                    "offwhite",
+                    "muted",
+                    "light"
+                  ]
+                }
+              }
+            },
+            "video": {
+              "type": "object",
+              "additionalProperties": false,
+              "required": [
+                "background",
+                "border"
+              ],
+              "properties": {
+                "background": {
+                  "enum": [
+                    "inherit",
+                    "primary",
+                    "dark",
+                    "royal",
+                    "accent",
+                    "gold",
+                    "muted-gold",
+                    "mauve",
+                    "gray",
+                    "offwhite",
+                    "muted",
+                    "light"
+                  ]
+                },
+                "border": {
+                  "enum": [
+                    "inherit",
+                    "primary",
+                    "dark",
+                    "royal",
+                    "accent",
+                    "gold",
+                    "muted-gold",
+                    "mauve",
+                    "gray",
+                    "offwhite",
+                    "muted",
+                    "light"
+                  ]
+                }
+              }
+            },
+            "activity": {
+              "type": "object",
+              "additionalProperties": false,
+              "required": [
+                "background",
+                "border"
+              ],
+              "properties": {
+                "background": {
+                  "enum": [
+                    "inherit",
+                    "primary",
+                    "dark",
+                    "royal",
+                    "accent",
+                    "gold",
+                    "muted-gold",
+                    "mauve",
+                    "gray",
+                    "offwhite",
+                    "muted",
+                    "light"
+                  ]
+                },
+                "border": {
+                  "enum": [
+                    "inherit",
+                    "primary",
+                    "dark",
+                    "royal",
+                    "accent",
+                    "gold",
+                    "muted-gold",
+                    "mauve",
+                    "gray",
+                    "offwhite",
+                    "muted",
+                    "light"
                   ]
                 }
               }

@@ -327,7 +327,7 @@ try {
     for (const role of ['sidebar', 'accent', 'button']) {
       await shared(page); await page.locator('#colorRole').selectOption(role);
       const scope = page.locator(`[data-shared-scope="${role}"]`);
-      assert.match(await scope.textContent(), /Shared only/);
+      assert.match(await scope.textContent(), role==='accent'?/Shared only/:/Shared default/);
       assert.equal(await scope.locator('[data-scope-role]').count(), 0, `${role} cannot offer an unrelated local editor`);
       const kind = role === 'accent' ? 'title' : 'video';
       const newColor = (await design(page)).roles[role] === 'mauve' ? 'primary' : 'mauve';
@@ -340,7 +340,7 @@ try {
       assert(delta.changedFraction > .00005, `${role} must visibly paint its supported sample element`);
       const target = role === 'sidebar' ? '.slide-video-frame > span' : role === 'accent' ? '.slide-accent' : '.slide-button';
       assert.equal(await page.locator('#modelStage ' + target).first().evaluate(el => getComputedStyle(el).backgroundColor), rgb(newColor));
-      evidence.push({ label: role + ' shared-only visible paint', delta });
+      evidence.push({ label: role + ' shared-default visible paint', delta });
     }
     await editor(page, 'title'); await setField(page, 'title', 'bodyFont', 'bitter');
     await shared(page); await page.locator('#themeScope').selectOption('shared'); await page.locator('#font-body').selectOption('raleway');

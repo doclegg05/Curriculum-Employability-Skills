@@ -131,8 +131,9 @@ try{
  await check('a11y',async()=>{
   const {page,done}=await fresh(1440);
   await page.locator('#stage-slides').click();
-  const named=await page.evaluate(()=>[...document.querySelectorAll('#modelStage [data-edit-target]')].map(n=>({tag:n.tagName,label:n.getAttribute('aria-label'),role:n.getAttribute('role'),container:n.matches('.bespoke-slide,.slide-card')})));
-  for(const n of named.filter(n=>!n.container))assert.equal(n.label,null,'A '+n.tag+' keeps its visible text as its name: '+JSON.stringify(n));
+  const named=await page.evaluate(()=>[...document.querySelectorAll('#modelStage [data-edit-target]')].map(n=>({tag:n.tagName,label:n.getAttribute('aria-label'),role:n.getAttribute('role'),container:n.matches('.bespoke-slide,.slide-card'),text:/^(heading|body|extra)/.test(n.dataset.editTarget)})));
+  for(const n of named.filter(n=>n.text))assert.equal(n.label,null,'A '+n.tag+' keeps its visible text as its name: '+JSON.stringify(n));
+  for(const n of named.filter(n=>!n.text))assert(n.label,'Non-text features have an accessible name');
   for(const n of named.filter(n=>n.container)){assert.equal(n.role,'group');assert.match(n.label||'',/^(Background|Box \d)$/);}
   await page.locator('#modelStage .slide-title-text').click();
   const current=await page.evaluate(()=>[...document.querySelectorAll('#modelStage [aria-current="true"]')].map(n=>n.className));

@@ -179,7 +179,7 @@ try{
     }
     await setStyle(page,kind,'watermarkMode','text');await setStyle(page,kind,'watermarkText',`Review <mark> ${kind}`);
     for(const field of ['watermarkColor','watermarkSize','watermarkPlacement','watermarkOpacity'])await options(page,kind,field);
-    const watermark=page.locator('#modelStage .role-watermark');assert.equal(await watermark.getAttribute('aria-hidden'),'true');assert.equal(await watermark.locator('mark').count(),0);assert((await watermark.textContent()).includes(`<mark>`));
+    const watermark=page.locator('#modelStage .role-watermark');assert.equal(await watermark.getAttribute('role'),'img');assert.match(await watermark.getAttribute('aria-label'),/^Decorative watermark:/);assert.equal(await watermark.locator('[aria-hidden=true]').count(),1);assert.equal(await watermark.locator('mark').count(),0);assert((await watermark.textContent()).includes(`<mark>`));
     for(const color of ['light','mauve']){await setStyle(page,kind,'watermarkColor',color);assert.equal(await watermark.evaluate(el=>getComputedStyle(el).color),rgb(color));stats.paintChecks++;}
     const sizes=[];for(const value of ['small','medium','large']){await setStyle(page,kind,'watermarkSize',value);sizes.push(await watermark.evaluate(el=>parseFloat(getComputedStyle(el).fontSize)));}assert(sizes[0]<sizes[1]&&sizes[1]<sizes[2]);
     const opacity=[];for(const value of ['low','medium','high']){await setStyle(page,kind,'watermarkOpacity',value);opacity.push(await watermark.evaluate(el=>parseFloat(getComputedStyle(el).opacity)));}assert(opacity[0]<opacity[1]&&opacity[1]<opacity[2]);

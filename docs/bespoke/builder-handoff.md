@@ -82,6 +82,10 @@ submission timestamp, plus a complete `design`:
 - Title/subtitle and all four sample-box strings, including currently hidden boxes.
 - The optional preset origin represented by `design.startingPoint` (`custom` after
   individual visual edits).
+- Optional `design.featureStyles` records for sidebar, button, box, titlebar, video
+  and activity preserve independent component fills, borders and navigation/button
+  text color and font. These closed records use `inherit` for defaults, and are
+  applied consistently to preview, component markup and generated CSS.
 - Optional `design.roleStyles` records for title, divider, cards, video and activity:
   independent background/gradient, texture strength, heading/body typography and
   visibility, sample words, chapter/activity labels and decorative watermarks.
