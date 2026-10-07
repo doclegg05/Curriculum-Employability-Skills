@@ -300,7 +300,7 @@ function roleContrastIssues(catalog,design,kind) {
     // stricter text guideline instead of assuming every heading is large/bold.
     const minimum=type==='heading'&&['title','divider','video'].includes(kind)&&style.headingSize!=='small'?3:4.5;
     if(ratio+1e-9>=minimum) return [];
-    return [{kind,role:type==='heading'?(special?'titleText':'heading'):(special?'subtitle':'body'),surface,ratio,minimum,related:[`roleStyles.${kind}`,surface,'titleBackgroundEnd',type==='heading'?(special?'titleText':'heading'):(special?'subtitle':'body'),'background'],message:`${catalog.slideGroups.find(item=>item.id===kind).label} ${type} text: ${fg.name} has an estimated minimum ${ratio.toFixed(2)}:1 over the selected surface and texture, below the ${minimum}:1 guideline. Gradient and texture values are sampled; verify the rendered composition.`}];
+    return [{kind,textType:type,role:type==='heading'?(special?'titleText':'heading'):(special?'subtitle':'body'),surface,ratio,minimum,related:[`roleStyles.${kind}`,surface,'titleBackgroundEnd',type==='heading'?(special?'titleText':'heading'):(special?'subtitle':'body'),'background'],message:`${catalog.slideGroups.find(item=>item.id===kind).label} ${type} text: ${fg.name} has an estimated minimum ${ratio.toFixed(2)}:1 over the selected surface and texture, below the ${minimum}:1 guideline. Gradient and texture values are sampled; verify the rendered composition.`}];
   });
 }
 

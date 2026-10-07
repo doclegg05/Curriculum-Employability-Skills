@@ -437,3 +437,13 @@ Shared defaults remain an explicit reset, with Undo/Redo and full saved restore.
 Added text and watermarks have independent font choices. Decorative watermark
 artwork is exposed as a named image during editing, with its text editable in the
 inspector, rather than treating its intentionally faint ink as body text.
+
+## Review additions — 2026-10-07
+
+Present and Compare use protected, window-filling review dialogs while the editor
+retains its selection and scroll position. Desktop compares A/B side by side;
+phones stack them with a persistent exit control. Current choice and formatting
+scope use plain labels. Readability suggestions require an explicit preview and
+application and remain undoable. Both alternatives persist; delivery and actual
+review remain separate states. See `docs/bespoke/review-tools-2026-10-07.md` for
+the complete contract and local/hosted evidence boundary.

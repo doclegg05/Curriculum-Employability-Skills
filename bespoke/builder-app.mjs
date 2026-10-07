@@ -1,4 +1,6 @@
 import * as Model from './builder-model.mjs';
+import { createReviewTools } from './review-tools.mjs';
+import { readabilitySuggestions } from './readability.mjs';
 import { compareDesign } from './similarity.mjs';
 import { createPreviewEditor } from './preview-editor.mjs';
 import { createGuide } from './guide/guide.mjs';
@@ -28,11 +30,12 @@ const STEPS = [
  {id:'review',label:'Review & save',view:'title'}
 ];
 const LEGACY_STEPS = ['welcome','team','colors','fonts','title','divider','cards','video','activity','review'];
-const state = {step:0,stepId:'start',meta:null,library:null,lessonId:'money-management',teamName:'',spokespersonName:'',spokespersonEmail:'',lessonTitle:'',lessonSubtitle:'',unspoken:'',editCode:'',previewView:'title',design:null,legacySelection:null,changes:[],redo:[]};
+const state = {step:0,stepId:'start',meta:null,library:null,lessonId:'money-management',teamName:'',spokespersonName:'',spokespersonEmail:'',lessonTitle:'',lessonSubtitle:'',unspoken:'',editCode:'',previewView:'title',design:null,legacySelection:null,alternatives:null,changes:[],redo:[]};
 const ui = {mode:'view',renderedStep:null,previewPinned:false,teamSession:null,cloudConflict:null,cloudBusy:false,autosavePaused:false,allowUnload:false,skipNextLocalSave:false,restoreNote:'',restoredFromLink:false,editCodeHash:'',activeRole:'sidebar',paintScope:'slide',themeScope:'slide',localPreview:false,editorRole:'title',sharedThemeOpen:false,startingLooksOpen:false,meaningfulDesign:false};
 ui.guide = null;
 let guide = null;
 let previewEditor = null;
+let reviewTools = null;
 ui.moreOptions = false;
 let catalog, fingerprints, selectionSchema, handoffApiBase='', handoffBusy=false, lastSavedRaw=null, storageConflict=false;
 // Replacing a draft or team invalidates pending operations against its predecessor.
@@ -204,6 +207,18 @@ const findOption=(family,slug)=>state.library?.families?.[family]?.options.find(
     status.textContent = ui.localPreview
       ? `${lesson?.title || session.lessonId} · Local test session. ${session.savedAt ? 'Saved '+new Date(session.savedAt).toLocaleString()+'.' : 'No test save yet.'} ${session.revision && hasUnsavedTeamWork() ? 'Browser changes are waiting to save.' : ''}`
       : `${lesson?.title || session.lessonId} team session.${saved}${dirty}`;
+    let delivered=byId('lastReviewReceipt');
+    if(!delivered){delivered=document.createElement('p');delivered.id='lastReviewReceipt';delivered.className='review-receipt';panel.append(delivered);}
+    delivered.replaceChildren();delivered.hidden=!session.lastReceipt;
+    if(session.lastReceipt){
+      delivered.append(document.createTextNode('Last confirmed review package · '+session.lastReceipt.submissionId+'. '));
+      for(const [field,label] of [['url','Open review request'],['artifactUrl','Exact submitted artifact']]){
+        const value=session.lastReceipt[field];
+        if(typeof value!=='string'||!value.startsWith('https://github.com/doclegg05/Curriculum-Employability-Skills/'))continue;
+        const link=document.createElement('a');link.href=value;link.textContent=label;link.target='_blank';link.rel='noopener';delivered.append(link,document.createTextNode(' · '));
+      }
+      delivered.append(document.createTextNode('Ready for review; this does not confirm that Britt or an AI has reviewed it.'));
+    }
     byId("btnLoadLatest")?.toggleAttribute("hidden", !ui.cloudConflict);
     byId("btnKeepLocal")?.toggleAttribute("hidden", !ui.cloudConflict);
     byId("btnCheckStatus")?.toggleAttribute("hidden", !pendingSubmission());
@@ -825,6 +840,15 @@ const findOption=(family,slug)=>state.library?.families?.[family]?.options.find(
     updateCloudChrome();
   }
 
+  function rememberReceipt(result, receipt) {
+    if (ui.teamSession?.lessonId === receipt.lessonId && ui.teamSession.editCode === receipt.editCode) {
+      ui.teamSession.lastReceipt = {submissionId:result.submissionId, url:result.url, artifactUrl:result.artifactUrl, revision:result.revision, receivedAt:new Date().toISOString()};
+      persistTeamSession();
+    }
+    storePendingSubmission(null);
+    fileNotice(result.url ? "Britt received the review request. " + result.url : "Britt received the review request.");
+  }
+
   function scheduleSubmissionPoll(receipt, delay = 10000) {
     clearTimeout(submissionPollTimer);
     submissionPollTimer = window.setTimeout(() => pollSubmission(receipt), delay);
@@ -837,6 +861,7 @@ const findOption=(family,slug)=>state.library?.families?.[family]?.options.find(
       submissionId: receipt.submissionId,
       runId: receipt.runId
     });
+    if(ui.teamSession?.lessonId!==receipt.lessonId||ui.teamSession.editCode!==receipt.editCode||pendingSubmission()?.submissionId!==receipt.submissionId)return;
     if (!result.ok) {
       fileNotice(result.message || "Britt’s receipt could not be checked. We will check again when this page opens.");
       return;
@@ -848,8 +873,7 @@ const findOption=(family,slug)=>state.library?.families?.[family]?.options.find(
       return;
     }
     if (result.status === "received") {
-      storePendingSubmission(null);
-      fileNotice(result.url ? "Britt received the review request. " + result.url : "Britt received the review request.");
+      rememberReceipt(result, receipt);
       return;
     }
     storePendingSubmission({ ...receipt, stage: "failed" });
@@ -892,6 +916,7 @@ const findOption=(family,slug)=>state.library?.families?.[family]?.options.find(
     fileNotice("Requesting Britt’s review…");
     try {
       const result = await handoffRequest("send", pending);
+      if(ui.teamSession!==session)return;
       if (!result.ok) {
         fileNotice(result.message || "The review request did not finish. Your saved design is safe; choose Send to Britt to retry.");
         return;
@@ -900,14 +925,13 @@ const findOption=(family,slug)=>state.library?.families?.[family]?.options.find(
         stage: "receipt",
         lessonId: session.lessonId,
         editCode: session.editCode,
-        expectedRevision: session.revision,
+        expectedRevision: pending.expectedRevision,
         submissionId: result.submissionId,
         runId: result.runId || null
       };
       storePendingSubmission(receipt);
       if (result.status === "received") {
-        storePendingSubmission(null);
-        fileNotice(result.url ? "Britt received the review request. " + result.url : "Britt received the review request.");
+        rememberReceipt(result, receipt);
       } else {
         fileNotice("Britt’s review request is processing. This is not a receipt yet.");
         scheduleSubmissionPoll(receipt, 5000);
@@ -1206,12 +1230,12 @@ function validateSelectionPayload(payload,{draft=false}={}){
  if(!payload.lesson.title.trim())throw new Error('Add the lesson title.');
  if(!state.meta.lessons.some(l=>l.id===payload.lesson.id))throw new Error('Choose one of the six planned lessons.');
  if(payload.legacySelection)validateV1(payload.legacySelection);
- const issues=Model.validateDesign(catalog,payload.design);if(issues.length)throw new Error(issues[0]);
+ const issues=[...Model.validateDesign(catalog,payload.design),...(payload.alternatives?Model.validateDesign(catalog,payload.alternatives.otherDesign):[])];if(issues.length)throw new Error(issues[0]);
  if(JSON.stringify(payload).length>MAX_FILE_BYTES)throw new Error('This design is too large. Keep source material in the team folder.');
 }
 function buildSelectionPayload(){
  const lesson=findMeta(state.meta.lessons,state.lessonId);
- return {schema:'bespoke-selection/v2',submittedAt:new Date().toISOString(),date:new Date().toISOString().slice(0,10),lesson:{id:state.lessonId,title:lesson.title,displayTitle:state.design.samples.title||lesson.title,subtitle:state.design.samples.subtitle},team:{name:state.teamName.trim(),spokesperson:{name:state.spokespersonName.trim(),email:state.spokespersonEmail.trim()}},design:clone(state.design),unspoken:state.unspoken,...(state.legacySelection?{legacySelection:clone(state.legacySelection)}:{})};
+ return {schema:'bespoke-selection/v2',submittedAt:new Date().toISOString(),date:new Date().toISOString().slice(0,10),lesson:{id:state.lessonId,title:lesson.title,displayTitle:state.design.samples.title||lesson.title,subtitle:state.design.samples.subtitle},team:{name:state.teamName.trim(),spokesperson:{name:state.spokespersonName.trim(),email:state.spokespersonEmail.trim()}},design:clone(state.design),...(state.alternatives?{alternatives:clone(state.alternatives)}:{}),unspoken:state.unspoken,...(state.legacySelection?{legacySelection:clone(state.legacySelection)}:{})};
 }
 function restoreStep(saved){
  const legacyId=saved.stepId||(Number.isInteger(saved.step)?LEGACY_STEPS[saved.step]:null)||'start';
@@ -1238,11 +1262,11 @@ function loadDraft(){
   if(!saved||typeof saved!=='object'||Array.isArray(saved)||!saved.design)throw new Error('Invalid draft');
   const before={...state};
   try{
-   for(const key of ['design','legacySelection','lessonId','teamName','spokespersonName','spokespersonEmail','unspoken','changes','redo'])if(Object.hasOwn(saved,key))state[key]=saved[key];
+   for(const key of ['design','alternatives','legacySelection','lessonId','teamName','spokespersonName','spokespersonEmail','unspoken','changes','redo'])if(Object.hasOwn(saved,key))state[key]=saved[key];
    validateSelectionPayload(buildSelectionPayload(),{draft:true});
    if(!Array.isArray(state.changes)||!Array.isArray(state.redo))throw new Error('Invalid history');
    // Undo snapshots are data boundaries too; reject corrupted history before it can reach preview.
-   for(const entry of [...state.changes,...state.redo])if(!entry||typeof entry.label!=='string'||schemaErrors({...buildSelectionPayload(),design:entry.design},selectionSchema).length||Model.validateDesign(catalog,entry.design).length)throw new Error('Invalid history');
+   for(const entry of [...state.changes,...state.redo])if(!entry||typeof entry.label!=='string'||schemaErrors({...buildSelectionPayload(),design:entry.design,...(entry.alternatives?{alternatives:entry.alternatives}:{})},selectionSchema).length||Model.validateDesign(catalog,entry.design).length||(entry.alternatives&&Model.validateDesign(catalog,entry.alternatives.otherDesign).length))throw new Error('Invalid history');
    draftGeneration++;restoreStep(saved);ui.autosavePaused=saved.autosavePaused===true;lastSavedRaw=raw;
   }catch(e){Object.assign(state,before);throw e;}
  }catch{storageConflict=true;ui.restoreNote='This browser draft needs recovery. It has not been replaced. Download a backup from the other tab, or open a known backup here.';}
@@ -1263,7 +1287,7 @@ function saveDraft(){
 }
 function resetDesignForLesson(lessonId){
  draftGeneration++;resetPresetConfirmation();ui.meaningfulDesign=false;ui.startingLooksOpen=false;ui.editorRole='title';const nextDesign=Model.defaultDesign(catalog);if(!keepsGuide({fromLesson:state.lessonId,toLesson:lessonId,fromDesign:state.design,toDesign:nextDesign}))ui.guide=null;ui.sharedThemeOpen=false;ui.paintScope='slide';ui.themeScope='slide';
- Object.assign(state,{step:0,lessonId,teamName:'',spokespersonName:'',spokespersonEmail:'',unspoken:'',design:nextDesign,legacySelection:null,changes:[],redo:[]});
+ Object.assign(state,{step:0,lessonId,teamName:'',spokespersonName:'',spokespersonEmail:'',unspoken:'',design:nextDesign,legacySelection:null,alternatives:null,changes:[],redo:[]});
 }
 function applySelectionPayload(payload){
  validateSelectionPayload(payload,{draft:true});
@@ -1275,14 +1299,14 @@ function applySelectionPayload(payload){
  ui.meaningfulDesign=true;ui.startingLooksOpen=false;
  if(!keepsGuide({fromLesson:state.lessonId,toLesson:payload.lesson.id,fromDesign:state.design,toDesign:nextDesign}))ui.guide=null;
  draftGeneration++;
- Object.assign(state,{lessonId:payload.lesson.id,teamName:team.name||'',spokespersonName:team.spokesperson?.name||'',spokespersonEmail:team.spokesperson?.email||'',unspoken:payload.unspoken||'',changes:[],redo:[]});
+ Object.assign(state,{lessonId:payload.lesson.id,teamName:team.name||'',spokespersonName:team.spokesperson?.name||'',spokespersonEmail:team.spokesperson?.email||'',unspoken:payload.unspoken||'',changes:[],redo:[],alternatives:payload.alternatives?clone(payload.alternatives):null});
  if(payload.schema==='bespoke-selection/v1'){
   state.design=migrated.design;state.legacySelection=clone(payload);ui.autosavePaused=true;
   ui.restoreNote='Converted a copy of the older design. '+migrated.warnings.join(' ')+' The original is included in every backup and can be downloaded on Review. Review this conversion before saving.';
  }else{state.design=nextDesign;state.legacySelection=payload.legacySelection?clone(payload.legacySelection):null;ui.restoreNote='';}
 }
 function recordChange(label,before){
- const entry={label,design:before};
+ const entry={label,design:before,alternatives:clone(state.alternatives||null)};
  const mark=guideMark(ui.guide);if(mark!==undefined)entry.guide=mark;
  state.changes.push(entry);state.changes=state.changes.slice(-40);state.redo=[];
 }
@@ -1299,8 +1323,8 @@ function undoChange(redo=false){
  if(!isLeadSession())return;
  const source=redo?state.redo:state.changes,target=redo?state.changes:state.redo;
  const entry=source.pop();if(!entry)return;
- target.push({label:entry.label,design:clone(state.design),...(entry.guide!==undefined?{guide:entry.guide}:{})});
- state.design=entry.design;
+ target.push({label:entry.label,design:clone(state.design),alternatives:clone(state.alternatives||null),...(entry.guide!==undefined?{guide:entry.guide}:{})});
+ state.design=entry.design;state.alternatives=clone(entry.alternatives||null);
  const index=ui.guide?.on?indexForMark(ui.guide,entry.guide):null;if(index!==null)ui.guide={...ui.guide,index};
  saveDraft();render(false);
  fileNotice((redo?'Redid: ':'Undid: ')+entry.label);
@@ -1658,6 +1682,7 @@ function contrastAdvisory(issues){
 }
 function renderReview(panel){
  heading(panel,'Your design, together','Review each slide type in the preview. Save the agreed design before requesting a review. Building a lesson is a separate step.');
+ if(state.alternatives){const note=document.createElement('p');note.className='version-status';note.textContent='Option '+state.alternatives.active+' is chosen for submission. Both options are included in your saved design and review package.';panel.append(note);}
  const errors=Model.validateDesign(catalog,state.design);
  const issues=Model.contrastIssues(catalog,state.design);
  const summary=document.createElement('div');summary.className='review-summary';summary.id='effectiveDesignSummary';summary.innerHTML='<h2>'+escapeHtml(state.meta.lessons.find(l=>l.id===state.lessonId).title)+'</h2><p>Effective appearance for all five slide types. Shared follows your defaults; Custom stays independent.</p>';panel.append(summary);
@@ -1679,7 +1704,7 @@ function renderReview(panel){
  for(const feature of Object.keys(state.design.featureStyles||{})){const style=Model.effectiveFeatureStyle(catalog,state.design,feature),p=document.createElement('p');p.textContent=({sidebar:'Navigation sidebar',button:'Action buttons',box:'Text boxes',titlebar:'Title bar',video:'Video frame',activity:'Activity panel'}[feature])+': '+color(style.background)+' fill'+(['sidebar','button'].includes(feature)?', '+color(style.color)+' text, '+font(style.font):', '+color(style.border)+' border')+'.';summary.append(p);}
  const valid=document.createElement('div');valid.className=errors.length||issues.length?'readability-warning':'review-ready';valid.innerHTML=errors.length?escapeHtml(errors.join(' ')):issues.length?contrastAdvisory(issues):'Contrast guidance is met for the modeled text/background pairs. This is not a whole-design accessibility assessment.';panel.append(valid);
  const label=document.createElement('label');label.className='field';label.innerHTML='Notes for the design review';const notes=document.createElement('textarea');notes.id='reviewNotes';notes.rows=3;notes.value=state.unspoken;notes.oninput=()=>{state.unspoken=notes.value;saveDraft();};label.append(notes);panel.append(label);
- const disclosure=document.createElement('p');disclosure.className='helper';disclosure.textContent=ui.localPreview?'This review preview saves only to the local test service. Nothing is sent to Britt or published.':'A review proposal is stored in a public repository. Use work contact details and non-sensitive sample text. A saved design does not authorize a lesson build.';panel.append(disclosure);
+ const disclosure=document.createElement('p');disclosure.className='helper';disclosure.textContent=ui.localPreview?'This review preview saves only to the local test service. Nothing is sent to Britt or published.':'A review proposal is stored in a public repository, including both saved options when present. Use work contact details and non-sensitive sample text. A saved design does not authorize a lesson build.';panel.append(disclosure);
  const save=document.createElement('button');save.className='btn btn-primary';save.textContent=ui.localPreview?'Save test design':'Save shared design';save.onclick=()=>cloudSave();panel.append(save);
  const backup=document.createElement('button');backup.className='btn btn-secondary';backup.textContent='Download design backup';backup.onclick=saveTeamFile;panel.append(backup);
  if(state.legacySelection){const p=document.createElement('p');p.className='helper';p.textContent='This design began as an older selection. Its complete original is retained for recovery; the new layout is a conversion to review.';panel.append(p);const b=document.createElement('button');b.className='btn btn-secondary';b.textContent='Download original v1 design';b.onclick=()=>downloadText('original-v1-selection.json',JSON.stringify(state.legacySelection,null,2),'application/json');panel.append(b);}
@@ -1739,6 +1764,9 @@ function updatePreview(design=state.design,{quick=false}={}){
  updateSimilarity(design);
  const errors=Model.validateDesign(catalog,design),allIssues=Model.contrastIssues(catalog,design),visibleSurface=state.previewView==='title'?'titleBackground':state.previewView==='divider'?'dividerBackground':'contentBackground';
  const issues=allIssues.filter(issue=>issue.feature==='sidebar'?['cards','video','activity'].includes(state.previewView):issue.feature==='button'?['video','activity'].includes(state.previewView):issue.kind?issue.kind===state.previewView:issue.surface===visibleSurface&&!design.roleStyles?.[state.previewView]);const warn=byId('readabilityNotes');warn.hidden=!errors.length&&!issues.length;warn.innerHTML=errors.length?'<strong>Design needs attention</strong><p>'+escapeHtml(errors.join(' '))+'</p>':issues.length?contrastAdvisory(issues):'';
+ for(const suggestion of readabilitySuggestions(catalog,design,state.previewView,issues).slice(0,2)){
+  const button=document.createElement('button');button.type='button';button.className='btn btn-secondary';button.textContent=suggestion.label;button.disabled=!isLeadSession();button.onclick=()=>reviewTools.previewFix(suggestion,()=>changeDesign(suggestion.label,d=>Object.assign(d,suggestion.design)),button);warn.append(button);
+ }
  const dividerIssues=issues.some(issue=>issue.surface==='dividerBackground');
  const repairs=document.createElement('div');repairs.className='readability-actions';if(issues.length)warn.append(repairs);
  if(dividerIssues){
@@ -1762,7 +1790,7 @@ function render(focus=true){
  byId('workspace').dataset.editor=String(state.step===1&&!ui.guide?.on);
  byId('workspace').dataset.options=String(ui.moreOptions||state.step!==1||Boolean(ui.guide?.on));
  byId('btnCloseOptions').hidden=state.step!==1||Boolean(ui.guide?.on);
- buildStepper();renderPanel();byId('stepPanel').querySelectorAll('details[id]').forEach(d=>{if(!d.dataset.roleSection&&d.id!=='sharedTheme'&&openDetails.has(d.id))d.open=openDetails.get(d.id);});syncAccessChrome();lockViewControls();updatePreview();updateUndo();
+ buildStepper();renderPanel();byId('stepPanel').querySelectorAll('details[id]').forEach(d=>{if(!d.dataset.roleSection&&d.id!=='sharedTheme'&&openDetails.has(d.id))d.open=openDetails.get(d.id);});syncAccessChrome();lockViewControls();updatePreview();updateUndo();reviewTools?.refresh();
  if(isLeadSession()){if(ui.skipNextLocalSave)ui.skipNextLocalSave=false;else saveDraft();if(changed)scheduleAutosave(AUTOSAVE.stepMs);}
  if(focus&&changed)(byId('workspace').dataset.options==='false'?byId('selectedElement'):byId('stepPanel'))?.focus({preventScroll:true});else if(activeId)byId(activeId)?.focus({preventScroll:true});
 }
@@ -1825,6 +1853,7 @@ async function init(){
  byId('btnHelp').onclick=()=>showBuilderHelp(!byId('builderHelp').hidden);
  byId('btnCloseHelp').onclick=()=>showBuilderHelp(true);
  setupRecoveryMenu();
+ reviewTools=createReviewTools({catalog,context:()=>({design:state.design,alternatives:state.alternatives,kind:state.previewView,lessonTitle:state.meta.lessons.find(l=>l.id===state.lessonId)?.title,editable:isLeadSession()}),change:(label,action)=>{if(!isLeadSession())return;recordChange(label,clone(state.design));action(state);ui.meaningfulDesign=true;saveDraft();render(false);}});
  byId('btnDownloadBackup').onclick=saveTeamFile;byId('btnOpenBackup').onclick=()=>byId('teamFileInput').click();byId('teamFileInput').onchange=async e=>{await openTeamFile(e.target.files?.[0]);e.target.value='';};
  byId('btnLoadLatest').onclick=()=>fetchSharedDesign({replace:true});byId('btnKeepLocal').onclick=()=>fileNotice('Browser draft kept. Download a backup before loading the latest shared version.');
  byId('btnHistory').onclick=loadHistory;byId('btnCheckStatus').onclick=()=>{const pending=pendingSubmission();if(pending?.stage==='receipt')pollSubmission(pending);else if(pending?.stage==='request')cloudSend();};

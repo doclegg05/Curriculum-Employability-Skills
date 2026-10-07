@@ -275,3 +275,25 @@
 
 /* Editor emphasis sits outside a video's own keyline. Keep saved frame paint intact. */
 #modelStage .slide-video-frame[data-edit-target]:is(:hover,.editor-selected,:focus-visible){outline:var(--editor-frame-outline)!important;outline-offset:var(--editor-frame-offset)!important;box-shadow:0 0 0 3px var(--blue),0 0 0 5px white!important}
+
+/* Review without losing the editor's place. */
+.preview-actions{display:flex;gap:.5rem;flex-wrap:wrap;justify-content:flex-end}
+.version-status{margin:.5rem 0 1rem;font-weight:600;color:var(--navy,#00133f)}
+.scope-badge{display:block;grid-column:1/-1;padding:.5rem .65rem;background:#edf3f7;color:#004071;font-size:.875rem;border-radius:6px}
+.design-review-dialog{position:fixed;inset:0;box-sizing:border-box;width:100vw;max-width:none;height:100dvh;max-height:none;margin:0;border:0;border-radius:0;padding:1rem 1.5rem;background:#edf3f7;color:#00133f;overflow:auto}
+.design-review-dialog[open]{display:flex;flex-direction:column;gap:.75rem}
+.review-dialog-heading,.review-dialog-navigation{display:flex;align-items:center;justify-content:space-between;gap:.75rem;flex-wrap:wrap}
+.review-dialog-heading h2{margin:0;font-size:1.25rem}
+.review-dialog-navigation{justify-content:center}
+.review-dialog-navigation select{font:inherit;min-height:44px;padding:.5rem}
+.review-slides{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:1.25rem;flex:1;min-height:350px}
+.design-review-dialog[data-mode=present] .review-slides{grid-template-columns:1fr}
+.review-version{display:flex;flex-direction:column;gap:.75rem;min-width:0;min-height:0}
+.review-version h3{margin:0;font-size:1rem}
+.review-version iframe{border:0;width:100%;flex:1;min-height:340px;background:white}
+.design-review-dialog .helper{margin:0}
+.readability-warning>.btn{margin:.25rem .5rem .5rem 0}
+@media(max-width:760px){.preview-heading{flex-wrap:wrap;gap:.5rem}.preview-actions{justify-content:flex-start}.design-review-dialog{padding:.75rem}.review-slides{grid-template-columns:1fr;flex:none}.review-version iframe{height:65vh;flex:none}.design-review-dialog[data-mode=present] .review-slides{flex:1}.design-review-dialog[data-mode=present] .review-version iframe{flex:1}}
+
+.design-review-dialog .review-dialog-heading{position:sticky;top:0;background:#edf3f7;z-index:2;padding-bottom:.5rem}
+.review-receipt{flex-basis:100%;font-size:.875rem;line-height:1.5}

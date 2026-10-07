@@ -69,6 +69,7 @@ export function createPreviewEditor(host) {
    edit.onclick=()=>{host.activate();document.getElementById('selectedElement')?.focus({preventScroll:true});};
    toolbar.append(edit);return;
   }
+  const scopeBadge=document.createElement('strong');scopeBadge.className='scope-badge';scopeBadge.id='formattingScope';scopeBadge.textContent=selected==='sidebar'?'Shared navigation':selected==='button'?'All action buttons':selected==='accent'?'Shared accent':kind==='cards'&&selected.startsWith('heading')?'Title bar & all box headings':kind==='cards'&&selected.startsWith('body')?'All box text':selected.startsWith('box')?'All text boxes':kind==='activity'&&selected.startsWith('heading')?'Heading & activity label':kind==='divider'&&selected.startsWith('body')?'Chapter label & supporting text':'This slide type only';toolbar.append(scopeBadge);
   field('element','Selected element',selected,targets.map(t=>({id:t.id,label:t.label})),value=>select(value,{focus:true}));
   document.getElementById('context-element').id='selectedElement';
   const saved={...host.model.roleStyleDefaults(host.catalog,design,kind),...design.roleStyles?.[kind]};
