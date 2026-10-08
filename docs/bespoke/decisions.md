@@ -1,6 +1,18 @@
 # BeSpoke decisions
 
-## Current direction — September 24, 2026
+## Current simplification — October 7, 2026
+
+Britt authorized implementation in an isolated worktree: twelve distinct layout
+presets with real slide thumbnails, one live preview with nearby text editing,
+three text sizes, text color, Left/Center/Right alignment and Top/Middle/Bottom
+placement. Solid exposes one brand-color picker; Gradient exposes independently
+selectable start and end colors. The preset determines direction. Choose a layout,
+Customize, Review & save replaces the earlier primary path; the detailed guide and
+editors remain optional. Orientation does not mean rotation. New values must
+survive existing Save/Open/recovery and generated design handoff. No merge,
+deployment or curriculum construction is authorized by this implementation.
+
+## Prior direction — September 24, 2026
 
 Britt authorized implementation of the guided visual-design builder in an
 isolated worktree and a separate local Safari preview. The v2 implementation is

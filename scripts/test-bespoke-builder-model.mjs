@@ -21,7 +21,7 @@ check('all 11 original palette colors and 12 existing families have local font a
   for (const color of catalog.palette) assert(contrast(color.hex, catalog.palette.find(c => c.id === inkFor(catalog, color.id)).hex) >= 4.5);
 });
 
-check('default and six editable brand presets are valid and independent copies', () => {
+check('default and twelve editable layout presets are valid and independent copies', () => {
   assert.deepEqual(validateDesign(catalog, defaultDesign(catalog)), []);
   assert.deepEqual(contrastIssues(catalog, defaultDesign(catalog)), []);
   for (const item of catalog.presets) {

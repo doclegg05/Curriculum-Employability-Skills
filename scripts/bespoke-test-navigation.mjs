@@ -13,6 +13,7 @@ export async function builderDestination(page, destination) {
   const designSurface = page.locator('#surface-design');
   if (await designSurface.isVisible()) await designSurface.click();
   if (destination === 'Shared colors' || destination === 'Shared typography') {
+    if (!await page.locator('#sharedTheme').count()) await page.locator('#stage-slides').click();
     if (!await page.locator('#detailControls').isVisible()) await page.locator('#btnMoreOptions').click();
     const theme = page.locator('#sharedTheme');
     if (!await theme.evaluate(el => el.open)) await theme.locator(':scope > summary').click();
@@ -29,6 +30,7 @@ export async function builderDestination(page, destination) {
   }
   if (destination === 'Start' || destination === 'Starting look') {
     await page.locator('#stage-start').click();
+    if(destination==='Start'&&!await page.locator('.start-team').evaluate(n=>n.open))await page.locator('.start-team > summary').click();
     if (destination === 'Starting look' && !await page.locator('[data-preset]').first().isVisible()) {
       await page.locator('#btnChangeStartingLook').click();
     }
@@ -49,4 +51,9 @@ export async function recoveryMenu(page, open) {
 export async function switchSurface(page, surface) {
   const tab=page.locator('#surface-'+surface);
   if(await tab.isVisible())await tab.click();
+}
+
+export async function otherStartingPaths(page) {
+ const section=page.locator('#otherStartingPaths');
+ if(!await section.evaluate(n=>n.open))await section.locator('summary').click();
 }

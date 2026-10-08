@@ -122,9 +122,9 @@ async function assertNoOverflow(page, label) {
 }
 async function axe(page, label, { excludePreview = false } = {}) {
   await page.addScriptTag({ content: axeSource });
-  // The watermark is intentionally faint decoration, hidden from assistive tech;
-  // the visible chapter label supplies the information and stays in this scan.
-  const violations = await page.evaluate(async excludePreview => (await window.axe.run({ exclude: [['.slide-watermark[aria-hidden="true"]'], ...(excludePreview ? [['#modelStage']] : [])] }, { runOnly: { type: 'tag', values: ['wcag2a', 'wcag2aa', 'wcag21aa'] } })).violations.map(item => ({ id: item.id, impact: item.impact, nodes: item.nodes.map(node => ({ target: node.target, message: node.failureSummary })) })), excludePreview);
+  // Only faint decorative artwork is excluded. The named, focusable editor
+  // wrapper and visible chapter label stay in the scan.
+  const violations = await page.evaluate(async excludePreview => (await window.axe.run({ exclude: [['.slide-watermark[aria-hidden="true"]'], ['.slide-watermark > [aria-hidden="true"]'], ['.role-watermark > [aria-hidden="true"]'], ...(excludePreview ? [['#modelStage']] : [])] }, { runOnly: { type: 'tag', values: ['wcag2a', 'wcag2aa', 'wcag21aa'] } })).violations.map(item => ({ id: item.id, impact: item.impact, nodes: item.nodes.map(node => ({ target: node.target, message: node.failureSummary })) })), excludePreview);
   assert.deepEqual(violations, [], `${label}: ${JSON.stringify(violations, null, 2)}`);
 }
 
@@ -152,7 +152,7 @@ try {
     const beforeRepeat = await draft(page);
     await page.locator('#btnHelp').evaluate(el => el.dispatchEvent(new KeyboardEvent('keydown', {key:'z',ctrlKey:true,repeat:true,bubbles:true,cancelable:true})));
     assert.deepEqual(await draft(page), beforeRepeat);
-    await go(page, 'Starting look'); await page.locator('[data-preset="modern"]').click();
+    await go(page, 'Starting look');await go(page, 'Starting look');await page.locator('[data-preset="modern"]').click();
     await page.locator('#presetDialog').waitFor({state:'visible'});
     await page.keyboard.press('Control+z'); assert.deepEqual(await design(page), painted);
     await page.keyboard.press('Escape'); assert.deepEqual(await design(page), painted);
@@ -191,14 +191,13 @@ try {
   await scenario('cumulative colors, independent fonts, editable presets, history and v2 file recovery', async ({ makePage }) => {
     const page = await makePage();
     await go(page, 'Starting look');
-    assert.equal(await page.locator('[data-preset]').count(), 6);
-    await page.locator('[data-preset="professional"]').click();
+    assert.equal(await page.locator('[data-preset]').count(), 12);
+    await go(page, 'Starting look');await page.locator('[data-preset="professional"]').click();
     await go(page, 'Text boxes');
     if(!await page.locator('#section-cards-text').evaluate(el=>el.open))await page.locator('#section-cards-text > summary').click();
     await page.getByText('Try your own sample text', { exact: true }).click();
     await page.locator('#sample-box-3').fill('Keep this fourth sample even while it is hidden.');
-    await go(page, 'Starting look');
-    await page.locator('[data-preset="modern"]').click();
+    await go(page, 'Starting look');await go(page, 'Starting look');await page.locator('[data-preset="modern"]').click();
     await page.locator('#presetApply').click();
     assert.equal((await design(page)).samples.boxes[3], 'Keep this fourth sample even while it is hidden.');
     const beforePaint = await design(page);
@@ -256,7 +255,7 @@ try {
     assert.equal((await design(page)).slides.title.layout, 'bottom');
     await page.locator('#btnRedo').click();
     assert.deepEqual(await design(page), expected);
-    const closest = compareDesign(fingerprints, expected)[0];
+    const closest = compareDesign(fingerprints, expected, catalog)[0];
     assert.match(await page.locator('#distinctMeter').textContent(), new RegExp(`${closest.shared}.*of ${closest.total}`));
     assert((await page.locator('#distinctMeter').textContent()).includes(closest.title));
     await page.locator('.similarity summary').click();
@@ -276,46 +275,45 @@ try {
     const preference = page => page.evaluate(key => sessionStorage.getItem(key), key);
     const page = await makePage(); await fillTeam(page);
     const native = []; page.on('dialog', dialog => native.push(dialog.message()));
-    await go(page, 'Starting look'); await page.locator('[data-preset="professional"]').click();
+    await go(page, 'Starting look');await go(page, 'Starting look');await page.locator('[data-preset="professional"]').click();
     await go(page, 'Text boxes'); if(!await page.locator('#section-cards-text').evaluate(el=>el.open))await page.locator('#section-cards-text > summary').click();
     await page.getByText('Try your own sample text', { exact: true }).click();
     await page.locator('#sample-box-3').fill('Retain my hidden sample after every preset.');
     await go(page, 'Starting look');
     const before = await draft(page);
-    await page.locator('[data-preset="modern"]').click();
+    await go(page, 'Starting look');await page.locator('[data-preset="modern"]').click();
     assert.equal(await page.locator('#presetSkipConfirmation').isChecked(), false);
     await page.locator('#presetSkipConfirmation').check(); await page.locator('#presetCancel').click();
     assert.deepEqual((await draft(page)).design, before.design); assert.deepEqual((await draft(page)).changes, before.changes);
     assert.equal(await preference(page), null);
-    assert.equal(await page.evaluate(() => document.activeElement.id), 'preset-modern');
-    await page.locator('[data-preset="modern"]').click();
+    assert.equal(await page.evaluate(() => document.activeElement.id), (await draft(page)).stepId==='slides'?'selectedElement':'preset-modern');
+    await go(page, 'Starting look');await page.locator('[data-preset="modern"]').click();
     assert.equal(await page.locator('#presetSkipConfirmation').isChecked(), false);
     await page.locator('#presetSkipConfirmation').check(); await page.keyboard.press('Escape');
     assert.deepEqual((await draft(page)).design, before.design); assert.deepEqual((await draft(page)).changes, before.changes);
     assert.equal(await preference(page), null);
-    assert.equal(await page.evaluate(() => document.activeElement.id), 'preset-modern');
-    await page.locator('[data-preset="modern"]').click(); await page.locator('#presetApply').click();
+    assert.equal(await page.evaluate(() => document.activeElement.id), (await draft(page)).stepId==='slides'?'selectedElement':'preset-modern');
+    await go(page, 'Starting look');await page.locator('[data-preset="modern"]').click(); await page.locator('#presetApply').click();
     assert.equal(await preference(page), null); assert.equal((await design(page)).startingPoint, 'modern');
     assert.deepEqual((await design(page)).samples, before.design.samples);
     assert.equal((await draft(page)).changes.length, before.changes.length + 1);
-    assert.equal(await page.evaluate(() => document.activeElement.id), 'preset-modern');
-    await page.locator('[data-preset="serious"]').click();
+    assert.equal(await page.evaluate(() => document.activeElement.id), (await draft(page)).stepId==='slides'?'selectedElement':'preset-modern');
+    await go(page, 'Starting look');await page.locator('[data-preset="serious"]').click();
     assert(await page.locator('#presetDialog').isVisible()); assert.equal(await page.locator('#presetSkipConfirmation').isChecked(), false);
     await page.keyboard.press('Escape'); await page.locator('#btnUndo').click();
     assert.deepEqual(await design(page), before.design);
-    await page.locator('[data-preset="modern"]').click();
+    await go(page, 'Starting look');await page.locator('[data-preset="modern"]').click();
     await page.locator('#presetSkipConfirmation').check(); await page.locator('#presetApply').click();
     assert.equal(await preference(page), '1');
     const modern = await design(page);
-    await page.locator('[data-preset="fun"]').focus(); await page.keyboard.press('Enter');
+    await go(page,'Starting look');await go(page, 'Starting look');await page.locator('[data-preset="fun"]').focus(); await page.keyboard.press('Enter');
     assert.equal(await page.locator('#presetDialog').isVisible(), false);
     assert.equal((await design(page)).startingPoint, 'fun');
-    assert.equal(await page.evaluate(() => document.activeElement.id), 'preset-fun');
+    assert.equal(await page.evaluate(() => document.activeElement.id), 'selectedElement');
     await page.locator('#btnUndo').click(); assert.deepEqual(await design(page), modern);
     await go(page, 'Shared typography'); await go(page, 'Starting look');
     await page.reload(); await ready(page); assert.equal(await preference(page), '1');
-    await go(page, 'Starting look');
-    await page.locator('[data-preset="outspoken"]').click();
+    await go(page, 'Starting look');await go(page, 'Starting look');await page.locator('[data-preset="outspoken"]').click();
     assert.equal(await page.locator('#presetDialog').isVisible(), false);
     assert.equal((await design(page)).startingPoint, 'outspoken');
     assert.deepEqual((await design(page)).samples, before.design.samples);
@@ -333,7 +331,7 @@ try {
     for(const value of [backup.payload, remote, persistent, actions]) assert(!/skipPresetConfirmation|skip-preset-confirmation|pendingPreset|presetSkipConfirmation/.test(JSON.stringify(value)), 'Preference must not leak into durable records or requests.');
     // A fresh browser session retaining the same durable draft/team record asks again.
     const fresh = await makePage({ storageState: await page.context().storageState() });
-    await go(fresh, 'Starting look'); await fresh.locator('[data-preset="serious"]').click();
+    await go(fresh, 'Starting look');await fresh.locator('[data-preset="serious"]').click();
     assert(await fresh.locator('#presetDialog').isVisible()); assert.equal(await fresh.locator('#presetSkipConfirmation').isChecked(), false);
     await fresh.keyboard.press('Escape');
     // Starting another draft is explicit and its separate native confirmation is not suppressed.
@@ -342,28 +340,28 @@ try {
     await recoveryMenu(page, false);
     assert(native.some(message => message.startsWith('Start a new browser draft?')));
     assert.equal(await preference(page), null);
-    await go(page, 'Starting look'); await page.locator('[data-preset="professional"]').click();
-    await page.locator('[data-preset="modern"]').click();
+    await go(page, 'Starting look');await go(page, 'Starting look');await page.locator('[data-preset="professional"]').click();
+    await go(page, 'Starting look');await page.locator('[data-preset="modern"]').click();
     assert.equal(await page.locator('#presetSkipConfirmation').isChecked(), false);
     await page.locator('#presetSkipConfirmation').check(); await page.locator('#presetApply').click();
     await go(page, 'Start'); await page.locator('#lessonSelect').selectOption('goal-setting');
     assert.equal(await preference(page), null, 'Changing teams/lessons starts a new confirmation session.');
-    await go(page, 'Starting look'); await page.locator('[data-preset="serious"]').click();
+    await go(page, 'Starting look');await go(page, 'Starting look');await page.locator('[data-preset="serious"]').click();
     await page.locator('#presetSkipConfirmation').check(); await page.locator('#presetApply').click();
     await page.locator('#btnLeaveSession').click(); await ready(page);
     assert(native.some(message => message.startsWith('Leave this session on this browser?')));
     assert.equal(await preference(page), null);
-    await go(page, 'Starting look'); await page.locator('[data-preset="professional"]').click();
+    await go(page, 'Starting look');await go(page, 'Starting look');await page.locator('[data-preset="professional"]').click();
     assert(await page.locator('#presetDialog').isVisible(), 'Returning saved design is protected even with cleared Undo history.');
     await page.locator('#presetApply').click();
-    await page.locator('[data-preset="modern"]').click();
+    await go(page, 'Starting look');await page.locator('[data-preset="modern"]').click();
     assert.equal(await page.locator('#presetSkipConfirmation').isChecked(), false);
     await page.locator('#presetSkipConfirmation').check(); await page.locator('#presetApply').click();
     const context = page.context(); await page.close();
     const nextTab = await context.newPage(); nextTab.on('dialog', dialog => dialog.accept());
     await nextTab.goto(server.baseUrl+'/bespoke/'); await ready(nextTab);
     assert.equal(await preference(nextTab), null, 'A fresh tab does not inherit the closed tab’s opt-out.');
-    await go(nextTab, 'Starting look'); await nextTab.locator('[data-preset="serious"]').click();
+    await go(nextTab, 'Starting look');await nextTab.locator('[data-preset="serious"]').click();
     assert(await nextTab.locator('#presetDialog').isVisible()); assert.equal(await nextTab.locator('#presetSkipConfirmation').isChecked(), false);
     assert(!native.some(message => message.startsWith('Apply this preset')), 'Preset confirmation is no longer a native window.confirm.');
   });
@@ -371,9 +369,9 @@ try {
   await scenario('preset dialog is accessible on desktop and phone with safe keyboard dismissal and storage fallback', async ({ makePage }) => {
     for (const mobile of [false, true]) {
       const page = await makePage({ mobile });
-      await page.locator('[data-preset="professional"]').click();
+      await go(page, 'Starting look');await page.locator('[data-preset="professional"]').click();
       const before = await design(page);
-      await page.locator('[data-preset="modern"]').focus(); await page.keyboard.press('Enter');
+      await go(page, 'Starting look');await page.locator('[data-preset="modern"]').focus(); await page.keyboard.press('Enter');
       assert.equal(await page.evaluate(() => document.activeElement.id), 'presetCancel');
       await page.keyboard.press(tabKey); assert.equal(await page.evaluate(() => document.activeElement.id), 'presetApply');
       await page.keyboard.press(tabKey);
@@ -383,7 +381,7 @@ try {
       await page.keyboard.press('Space'); assert.equal(await page.locator('#presetSkipConfirmation').isChecked(), true);
       await page.keyboard.press('Escape');
       assert.deepEqual(await design(page), before);
-      assert.equal(await page.evaluate(() => document.activeElement.id), 'preset-modern');
+      assert.equal(await page.evaluate(() => document.activeElement.id), (await draft(page)).stepId==='slides'?'selectedElement':'preset-modern');
       await page.keyboard.press('Enter');
       assert.equal(await page.locator('#presetSkipConfirmation').isChecked(), false);
       await axe(page, 'Preset dialog '+(mobile?'phone':'desktop'));
@@ -392,14 +390,14 @@ try {
       if(process.env.BESPOKE_REVIEW_DIR){await fs.mkdir(process.env.BESPOKE_REVIEW_DIR,{recursive:true});await page.screenshot({path:path.join(process.env.BESPOKE_REVIEW_DIR,'preset-dialog-'+(mobile?'phone':'desktop')+'.png')});}
       await page.locator('#presetApply').focus(); await page.keyboard.press('Enter');
       assert.equal((await design(page)).startingPoint, 'modern');
-      assert.equal(await page.evaluate(() => document.activeElement.id), 'preset-modern');
+      assert.equal(await page.evaluate(() => document.activeElement.id), (await draft(page)).stepId==='slides'?'selectedElement':'preset-modern');
     }
     const blocked = await makePage({ sessionStorageUnavailable: true });
-    await blocked.locator('[data-preset="professional"]').click(); await blocked.locator('[data-preset="modern"]').click();
+    await go(blocked, 'Starting look');await blocked.locator('[data-preset="professional"]').click(); await go(blocked, 'Starting look');await blocked.locator('[data-preset="modern"]').click();
     await blocked.locator('#presetSkipConfirmation').check(); await blocked.locator('#presetApply').click();
-    await blocked.locator('[data-preset="fun"]').click(); assert.equal((await design(blocked)).startingPoint,'fun');
+    await go(blocked, 'Starting look');await blocked.locator('[data-preset="fun"]').click(); assert.equal((await design(blocked)).startingPoint,'fun');
     assert.equal(await blocked.locator('#presetDialog').isVisible(),false);
-    await blocked.reload(); await ready(blocked); await go(blocked, 'Starting look'); await blocked.locator('[data-preset="serious"]').click();
+    await blocked.reload(); await ready(blocked); await go(blocked, 'Starting look');await blocked.locator('[data-preset="serious"]').click();
     assert(await blocked.locator('#presetDialog').isVisible()); assert.equal(await blocked.locator('#presetSkipConfirmation').isChecked(),false);
   });
 
@@ -745,11 +743,11 @@ try {
 
   await scenario('all desktop steps and mobile controls pass WCAG checks and keyboard navigation', async ({ makePage }) => {
     const desktop = await makePage();
-    await desktop.locator('[data-preset="professional"]').focus();
+    await go(desktop, 'Starting look');await desktop.locator('[data-preset="professional"]').focus();
     await desktop.keyboard.press('Enter');
-    assert.equal(await desktop.locator('[data-preset="professional"]').evaluate(el => el === document.activeElement), true, 'Preset focus survives a rerender.');
+    assert.equal(await desktop.locator('#selectedElement').evaluate(el => el === document.activeElement), true, 'Applying a preset moves focus into Customize.');
     await desktop.keyboard.press(tabKey);
-    assert.equal(await desktop.locator('[data-preset="modern"]').evaluate(el => el === document.activeElement), true, 'Tab continues to the next preset.');
+    assert.equal(await desktop.locator('#context-finish').evaluate(el => el === document.activeElement), true, 'Tab continues into the contextual controls.');
     await go(desktop, 'Title slide');
     await desktop.getByRole('group', { name: /Arrangement/ }).locator('[data-choice="bottom"]').focus();
     await desktop.keyboard.press('Enter');
@@ -780,8 +778,8 @@ try {
     });
     assert(visible, 'White swatch must be visible, reachable and unobscured on mobile.');
     await axe(mobile, 'mobile paint controls'); await assertNoOverflow(mobile, 'mobile controls');
-    await mobile.locator('#surface-design').focus(); await mobile.keyboard.press('ArrowRight');
-    assert.equal(await mobile.locator('#workspace').getAttribute('data-active-surface'), 'preview');
+    if(await mobile.locator('#surface-design').isVisible()){await mobile.locator('#surface-design').focus();await mobile.keyboard.press('ArrowRight');assert.equal(await mobile.locator('#workspace').getAttribute('data-active-surface'),'preview');}
+    else assert.equal(await mobile.locator('#workspace').getAttribute('data-editor'),'true','The compact editor exposes controls and preview together');
     assert(await mobile.locator('#previewPane').isVisible());
     await mobile.locator('#previewTabs [data-view="cards"]').focus(); await mobile.keyboard.press('ArrowRight');
     assert.equal(await mobile.locator('#modelStage .bespoke-slide').getAttribute('data-kind'), 'video');

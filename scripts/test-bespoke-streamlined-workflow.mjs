@@ -1,4 +1,5 @@
 #!/usr/bin/env node
+import {otherStartingPaths} from './bespoke-test-navigation.mjs';
 // Independent acceptance of the three-stage workflow. All services are ephemeral,
 // all browser contexts are new, and all names/content are synthetic. Never attaches
 // to Safari, an existing browser, the persistent preview, or a hosted service.
@@ -92,6 +93,7 @@ async function preview(page, kind) {
   await page.evaluate(() => document.fonts.ready);
 }
 async function shared(page, open = true) {
+  if(!await page.locator('#sharedTheme').count())await page.locator('#stage-slides').click();
   await surface(page);
   if (!await page.locator('#detailControls').isVisible()) await page.locator('#btnMoreOptions').click();
   const details = page.locator('#sharedTheme');
@@ -125,6 +127,7 @@ async function setField(page, kind, key, value) {
 }
 async function team(page) {
   await stage(page, 'start');
+  if(!await page.locator('.start-team').evaluate(n=>n.open))await page.locator('.start-team > summary').click();
   await page.locator('#teamName').fill('Synthetic workflow team');
   await page.locator('#spokespersonName').fill('Sample Instructor');
   await page.locator('#spokespersonEmail').fill('sample@example.org');
@@ -181,7 +184,7 @@ try {
   await scenario('custom journey and effective review', async ({ makePage, server }) => {
     const page = await makePage(); await team(page);
     assert.equal(await page.locator('#stepList button').count(), 3);
-    await page.locator('#btnBuildOwn').click();
+    await otherStartingPaths(page);await page.locator('#btnBuildOwn').click();
     assert.equal(await page.locator('#stage-slides').getAttribute('aria-current'), 'step');
     assert.equal(await page.locator('#roleEditorTabs [role=tab]').count(), 5);
     await shared(page);
@@ -236,7 +239,7 @@ try {
     await stage(returning, 'start');
     assert(await returning.locator('#btnContinueEditing').isVisible());
     assert(await returning.locator('#btnQuickReview').isVisible());
-    assert(!await returning.locator('#preset-fun').isVisible(), 'Returning designs make changing the starting look deliberate');
+    assert(await returning.locator('#preset-fun').isVisible(), 'Returning designs retain the gallery; applying a different look still requires confirmation');
     await returning.locator('#btnContinueEditing').click();
     assert.deepEqual(await design(returning), selected);
     await startingLooks(returning);
@@ -253,9 +256,9 @@ try {
 
   await scenario('preset quick path and confirmation scope', async ({ makePage }) => {
     const page = await makePage(); await team(page);
-    await page.locator('#preset-modern').click();
+    await startingLooks(page);await page.locator('#preset-modern').click();
     assert(!await page.locator('#presetDialog').isVisible(), 'An untouched new design does not require replacement confirmation');
-    await page.locator('#btnQuickReview').click();
+    await page.locator('#stage-review').click();
     assert.equal(await page.locator('#stage-review').getAttribute('aria-current'), 'step');
     const quick = await design(page); await save(page);
     await startingLooks(page);
@@ -267,7 +270,7 @@ try {
     await page.locator('#presetSkipConfirmation').check(); await page.locator('#presetApply').click();
     const fun = await design(page);
     assert.equal(fun.startingPoint, 'fun');
-    await page.locator('#preset-modern').click();
+    await startingLooks(page);await page.locator('#preset-modern').click();
     assert(!await page.locator('#presetDialog').isVisible(), 'Confirmed opt-out applies in the same tab session');
     await page.locator('#btnUndo').click(); assert.deepEqual(await design(page), fun);
     await page.locator('#btnUndo').click(); assert.deepEqual(await design(page), quick);
@@ -279,7 +282,7 @@ try {
   });
 
   await scenario('shared scope painted output and field resets', async ({ makePage }) => {
-    const page = await makePage(); await team(page); await page.locator('#btnBuildOwn').click();
+    const page = await makePage(); await team(page); await otherStartingPaths(page);await page.locator('#btnBuildOwn').click();
     await editor(page, 'title');
     await setField(page, 'title', 'backgroundMode', 'gradient');
     await setField(page, 'title', 'primary', 'gold');
@@ -324,7 +327,7 @@ try {
     for (const role of ['sidebar', 'accent', 'button']) {
       await shared(page); await page.locator('#colorRole').selectOption(role);
       const scope = page.locator(`[data-shared-scope="${role}"]`);
-      assert.match(await scope.textContent(), /Shared only/);
+      assert.match(await scope.textContent(), role==='accent'?/Shared only/:/Shared default/);
       assert.equal(await scope.locator('[data-scope-role]').count(), 0, `${role} cannot offer an unrelated local editor`);
       const kind = role === 'accent' ? 'title' : 'video';
       const newColor = (await design(page)).roles[role] === 'mauve' ? 'primary' : 'mauve';
@@ -337,7 +340,7 @@ try {
       assert(delta.changedFraction > .00005, `${role} must visibly paint its supported sample element`);
       const target = role === 'sidebar' ? '.slide-video-frame > span' : role === 'accent' ? '.slide-accent' : '.slide-button';
       assert.equal(await page.locator('#modelStage ' + target).first().evaluate(el => getComputedStyle(el).backgroundColor), rgb(newColor));
-      evidence.push({ label: role + ' shared-only visible paint', delta });
+      evidence.push({ label: role + ' shared-default visible paint', delta });
     }
     await editor(page, 'title'); await setField(page, 'title', 'bodyFont', 'bitter');
     await shared(page); await page.locator('#themeScope').selectOption('shared'); await page.locator('#font-body').selectOption('raleway');
@@ -397,7 +400,7 @@ try {
     for (const [index, oldId] of oldIds.entries()) {
       const saved = { step: index, stepId: oldId, previewView: 'activity', activeRole: 'sidebar', lessonId: 'money-management', teamName: 'Synthetic previous workflow', spokespersonName: 'Sample Instructor', spokespersonEmail: 'sample@example.org', unspoken: '', design: storedDesign, changes: [], redo: [] };
       const page = await makePage({ storedDraft: saved });
-      const mapped = kinds.includes(oldId) ? 'slides' : oldId === 'review' ? 'review' : 'start';
+      const mapped = [...kinds,'colors','fonts'].includes(oldId) ? 'slides' : oldId === 'review' ? 'review' : 'start';
       assert.equal(await page.locator('#stage-' + mapped).getAttribute('aria-current'), 'step', oldId + ' maps to the right stage');
       if (kinds.includes(oldId)) assert.equal(await page.locator('#editor-' + oldId).getAttribute('aria-selected'), 'true');
       if (['colors', 'fonts'].includes(oldId)) assert(await page.locator('#sharedTheme').evaluate(el => el.open));
@@ -430,7 +433,7 @@ try {
       if (scale === 2) await page.addStyleTag({ content: 'html { font-size: 200% !important; }' });
       const label = `${width}x${height}-${scale * 100}percent`;
       await axe(page, label + ' Start');
-      await page.locator('#btnBuildOwn').click();
+      await otherStartingPaths(page);await page.locator('#btnBuildOwn').click();
       await page.locator('#btnMoreOptions').click();
       await page.locator('#editor-title').focus(); await page.keyboard.press('ArrowRight');
       assert.equal(await page.locator('#editor-divider').getAttribute('aria-selected'), 'true');

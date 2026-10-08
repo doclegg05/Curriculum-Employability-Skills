@@ -49,7 +49,7 @@ const priorAppearance = {
 };
 
 test('default and six old v2 presets preserve exact CSS and markup without the optional extension', () => {
-  for (const [id, design] of [['default', Model.defaultDesign(catalog)], ...catalog.presets.map(preset => [preset.id, Model.applyPreset(catalog, preset.id)])]) {
+  for (const [id, design] of [['default', Model.defaultDesign(catalog)], ...JSON.parse(fs.readFileSync(path.join(root,'scripts/test-fixtures/bespoke/legacy-builder-catalog.json'),'utf8')).presets.map(preset => [preset.id, preset.design])]) {
     const before = structuredClone(design);
     assert.deepEqual(selectionErrors({ ...payload(), design }, 'money-management'), [], id);
     assert.equal(sha(Model.cssForDesign(catalog, design)), priorAppearance[id][0], `${id}: CSS changed without roleStyles`);
