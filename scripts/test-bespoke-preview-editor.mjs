@@ -58,7 +58,8 @@ try{
   await page.locator('#modelStage .slide-card').first().focus();await page.keyboard.press('Escape');
   assert.equal(await page.locator('#selectedElement').inputValue(),'background');
   await page.locator('#context-finish').selectOption('solid');await page.locator('#context-background').selectOption('light');
-  await page.locator('#btnMoreOptions').click();assert.equal(await page.locator('#detailControls').isVisible(),true);
+  // On wide screens the drawer is already open from the font step above.
+  if(!await page.locator('#detailControls').isVisible())await page.locator('#btnMoreOptions').click();assert.equal(await page.locator('#detailControls').isVisible(),true);
   await page.locator('#btnCloseOptions').click();assert.equal(await page.locator('#detailControls').isVisible(),false);
   // Picker is the native keyboard equivalent of clicking visible text.
   await page.locator('#selectedElement').selectOption('heading-1');assert.equal(width>=1101?await page.locator('#context-font').count()===1:await page.locator('#context-font').isVisible(),true);

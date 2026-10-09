@@ -17,7 +17,7 @@
 .app-bar #stepList button:after{content:"";position:absolute;inset:-4px 0}
 .app-bar #stepList button:hover{background:var(--mist)}
 .app-bar #stepList button[aria-current]{background:var(--mist);color:var(--blue);font-weight:600}
-.bar-end{display:flex;align-items:center;gap:8px;margin-left:auto}
+.bar-end{display:flex;align-items:center;gap:8px;min-width:0;margin-left:auto}
 .undo-actions{display:flex;gap:2px}
 .btn-ghost{border-color:transparent;background:transparent}
 .btn-ghost:hover{background:var(--mist)}
@@ -105,4 +105,7 @@
  .save-chip{flex:1 1 100%;order:-1;max-width:none}
  .more-menu{position:static}
  .more-menu-list{left:12px;right:12px;width:auto}
+ /* Touch targets: the project contract is 44px on phones. */
+ .app-bar .brand{min-height:44px}
+ .app-bar #stepList button{min-height:44px}
 }
