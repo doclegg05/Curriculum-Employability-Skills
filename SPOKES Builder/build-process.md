@@ -92,7 +92,7 @@ Additional Presentation chapters (P4, P5, etc.) may be added with sequential dat
 
 #### Step B: Copy Template & Apply Theme
 
-1. Copy `template.html` to the new project directory as `index.html`
+1. Copy `template.html` to the new project directory as `index.html`, and copy `SPOKES Builder/print/manifest.js` to `print/manifest.js` in the new project. The template loads that placeholder, and the validator's REF-01 rule blocks every edit to `index.html` while it is missing.
 2. Add lesson-specific Google Font `<link>` tags in `<head>` (look up import URL in `font-pairings.md`)
 3. Generate a `<style id="theme-override">` block AFTER the main CSS block by assembling snippets from `theme-library.css`:
    - Font family overrides
