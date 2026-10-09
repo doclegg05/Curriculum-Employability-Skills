@@ -14,18 +14,23 @@
 - **BeSpoke: built, deployed, live-verified 2026-09-22** (`docs/bespoke/verification-2026-09-22.md`). Private per-lesson team links, encrypted shared Save/Open, History, Download/Open backup, Send to Britt → receipt-confirmed draft PR. Scope is visual design only (colors, fonts, layouts, cards); no lesson is built by it.
 - **BeSpoke design brief + UI rework live 2026-09-23** (PR #25, merged `3b5ea01`; Pages deployed; Netlify service `6ab3ebad54816f0e2b364fa9`). Teams answer four questions and get a starting design of their own. Live save of a design *with* a brief not yet exercised.
 - **Moving to Phase 2 (Round 2): the next six lessons** — Goal Setting, Money Management (Budget), Professionalism and Diversity, Knowing Your Rights in the Workplace, Communicating Assertively, Workplace Ethics. Unbuilt; March 2027 soft target. Building needs separate Britt authorization + complete approved content.
+- **Money Management intro animation narrated 2026-10-09** (branch `claude/money-animation-narration-music-7e1e34`, not yet a PR). 60s Claude Design animation + ElevenLabs narration (voice `DtQLDxHbTiQTpVVanTy1`, Britt's pick) + ElevenLabs Music bed + captions, built by `lesson-Money-Management/intro-narration/build_intro_audio.py` on the education toolkit. Loudness gate PASS (-14.2 LUFS, -2.3 dBTP); whisper matches the script word for word. Notes and rebuild steps: `lesson-Money-Management/intro-narration/script.md`.
 - **BeSpoke preview fidelity fixes live 2026-09-23** (PRs #27–#31): every option in every design step now visibly changes the preview (guarded by a browser sweep). Color lead and background open on the content slide; title slides use the template's real markup with library px/rem scaled to the frame; per-chapter cards have a chapter picker.
 - **Theme library fixed 2026-09-23** (PR #28): download-button AA contrast for every lead; Split Hero, Diagonal Split and the title rule repaired. Guards: `scripts/test_bespoke_theme_contrast.py`, `scripts/check-title-layouts.mjs` (both in quality.sh).
 - **Slide-builder Plan 1 (2026-09-23) is superseded, never built.** The Codex builder (Sept 24 to 30) took its place with its own model (`bespoke/builder-model.mjs`, `bespoke/builder-catalog.json`). `role-components.json` / `design-model.mjs` will not exist; `docs/bespoke/slide-builder-spec.md` and Plan 1 are history only.
 - Quality gate green on PR #36 head `8fa1e5b`, locally and in CI (2026-10-01).
 
 ## Last Session
-- **Date**: 2026-10-01
-- **What we worked on**: BeSpoke, all day. (1) Status check found Guide me merged only into the Codex builder branch; opened PR #36, staged the service, Britt deployed it, merged. (2) Pages had not deployed since 2026-09-23 (Liquid in the Plan 1 doc); PR #38 fixed it and the builder went live. (3) PR #39 fixed three Guide me bugs. (4) Reviewed two parallel Codex redesigns (direct-editor, contextual-editor) with independent reviewers and both quality gates; Britt chose contextual-editor; PR #42 = that commit plus fixes for the four Important findings. The first layout fix overflowed the divider at 844x390 (caught by Visual QA) and a screenshot then showed a 1,190px gap; both fixed with tests. (5) Closed PRs #14, #15, #40, #41; deleted branch `claude/slide-builder-design-model` (tip `3bf9ddf`).
-- **What we decided**: see the 2026-10-01 rows in the decision log.
-- **Where we left off**: preview editor is live. Next is still the hosted round trip with a real team link (v2 design, a Guide me design, an old v1 draft), then the Money Management pilot on the new editor.
+- **Date**: 2026-10-09
+- **What we worked on**: Narration script, voiceover and music for the team's Money Management intro animation (Claude Design project `15ed823d…`). The design MCP could not authorize from the app session, so Britt exported the MP4. Timed an 8-line script (97 words) to the scenes from frame motion; Britt approved it as written. Built `build_intro_audio.py` (toolkit preflight, generate, trim, align; ElevenLabs Music; per-line leveling, 80 Hz high-pass, oversampled voice limiter, ducked bed; house normalize + verify-loudness; VTT + embedded captions). The old ElevenLabs key was dead; Britt stored a new one in the Keychain (detail in auto-memory `elevenlabs-key-in-keychain`). Render review: whisper word-for-word match, picture bit-identical, no dead air; Gemini's 0:27 sort "blocker" not confirmed by frames (annotated in the `.review.json`).
+- **What we decided**: see the 2026-10-09 rows in the decision log.
+- **Where we left off**: everything committed on `claude/money-animation-narration-music-7e1e34`; no PR yet. BeSpoke work is unchanged since 2026-10-01: the hosted round trip with a real team link is still next there.
 
 ## Open Items
+- [ ] **Money Management intro**: open a PR for `claude/money-animation-narration-music-7e1e34` when Britt wants it on `main`.
+- [ ] Intro animation (Claude Design, team-owned): the Transportation tag sits on the Wants box edge from 0:27 to 0:33 before moving to Needs at 0:34, while the narration says "able to get to work". Team fix in the design file; then re-export and rerun `build_intro_audio.py` (no credits).
+- [ ] Intro master lands at -14.2 LUFS, the gate's lower edge (house loudnorm runs dynamic because the music bed fills the gaps). Britt's call whether to trade voice squash or a quieter bed for -13.7.
+- [ ] SPOKES narrator `DtQLDxHbTiQTpVVanTy1` runs on toolkit default settings (FY27 pin); no listening test of settings yet. The voice pin lives in `lesson-Money-Management/intro-narration/voice.json` only.
 - [x] Guided mode and the Codex builder merged to `main` 2026-10-01 (PR #36), after the service redeploy.
 - [x] PR #38 merged 2026-10-01; Pages deployed `4dfba98` and the builder is live.
 - [x] PR #39 merged 2026-10-01 (`b4eb377`, live on Pages): Guide me Undo after restart, thumbnail resizing, guide cleared when the design is replaced.
@@ -69,6 +74,10 @@
 ## Key Decisions Log
 | Date | Decision | Rationale |
 |------|----------|-----------|
+| 2026-10-09 | Intro narration says no percentages, names no income source, frames wants as "extras that make life better" | Topic map: dignity first, cite-or-abstain, no surplus budgets; the 50/30/20 bar stays visual only |
+| 2026-10-09 | Narrate the exported MP4 directly instead of rebuilding the animation in HyperFrames | Britt's team owns the animation in Claude Design; audio on the MP4 keeps the picture bit-identical |
+| 2026-10-09 | Level each ElevenLabs take before mixing; keep a gentle voice limiter rather than chase -13.7 LUFS | Takes came back up to 13 dB apart; harder limiting bought <1 dB of gate margin at audible cost |
+| 2026-10-09 | Commit both MP4s (12.6 MB source, 14 MB narrated) to the branch | Britt's call; repo already carries lesson videos |
 | 2026-10-01 | Merge the Codex v2 builder (with Guide me) to `main`, replacing the wizard | Britt's call after the status review; quality gate green on the exact commit |
 | 2026-10-01 | Keep the contextual preview editor (PR #42), not the direct editor with per-box styling | Same idea with no saved-design format change, so no service redeploy; per-box styling can come later if teams ask |
 | 2026-10-01 | Preview edits only on the Slide designs stage; Guide me owns the preview while it runs | A click on the preview ended the guide or pulled the spokesperson off Review |
