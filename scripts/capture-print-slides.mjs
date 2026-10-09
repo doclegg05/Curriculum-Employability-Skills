@@ -30,6 +30,9 @@ const TEACHER_SELECTORS = Object.freeze([
 // squeeze cards over each other instead of letting the slide grow for the picture.
 const CAPTURE_CSS = `
 .slide.active > * { flex-shrink: 0 !important; }
+html.sp-expand, html.sp-expand body, html.sp-expand .container, html.sp-expand main.main {
+  height: auto !important; min-height: 100vh; overflow: visible !important; }
+html.sp-expand .slide.active { height: auto !important; min-height: 100vh; overflow: visible !important; }
 nav.sidebar, .sidebar-toggle, .progress-bar, .nav-hint, .nav-pos, .branding-logo, .skip-link,
 .video-toolbar, .flip-hint, .print-slides-btn, #spokesPrintSlides { display: none !important; }
 textarea { color: transparent !important; resize: none !important;
@@ -199,24 +202,33 @@ async function applyActions(page, actions) {
   }
 }
 
-const slideHeight = (page) => page.evaluate(() => document.querySelector(".slide.active").scrollHeight);
 
-async function shoot(page) {
-  let height = VIEWPORT.height;
-  for (let pass = 0; pass < 3; pass += 1) {
-    const needed = await slideHeight(page);
-    if (needed <= height + 2) break;
-    height = needed;
-    await page.setViewportSize({ width: VIEWPORT.width, height });
+// A slide taller than the screen is photographed at its natural height. The viewport
+// stays fixed: lesson layout uses vh units and max-height media queries, so resizing
+// the window would change the design and fire the lessons' resize handlers.
+async function expandSlide(page) {
+  const tall = await page.evaluate(() => {
+    const slide = document.querySelector(".slide.active");
+    return slide.scrollHeight > slide.clientHeight + 2;
+  });
+  if (tall) {
+    await page.evaluate(() => document.documentElement.classList.add("sp-expand"));
     await settle(page);
   }
+  return page.evaluate(() => Math.round(document.querySelector(".slide.active").getBoundingClientRect().height));
+}
+
+async function collapseSlide(page) {
+  await page.evaluate(() => document.documentElement.classList.remove("sp-expand"));
+  await settle(page);
+}
+
+async function shoot(page) {
+  await expandSlide(page);
   const slide = page.locator(".slide.active");
   const buffer = await slide.screenshot({ type: "jpeg", quality: JPEG_QUALITY, animations: "disabled" });
   const box = await slide.boundingBox();
-  if (height !== VIEWPORT.height) {
-    await page.setViewportSize(VIEWPORT);
-    await settle(page);
-  }
+  await collapseSlide(page);
   return { buffer, width: Math.round(box.width * DEVICE_SCALE), height: Math.round(box.height * DEVICE_SCALE) };
 }
 
@@ -243,7 +255,9 @@ function planViews(info, settings, slideNumber) {
 
 async function splitTallAccordion(page, views, info) {
   await applyActions(page, views[0].actions);
-  if ((await slideHeight(page)) <= MAX_READABLE_HEIGHT) return views;
+  const height = await expandSlide(page);
+  await collapseSlide(page);
+  if (height <= MAX_READABLE_HEIGHT) return views;
   const base = views[0].actions.slice(0, -1);
   return Array.from({ length: info.accordionSections }, (_, i) => ({
     label: `section ${i + 1} of ${info.accordionSections}`,
