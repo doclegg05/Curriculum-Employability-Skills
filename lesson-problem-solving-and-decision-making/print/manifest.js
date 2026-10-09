@@ -2,7 +2,7 @@
 window.SPOKES_PRINT_MANIFEST = {
   "version": 1,
   "lessonTitle": "Problem-Solving & Decision-Making",
-  "sourceHash": "afe42b77f06d964e0f6107bbe484f1508310af87dc31dfd38a9641d23fc54b16",
+  "sourceHash": "01d787b68602696999269952c93d301fe1a68ec3e2ded87c7104fe108ee142a7",
   "pictures": [
     {
       "slide": 1,
@@ -11,7 +11,7 @@ window.SPOKES_PRINT_MANIFEST = {
       "student": "print/s01.jpg",
       "teacher": "print/s01.jpg",
       "width": 2400,
-      "height": 1350
+      "height": 1352
     },
     {
       "slide": 3,
@@ -20,7 +20,7 @@ window.SPOKES_PRINT_MANIFEST = {
       "student": "print/s03.jpg",
       "teacher": "print/s03-t.jpg",
       "width": 2400,
-      "height": 1724
+      "height": 2125
     },
     {
       "slide": 4,
@@ -29,7 +29,7 @@ window.SPOKES_PRINT_MANIFEST = {
       "student": "print/s04.jpg",
       "teacher": "print/s04.jpg",
       "width": 2400,
-      "height": 1350
+      "height": 1352
     },
     {
       "slide": 5,
@@ -38,7 +38,7 @@ window.SPOKES_PRINT_MANIFEST = {
       "student": "print/s05.jpg",
       "teacher": "print/s05.jpg",
       "width": 2400,
-      "height": 1350
+      "height": 1352
     },
     {
       "slide": 7,
@@ -47,7 +47,7 @@ window.SPOKES_PRINT_MANIFEST = {
       "student": "print/s07.jpg",
       "teacher": "print/s07.jpg",
       "width": 2400,
-      "height": 1350
+      "height": 1352
     },
     {
       "slide": 8,
@@ -56,7 +56,7 @@ window.SPOKES_PRINT_MANIFEST = {
       "student": "print/s08.jpg",
       "teacher": "print/s08.jpg",
       "width": 2400,
-      "height": 1350
+      "height": 1352
     },
     {
       "slide": 8,
@@ -65,7 +65,7 @@ window.SPOKES_PRINT_MANIFEST = {
       "student": "print/s08-v2.jpg",
       "teacher": "print/s08-v2.jpg",
       "width": 2400,
-      "height": 1350
+      "height": 1352
     },
     {
       "slide": 9,
@@ -74,7 +74,7 @@ window.SPOKES_PRINT_MANIFEST = {
       "student": "print/s09.jpg",
       "teacher": "print/s09.jpg",
       "width": 2400,
-      "height": 1350
+      "height": 1352
     },
     {
       "slide": 11,
@@ -83,7 +83,7 @@ window.SPOKES_PRINT_MANIFEST = {
       "student": "print/s11.jpg",
       "teacher": "print/s11.jpg",
       "width": 2400,
-      "height": 1350
+      "height": 1352
     },
     {
       "slide": 12,
@@ -92,7 +92,7 @@ window.SPOKES_PRINT_MANIFEST = {
       "student": "print/s12.jpg",
       "teacher": "print/s12.jpg",
       "width": 2400,
-      "height": 1350
+      "height": 1352
     },
     {
       "slide": 12,
@@ -101,7 +101,7 @@ window.SPOKES_PRINT_MANIFEST = {
       "student": "print/s12-v2.jpg",
       "teacher": "print/s12-v2.jpg",
       "width": 2400,
-      "height": 1350
+      "height": 1352
     },
     {
       "slide": 12,
@@ -110,7 +110,7 @@ window.SPOKES_PRINT_MANIFEST = {
       "student": "print/s12-v3.jpg",
       "teacher": "print/s12-v3.jpg",
       "width": 2400,
-      "height": 1350
+      "height": 1352
     },
     {
       "slide": 12,
@@ -119,7 +119,7 @@ window.SPOKES_PRINT_MANIFEST = {
       "student": "print/s12-v4.jpg",
       "teacher": "print/s12-v4.jpg",
       "width": 2400,
-      "height": 1350
+      "height": 1352
     },
     {
       "slide": 13,
@@ -128,7 +128,7 @@ window.SPOKES_PRINT_MANIFEST = {
       "student": "print/s13.jpg",
       "teacher": "print/s13.jpg",
       "width": 2400,
-      "height": 1350
+      "height": 1352
     },
     {
       "slide": 14,
@@ -137,7 +137,7 @@ window.SPOKES_PRINT_MANIFEST = {
       "student": "print/s14.jpg",
       "teacher": "print/s14.jpg",
       "width": 2400,
-      "height": 1350
+      "height": 1352
     },
     {
       "slide": 16,
@@ -146,7 +146,7 @@ window.SPOKES_PRINT_MANIFEST = {
       "student": "print/s16.jpg",
       "teacher": "print/s16.jpg",
       "width": 2400,
-      "height": 1350
+      "height": 1352
     },
     {
       "slide": 17,
@@ -155,7 +155,7 @@ window.SPOKES_PRINT_MANIFEST = {
       "student": "print/s17.jpg",
       "teacher": "print/s17.jpg",
       "width": 2400,
-      "height": 1350
+      "height": 1352
     },
     {
       "slide": 18,
@@ -164,7 +164,7 @@ window.SPOKES_PRINT_MANIFEST = {
       "student": "print/s18.jpg",
       "teacher": "print/s18.jpg",
       "width": 2400,
-      "height": 1350
+      "height": 1352
     },
     {
       "slide": 19,
@@ -173,7 +173,7 @@ window.SPOKES_PRINT_MANIFEST = {
       "student": "print/s19.jpg",
       "teacher": "print/s19.jpg",
       "width": 2400,
-      "height": 1350
+      "height": 1352
     },
     {
       "slide": 20,
@@ -182,7 +182,7 @@ window.SPOKES_PRINT_MANIFEST = {
       "student": "print/s20.jpg",
       "teacher": "print/s20.jpg",
       "width": 2400,
-      "height": 1350
+      "height": 1352
     },
     {
       "slide": 20,
@@ -191,7 +191,7 @@ window.SPOKES_PRINT_MANIFEST = {
       "student": null,
       "teacher": "print/s20-v2-t.jpg",
       "width": 2400,
-      "height": 1350
+      "height": 1352
     },
     {
       "slide": 21,
@@ -200,7 +200,7 @@ window.SPOKES_PRINT_MANIFEST = {
       "student": "print/s21.jpg",
       "teacher": "print/s21.jpg",
       "width": 2400,
-      "height": 1350
+      "height": 1352
     },
     {
       "slide": 21,
@@ -209,7 +209,7 @@ window.SPOKES_PRINT_MANIFEST = {
       "student": null,
       "teacher": "print/s21-v2-t.jpg",
       "width": 2400,
-      "height": 1350
+      "height": 1352
     },
     {
       "slide": 22,
@@ -218,7 +218,7 @@ window.SPOKES_PRINT_MANIFEST = {
       "student": "print/s22.jpg",
       "teacher": "print/s22.jpg",
       "width": 2400,
-      "height": 1350
+      "height": 1352
     },
     {
       "slide": 23,
@@ -227,7 +227,7 @@ window.SPOKES_PRINT_MANIFEST = {
       "student": "print/s23.jpg",
       "teacher": "print/s23.jpg",
       "width": 2400,
-      "height": 1350
+      "height": 1352
     },
     {
       "slide": 24,
@@ -236,7 +236,7 @@ window.SPOKES_PRINT_MANIFEST = {
       "student": "print/s24.jpg",
       "teacher": "print/s24.jpg",
       "width": 2400,
-      "height": 1350
+      "height": 1352
     },
     {
       "slide": 25,
@@ -245,7 +245,7 @@ window.SPOKES_PRINT_MANIFEST = {
       "student": "print/s25.jpg",
       "teacher": "print/s25.jpg",
       "width": 2400,
-      "height": 1350
+      "height": 1352
     },
     {
       "slide": 26,
@@ -254,7 +254,7 @@ window.SPOKES_PRINT_MANIFEST = {
       "student": "print/s26.jpg",
       "teacher": "print/s26.jpg",
       "width": 2400,
-      "height": 1350
+      "height": 1352
     },
     {
       "slide": 27,
@@ -263,7 +263,7 @@ window.SPOKES_PRINT_MANIFEST = {
       "student": "print/s27.jpg",
       "teacher": "print/s27.jpg",
       "width": 2400,
-      "height": 1350
+      "height": 1352
     },
     {
       "slide": 28,
@@ -272,7 +272,7 @@ window.SPOKES_PRINT_MANIFEST = {
       "student": "print/s28.jpg",
       "teacher": "print/s28.jpg",
       "width": 2400,
-      "height": 1350
+      "height": 1352
     }
   ]
 };

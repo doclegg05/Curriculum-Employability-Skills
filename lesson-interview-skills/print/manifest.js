@@ -2,7 +2,7 @@
 window.SPOKES_PRINT_MANIFEST = {
   "version": 1,
   "lessonTitle": "Interview Skills for Employment Success",
-  "sourceHash": "69410ecb850b1919e3aedc0dc113e8d8efb82679a9c02f1010df95ec28ad21fd",
+  "sourceHash": "756782389dd7b7aaec940713bfb0ae127bf23a087f84c2463eee54677d177e5b",
   "pictures": [
     {
       "slide": 1,
@@ -11,7 +11,7 @@ window.SPOKES_PRINT_MANIFEST = {
       "student": "print/s01.jpg",
       "teacher": "print/s01.jpg",
       "width": 2400,
-      "height": 1350
+      "height": 1352
     },
     {
       "slide": 2,
@@ -20,7 +20,7 @@ window.SPOKES_PRINT_MANIFEST = {
       "student": "print/s02.jpg",
       "teacher": "print/s02.jpg",
       "width": 2400,
-      "height": 1350
+      "height": 1352
     },
     {
       "slide": 3,
@@ -29,7 +29,7 @@ window.SPOKES_PRINT_MANIFEST = {
       "student": "print/s03.jpg",
       "teacher": "print/s03.jpg",
       "width": 2400,
-      "height": 1350
+      "height": 1352
     },
     {
       "slide": 4,
@@ -38,7 +38,7 @@ window.SPOKES_PRINT_MANIFEST = {
       "student": "print/s04.jpg",
       "teacher": "print/s04.jpg",
       "width": 2400,
-      "height": 1350
+      "height": 1352
     },
     {
       "slide": 5,
@@ -47,7 +47,7 @@ window.SPOKES_PRINT_MANIFEST = {
       "student": "print/s05.jpg",
       "teacher": "print/s05.jpg",
       "width": 2400,
-      "height": 1350
+      "height": 1352
     },
     {
       "slide": 6,
@@ -56,7 +56,7 @@ window.SPOKES_PRINT_MANIFEST = {
       "student": "print/s06.jpg",
       "teacher": "print/s06.jpg",
       "width": 2400,
-      "height": 1350
+      "height": 1352
     },
     {
       "slide": 7,
@@ -65,7 +65,7 @@ window.SPOKES_PRINT_MANIFEST = {
       "student": "print/s07.jpg",
       "teacher": "print/s07.jpg",
       "width": 2400,
-      "height": 1350
+      "height": 1352
     },
     {
       "slide": 8,
@@ -74,7 +74,7 @@ window.SPOKES_PRINT_MANIFEST = {
       "student": "print/s08.jpg",
       "teacher": "print/s08.jpg",
       "width": 2400,
-      "height": 1350
+      "height": 1352
     },
     {
       "slide": 9,
@@ -83,7 +83,7 @@ window.SPOKES_PRINT_MANIFEST = {
       "student": "print/s09.jpg",
       "teacher": "print/s09.jpg",
       "width": 2400,
-      "height": 1350
+      "height": 1352
     },
     {
       "slide": 10,
@@ -92,7 +92,7 @@ window.SPOKES_PRINT_MANIFEST = {
       "student": "print/s10.jpg",
       "teacher": "print/s10.jpg",
       "width": 2400,
-      "height": 1350
+      "height": 1352
     },
     {
       "slide": 11,
@@ -101,7 +101,7 @@ window.SPOKES_PRINT_MANIFEST = {
       "student": "print/s11.jpg",
       "teacher": "print/s11.jpg",
       "width": 2400,
-      "height": 1350
+      "height": 1352
     },
     {
       "slide": 12,
@@ -110,7 +110,7 @@ window.SPOKES_PRINT_MANIFEST = {
       "student": "print/s12.jpg",
       "teacher": "print/s12.jpg",
       "width": 2400,
-      "height": 1350
+      "height": 1352
     },
     {
       "slide": 13,
@@ -119,7 +119,7 @@ window.SPOKES_PRINT_MANIFEST = {
       "student": "print/s13.jpg",
       "teacher": "print/s13.jpg",
       "width": 2400,
-      "height": 1350
+      "height": 1352
     },
     {
       "slide": 14,
@@ -128,7 +128,7 @@ window.SPOKES_PRINT_MANIFEST = {
       "student": "print/s14.jpg",
       "teacher": "print/s14.jpg",
       "width": 2400,
-      "height": 1350
+      "height": 1352
     },
     {
       "slide": 16,
@@ -137,7 +137,7 @@ window.SPOKES_PRINT_MANIFEST = {
       "student": "print/s16.jpg",
       "teacher": "print/s16.jpg",
       "width": 2400,
-      "height": 1350
+      "height": 1352
     },
     {
       "slide": 18,
@@ -146,7 +146,7 @@ window.SPOKES_PRINT_MANIFEST = {
       "student": "print/s18.jpg",
       "teacher": "print/s18.jpg",
       "width": 2400,
-      "height": 1350
+      "height": 1352
     },
     {
       "slide": 19,
@@ -155,7 +155,7 @@ window.SPOKES_PRINT_MANIFEST = {
       "student": "print/s19.jpg",
       "teacher": "print/s19.jpg",
       "width": 2400,
-      "height": 1350
+      "height": 1352
     },
     {
       "slide": 20,
@@ -164,7 +164,7 @@ window.SPOKES_PRINT_MANIFEST = {
       "student": "print/s20.jpg",
       "teacher": "print/s20.jpg",
       "width": 2400,
-      "height": 1350
+      "height": 1352
     },
     {
       "slide": 21,
@@ -173,7 +173,7 @@ window.SPOKES_PRINT_MANIFEST = {
       "student": "print/s21.jpg",
       "teacher": "print/s21.jpg",
       "width": 2400,
-      "height": 1350
+      "height": 1352
     },
     {
       "slide": 22,
@@ -182,7 +182,7 @@ window.SPOKES_PRINT_MANIFEST = {
       "student": "print/s22.jpg",
       "teacher": "print/s22.jpg",
       "width": 2400,
-      "height": 1350
+      "height": 1352
     },
     {
       "slide": 23,
@@ -191,7 +191,7 @@ window.SPOKES_PRINT_MANIFEST = {
       "student": "print/s23.jpg",
       "teacher": "print/s23.jpg",
       "width": 2400,
-      "height": 1350
+      "height": 1352
     },
     {
       "slide": 24,
@@ -200,7 +200,7 @@ window.SPOKES_PRINT_MANIFEST = {
       "student": "print/s24.jpg",
       "teacher": "print/s24.jpg",
       "width": 2400,
-      "height": 1350
+      "height": 1352
     },
     {
       "slide": 25,
@@ -209,7 +209,7 @@ window.SPOKES_PRINT_MANIFEST = {
       "student": "print/s25.jpg",
       "teacher": "print/s25.jpg",
       "width": 2400,
-      "height": 1350
+      "height": 1352
     },
     {
       "slide": 26,
@@ -218,7 +218,7 @@ window.SPOKES_PRINT_MANIFEST = {
       "student": "print/s26.jpg",
       "teacher": "print/s26.jpg",
       "width": 2400,
-      "height": 1350
+      "height": 1352
     },
     {
       "slide": 27,
@@ -227,7 +227,7 @@ window.SPOKES_PRINT_MANIFEST = {
       "student": "print/s27.jpg",
       "teacher": "print/s27.jpg",
       "width": 2400,
-      "height": 1350
+      "height": 1352
     },
     {
       "slide": 28,
@@ -236,7 +236,7 @@ window.SPOKES_PRINT_MANIFEST = {
       "student": "print/s28.jpg",
       "teacher": "print/s28.jpg",
       "width": 2400,
-      "height": 1350
+      "height": 1352
     },
     {
       "slide": 29,
@@ -245,7 +245,7 @@ window.SPOKES_PRINT_MANIFEST = {
       "student": "print/s29.jpg",
       "teacher": "print/s29.jpg",
       "width": 2400,
-      "height": 1350
+      "height": 1352
     },
     {
       "slide": 30,
@@ -254,7 +254,7 @@ window.SPOKES_PRINT_MANIFEST = {
       "student": "print/s30.jpg",
       "teacher": "print/s30.jpg",
       "width": 2400,
-      "height": 1350
+      "height": 1352
     },
     {
       "slide": 30,
@@ -263,7 +263,7 @@ window.SPOKES_PRINT_MANIFEST = {
       "student": "print/s30-v2.jpg",
       "teacher": "print/s30-v2.jpg",
       "width": 2400,
-      "height": 1350
+      "height": 1352
     },
     {
       "slide": 30,
@@ -272,7 +272,7 @@ window.SPOKES_PRINT_MANIFEST = {
       "student": "print/s30-v3.jpg",
       "teacher": "print/s30-v3.jpg",
       "width": 2400,
-      "height": 1350
+      "height": 1352
     },
     {
       "slide": 31,
@@ -281,7 +281,7 @@ window.SPOKES_PRINT_MANIFEST = {
       "student": "print/s31.jpg",
       "teacher": "print/s31.jpg",
       "width": 2400,
-      "height": 1419
+      "height": 1497
     },
     {
       "slide": 32,
@@ -290,7 +290,7 @@ window.SPOKES_PRINT_MANIFEST = {
       "student": "print/s32.jpg",
       "teacher": "print/s32-t.jpg",
       "width": 2400,
-      "height": 1350
+      "height": 1352
     },
     {
       "slide": 33,
@@ -299,7 +299,7 @@ window.SPOKES_PRINT_MANIFEST = {
       "student": "print/s33.jpg",
       "teacher": "print/s33.jpg",
       "width": 2400,
-      "height": 1350
+      "height": 1352
     },
     {
       "slide": 34,
@@ -308,7 +308,7 @@ window.SPOKES_PRINT_MANIFEST = {
       "student": "print/s34.jpg",
       "teacher": "print/s34.jpg",
       "width": 2400,
-      "height": 1350
+      "height": 1352
     },
     {
       "slide": 35,
@@ -317,7 +317,7 @@ window.SPOKES_PRINT_MANIFEST = {
       "student": "print/s35.jpg",
       "teacher": "print/s35.jpg",
       "width": 2400,
-      "height": 1350
+      "height": 1352
     },
     {
       "slide": 36,
@@ -326,7 +326,7 @@ window.SPOKES_PRINT_MANIFEST = {
       "student": "print/s36.jpg",
       "teacher": "print/s36.jpg",
       "width": 2400,
-      "height": 1350
+      "height": 1352
     }
   ]
 };
