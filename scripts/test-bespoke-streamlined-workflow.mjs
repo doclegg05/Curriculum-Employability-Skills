@@ -126,11 +126,12 @@ async function setField(page, kind, key, value) {
   else await control.fill(value);
 }
 async function team(page) {
-  await stage(page, 'start');
-  if(!await page.locator('.start-team').evaluate(n=>n.open))await page.locator('.start-team > summary').click();
+  await stage(page, 'team');
   await page.locator('#teamName').fill('Synthetic workflow team');
   await page.locator('#spokespersonName').fill('Sample Instructor');
   await page.locator('#spokespersonEmail').fill('sample@example.org');
+  // Callers carry on with the starting looks, which is the stage after Lesson & team.
+  await stage(page, 'start');
 }
 async function startingLooks(page) {
   await stage(page, 'start');
@@ -183,7 +184,7 @@ async function axe(page, label) {
 try {
   await scenario('custom journey and effective review', async ({ makePage, server }) => {
     const page = await makePage(); await team(page);
-    assert.equal(await page.locator('#stepList button').count(), 3);
+    assert.equal(await page.locator('#stepList button').count(), 4);
     await otherStartingPaths(page);await page.locator('#btnBuildOwn').click();
     assert.equal(await page.locator('#stage-slides').getAttribute('aria-current'), 'step');
     assert.equal(await page.locator('#roleEditorTabs [role=tab]').count(), 5);
@@ -400,7 +401,8 @@ try {
     for (const [index, oldId] of oldIds.entries()) {
       const saved = { step: index, stepId: oldId, previewView: 'activity', activeRole: 'sidebar', lessonId: 'money-management', teamName: 'Synthetic previous workflow', spokespersonName: 'Sample Instructor', spokespersonEmail: 'sample@example.org', unspoken: '', design: storedDesign, changes: [], redo: [] };
       const page = await makePage({ storedDraft: saved });
-      const mapped = [...kinds,'colors','fonts'].includes(oldId) ? 'slides' : oldId === 'review' ? 'review' : 'start';
+      // The old team step is the new Lesson & team stage; the old welcome step is the starting looks.
+      const mapped = [...kinds,'colors','fonts'].includes(oldId) ? 'slides' : oldId === 'review' ? 'review' : oldId === 'team' ? 'team' : 'start';
       assert.equal(await page.locator('#stage-' + mapped).getAttribute('aria-current'), 'step', oldId + ' maps to the right stage');
       if (kinds.includes(oldId)) assert.equal(await page.locator('#editor-' + oldId).getAttribute('aria-selected'), 'true');
       if (['colors', 'fonts'].includes(oldId)) assert(await page.locator('#sharedTheme').evaluate(el => el.open));

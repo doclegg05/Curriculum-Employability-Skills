@@ -66,9 +66,9 @@ try{
   assert.match(await page.locator('#editScope').textContent(),/ALL box headings/);
   await page.locator('#context-color').selectOption('royal');
   const saved=await current(page);await page.reload();await page.locator('#selectedElement').waitFor();assert.deepEqual(await current(page),saved);
-  await page.locator('#stage-start').click();
+  await page.locator('#stage-team').click();
   if(await page.locator('#surface-design').isVisible())await page.locator('#surface-design').click();
-  await page.locator('.start-team > summary').click();await page.locator('#teamName').fill('Preview editor test');await page.locator('#spokespersonName').fill('Sample Instructor');await page.locator('#spokespersonEmail').fill('sample@example.org');
+  await page.locator('#teamName').fill('Preview editor test');await page.locator('#spokespersonName').fill('Sample Instructor');await page.locator('#spokespersonEmail').fill('sample@example.org');
   const save=page.waitForResponse(r=>r.url().endsWith('/api/bespoke')&&r.request().postDataJSON()?.action==='save');await page.locator('#btnSave').click();assert.equal((await (await save).json()).ok,true);
   const session=await context.storageState();
   for(const origin of session.origins)origin.localStorage=origin.localStorage.filter(item=>!['bespoke-draft-v2','bespoke-previous-draft-v2'].includes(item.name));

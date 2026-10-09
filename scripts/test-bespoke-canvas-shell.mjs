@@ -132,6 +132,46 @@ try {
     pass('options drawer toggles from toolbar, shortcut and menu');
   }
   {
+    // Lesson & team is its own first stage so people see it and identify their team.
+    const {context, page} = await open(1440);
+    const pills = await page.locator('#stepList button').allTextContents();
+    assert.equal(pills.length, 4, 'four stages');
+    assert.match(pills[0], /Lesson & team/);
+    assert.equal(await page.locator('#stage-team').getAttribute('aria-current'), 'step', 'a new visit opens on Lesson & team');
+    assert.equal(await page.locator('#workspace').getAttribute('data-stage'), 'team');
+    for (const id of ['#lessonSelect', '#teamName', '#spokespersonName', '#spokespersonEmail'])
+      assert.ok(await page.locator(id).isVisible(), id + ' is visible without opening anything');
+    assert.equal(await page.locator('[data-preset]').count(), 0, 'the starting looks wait on the next stage');
+    assert.equal(await page.locator('#stage-team').getAttribute('data-attention'), 'true', 'the pill asks for attention while details are missing');
+    pass('a new visit opens on a Lesson & team page with an attention marker');
+
+    await page.locator('#teamName').fill('Riverside Team');
+    await page.locator('#spokespersonName').fill('Sample Instructor');
+    assert.equal(await page.locator('#stage-team').getAttribute('data-attention'), null, 'the marker clears once the team is identified');
+    await page.locator('#btnNext').click();
+    assert.equal(await page.locator('#stage-start').getAttribute('aria-current'), 'step');
+    assert.ok(await page.locator('[data-preset]').first().isVisible(), 'Continue opens the starting looks');
+    assert.match(await page.locator('#stage-team').getAttribute('title'), /Riverside Team/, 'the pill names the team on later stages');
+    await page.locator('#btnBack').click();
+    assert.equal(await page.locator('#stage-team').getAttribute('aria-current'), 'step', 'Back returns to Lesson & team');
+    assert.equal(await page.locator('#teamName').inputValue(), 'Riverside Team');
+    pass('Continue and Back move between Lesson & team and the starting looks');
+
+    // Leaving a field must not rebuild the stage pills under the pointer and swallow the click.
+    await page.locator('#teamName').fill('Riverside Team 2');
+    await page.locator('#stage-slides').click();
+    assert.equal(await page.locator('#stage-slides').getAttribute('aria-current'), 'step', 'the first click on a stage pill works right after typing');
+    await page.locator('#stage-team').click();
+    pass('a stage pill responds to its first click right after typing');
+
+    await page.reload();
+    await page.locator('#localPreviewNotice').waitFor({state: 'visible'});
+    assert.equal(await page.locator('#stage-team').getAttribute('aria-current'), 'step', 'reload keeps the stage');
+    assert.equal(await page.locator('#spokespersonName').inputValue(), 'Sample Instructor', 'reload keeps the team');
+    await context.close();
+    pass('stage and team survive a reload');
+  }
+  {
     const {context, page} = await open(1024);
     await page.locator('#stage-slides').click();
     await page.locator('#modelStage .slide-title-text').click();

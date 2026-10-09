@@ -28,10 +28,15 @@ export async function builderDestination(page, destination) {
     await page.locator('#editor-'+roles[destination]).click();
     return;
   }
-  if (destination === 'Start' || destination === 'Starting look') {
+  // Lesson & team is its own first stage; the starting looks are the second.
+  if (destination === 'Start') {
+    await page.locator('#stage-team').click();
+    await page.locator('#teamName').waitFor({state: 'visible'});
+    return;
+  }
+  if (destination === 'Starting look') {
     await page.locator('#stage-start').click();
-    if(destination==='Start'&&!await page.locator('.start-team').evaluate(n=>n.open))await page.locator('.start-team > summary').click();
-    if (destination === 'Starting look' && !await page.locator('[data-preset]').first().isVisible()) {
+    if (!await page.locator('[data-preset]').first().isVisible()) {
       await page.locator('#btnChangeStartingLook').click();
     }
     return;
