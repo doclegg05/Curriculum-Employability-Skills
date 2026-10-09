@@ -34,6 +34,8 @@ try{
   await page.addScriptTag({content:axeSource});
   const accessibility=await page.evaluate(()=>axe.run({include:[['#contextToolbar'],['#modelStage']]},{runOnly:{type:'tag',values:['wcag2a','wcag2aa','wcag21aa']},rules:{'color-contrast':{enabled:false}}}));
   assert.deepEqual(accessibility.violations.map(v=>({id:v.id,targets:v.nodes.map(n=>n.target)})),[],'Editor selection semantics at '+width);
+  // Wide screens keep font in the options drawer; open it to reach the control.
+  if(width>=1101)await page.locator('#btnMoreOptions').click();
   await page.locator('#context-font').selectOption('inter');
   assert.equal((await current(page)).roleStyles.title.headingFont,'inter');
   assert.deepEqual((await current(page)).roles,before.roles);
@@ -59,7 +61,7 @@ try{
   await page.locator('#btnMoreOptions').click();assert.equal(await page.locator('#detailControls').isVisible(),true);
   await page.locator('#btnCloseOptions').click();assert.equal(await page.locator('#detailControls').isVisible(),false);
   // Picker is the native keyboard equivalent of clicking visible text.
-  await page.locator('#selectedElement').selectOption('heading-1');assert.equal(await page.locator('#context-font').isVisible(),true);
+  await page.locator('#selectedElement').selectOption('heading-1');assert.equal(width>=1101?await page.locator('#context-font').count()===1:await page.locator('#context-font').isVisible(),true);
   assert.match(await page.locator('#editScope').textContent(),/ALL box headings/);
   await page.locator('#context-color').selectOption('royal');
   const saved=await current(page);await page.reload();await page.locator('#selectedElement').waitFor();assert.deepEqual(await current(page),saved);

@@ -57,3 +57,16 @@ export async function otherStartingPaths(page) {
  const section=page.locator('#otherStartingPaths');
  if(!await section.evaluate(n=>n.open))await section.locator('summary').click();
 }
+
+// Header actions other than Save, Undo and Redo live in the top bar's ⋯ menu.
+export async function openMoreMenu(page) {
+  const menu = page.locator('.more-menu');
+  if (!await menu.evaluate(el => el.open)) await menu.locator(':scope > summary').click();
+}
+
+// Click a control that is either visible in the bar or inside the ⋯ menu.
+export async function clickMenuItem(page, selector) {
+  const target = page.locator(selector);
+  if (!await target.isVisible()) await openMoreMenu(page);
+  await target.click();
+}

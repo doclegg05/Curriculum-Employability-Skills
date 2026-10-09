@@ -1,5 +1,5 @@
 #!/usr/bin/env node
-import {otherStartingPaths} from './bespoke-test-navigation.mjs';
+import {clickMenuItem, otherStartingPaths} from './bespoke-test-navigation.mjs';
 // Independent acceptance of the three-stage workflow. All services are ephemeral,
 // all browser contexts are new, and all names/content are synthetic. Never attaches
 // to Safari, an existing browser, the persistent preview, or a hosted service.
@@ -375,9 +375,9 @@ try {
     await trigger.click(); await second.locator('#stage-review').click();
     assert.equal(await menu.evaluate(el => el.open), false, 'Clicking another control outside dismisses the menu');
     assert.equal(await second.locator('#stage-review').getAttribute('aria-current'), 'step', 'Outside control still performs its action');
-    await second.locator('#btnHistory').click(); await second.locator('#historyPanel button').first().waitFor();
+    await clickMenuItem(second, '#btnHistory'); await second.locator('#historyPanel button').first().waitFor();
     assert.equal(await second.locator('#btnHistory').getAttribute('aria-expanded'), 'true', 'Previous versions is not intercepted by recovery overlay');
-    await second.locator('#btnHistory').click();
+    await clickMenuItem(second, '#btnHistory');
     await second.locator('#btnLoadLatest').click();
     await second.locator('#fileStatus').filter({ hasText: 'Opened the latest shared design.' }).waitFor();
     assert.deepEqual(await design(second), (await remote(server)).selection.design);
@@ -385,7 +385,7 @@ try {
     assert.equal((await draft(second)).autosavePaused, true, 'Recovered backup needs deliberate Save');
     await save(second);
     assert.deepEqual((await remote(server)).selection.design, local, 'Explicit recovery Save confirms the chosen local design');
-    await backup(second); await second.locator('#btnHistory').click();
+    await backup(second); await clickMenuItem(second, '#btnHistory');
     await second.locator('#historyPanel button').first().waitFor();
     await shot(second, 'recovery-history-accessible');
     const history = (await remote(server, 'history')).history;

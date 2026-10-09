@@ -19,8 +19,10 @@ try{
   const page=await context.newPage();page.on('pageerror',e=>errors.push(e.message));
   try{
    await page.goto(server.baseUrl+'/bespoke/');await page.locator('#stage-slides').click();
+   // Wide screens float the quick controls over the slide; the rest wait in the options drawer.
+   const wide=width>=1101;if(wide)await page.locator('#btnMoreOptions').click();
    const view=async kind=>{await page.locator(`#previewTabs [data-view=${kind}]`).click();};
-   const choose=async(selector,id)=>{await page.locator(selector).first().click();assert.equal(await page.locator('#selectedElement').inputValue(),id);assert.equal(await page.locator('#selectionInspector #contextToolbar').count(),1);};
+   const choose=async(selector,id)=>{await page.locator(selector).first().click();assert.equal(await page.locator('#selectedElement').inputValue(),id);assert.equal(await page.locator((wide?'#previewToolbarMount':'#selectionInspector')+' #contextToolbar').count(),1);};
    await view('cards');const before=await current(page);
    const sidebar=async()=>{
     if(await page.locator('#modelStage .slide-sidebar').isVisible())await choose('#modelStage .slide-sidebar .sample-sidebar-title','sidebar');

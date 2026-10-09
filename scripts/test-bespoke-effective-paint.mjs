@@ -2,6 +2,7 @@
 // Regression for painting the visible effective element when it has a local
 // override. Isolated browsers + in-memory loopback services only; no user state.
 import assert from 'node:assert/strict';
+import {clickMenuItem} from './bespoke-test-navigation.mjs';
 import fs from 'node:fs/promises';
 import path from 'node:path';
 import { browserName, browserType, tabKey } from './bespoke-test-browser.mjs';
@@ -129,7 +130,7 @@ try {
     await save(page); const saved = (await openRemote(server)).selection; assert.deepEqual(saved.design, expected);
     for (const key of ['colorScope', 'paintScope', 'activeRole', 'previewView']) assert(!Object.hasOwn(saved, key), 'UI-only paint scope must not enter saved selection');
     const fresh = await makePage(); assert.deepEqual(await design(fresh), expected, 'Fresh-context automatic Open preserves exact painted design');
-    await fresh.locator('#btnOpen').click(); await fresh.locator('#fileStatus').filter({ hasText: /Opened|latest|up to date/i }).waitFor(); assert.deepEqual(await design(fresh), expected);
+    await clickMenuItem(fresh, '#btnOpen'); await fresh.locator('#fileStatus').filter({ hasText: /Opened|latest|up to date/i }).waitFor(); assert.deepEqual(await design(fresh), expected);
     const copied = await backup(fresh); assert.deepEqual(copied.design, expected);
     for (const key of ['colorScope', 'paintScope', 'activeRole', 'previewView']) assert(!Object.hasOwn(copied, key), 'UI-only paint scope must not enter backup selection');
     await importDesign(fresh, before); await fresh.locator('#teamFileInput').setInputFiles({ name: 'synthetic-painted-backup.json', mimeType: 'application/json', buffer: Buffer.from(JSON.stringify(copied)) });

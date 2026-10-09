@@ -3,6 +3,7 @@ import { createReviewTools } from './review-tools.mjs';
 import { readabilitySuggestions } from './readability.mjs';
 import { compareDesign } from './similarity.mjs';
 import { createPreviewEditor } from './preview-editor.mjs';
+import { syncStageChrome } from './canvas-shell.mjs';
 import { createGuide } from './guide/guide.mjs';
 import { guideMark, indexForMark, keepsGuide } from './guide/questions.mjs';
 import { buildQuestions, normalizeGuide } from './guide/questions.mjs';
@@ -62,7 +63,10 @@ const findOption=(family,slug)=>state.library?.families?.[family]?.options.find(
 
   function setSaveStatus(text) {
     const el = byId("saveStatus");
-    if (el) el.textContent = text;
+    if (!el) return;
+    el.textContent = text;
+    el.title = text;
+    el.dataset.state = /another tab|failed|could not|not saved|not shared|waiting|newer|unsaved|stale|conflict/i.test(text) ? "warn" : "ok";
   }
 
   function queueSaveAnnouncement() {
@@ -1393,7 +1397,7 @@ function builderGuidance(compact=false){
 }
 function showBuilderHelp(close=false){
  const help=byId('builderHelp');help.hidden=close;byId('btnHelp').setAttribute('aria-expanded',String(!close));
- if(close){byId('btnHelp').focus({preventScroll:true});return;}
+ if(close){const menu=byId('filesRecovery');(menu.open?byId('btnHelp'):menu.querySelector(':scope > summary')).focus({preventScroll:true});return;}
  byId('builderHelpContent').innerHTML=builderGuidance();byId('builderHelpTitle').focus();
 }
 function goStage(id){if(ui.guide?.on&&id!=='slides')ui.guide={...ui.guide,on:false};state.step=stepIndex(id);render();}
@@ -1790,7 +1794,7 @@ function render(focus=true){
  byId('workspace').dataset.editor=String(state.step===1&&!ui.guide?.on);
  byId('workspace').dataset.options=String(ui.moreOptions||state.step!==1||Boolean(ui.guide?.on));
  byId('btnCloseOptions').hidden=state.step!==1||Boolean(ui.guide?.on);
- buildStepper();renderPanel();byId('stepPanel').querySelectorAll('details[id]').forEach(d=>{if(!d.dataset.roleSection&&d.id!=='sharedTheme'&&openDetails.has(d.id))d.open=openDetails.get(d.id);});syncAccessChrome();lockViewControls();updatePreview();updateUndo();reviewTools?.refresh();
+ syncStageChrome(STEPS[state.step].id);buildStepper();renderPanel();byId('stepPanel').querySelectorAll('details[id]').forEach(d=>{if(!d.dataset.roleSection&&d.id!=='sharedTheme'&&openDetails.has(d.id))d.open=openDetails.get(d.id);});syncAccessChrome();lockViewControls();updatePreview();updateUndo();reviewTools?.refresh();
  if(isLeadSession()){if(ui.skipNextLocalSave)ui.skipNextLocalSave=false;else saveDraft();if(changed)scheduleAutosave(AUTOSAVE.stepMs);}
  if(focus&&changed)(byId('workspace').dataset.options==='false'?byId('selectedElement'):byId('stepPanel'))?.focus({preventScroll:true});else if(activeId)byId(activeId)?.focus({preventScroll:true});
 }
@@ -1831,7 +1835,6 @@ async function init(){
  const data=await Promise.all(paths.map(async url=>{const r=await fetch(url);if(!r.ok)throw new Error('Could not load '+url);return r.json();}));
  [state.meta,state.library,catalog,fingerprints,selectionSchema]=data;state.design=Model.defaultDesign(catalog);
  guide=createGuide(guideHost());
- byId('editorStages').append(byId('chromeRail').querySelector('.stepper'));
  byId('slideRail').append(byId('previewTabs'));
  const thumbnailMedia=matchMedia('(max-width:1100px)');
  const orientThumbnails=()=>byId('previewTabs').setAttribute('aria-orientation',thumbnailMedia.matches?'horizontal':'vertical');
@@ -1845,7 +1848,8 @@ async function init(){
   more:target=>{ui.moreOptions=!ui.moreOptions;if(ui.moreOptions)showRoleEditor(state.previewView,target==='background'?'background':target.startsWith('box')?'arrangement':'text',target.startsWith('body')?'bodyFont':target==='background'?'primary':'headingFont');else{render(false);byId('btnMoreOptions').focus();}},
   thumbnail:kind=>Model.renderSlide(catalog,state.design,kind,{title:state.design.samples.title,subtitle:state.design.samples.subtitle,logoUrl:'../SPOKES-Logo.png'})
  });
- byId('btnCloseOptions').onclick=()=>{ui.moreOptions=false;render(false);byId('btnMoreOptions').focus();};
+ const closeOptions=()=>{ui.moreOptions=false;render(false);byId('btnMoreOptions').focus();};
+ byId('btnCloseOptions').onclick=closeOptions;byId('btnHideDrawer').onclick=closeOptions;
  await loadHandoffConfig();const startup=await openShareLink();
  if(ui.localPreview&&!ui.teamSession&&!startup?.snapshot){installTeamSession(state.lessonId,'bespoke-local-preview-synthetic');ui.mode='edit';}
  const mayReplace=Boolean(ui.teamSession)&&(!lastSavedRaw||Boolean(ui.teamSession.baseSelectionKey&&currentSelectionKey()===ui.teamSession.baseSelectionKey));
