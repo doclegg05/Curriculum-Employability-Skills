@@ -2,14 +2,15 @@ import assert from "node:assert/strict";
 import test from "node:test";
 import {
   checkLesson, formatManifest, lessonTitleFrom, missingPictures, parseManifest,
-  parseSettings, pdfPageCount, pictureFileName, sha256,
+  parseSettings, pdfPageCount, pictureFileName, sha256, sourceFingerprint, unmatchedSettings,
 } from "./print-slides-lib.mjs";
 
 const html = "<html><body>v1</body></html>";
+const settings = "{}\n";
 const manifest = {
   version: 1,
   lessonTitle: "Sample",
-  sourceHash: sha256(html),
+  sourceHash: sourceFingerprint(html, settings),
   pictures: [{ slide: 2, title: "T", label: "", student: "print/s02.jpg", teacher: "print/s02-t.jpg", width: 10, height: 5 }],
 };
 
@@ -29,20 +30,45 @@ test("parseManifest rejects a file that does not set the global", () => {
 });
 
 test("checkLesson passes when the fingerprint matches", () => {
-  assert.deepEqual(checkLesson(html, formatManifest(manifest)), { ok: true, reason: "" });
-  assert.equal(checkLesson(Buffer.from(html), formatManifest(manifest)).ok, true);
+  assert.deepEqual(checkLesson(html, settings, formatManifest(manifest)), { ok: true, reason: "" });
+  assert.equal(checkLesson(Buffer.from(html), Buffer.from(settings), formatManifest(manifest)).ok, true);
 });
 
 test("checkLesson fails after index.html changes", () => {
-  const result = checkLesson(html.replace("v1", "v2"), formatManifest(manifest));
+  const result = checkLesson(html.replace("v1", "v2"), settings, formatManifest(manifest));
   assert.equal(result.ok, false);
-  assert.match(result.reason, /index\.html changed after the print pictures were taken/);
+  assert.match(result.reason, /index\.html or print-settings\.json changed after the print pictures were taken/);
+});
+
+test("checkLesson fails after print-settings.json changes", () => {
+  const result = checkLesson(html, '{"teacherOnlyTabs":["answers"]}', formatManifest(manifest));
+  assert.equal(result.ok, false);
+  assert.match(result.reason, /print-settings\.json/);
+});
+
+test("the fingerprint keeps index.html and settings apart", () => {
+  assert.notEqual(sourceFingerprint("ab", "c"), sourceFingerprint("a", "bc"));
 });
 
 test("checkLesson fails on a missing, placeholder or unreadable manifest", () => {
-  assert.match(checkLesson(html, null).reason, /print\/manifest\.js is missing/);
-  assert.match(checkLesson(html, "window.SPOKES_PRINT_MANIFEST = null;").reason, /have not been taken/);
-  assert.match(checkLesson(html, "window.SPOKES_PRINT_MANIFEST = {oops;").reason, /unreadable/);
+  assert.match(checkLesson(html, settings, null).reason, /print\/manifest\.js is missing/);
+  assert.match(checkLesson(html, settings, "window.SPOKES_PRINT_MANIFEST = null;").reason, /have not been taken/);
+  assert.match(checkLesson(html, settings, "window.SPOKES_PRINT_MANIFEST = {oops;").reason, /unreadable/);
+});
+
+test("unmatchedSettings names entries that match nothing in the lesson", () => {
+  const slides = [
+    { hasVideo: false, tabPanelIds: ["items", "sea-answers"] },
+    { hasVideo: true, tabPanelIds: [] },
+  ];
+  const ok = parseSettings('{"teacherOnlyTabs":["sea-answers"],"keepVideoSlides":[2]}', "x");
+  assert.deepEqual(unmatchedSettings(ok, slides), []);
+  const typo = parseSettings('{"teacherOnlyTabs":["sea-answer"],"keepVideoSlides":[1,3]}', "x");
+  assert.deepEqual(unmatchedSettings(typo, slides), [
+    'teacherOnlyTabs "sea-answer" matches no tab panel',
+    "keepVideoSlides 1 is not a slide with a video",
+    "keepVideoSlides 3 is not a slide with a video",
+  ]);
 });
 
 test("missingPictures lists each absent file once, in manifest order", () => {

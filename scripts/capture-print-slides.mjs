@@ -9,23 +9,31 @@ import path from "node:path";
 import { fileURLToPath, pathToFileURL } from "node:url";
 import {
   checkLesson, formatManifest, lessonTitleFrom, missingPictures, parseManifest,
-  parseSettings, pictureFileName, sha256,
+  parseSettings, pictureFileName, sha256, sourceFingerprint, unmatchedSettings,
 } from "./print-slides-lib.mjs";
 
 const root = path.resolve(path.dirname(fileURLToPath(import.meta.url)), "..");
-const VIEWPORT = Object.freeze({ width: 1600, height: 900 });
+// One pixel taller than the lessons' short-screen layout, @media (max-height: 900px),
+// which squeezes cards until their text is clipped. 901 keeps the 16:9 proportions.
+const VIEWPORT = Object.freeze({ width: 1600, height: 901 });
 const DEVICE_SCALE = 1.5;
 const JPEG_QUALITY = 82;
 // An open accordion taller than this would print below 75% scale, so it splits.
 const MAX_READABLE_HEIGHT = Math.round(VIEWPORT.height / 0.75);
 const MAX_LESSON_BYTES = 20 * 1024 * 1024;
-const TEACHER_SELECTORS = Object.freeze([
-  '[onclick*="checkQuiz(this, true)"]',
-  '[onclick*="checkAnswer(this, true)"]',
-  '.qa-choice-btn[data-correct="true"]',
-  ".quiz-reveal-btn",
-  '.match-control-btn[onclick*="revealMatchingAnswers"]',
-]);
+// Clicked for the Teacher copy. Correct choices also get a check mark and outline,
+// because the lessons mark them by color alone, which a black-and-white printer loses.
+const TEACHER_CONTROLS = Object.freeze({
+  correctChoices: [
+    '[onclick*="checkQuiz(this, true)"]',
+    '[onclick*="checkAnswer(this, true)"]',
+    '.qa-choice-btn[data-correct="true"]',
+  ],
+  reveals: [
+    ".quiz-reveal-btn",
+    '.match-control-btn[onclick*="revealMatchingAnswers"]',
+  ],
+});
 // Slide children keep their natural height: with answers open, flex shrink would
 // squeeze cards over each other instead of letting the slide grow for the picture.
 const CAPTURE_CSS = `
@@ -38,6 +46,8 @@ nav.sidebar, .sidebar-toggle, .progress-bar, .nav-hint, .nav-pos, .branding-logo
 textarea { color: transparent !important; resize: none !important;
   background: repeating-linear-gradient(to bottom, transparent 0, transparent 35px, #60636b 35px, #60636b 36px) !important; }
 textarea::placeholder { color: transparent !important; }
+.sp-answer { outline: 4px solid currentColor !important; outline-offset: 3px !important; font-weight: 700 !important; }
+.sp-answer::before { content: "\\2713\\00a0"; font-weight: 900; }
 .sp-video-box { display: flex; align-items: center; justify-content: center; aspect-ratio: 16 / 9; width: 100%;
   box-sizing: border-box; padding: 1rem; border: 3px dashed currentColor; border-radius: 12px;
   font-size: 1.3rem; font-weight: 700; text-align: center; }
@@ -71,7 +81,7 @@ function runCheck(lessons) {
   for (const lesson of lessons) {
     const dir = path.join(root, lesson);
     const source = readManifestSource(dir);
-    const result = checkLesson(fs.readFileSync(path.join(dir, "index.html")), source);
+    const result = checkLesson(fs.readFileSync(path.join(dir, "index.html")), readSettingsText(dir), source);
     const missing = result.ok ? missingPictures(parseManifest(source), (file) => fs.existsSync(path.join(dir, file))) : [];
     if (result.ok && missing.length === 0) {
       console.log(`  ${lesson}: print pictures current`);
@@ -84,12 +94,26 @@ function runCheck(lessons) {
   return failures === 0 ? 0 : 1;
 }
 
+const settingsPath = (dir) => path.join(dir, "print", "print-settings.json");
+
+// Raw settings text, "" when the file is absent. The fingerprint hashes exactly this.
+function readSettingsText(dir) {
+  return fs.existsSync(settingsPath(dir)) ? fs.readFileSync(settingsPath(dir), "utf8") : "";
+}
+
 function loadSettings(dir) {
-  const file = path.join(dir, "print", "print-settings.json");
-  return parseSettings(fs.existsSync(file) ? fs.readFileSync(file, "utf8") : "{}", path.relative(root, file));
+  return parseSettings(readSettingsText(dir) || "{}", path.relative(root, settingsPath(dir)));
 }
 
 // ---- Functions below run inside the page through page.evaluate --------------
+
+function surveyLesson() {
+  return [...document.querySelectorAll(".slide")].map((slide) => ({
+    hasVideo: Boolean(slide.querySelector("video")),
+    tabPanelIds: [...slide.querySelectorAll(".tab-btn, .qa-tab-btn")].map((button) =>
+      button.getAttribute("aria-controls") || ((button.getAttribute("onclick") || "").match(/'([^']+)'/) || [])[1] || ""),
+  }));
+}
 
 function describeSlide() {
   const slide = document.querySelector(".slide.active");
@@ -160,11 +184,14 @@ function applyAction(action) {
   throw new Error(`unknown capture action ${action.type}`);
 }
 
-function clickTeacherControls(selectors) {
+function clickTeacherControls(controls) {
   const slide = document.querySelector(".slide.active");
-  const visible = [...slide.querySelectorAll(selectors.join(","))].filter((el) => el.getClientRects().length > 0);
-  visible.forEach((el) => el.click());
-  return visible.length;
+  const visible = (selectors) => [...slide.querySelectorAll(selectors.join(","))].filter((el) => el.getClientRects().length > 0);
+  const choices = visible(controls.correctChoices);
+  const reveals = visible(controls.reveals);
+  choices.forEach((el) => { el.click(); el.classList.add("sp-answer"); });
+  reveals.forEach((el) => el.click());
+  return choices.length + reveals.length;
 }
 
 async function finishRendering() {
@@ -269,7 +296,7 @@ async function splitTallAccordion(page, views, info) {
 async function captureView(page, view) {
   await applyActions(page, view.actions);
   const student = view.teacherOnly ? null : await shoot(page);
-  const clicked = await page.evaluate(clickTeacherControls, TEACHER_SELECTORS);
+  const clicked = await page.evaluate(clickTeacherControls, TEACHER_CONTROLS);
   if (clicked > 0) await settle(page);
   const teacher = clicked > 0 || view.teacherOnly ? await shoot(page) : student;
   return { student, teacher };
@@ -308,10 +335,10 @@ function jpegBytes(printDir) {
 async function captureLesson(browser, lesson) {
   const dir = path.join(root, lesson);
   const indexPath = path.join(dir, "index.html");
+  const settingsText = readSettingsText(dir);
   const settings = loadSettings(dir);
   const printDir = path.join(dir, "print");
   fs.mkdirSync(printDir, { recursive: true });
-  fs.readdirSync(printDir).filter((f) => f.endsWith(".jpg")).forEach((f) => fs.rmSync(path.join(printDir, f)));
   const context = await browser.newContext({
     viewport: VIEWPORT, deviceScaleFactor: DEVICE_SCALE, reducedMotion: "reduce", serviceWorkers: "block",
   });
@@ -321,13 +348,18 @@ async function captureLesson(browser, lesson) {
   const url = pathToFileURL(indexPath).href;
   try {
     await page.goto(url, { waitUntil: "load" });
+    const unmatched = unmatchedSettings(settings, await page.evaluate(surveyLesson));
+    if (unmatched.length) {
+      throw new Error(`${path.relative(root, settingsPath(dir))}: ${unmatched.join("; ")}. Nothing was changed.`);
+    }
+    fs.readdirSync(printDir).filter((f) => f.endsWith(".jpg")).forEach((f) => fs.rmSync(path.join(printDir, f)));
     const slideCount = await page.evaluate(() => document.querySelectorAll(".slide").length);
     const lessonTitle = lessonTitleFrom(await page.title());
     const pictures = [];
     for (let index = 0; index < slideCount; index += 1) {
       pictures.push(...(await captureSlide(page, url, index, settings, printDir)));
     }
-    const manifest = { version: 1, lessonTitle, sourceHash: sha256(fs.readFileSync(indexPath)), pictures };
+    const manifest = { version: 1, lessonTitle, sourceHash: sourceFingerprint(fs.readFileSync(indexPath), settingsText), pictures };
     fs.writeFileSync(path.join(printDir, "manifest.js"), formatManifest(manifest));
     return {
       pictures: pictures.length,

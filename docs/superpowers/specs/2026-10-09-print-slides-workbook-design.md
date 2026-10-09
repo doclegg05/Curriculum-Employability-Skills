@@ -27,7 +27,7 @@ A Print slides option in each released lesson, built from saved slide pictures, 
 - `PRINT_DIR`: `<lesson>/print/`, which holds the pictures, `manifest.js`, and `print-settings.json`.
 - `CAPTURE`: `scripts/capture-print-slides.mjs`.
 - `RUNTIME`: `scripts/print-slides.js`.
-- `VIEWPORT`: 1600 by 900 CSS pixels, device scale factor 1.5.
+- `VIEWPORT`: 1600 by 901 CSS pixels, device scale factor 1.5. The lessons switch to a squeezed short-screen layout at `max-height: 900px`, which clips card text, so capture runs one pixel taller.
 
 ## Implementation notes
 

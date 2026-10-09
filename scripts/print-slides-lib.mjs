@@ -10,6 +10,14 @@ export function sha256(content) {
   return crypto.createHash("sha256").update(content).digest("hex");
 }
 
+// The pictures depend on the lesson and on its settings (which tabs are answers,
+// which video slides keep their text), so the fingerprint covers both.
+export function sourceFingerprint(indexHtml, settingsText) {
+  return crypto.createHash("sha256")
+    .update(indexHtml).update("\0print-settings.json\0").update(settingsText)
+    .digest("hex");
+}
+
 export function formatManifest(manifest) {
   return `${HEADER}${GLOBAL} = ${JSON.stringify(manifest, null, 2)};\n`;
 }
@@ -22,7 +30,7 @@ export function parseManifest(source) {
   return JSON.parse(body);
 }
 
-export function checkLesson(indexHtml, manifestSource) {
+export function checkLesson(indexHtml, settingsText, manifestSource) {
   if (manifestSource === null) return { ok: false, reason: "print/manifest.js is missing" };
   let manifest;
   try {
@@ -31,8 +39,8 @@ export function checkLesson(indexHtml, manifestSource) {
     return { ok: false, reason: `print/manifest.js is unreadable (${error.message})` };
   }
   if (manifest === null) return { ok: false, reason: "print pictures have not been taken" };
-  if (manifest.sourceHash !== sha256(indexHtml)) {
-    return { ok: false, reason: "index.html changed after the print pictures were taken" };
+  if (manifest.sourceHash !== sourceFingerprint(indexHtml, settingsText)) {
+    return { ok: false, reason: "index.html or print-settings.json changed after the print pictures were taken" };
   }
   return { ok: true, reason: "" };
 }
@@ -58,6 +66,20 @@ export function parseSettings(text, source) {
     throw new Error(`${source}: teacherOnlyTabs must be a list of tab panel ids`);
   }
   return Object.freeze({ keepVideoSlides: Object.freeze([...keep]), teacherOnlyTabs: Object.freeze([...tabs]) });
+}
+
+// slides: one entry per lesson slide, in order: { hasVideo, tabPanelIds }.
+// A settings entry that matches nothing is almost always a typo, and a mistyped
+// answer tab would print its answers in the Student workbook.
+export function unmatchedSettings(settings, slides) {
+  const panels = new Set(slides.flatMap((slide) => slide.tabPanelIds));
+  const tabs = settings.teacherOnlyTabs
+    .filter((id) => !panels.has(id))
+    .map((id) => `teacherOnlyTabs "${id}" matches no tab panel`);
+  const videos = settings.keepVideoSlides
+    .filter((n) => !(slides[n - 1] && slides[n - 1].hasVideo))
+    .map((n) => `keepVideoSlides ${n} is not a slide with a video`);
+  return [...tabs, ...videos];
 }
 
 export function pictureFileName(slide, viewIndex, version) {
