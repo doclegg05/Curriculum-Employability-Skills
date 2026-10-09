@@ -260,10 +260,23 @@
     return el("div", { id: ROOT_ID, className: "sp-layout-" + context.layout }, sections);
   }
 
+  // Waits for each picture's load or error event. img.decode() is not used: Chrome
+  // rejects some decodes once a few dozen full-size pictures are pending at once.
+  function pictureLoaded(img) {
+    return new Promise(function (resolve) {
+      function done() { resolve(img.naturalWidth > 0); }
+      if (img.complete) done();
+      else {
+        img.addEventListener("load", done, { once: true });
+        img.addEventListener("error", done, { once: true });
+      }
+    });
+  }
+
   function firstFailedPicture(container) {
     const pictures = Array.from(container.querySelectorAll("img.sp-picture"));
     return Promise.all(pictures.map(function (img) {
-      return img.decode().then(function () { return null; }, function () { return img.dataset.spLabel; });
+      return pictureLoaded(img).then(function (ok) { return ok ? null : img.dataset.spLabel; });
     })).then(function (results) { return results.find(Boolean) || null; });
   }
 
