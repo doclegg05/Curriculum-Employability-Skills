@@ -22,11 +22,14 @@
 
 ## Last Session
 - **Date**: 2026-10-09
-- **What we worked on**: Narration script, voiceover and music for the team's Money Management intro animation (Claude Design project `15ed823d…`). The design MCP could not authorize from the app session, so Britt exported the MP4. Timed an 8-line script (97 words) to the scenes from frame motion; Britt approved it as written. Built `build_intro_audio.py` (toolkit preflight, generate, trim, align; ElevenLabs Music; per-line leveling, 80 Hz high-pass, oversampled voice limiter, ducked bed; house normalize + verify-loudness; VTT + embedded captions). The old ElevenLabs key was dead; Britt stored a new one in the Keychain (detail in auto-memory `elevenlabs-key-in-keychain`). Render review: whisper word-for-word match, picture bit-identical, no dead air; Gemini's 0:27 sort "blocker" not confirmed by frames (annotated in the `.review.json`).
-- **What we decided**: see the 2026-10-09 rows in the decision log.
-- **Where we left off**: PR #46 open with the `quality` check running, GitHub auto-merge armed (merge method "merge") and Auto-fix on. To arm it, Claude turned on the repo's "Allow auto-merge" setting at Britt's request. First thing next session: confirm #46 merged. BeSpoke work is unchanged since 2026-10-01: the hosted round trip with a real team link is still next there.
+- **What we worked on**: Print slides, a teacher request to print a whole lesson as a stapled or binder workbook. Spec `docs/superpowers/specs/2026-10-09-print-slides-workbook-design.md`, plan `docs/superpowers/plans/2026-10-09-print-slides-workbook.md`, built on `claude/module-slides-pdf-booklet-2076fb`. A Print slides button under Print All in all six released lessons prints a Student workbook (no answers) or a Teacher copy (answers marked) as slide with note lines, two per page, or one full landscape slide per page. The pictures come from `scripts/capture-print-slides.mjs` (Playwright, 1600x901, about 31 MB across six lessons); `scripts/print-slides.js` lays them out and calls print. Round 2: template, `SPOKES Builder/CLAUDE.md`, `build-process.md`, `components.md` and SPOKES-STANDARD Section 11 (PRT-01) carry the step. A 32-agent review workflow confirmed 23 findings; 9 important ones fixed test-first.
+- **What we decided**: see the 2026-10-09 print rows in the decision log.
+- **Where we left off**: branch pushed, PR not opened. Waiting on Britt and the teacher to review the six Problem Solving sample PDFs. After approval: open the PR (do not arm auto-merge).
 
 ## Open Items
+- [ ] **Print slides**: Britt and the teacher review the sample PDFs, then open the PR from `claude/module-slides-pdf-booklet-2076fb` and merge. After any lesson edit run `node scripts/capture-print-slides.mjs <lesson-folder>`; `quality.sh` fails until you do.
+- [ ] **Print slides, Britt's call**: Interview Skills slide 31 and Time Management slide 30 accordions hold model answers that print in the Student workbook. The spec treats accordions as content; mark them answers only if Britt wants them out of student copies.
+- [ ] Print slides deferred minors (from the 2026-10-09 review): duplex hole-punch side, Chrome headers and footers in the margin, damaged vs not-made message, capture deletes pictures before a failed run, 20 MB limit checked late, --check crash on a manifest without pictures, settings JSON errors without file name, manifest size fields, --check only covers registered lessons, `slide-video` placeholder row in components.md, CRLF fingerprint risk, When printed section sits under Slide Types, small write-in line spacing.
 - [ ] **Money Management intro**: confirm PR #46 merged on a green `quality` check (auto-merge armed 2026-10-09). If it failed, Auto-fix should have woken the session; check the PR.
 - [ ] Intro animation (Claude Design, team-owned): the Transportation tag sits on the Wants box edge from 0:27 to 0:33 before moving to Needs at 0:34, while the narration says "able to get to work". Team fix in the design file; then re-export and rerun `build_intro_audio.py` (no credits).
 - [ ] Intro master lands at -14.2 LUFS, the gate's lower edge (house loudnorm runs dynamic because the music bed fills the gaps). Britt's call whether to trade voice squash or a quieter bed for -13.7.
@@ -74,6 +77,9 @@
 ## Key Decisions Log
 | Date | Decision | Rationale |
 |------|----------|-----------|
+| 2026-10-09 | Print slides prints saved slide pictures, not the live slides | Live slides size from the screen with vw/vh and clamp(); pictures match the screen in every browser |
+| 2026-10-09 | Print capture runs at 1600x901 | 900 trips the lessons' max-height: 900px short-screen layout, which clips card text |
+| 2026-10-09 | Print dialog always opens on the Student workbook | A remembered Teacher choice could send answers to a class set |
 | 2026-10-09 | Intro narration says no percentages, names no income source, frames wants as "extras that make life better" | Topic map: dignity first, cite-or-abstain, no surplus budgets; the 50/30/20 bar stays visual only |
 | 2026-10-09 | Narrate the exported MP4 directly instead of rebuilding the animation in HyperFrames | Britt's team owns the animation in Claude Design; audio on the MP4 keeps the picture bit-identical |
 | 2026-10-09 | Level each ElevenLabs take before mixing; keep a gentle voice limiter rather than chase -13.7 LUFS | Takes came back up to 13 dB apart; harder limiting bought <1 dB of gate margin at audible cost |
