@@ -55,9 +55,9 @@ Every printout has these parts.
 - A cover page with the lesson title and the SPOKES logo. The Student workbook adds Name and Date lines. The Teacher copy reads "Teacher copy, includes answers".
 - The lesson title at the top of each page and a page number at the bottom.
 - A label on each slide with its on-screen slide number, so "turn to slide 12" works on paper.
-- A wider left margin on every page for a three-hole punch.
+- A wider margin for a three-hole punch: the left edge on portrait pages, the top edge on landscape pages.
 
-Video slides are left out. Each lesson's settings file lists any slide that pairs a video with text worth keeping. Communicating with the Public slide 19 is the one known case, with about 40 words of text beside its video. A listed slide prints with a box reading "Video: [title]" where the player was.
+Video slides are left out. Each lesson's settings file lists any slide that pairs a video with text worth keeping. Communicating with the Public slide 19 is the one known case: a grid of four videos with an intro line and a caption under each. On a listed slide each player becomes a box reading "Video: [caption]".
 
 ### What goes in each version
 
@@ -65,12 +65,15 @@ The lessons share a small set of click-to-show components. Each kind follows one
 
 | Component | Where it appears | Student workbook | Teacher copy |
 |---|---|---|---|
-| Tabs | five lessons, all but Time Management | each tab is its own picture, labeled "Slide 14, tab 2 of 3" | same |
+| Tabs | five lessons, all but Time Management | each tab is its own picture, labeled "Slide 14, tab 2 of 3" | same, plus answer tabs |
+| Answer tabs | Problem Solving slides 20 and 21, "Expert Answers" and "NASA Answers" | left out | printed |
+| Carousel | Employee Accountability slide 33 | each card is its own picture | same |
 | Accordions | five lessons | all sections open in one picture, split into one picture per section if too tall to read | same |
-| Flip cards, `danger-card` | four lessons | front and back side by side | same |
+| Flip cards, `danger-card` | four lessons | two pictures, all card fronts then all card backs | same |
 | Write-in boxes | Controlling Anger reflection, Problem Solving action plan | blank ruled lines | blank ruled lines |
 | Quizzes | Controlling Anger, Problem Solving | question and choices, no answer marked | correct answer marked, feedback and explanation printed |
-| Checkpoints | all six lessons | question and choices, no answer marked | correct answer marked, feedback printed |
+| Checkpoints with an answer | Employee Accountability 27, Interview Skills 32, Time Management 32 | question and choices, no answer marked | correct answer marked, feedback printed |
+| Reflection checkpoints | the other checkpoint boxes | printed as on screen | same |
 | Matching game | Time Management | scenarios and categories, unmatched | correct matches shown |
 | Video player | five lessons | slide left out, or a "Video: [title]" box if listed in settings | same |
 | Everything else | all | printed as on screen | same |
@@ -92,7 +95,7 @@ The navigation engine stays untouched, as SPOKES-STANDARD Section 5 requires. `C
 
 The manifest is a script that sets `window.SPOKES_PRINT_MANIFEST`. It is not a JSON file because the lessons must work when opened straight from a folder, and browsers block `fetch` on `file://`. It records the SHA-256 fingerprint of the `index.html` the pictures came from, and one entry per printed picture with its slide number, slide title, tab or section label, and its student and teacher picture paths.
 
-`print-settings.json` holds one-off exceptions such as video slides that keep their text. Only `CAPTURE` reads it, so `file://` does not matter there.
+`print-settings.json` holds one-off exceptions. It accepts two keys: `keepVideoSlides`, a list of slide numbers, and `teacherOnlyTabs`, a list of tab panel ids. Only `CAPTURE` reads it, so `file://` does not matter there.
 
 `node scripts/capture-print-slides.mjs <lesson-folder>` retakes one lesson. With no argument it retakes all of them. `--check` compares fingerprints without opening a browser.
 
@@ -124,9 +127,18 @@ The fingerprint covers `index.html` only. A changed image file inside a lesson d
 
 The per-edit validator, `scripts/validate-lesson.py`, checks only that the print script tags are present. It does not check freshness, so it never blocks a lesson edit midway.
 
+### Testing
+
+- Unit tests with `node --test` for the page math: page counts for all six combinations, shared pictures, teacher-only pictures, and the cover page.
+- Unit tests for the manifest, settings and `--check` helpers: a matching fingerprint passes and a changed file fails.
+- A browser test on a small fixture page for the dialog: button placement, keyboard use, Escape, focus return, an axe check of the open dialog, a missing manifest, and a picture that fails to load. `npm run a11y` audits only the first slide of each lesson and never opens a dialog, so the dialog's axe check lives here. `npm run a11y` must still pass with the new sidebar button.
+- A Playwright test that opens each lesson, runs all six combinations, saves each as a PDF with `page.pdf()`, and confirms that the page count matches the dialog, every picture loaded, and each page uses the pictures the manifest names for that version.
+- `validate-lesson.py` passes on all six lessons and on `SPOKES Builder/template.html` after the script tags are added.
+- A human check. One lesson printed to PDF in all six combinations goes to Britt and the teacher before merge.
+
 ### Round 2 lessons
 
-- `SPOKES Builder/template.html` gets the two script tags and the `print/` folder convention, so every new lesson starts with the button.
+- `SPOKES Builder/template.html` gets the two script tags and the `print/` folder convention, so every new lesson starts with the button. `SPOKES Builder/print/manifest.js` holds an empty placeholder, because the validator's REF-01 rule fails a script link to a missing file. A lesson built from the template shows "not made yet" until its pictures are taken.
 - `SPOKES Builder/build-process.md` gets a step after the deck is final: run `CAPTURE`, then review the six sample PDFs.
 - `SPOKES-STANDARD.md` gets Section 11, Print, with rule PRT-01. Every lesson loads `print/manifest.js` and `scripts/print-slides.js`. Severity WARN in the per-edit validator. Freshness is enforced by `quality.sh`.
 - `SPOKES Builder/components.md` gets a "When printed" line for each component, naming it content or answer. A new click-to-show component must declare this before it ships, and `CAPTURE` must get a matching rule.
@@ -179,9 +191,12 @@ The per-edit validator, `scripts/validate-lesson.py`, checks only that the print
 
 ### The dialog is accessible
 
-- The dialog passes the repo's accessibility check.
+- The dialog passes an axe check while open and works by keyboard.
+  - Check: `node --test scripts/test-print-slides-browser.mjs`
+    Expected: exit code 0.
+- The new sidebar button adds no accessibility failures.
   - Check: `npm run a11y`
-    Expected: exit code 0 with the dialog open in at least one lesson.
+    Expected: exit code 0.
 
 ### Round 2 is covered
 
