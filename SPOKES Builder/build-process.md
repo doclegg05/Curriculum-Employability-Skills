@@ -170,6 +170,12 @@ Is there a simple list?
 7. **Set the closing slide:**
    - Choose an inspirational quote related to the lesson topic
    - Set the closing statement
+8. **Take the print pictures (after the deck is final):**
+   - Register the lesson in `lesson-registry.json` so the picture script finds it
+   - Write `print/print-settings.json`: `{}` by default; list slide numbers in `keepVideoSlides` to keep a video slide's text, and answer tab panel ids in `teacherOnlyTabs`
+   - Run `node scripts/capture-print-slides.mjs lesson-<slug>`
+   - Print the lesson to PDF in all three layouts, both versions, and check that the Student workbook shows no answers
+   - Retake the pictures after any later edit to `index.html`; `scripts/quality.sh` fails until you do
 
 ### Phase 6: Brand Compliance Check
 
@@ -201,6 +207,10 @@ New-Lesson-Project/
   videos/                 <-- All local video files (.mp4)
     video_file_name.mp4
     ...
+  print/                  <-- Print slides pictures (generated, see Phase 5 step 8)
+    print-settings.json
+    manifest.js
+    s01.jpg ...
   .claude/
     launch.json           <-- Preview server config (see below)
   .gitignore              <-- Standard ignore file (see below)
@@ -245,6 +255,7 @@ Run through this checklist before delivering:
 - [ ] **Video placeholder slides** display styled placeholder box, or **Local video slides** play successfully from the `videos/` folder (no broken iframes)
 - [ ] **All download buttons** link to correct PDFs
 - [ ] **Resources sidebar** links work
+- [ ] **Print slides** button prints both versions in all three layouts, and `node scripts/capture-print-slides.mjs --check` passes
 - [ ] **Keyboard navigation** works (ArrowRight, ArrowLeft, Space)
 - [ ] **Closing slide** triggers confetti and success sound
 - [ ] **No console errors** in browser dev tools
