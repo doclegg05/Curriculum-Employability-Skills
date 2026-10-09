@@ -3,6 +3,8 @@
 <head>
   <meta charset="utf-8">
   <title>Fixture Lesson &mdash; SPOKES</title>
+  <!-- Same global reset the lessons use; it removes the dialog's default centring margin. -->
+  <style>* { margin: 0; padding: 0; box-sizing: border-box; }</style>
 </head>
 <body>
   <div class="container">
@@ -32,6 +34,11 @@
           teacher: location.hash === "#broken" ? "missing-picture.jpg" : picture, width: 2400, height: 1350 }
       ]
     };
+  </script>
+  <script>
+    // Stands in for the lessons' slide navigation, which listens for arrow keys on document.
+    window.__deckKeys = [];
+    document.addEventListener("keydown", function (event) { window.__deckKeys.push(event.key); });
   </script>
   <script src="../print-slides.js"></script>
 </body>

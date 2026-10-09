@@ -85,7 +85,7 @@
     ".print-slides-btn::before { content: \"\\2399\"; color: var(--gold, #d3b257); font-size: 1rem; line-height: 1; }",
     ".print-slides-btn:hover, .print-slides-btn:focus-visible { background: rgba(211,178,87,0.16);",
     "  outline: 2px solid var(--gold, #d3b257); outline-offset: 2px; }",
-    ".sp-dialog { width: calc(100% - 2rem); max-width: 30rem; border: none; border-radius: 12px; padding: 1.5rem;",
+    ".sp-dialog { margin: auto; width: calc(100% - 2rem); max-width: 30rem; border: none; border-radius: 12px; padding: 1.5rem;",
     "  background: var(--light, #ffffff); color: var(--royal, #00133f); font-family: var(--font-body, Arial, sans-serif);",
     "  box-shadow: 0 18px 50px rgba(0,19,63,0.35); }",
     ".sp-dialog::backdrop { background: rgba(0,19,63,0.55); }",
@@ -200,7 +200,14 @@
     status.textContent = message || "";
   }
 
+  function setBusy(dialog, busy) {
+    dialog.querySelectorAll("input").forEach(function (input) { input.disabled = busy; });
+    dialog.querySelector(".sp-print").disabled = busy;
+    if (busy) dialog.querySelector(".sp-count").textContent = "Preparing pages...";
+  }
+
   function refreshDialog(dialog) {
+    setBusy(dialog, false);
     const manifest = root.SPOKES_PRINT_MANIFEST;
     const version = selected(dialog, "spVersion");
     const problem = manifestProblem(manifest) || versionProblem(manifest, version);
@@ -288,7 +295,9 @@
     document.body.classList.remove("sp-printing");
   }
 
-  async function printWorkbook(dialog) {
+  // isCurrent() turns false when the teacher cancels or reopens the dialog while
+  // pictures are still loading, so a stale attempt never reaches print().
+  async function printWorkbook(dialog, isCurrent) {
     cleanupPrint();
     const manifest = root.SPOKES_PRINT_MANIFEST;
     const version = selected(dialog, "spVersion");
@@ -297,8 +306,15 @@
     const workbook = renderWorkbook(buildPages(manifest, version, layout), context);
     document.body.appendChild(workbook);
     const failed = await firstFailedPicture(workbook);
+    if (!isCurrent()) {
+      workbook.remove();
+      return;
+    }
     if (failed) {
       workbook.remove();
+      setBusy(dialog, false);
+      dialog.querySelector(".sp-print").disabled = true;
+      dialog.querySelector(".sp-count").textContent = "";
       showStatus(dialog, failed + " could not be loaded, so nothing was printed. Ask the curriculum team to retake the print pictures.");
       return;
     }
@@ -309,16 +325,30 @@
   }
 
   function bindEvents(button, dialog) {
+    let attempt = 0;
     button.addEventListener("click", function () {
+      attempt += 1;
+      // Every open starts on the answer-free version, whatever was printed last.
+      dialog.querySelector('input[name="spVersion"][value="student"]').checked = true;
       refreshDialog(dialog);
       dialog.showModal();
     });
     dialog.addEventListener("change", function () { refreshDialog(dialog); });
-    dialog.addEventListener("close", function () { button.focus(); });
+    dialog.addEventListener("close", function () {
+      attempt += 1;
+      button.focus();
+    });
+    // The lessons navigate slides on document keydown; keep the dialog's keys
+    // (arrows move between radio buttons) from changing the slide behind it.
+    dialog.addEventListener("keydown", function (event) { event.stopPropagation(); });
     dialog.querySelector(".sp-cancel").addEventListener("click", function () { dialog.close(); });
     dialog.querySelector(".sp-print").addEventListener("click", function () {
-      printWorkbook(dialog).catch(function (error) {
+      const mine = ++attempt;
+      setBusy(dialog, true);
+      showStatus(dialog, null);
+      printWorkbook(dialog, function () { return mine === attempt && dialog.open; }).catch(function (error) {
         cleanupPrint();
+        setBusy(dialog, false);
         showStatus(dialog, "Printing stopped: " + error.message);
       });
     });
