@@ -76,6 +76,62 @@ try {
     pass('Review stage demotes Save');
   }
   {
+    // Apple HIG: closely related choices on an object are segmented controls; color opens a picker.
+    const {context, page} = await open(1440);
+    const saved = () => page.evaluate(() => JSON.parse(localStorage.getItem('bespoke-draft-v2')).design);
+    await page.locator('#stage-slides').click();
+    await page.locator('#modelStage .slide-title-text').click();
+
+    for (const [label, count] of [['Size', 3], ['Align', 3], ['Place in text area', 3]]) {
+      const group = page.locator(`#contextToolbar [role=radiogroup][aria-label="${label}"]`);
+      assert.equal(await group.count(), 1, `${label} is a segmented control`);
+      assert.equal(await group.getByRole('radio').count(), count, `${label} segment count`);
+      assert.equal(await group.locator('[aria-checked=true]').count(), 1, `${label} has one checked segment`);
+      for (const radio of await group.getByRole('radio').all())
+        assert.ok((await radio.boundingBox()).height >= 44, `${label} segment keeps a 44px target`);
+    }
+    const size = page.locator('#contextToolbar [role=radiogroup][aria-label="Size"]');
+    await size.getByRole('radio', {name: 'Larger'}).click();
+    assert.equal((await saved()).roleStyles.title.headingSize, 'large', 'clicking a segment changes the design');
+    assert.equal(await page.locator('#context-size').inputValue(), 'large', 'native select mirrors the choice');
+    assert.equal(await size.getByRole('radio', {name: 'Larger'}).getAttribute('aria-checked'), 'true');
+    assert.equal(await page.evaluate(() => document.activeElement.getAttribute('aria-label') || document.activeElement.textContent), 'Larger', 'focus stays on the chosen segment');
+    await page.keyboard.press('ArrowLeft');
+    assert.equal((await saved()).roleStyles.title.headingSize, 'default', 'arrow keys move the selection like a radio group');
+    pass('Size, Align and Placement are segmented controls with radio semantics');
+
+    const well = page.locator('#context-color-well');
+    assert.equal(await well.getAttribute('aria-expanded'), 'false');
+    await well.click();
+    const popover = page.locator('#context-color-popover');
+    assert.ok(await popover.isVisible(), 'color well opens a picker');
+    assert.equal(await popover.getByRole('radio').count(), 11, 'all eleven brand colors are offered');
+    await popover.getByRole('radio', {name: 'Gold', exact: true}).click();
+    assert.equal((await saved()).roleStyles.title.headingColor, 'gold');
+    assert.equal(await page.locator('#context-color-popover').isVisible(), false, 'picking a color closes the picker');
+    await page.locator('#context-color-well').click();
+    await page.keyboard.press('Escape');
+    assert.equal(await page.locator('#context-color-popover').isVisible(), false, 'Escape closes the picker');
+    assert.equal(await page.evaluate(() => document.activeElement.id), 'context-color-well', 'focus returns to the color well');
+    await page.locator('#context-color-well').click();
+    await page.locator('#modelStage .slide-subtitle, #modelStage .slide-body').first().click({force: true});
+    assert.equal(await page.locator('#context-color-popover').count() === 0 || !await page.locator('#context-color-popover').isVisible(), true, 'clicking elsewhere closes the picker');
+    pass('color opens a swatch picker that closes on pick, Escape and outside click');
+
+    await page.locator('#modelStage .slide-title-text').click();
+    assert.equal(await page.locator('#chromeRail').isVisible(), false);
+    await page.keyboard.press('Control+Alt+o');
+    assert.equal(await page.locator('#chromeRail').isVisible(), true, 'shortcut opens the options drawer');
+    await page.keyboard.press('Control+Alt+o');
+    assert.equal(await page.locator('#chromeRail').isVisible(), false, 'shortcut hides the options drawer');
+    await openMoreMenu(page);
+    assert.ok(await page.locator('#btnMenuOptions').isVisible(), 'menu offers a Slide options command');
+    await page.locator('#btnMenuOptions').click();
+    assert.equal(await page.locator('#chromeRail').isVisible(), true, 'menu command opens the drawer');
+    await context.close();
+    pass('options drawer toggles from toolbar, shortcut and menu');
+  }
+  {
     const {context, page} = await open(1024);
     await page.locator('#stage-slides').click();
     await page.locator('#modelStage .slide-title-text').click();

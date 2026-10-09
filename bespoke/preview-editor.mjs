@@ -1,9 +1,12 @@
 import {computeToolbarPosition,isQuickField} from './canvas-toolbar.mjs';
+import {colorWell,segmentedControl,SEGMENTED_FIELDS,MAX_SEGMENTS} from './canvas-controls.mjs';
 /** Selection is transient UI state; every edit goes through the existing history/model. */
 export function createPreviewEditor(host) {
  const wide=matchMedia('(min-width:1101px)');
  // Where the next control goes: the floating toolbar, or (wide screens only) the options drawer.
  let place=()=>document.getElementById('contextToolbar');
+ // Wide screens swap small dropdowns for segmented controls and a color well.
+ let richControls=false;
  const stage=document.getElementById('modelStage'),toolbar=document.getElementById('contextToolbar'),inspector=document.getElementById('selectionInspector');
  const names={title:'Title slide',divider:'Chapter divider',cards:'Text boxes',video:'Video slide',activity:'Activity'};
  let selected='background',targets=[],lastKind,editingText=false;
@@ -40,23 +43,28 @@ export function createPreviewEditor(host) {
   if(kind==='activity'&&id.startsWith('heading'))return `${target} selected · Formatting affects the heading and activity label on Activity slides.`;
   return `${target} selected · ${names[kind]} only. Other slide types and shared defaults stay unchanged.`;
  }
- function field(id,title,value,options,onChange){
-  const wrapper=document.createElement('label');wrapper.className='toolbar-field';wrapper.append(document.createTextNode(title));
+ function field(id,title,value,options,onChange,{color=false}={}){
   const select=document.createElement('select');select.id='context-'+id;
   for(const option of options){const el=document.createElement('option');el.value=String(option.id);el.textContent=option.label;select.append(el);}
-  select.value=String(value);select.disabled=!host.context().editable;
+  const editable=host.context().editable;
+  select.value=String(value);select.disabled=!editable;
   select.onchange=()=>{if(!host.context().editable)return;onChange(select.value);document.getElementById(select.id)?.focus({preventScroll:true});};
-  wrapper.append(select);place(id).append(wrapper);
+  const dest=place(id),rich=richControls&&dest===toolbar;
+  if(rich&&color)return void dest.append(colorWell({id,title,select,swatches:host.catalog.palette,value,editable,onChoose:onChange}));
+  if(rich&&SEGMENTED_FIELDS.includes(id)&&options.length>=2&&options.length<=MAX_SEGMENTS)return void dest.append(segmentedControl({id,title,select,options,value,editable,onChoose:onChange}));
+  const wrapper=document.createElement('label');wrapper.className='toolbar-field';wrapper.append(document.createTextNode(title),select);dest.append(wrapper);
  }
  function renderToolbar(){
   if(editingText)return;
   const activeId=toolbar.contains(document.activeElement)?document.activeElement.id:null;
   toolbar.replaceChildren();document.getElementById('inspectorMore')?.replaceChildren();
+  document.querySelector('.preview-actions #btnMoreOptions')?.remove();
   const {design,kind,editable,optionsOpen,mode}=host.context();
   if(!design)return;
   // Wide editing: quick controls float over the slide, the rest wait in the options drawer.
   const floating=mode==='edit'&&wide.matches,moreBox=document.getElementById('inspectorMore');
   place=id=>floating&&!isQuickField(selected,id)?moreBox:toolbar;
+  richControls=floating;
   toolbar.classList.toggle('is-floating',floating);
   if(!floating){toolbar.style.left='';toolbar.style.top='';delete toolbar.dataset.placement;}
   // Guide me owns the preview while it runs; Start and Review offer one explicit way into editing.
@@ -85,7 +93,7 @@ export function createPreviewEditor(host) {
   const effective=host.model.effectiveRoleStyle(host.catalog,design,kind);
   const apply=(key,value)=>host.change(`${names[kind]}: ${key.replace(/([A-Z])/g,' $1').toLowerCase()}`,d=>Object.assign(d,host.model.setRoleStyle(host.catalog,d,kind,key,value)));
   const colors=()=>host.catalog.palette.map(c=>({id:c.id,label:c.name}));
-  const colorField=(id,title,value,callback)=>{field(id,title,value,colors(),callback);const input=document.getElementById('context-'+id);input.style.borderLeft='12px solid '+host.catalog.palette.find(c=>c.id===value).hex;};
+  const colorField=(id,title,value,callback)=>{field(id,title,value,colors(),callback,{color:true});const input=document.getElementById('context-'+id);input.style.borderLeft='12px solid '+host.catalog.palette.find(c=>c.id===value).hex;};
   const feature=(id,key,value)=>host.change(label(selected)+': '+key,d=>Object.assign(d,host.model.setFeatureStyle(host.catalog,d,id,key,value)));
   const featureColors=(id,{text=false,border=false}={})=>{
    const values=host.model.effectiveFeatureStyle(host.catalog,design,id);
@@ -159,9 +167,12 @@ export function createPreviewEditor(host) {
   const addText=document.createElement('button');addText.type='button';addText.id='btnAddText';addText.className='btn btn-secondary';addText.textContent=effective.extraText===null?'Add text':'Select added text';addText.disabled=!editable;addText.onclick=()=>{selected='extra';if(effective.extraText===null)apply('extraText','Your text here');else refreshSelection();document.getElementById('context-text')?.focus();};if(selected==='background'||selected==='extra'||selected.startsWith('heading')||selected.startsWith('body'))toolbar.append(addText);
   const featureId=selected.startsWith('box')?'box':selected;
   if(design.featureStyles?.[featureId]){const reset=document.createElement('button');reset.type='button';reset.className='btn btn-secondary';reset.id='btnResetFeature';reset.textContent='Use shared defaults';reset.disabled=!editable;reset.onclick=()=>host.change(label(selected)+': shared defaults',d=>{delete d.featureStyles[featureId];if(!Object.keys(d.featureStyles).length)delete d.featureStyles;});place('reset').append(reset);}
-  const more=document.createElement('button');more.id='btnMoreOptions';more.type='button';more.className='btn btn-secondary';more.textContent=optionsOpen?'Hide slide options':'More slide options';more.setAttribute('aria-expanded',String(optionsOpen));more.setAttribute('aria-controls','detailControls');more.onclick=()=>host.more(selected);toolbar.append(more);
+  const more=document.createElement('button');more.id='btnMoreOptions';more.type='button';more.className='btn btn-secondary';more.textContent=optionsOpen?'Hide slide options':'More slide options';more.setAttribute('aria-expanded',String(optionsOpen));more.setAttribute('aria-controls','detailControls');more.onclick=()=>host.more(selected);
+  // Wide screens keep the pane toggle in the canvas header beside Present, so the toolbar stays on one row.
+  (floating?document.querySelector('.preview-actions'):toolbar).append(more);
   if(!editable){const note=document.createElement('span');note.className='toolbar-readonly';note.textContent='View only · open your team design to edit.';toolbar.append(note);}
   if(activeId)document.getElementById(activeId)?.focus({preventScroll:true});
+  toolbar.classList.toggle('has-copy',Boolean(toolbar.querySelector('.toolbar-copy')));
   positionToolbar();
  }
  // Dock the floating toolbar above the slide, never over it, so every element stays clickable.

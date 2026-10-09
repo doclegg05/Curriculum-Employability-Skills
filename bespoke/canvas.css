@@ -46,6 +46,12 @@
 .menu-recent summary:hover{background:var(--mist)}
 .menu-recent ol{margin:0;padding:0 12px 10px 32px;color:var(--muted);font-size:.8125rem;line-height:1.5}
 
+/* The Slide options command only applies while the editor is showing. */
+#btnMenuOptions{display:none}
+body:has(.workspace[data-editor=true]) #btnMenuOptions{display:flex}
+#btnMenuOptions{align-items:center;justify-content:space-between;gap:16px}
+.more-menu-list kbd{color:var(--muted);font:inherit;font-size:.8125rem}
+
 /* Notices stay slim; the session strip appears only when it holds a decision. */
 .notice{padding:8px 16px;font-size:.875rem}
 .team-session{display:none;padding:8px 16px;background:#fff5d7;border-bottom:1px solid #d3b257;font-size:.875rem}
@@ -83,6 +89,34 @@
  .context-toolbar.is-floating .toolbar-copy textarea{min-height:44px;height:44px;padding:9px 10px;font-size:.875rem;line-height:1.35;resize:none}
  .context-toolbar.is-floating .toolbar-copy:focus-within textarea{height:112px}
  .context-toolbar.is-floating .btn{order:3;margin:0}
+
+ /* Segmented control: a few closely related choices that act on the selection. */
+ .toolbar-segmented,.toolbar-well{position:relative;display:flex;flex-direction:column;gap:5px;color:var(--muted);font-size:.75rem;font-weight:500}
+ .context-toolbar.is-floating .toolbar-segmented,.context-toolbar.is-floating .toolbar-well{max-width:none}
+ .toolbar-label{line-height:1.2}
+ .segment-icon{display:grid;place-items:center;min-width:44px;padding:0}
+ .segmented{display:grid;grid-auto-flow:column;grid-auto-columns:1fr;border:1px solid #8fa2b3;border-radius:8px;overflow:hidden;background:#fff}
+ .segment{min-width:52px;min-height:44px;padding:0 10px;border:0;border-left:1px solid var(--line);background:#fff;color:var(--navy);font-size:.8125rem;white-space:nowrap}
+ .segment:first-child{border-left:0}
+ .segment:hover:not(:disabled){background:var(--mist)}
+ .segment[aria-checked=true]{background:#dbe9f3;color:var(--blue);font-weight:600;box-shadow:inset 0 -3px 0 var(--blue)}
+ .segment:disabled{opacity:.55}
+ .native-mirror{position:absolute;inset:0;width:100%;height:100%;opacity:0;pointer-events:none}
+ /* Color well: shows the current color; opens the brand swatches. */
+ .well{display:flex;align-items:center;gap:8px;min-height:44px;min-width:128px;padding:0 10px;border:1px solid #8fa2b3;border-radius:8px;background:#fff;color:var(--navy);font-size:.8125rem;text-align:left}
+ .well:hover:not(:disabled){background:var(--mist)}
+ .well[aria-expanded=true]{border-color:var(--blue);box-shadow:0 0 0 2px #dbe9f3}
+ .well-chip{flex:none;width:22px;height:22px;border-radius:50%;box-shadow:inset 0 0 0 1px #00133f40}
+ .well-popover{position:absolute;top:calc(100% + 6px);left:0;z-index:8;padding:10px;border:1px solid var(--line);border-radius:12px;background:#fff;box-shadow:0 10px 28px #00133f33}
+ .swatch-grid{display:grid;grid-template-columns:repeat(6,44px);gap:2px}
+ .swatch{display:grid;place-items:center;width:44px;height:44px;padding:0;border:2px solid transparent;border-radius:10px;background:transparent}
+ .swatch:hover{background:var(--mist)}
+ .swatch[aria-checked=true]{border-color:var(--blue)}
+ .swatch-dot{width:26px;height:26px;border-radius:50%;box-shadow:inset 0 0 0 1px #00133f40}
+ /* Group related controls with quiet dividers: selection and words, formatting, then actions. */
+ .context-toolbar.is-floating .toolbar-copy{padding-right:10px;border-right:1px solid var(--line)}
+ .context-toolbar.is-floating:not(.has-copy) .toolbar-field:has(#selectedElement){padding-right:10px;border-right:1px solid var(--line)}
+ .context-toolbar.is-floating > .btn:first-of-type{margin-left:2px;padding-left:12px;border-left:1px solid var(--line);border-radius:0 6px 6px 0}
 
  .inspector-more{display:flex;flex-direction:column;gap:16px}
  .inspector-more:empty{display:none}

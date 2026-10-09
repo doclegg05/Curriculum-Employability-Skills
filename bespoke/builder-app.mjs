@@ -1850,6 +1850,11 @@ async function init(){
  });
  const closeOptions=()=>{ui.moreOptions=false;render(false);byId('btnMoreOptions').focus();};
  byId('btnCloseOptions').onclick=closeOptions;byId('btnHideDrawer').onclick=closeOptions;
+ // Show or hide the options drawer by toolbar button, menu command or shortcut (Apple HIG: more than one way to reveal a hidden pane).
+ const toggleOptions=()=>{if(byId('workspace').dataset.editor==='true')byId('btnMoreOptions')?.click();};
+ byId('btnMenuOptions').onclick=toggleOptions;
+ if(/Mac|iPhone|iPad/.test(navigator.platform))byId('optionsShortcut').textContent='\u2318\u2325O';
+ document.addEventListener('keydown',event=>{if(event.defaultPrevented||event.repeat||!event.altKey||!(event.ctrlKey||event.metaKey)||event.code!=='KeyO')return;event.preventDefault();toggleOptions();});
  await loadHandoffConfig();const startup=await openShareLink();
  if(ui.localPreview&&!ui.teamSession&&!startup?.snapshot){installTeamSession(state.lessonId,'bespoke-local-preview-synthetic');ui.mode='edit';}
  const mayReplace=Boolean(ui.teamSession)&&(!lastSavedRaw||Boolean(ui.teamSession.baseSelectionKey&&currentSelectionKey()===ui.teamSession.baseSelectionKey));
