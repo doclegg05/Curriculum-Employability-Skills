@@ -747,7 +747,8 @@ try {
     await desktop.keyboard.press('Enter');
     assert.equal(await desktop.locator('#selectedElement').evaluate(el => el === document.activeElement), true, 'Applying a preset moves focus into Customize.');
     await desktop.keyboard.press(tabKey);
-    assert.equal(await desktop.locator('#context-finish').evaluate(el => el === document.activeElement), true, 'Tab continues into the contextual controls.');
+    // Background mode is a segmented control on wide screens; its checked segment holds the tab stop.
+    assert.equal(await desktop.evaluate(() => document.activeElement.closest('[role=radiogroup]')?.getAttribute('aria-label')), 'Background', 'Tab continues into the contextual controls.');
     await go(desktop, 'Title slide');
     await desktop.getByRole('group', { name: /Arrangement/ }).locator('[data-choice="bottom"]').focus();
     await desktop.keyboard.press('Enter');
