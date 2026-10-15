@@ -391,5 +391,208 @@ class TestCLR07ProximityCheck(unittest.TestCase):
         )
 
 
+class TestBlindSpotRegressions(unittest.TestCase):
+    """Regression tests for auto-pass blind spots fixed 2026-08-03."""
+
+    def _load_mod(self):
+        import importlib.util
+        spec = importlib.util.spec_from_file_location(
+            "validate_lesson", Path(__file__).parent / "validate-lesson.py"
+        )
+        mod = importlib.util.module_from_spec(spec)
+        spec.loader.exec_module(mod)
+        return mod
+
+    def _result(self, results, rule_id):
+        return next(r for r in results if r.rule_id == rule_id)
+
+    def test_thm05_sees_dark_theme_in_theme_override(self):
+        """THM-05 must not auto-pass when .theme-dark CSS lives only in theme-override."""
+        mod = self._load_mod()
+        doc = mod.parse_document(
+            '<html><head><style>body{}</style>'
+            '<style id="theme-override">.theme-dark .slide{color:#ffffff}</style></head>'
+            '<body><main class="main theme-dark"></main></body></html>'
+        )
+        r = self._result(mod.check_theme(doc), "THM-05")
+        self.assertEqual(r.status, "PASS")
+        self.assertNotIn("auto-pass", r.message)
+
+    def test_thm05_fails_when_main_lacks_dark_class(self):
+        mod = self._load_mod()
+        doc = mod.parse_document(
+            '<html><head><style id="theme-override">.theme-dark .slide{color:#ffffff}</style></head>'
+            '<body><main class="main"></main></body></html>'
+        )
+        r = self._result(mod.check_theme(doc), "THM-05")
+        self.assertEqual(r.status, "FAIL")
+
+    def test_cmp01_flags_qa_tab_btn(self):
+        mod = self._load_mod()
+        doc = mod.parse_document('<html><body><button class="qa-tab-btn">x</button></body></html>')
+        r = self._result(mod.check_components(doc), "CMP-01")
+        self.assertEqual(r.status, "WARN")
+
+    def test_cmp02_flags_qa_accordion(self):
+        mod = self._load_mod()
+        doc = mod.parse_document('<html><body><div class="qa-accordion-item">x</div></body></html>')
+        r = self._result(mod.check_components(doc), "CMP-02")
+        self.assertEqual(r.status, "WARN")
+
+    def test_nav08_warns_on_unguarded_confetti(self):
+        mod = self._load_mod()
+        doc = mod.parse_document(
+            '<html><body><script>function triggerConfetti(){}</script></body></html>'
+        )
+        r = self._result(mod.check_navigation(doc), "NAV-08")
+        self.assertEqual(r.status, "WARN")
+
+    def test_nav11_warns_on_tab_markup_without_switchtab(self):
+        mod = self._load_mod()
+        doc = mod.parse_document(
+            '<html><body><button role="tab">t</button><script>const x=1;</script></body></html>'
+        )
+        r = self._result(mod.check_navigation(doc), "NAV-11")
+        self.assertEqual(r.status, "WARN")
+
+    def test_a11y01_detects_tabs_by_role_markup(self):
+        """A11Y-01 must not auto-pass when tabs use variant classes but role markup exists."""
+        mod = self._load_mod()
+        doc = mod.parse_document(
+            '<html><body><div role="tablist">'
+            '<button class="qa-tab-btn" role="tab">t</button></div></body></html>'
+        )
+        r = self._result(mod.check_accessibility(doc), "ACC-01")
+        self.assertEqual(r.status, "FAIL")  # role markup found, ARIA incomplete
+
+    def test_a11y07_fails_on_cueless_vtt(self):
+        import tempfile
+        mod = self._load_mod()
+        with tempfile.TemporaryDirectory() as tmp:
+            tmp_path = Path(tmp)
+            (tmp_path / "empty.vtt").write_text("WEBVTT\n", encoding="utf-8")
+            doc = mod.parse_document(
+                '<html><body><video preload="none" aria-label="v">'
+                '<track kind="captions" src="empty.vtt" srclang="en"></video></body></html>'
+            )
+            doc.source_path = tmp_path / "index.html"
+            r = self._result(mod.check_accessibility(doc), "ACC-07")
+            self.assertEqual(r.status, "FAIL")
+            self.assertIn("no cues", r.message)
+
+
+class TestTYP05SelfHostedFonts(unittest.TestCase):
+    """TYP-05: fonts must be self-hosted via @font-face with font-display: swap."""
+
+    def _load_mod(self):
+        import importlib.util
+        spec = importlib.util.spec_from_file_location(
+            "validate_lesson", Path(__file__).parent / "validate-lesson.py"
+        )
+        mod = importlib.util.module_from_spec(spec)
+        spec.loader.exec_module(mod)
+        return mod
+
+    def _typ05(self, mod, html):
+        doc = mod.parse_document(html)
+        results = [r for r in mod.check_typography(doc) if r.rule_id == "TYP-05"]
+        self.assertEqual(len(results), 1)
+        return results[0]
+
+    def _typ(self, mod, html, rule_id):
+        doc = mod.parse_document(html)
+        results = [r for r in mod.check_typography(doc) if r.rule_id == rule_id]
+        self.assertEqual(len(results), 1)
+        return results[0]
+
+    def test_warns_on_google_fonts_link(self):
+        mod = self._load_mod()
+        r = self._typ05(mod, """<!DOCTYPE html>
+<html lang="en"><head>
+  <link href="https://fonts.googleapis.com/css2?family=Outfit&display=swap" rel="stylesheet">
+</head><body></body></html>""")
+        self.assertEqual(r.status, "WARN")
+        self.assertIn("self-hosted", r.message)
+
+    def test_passes_on_font_face_with_swap(self):
+        mod = self._load_mod()
+        r = self._typ05(mod, """<!DOCTYPE html>
+<html lang="en"><head><style>
+  @font-face { font-family: "Outfit"; src: url("../fonts/outfit-latin.woff2") format("woff2"); font-weight: 300 800; font-display: swap; }
+</style></head><body></body></html>""")
+        self.assertEqual(r.status, "PASS")
+
+    def test_font_face_family_names_do_not_trigger_token_warnings(self):
+        mod = self._load_mod()
+        html = """<!DOCTYPE html>
+<html lang="en"><head><style>
+  :root { --font-heading: "DM Serif Display", serif; --font-body: "Outfit", sans-serif; }
+  @font-face { font-family: "DM Serif Display"; src: url("heading.woff2"); font-display: swap; }
+  @font-face { font-family: "Outfit"; src: url("body.woff2"); font-display: swap; }
+  h1 { font-family: var(--font-heading); } body { font-family: var(--font-body); }
+</style></head><body></body></html>"""
+        self.assertEqual(self._typ(mod, html, "TYP-03").status, "PASS")
+        self.assertEqual(self._typ(mod, html, "TYP-04").status, "PASS")
+
+    def test_selector_hardcoding_still_triggers_token_warnings(self):
+        mod = self._load_mod()
+        html = """<!DOCTYPE html>
+<html lang="en"><head><style>
+  :root { --font-heading: "DM Serif Display", serif; --font-body: "Outfit", sans-serif; }
+  h1 { font-family: "DM Serif Display", serif; } body { font-family: "Outfit", sans-serif; }
+</style></head><body></body></html>"""
+        self.assertEqual(self._typ(mod, html, "TYP-03").status, "WARN")
+        self.assertEqual(self._typ(mod, html, "TYP-04").status, "WARN")
+
+    def test_warns_on_font_face_missing_swap(self):
+        mod = self._load_mod()
+        r = self._typ05(mod, """<!DOCTYPE html>
+<html lang="en"><head><style>
+  @font-face { font-family: "Outfit"; src: url("../fonts/outfit-latin.woff2") format("woff2"); font-weight: 300 800; }
+</style></head><body></body></html>""")
+        self.assertEqual(r.status, "WARN")
+        self.assertIn("font-display", r.message)
+
+    def test_warns_when_no_fonts_declared(self):
+        mod = self._load_mod()
+        r = self._typ05(mod, """<!DOCTYPE html>
+<html lang="en"><head><style>body { color: #000; }</style></head><body></body></html>""")
+        self.assertEqual(r.status, "WARN")
+        self.assertIn("No self-hosted @font-face", r.message)
+
+
+class TestPrintRule(unittest.TestCase):
+    """PRT-01: lessons load print/manifest.js before ../scripts/print-slides.js."""
+
+    def _load_mod(self):
+        import importlib.util
+        spec = importlib.util.spec_from_file_location(
+            "validate_lesson", Path(__file__).parent / "validate-lesson.py")
+        mod = importlib.util.module_from_spec(spec)
+        spec.loader.exec_module(mod)
+        return mod
+
+    def _prt(self, html):
+        mod = self._load_mod()
+        return next(r for r in mod.check_print(mod.parse_document(html)) if r.rule_id == "PRT-01")
+
+    def test_prt01_passes_with_both_scripts_in_order(self):
+        r = self._prt('<html><body><script src="print/manifest.js"></script>'
+                      '<script src="../scripts/print-slides.js"></script></body></html>')
+        self.assertEqual(r.status, "PASS")
+
+    def test_prt01_warns_when_scripts_missing(self):
+        r = self._prt('<html><body></body></html>')
+        self.assertEqual(r.status, "WARN")
+        self.assertIn("print/manifest.js", r.message)
+        self.assertIn("../scripts/print-slides.js", r.message)
+
+    def test_prt01_warns_when_runtime_loads_first(self):
+        r = self._prt('<html><body>\n<script src="../scripts/print-slides.js"></script>\n'
+                      '<script src="print/manifest.js"></script>\n</body></html>')
+        self.assertEqual(r.status, "WARN")
+        self.assertIn("after", r.message)
+
+
 if __name__ == "__main__":
     unittest.main()

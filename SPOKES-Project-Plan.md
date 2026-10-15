@@ -3,6 +3,19 @@
 **Date:** 2026-02-27 (last updated: 2026-04-30)
 **Goal:** Deliver 18 interactive HTML lessons built from the SPOKES Builder system
 **Current State:** 6 of 18 lessons are built and currently tracked as QA in `lesson-registry.json`; 0 lessons are currently tagged Ready in the dashboard. 12 lessons remain to build/add. See `docs/current-roadmap.md` for the active planning snapshot.
+> **Current state (September 23, 2026):** the six Phase 1 lessons are out of QA
+> and ready for teaching. The program is now in **Phase 2 (Round 2)**: six new
+> lessons built with instructor teams, soft target March 2027. See
+> `docs/phase-2/` for Round 2 planning and `docs/bespoke/builder-handoff.md` for
+> the approved intake/build boundary.
+>
+> The phase sections below are the original February 2026 build plan and are kept
+> for history. Their numbering does not match the program phases: this plan's
+> "Phase 2: Pipeline" is not the program's Phase 2 (Round 2).
+
+**Date:** 2026-02-27 (last updated: 2026-09-23)
+**Goal:** Deliver 18 interactive HTML lessons built from the SPOKES Builder system
+**Current State:** Phase 1 complete: 6 of 18 lessons ready for teaching. Phase 2 (Round 2): 6 lessons in instructor-team planning, soft target March 2027. Lessons 13–18 not yet named.
 
 ---
 
@@ -16,6 +29,11 @@
 | Lessons remaining to build/add           | 12                                                             |
 | Phase 1 target                           | 6 lessons by June 15, 2026 (inventory reached; QA/release decisions still need reconciliation) |
 | Template/design variety tracking         | Theme registry active; component tracker still needed          |
+| Phase 1 lessons ready for teaching       | 6 (Time Management, Interview Skills, Employee Accountability, Communicating with the Public, Controlling Anger, Problem Solving and Decision Making) |
+| Phase 2 (Round 2) lessons in planning    | 6 (Goal Setting, Money Management - Budget, Professionalism and Diversity, Knowing Your Rights in the Workplace, Communicating Assertively, Workplace Ethics) |
+| Lessons not yet assigned                 | 6 (lessons 13–18)                                              |
+| Phase 2 target                           | Soft target March 2027; no hard deadline                       |
+| Template variants needed                 | 3-4 (documented in registry, CSS not yet formalized)           |
 | Content teams delivering source material | 6                                                              |
 | Build format                             | Single self-contained index.html per lesson                    |
 | Source material format                   | PowerPoint + PDFs from human teams                             |
@@ -167,7 +185,7 @@
   1. **Automated checks:** Brand color scan (grep for non-palette hex values), structural validation (sequential data-chapter, required elements present)
   2. **Manual review:** Visual inspection by user, font pairing confirmation, component variety check
 - Create a simple bash script or checklist that runs the automated checks against any `index.html`
-- Document in `SPOKES Builder/quality-gate.md`
+- Document in `docs/release-checklist.md`
 
 **Definition of done:** Quality gate process documented. Automated check script created and tested against all existing lessons.
 

@@ -4,6 +4,10 @@
 
 **Deliver this completed template along with:** your PowerPoint file and all PDF handouts.
 
+**Working together in Teams / OneDrive:** Keep one shared working copy with a named team lead. The lead records agreed changes after meetings and labels the approved submission revision. Include editable handout originals alongside the PDF delivery copies so corrections remain possible. OneDrive sharing does not merge separate BeSpoke design files; designate one person to save the team's agreed design, then have another team member reopen the saved file and check it.
+
+**Instructor ownership:** Keep instructor-authored hooks, stories, quotes, activity wording, and learning objectives **KEEP VERBATIM**. Agents may format, choose approved components, and split slides; they may not invent or restate instructional meaning, facts, figures, eligibility rules, or partner promises. Flag a conflict or unclear statement for the team to resolve before building. The approved BeSpoke selection and this intake travel together; any design change needed for accessibility or a brand rule must be recorded for human review.
+
 ---
 
 ## Section 1: Lesson Overview
@@ -15,6 +19,10 @@
 | **Module Number** | _(If applicable, e.g., "Module 3")_ |
 | **Content Team / Author** | _(Your name or team name)_ |
 | **Date Submitted** | _(YYYY-MM-DD)_ |
+| **Team Lead / Content Approver** | _(Who records agreement and approves instructional meaning?)_ |
+| **Submission Revision** | _(Use the same revision on this intake and the accompanying design package)_ |
+| **Approved BeSpoke Design File** | _(Exact filename and saved date; team lead confirms this is the agreed selection)_ |
+| **Target Learners / Delivery** | _(Reading and language supports, approximate duration, in-person or online teaching)_ |
 | **Lesson Description** | _(2-3 sentences summarizing what this lesson covers and its learning objective)_ |
 
 ---
@@ -319,7 +327,7 @@ List every document you are delivering with this lesson. Check the appropriate c
 | 1 | | _(e.g., Pre/Post Test)_ | [ ] |
 | 2 | | _(e.g., Rubric)_ | [ ] |
 
-**Important:** All handouts must be in **PDF format**. If you have Word documents (.docx), please convert them to PDF before delivery. The interactive lesson links to PDFs only.
+**Important:** Deliver a **PDF copy** of every handout for lesson download links and retain the editable original (such as .docx) in the shared team folder. Check readable text, reading order, and descriptions for meaningful images; a scanned image alone is not an accessible handout. List both filenames when an editable original is supplied.
 
 ---
 
@@ -386,15 +394,62 @@ Before submitting, confirm:
 - [ ] Video topics are described (no YouTube links needed)
 - [ ] At least one closing quote or inspirational statement is provided
 - [ ] File naming follows the convention: `SPOKES_[Module]_[Description].pdf` or `[Descriptive_Name].pdf`
+- [ ] Section 7 records claim sources, content approval, assessment alignment, and unresolved items
+- [ ] Instructor wording and objectives marked KEEP VERBATIM have been preserved
+- [ ] Each learning objective has an observable activity or assessment with expected answers or scoring criteria
+- [ ] Guided practice is identified separately from presentation, even when both occur in the same chapter
+- [ ] Participation can be demonstrated without forced personal disclosure; equivalent written, spoken, partner, and offline options are specified where needed
+- [ ] The team lead has approved this exact intake revision and design package; another team member has reopened the saved design successfully
+- [ ] A human review of the built lesson, handouts, guide, and approved design choices is scheduled before teaching
 
 ---
 
 ## Common Mistakes to Avoid
 
-1. **Delivering .docx files instead of .pdf** -- The interactive lesson can only link to PDFs. Convert before submitting.
+1. **Delivering only .docx files** -- Include PDF delivery copies for lesson links and retain editable originals for collaboration and corrections.
 2. **Including YouTube URLs** -- We only need video topic descriptions now. Links are added later.
 3. **Skipping the Warm-Up or Application stages** -- Every WIPPEA stage needs content, even if brief.
 4. **Providing content as one long block of text** -- Break content into discrete points. Each bullet point roughly maps to one slide or one section of a slide.
 5. **Forgetting the closing quote** -- The lesson ends with a full-screen inspirational moment. Provide at least one strong quote or statement.
 6. **Not listing all handouts** -- If it is referenced in the lesson, it must be in the inventory and delivered as a file.
 7. **Leaving the exit ticket vague** -- Provide specific questions or prompts, not just "students will reflect on what they learned."
+
+---
+
+## Section 7: Evidence, Learning Checks, and Team Approval
+
+### Sources for claims and resources
+
+List factual claims, statistics, named frameworks, quotations, and third-party materials. Provide the original source where available, its publication/update date, and the date the team checked it. This evidence list supplements the video-topic list above; a research URL does not authorize downloading or redistributing media. Identify permission or license evidence for reused materials and flag any uncertainty for review.
+
+| Claim / Resource and Location in Intake | Source Title / Author / URL or Local File | Published / Updated | Checked On | Jurisdiction / Audience / Limits | Reuse Permission / License |
+|---|---|---|---|---|---|
+| | | | | | |
+| | | | | | |
+
+For workplace rights, benefits, money, health, or safety content, identify the relevant jurisdiction and a qualified human reviewer. Use current authoritative sources. Do not supply individualized legal, eligibility, financial, or medical advice. If a needed fact cannot be verified, mark it unresolved and omit it from the build until the team approves it. Never invent dollar figures, rules, or service promises to fill a blank.
+
+### Objective-to-evidence map
+
+| Learning Objective (KEEP VERBATIM) | Guided Practice / WIPPEA Stage | Observable Assessment / Expected Answer or Rubric | Accessible / Offline Alternative | Linked Handout |
+|---|---|---|---|---|
+| | | | | |
+| | | | | |
+| | | | | |
+
+Keep self-reflection distinct from demonstrated skill. Include scoring instructions and answer rationales where appropriate. Use fictional scenarios when an activity could otherwise pressure learners to disclose personal finances, benefits, health, conflict, or trauma. Record facilitation boundaries and a support route for sensitive topics.
+
+### Approval and unresolved decisions
+
+| Field | Team Entry |
+|---|---|
+| Approved intake revision and matching design filename | |
+| Content reviewer / review date | |
+| Source or specialist reviewer / review date (if needed) | |
+| Team lead approval / date | |
+| Unresolved claims, permissions, activities, or design choices | _(Write “None” only after review)_ |
+| Person responsible for resolving each open item | |
+| Person who reopened the saved design / date | |
+| Final built-lesson reviewer | |
+
+Unresolved content is not permission for an agent to invent a substitute. A team-approved intake is a build input; final teaching approval comes after reviewing the rendered lesson, its assessments and resources, and how the team's approved choices appear in the product.

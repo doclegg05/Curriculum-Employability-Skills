@@ -1,6 +1,10 @@
 # SPOKES Agent Execution Spec
 
-Status: v0.8 (2026-03-09)
+Status: v0.8 (2026-03-09); authority/link correction 2026-09-22
+
+Current Round 2 planning: six instructor-team lessons, with a soft March 2027
+phase target. Earlier milestone dates below are historical; current readiness
+is documented in `docs/qa-reports/project-review-2026-09-22.md`.
 Audience: Autonomous agents with minimal supervision
 Purpose: Single operational source for planning, building, QA, and release decisions.
 
@@ -10,9 +14,9 @@ Purpose: Single operational source for planning, building, QA, and release decis
 
 If documents conflict, use this precedence:
 
-1. This file (`SPOKES-Agent-Execution-Spec.md`)
-2. `docs/final-product-definition.md` (final product behavior/experience intent)
-3. `SPOKES Builder/brand-palette.md`
+1. `SPOKES-STANDARD.md` (canonical lesson requirements and brand guardrails)
+2. This file (`SPOKES-Agent-Execution-Spec.md`)
+3. `docs/final-product-definition.md` (final product behavior/experience intent)
 4. `SPOKES Builder/build-process.md`
 5. `SPOKES-Master-Action-Plan.md`
 
@@ -30,12 +34,12 @@ If documents conflict, use this precedence:
    - If a YouTube URL is provided, embed it.
    - If no URL is provided, render the approved video placeholder component.
 4. Palette source:
-   - Canonical color system is `SPOKES Builder/brand-palette.md`.
+   - Canonical color system is `SPOKES-STANDARD.md`.
 5. Color policy:
    - Use strict fixed 11-color palette only (no non-canonical hex values).
    - Controlled per-lesson color mixing is allowed within the 11-color palette.
    - Theme variation should come from combinatorial design: template variants, CSS background textures, typography, accent emphasis, component composition, and optional per-lesson effects — all within the palette.
-   - All color usage must follow the contrast and anti-clash guardrails in `SPOKES Builder/brand-palette.md`.
+   - All color usage must follow the contrast and anti-clash guardrails in `SPOKES-STANDARD.md`.
    - Combinatorial design choices are documented in `SPOKES Builder/AGENT_THEMING_GUIDELINES.md` and tracked in the `combinatorics` field of `lesson-registry.json`.
    - Theme variation is defined in `SPOKES Builder/theme-registry.json` and applied via `theme-library.css`. Agents do not make design decisions.
 6. Agent concurrency:

@@ -2,6 +2,34 @@
 
 SPOKES interactive employability curriculum system with standards, templates, and lesson production workflow.
 
+## Instructor collaboration
+
+Round 2 teams use BeSpoke during Teams calls to choose the visual style of their
+lessons: colors, fonts, backgrounds, layouts and cards. Britt puts each team's
+private 8-character code in that team's OneDrive folder. Teams use **Save shared
+design** and **Open team design** to save and resume their shared choices across
+computers. One spokesperson operates BeSpoke during the call; OneDrive can hold
+optional files from **Download backup**. No lesson-writing form, coding or GitHub
+account is required for this workflow.
+The current local builder uses **Start → Slide designs → Review & save**. Choose a
+preset or Build my own, use Shared theme and any slide editors optionally, then
+review the effective design. Start with the [BeSpoke visual design guide](bespoke/team-guide.html).
+Britt/builders follow [the handoff and design verification procedure](docs/bespoke/builder-handoff.md).
+Administrators follow [shared service setup and hosted acceptance](docs/bespoke/auto-handoff-setup.md).
+The earlier v1 hosted Save/Open/Send flow passed
+[live acceptance](docs/bespoke/verification-2026-09-22.md), including two browser
+sessions and a real review proposal. The current v2 builder is for local review;
+its synthetic tests do not establish hosted v2 acceptance. In that local preview,
+Save test design and Open test design use a local test service, and Send is disabled.
+The six Phase 1 lessons are out of QA and ready for teaching (September 23, 2026).
+Phase 2 (Round 2) builds six new lessons with instructor teams: Goal Setting,
+Money Management - Budget, Professionalism and Diversity, Knowing Your Rights in
+the Workplace, Communicating Assertively and Workplace Ethics. None is built yet;
+March 2027 is the soft target. Round 2 planning lives in `docs/phase-2/`.
+
+Earlier review evidence:
+[project review dated September 22, 2026](docs/qa-reports/project-review-2026-09-22.md).
+
 ## Quick Start (3 minutes)
 
 1. Read `SPOKES-Agent-Execution-Spec.md` (source of truth + locked decisions)
@@ -19,6 +47,17 @@ SPOKES interactive employability curriculum system with standards, templates, an
 - `Project_1_Employee_Accountability.v2.5/` — Employee Accountability lesson
 - `Project_2_Hilary's Project/` — Time Management lesson
 - `Project_3_Interview-Skills/` — Interview Skills lesson
+- `Dashboard.html` — curriculum launcher/dashboard (`index.html` redirects here)
+- `bespoke/` — BeSpoke instructor visual design builder; v2 is under local review, with the earlier v1 hosted acceptance recorded separately
+- `netlify/` — private-team Save/Open and review handoff service; deploy the staged service package
+- `docs/bespoke/decisions.md` — greenlit Bespoke lock decisions
+- `lesson-registry.json` — per-lesson status, theme, and quality-gate registry
+- `lesson-time-management/` — Time Management lesson
+- `lesson-interview-skills/` — Interview Skills lesson
+- `lesson-employee-accountability/` — Employee Accountability lesson
+- `lesson-communicating-with-the-public/` — Communicating with the Public lesson
+- `lesson-controlling-anger/` — Controlling Anger lesson
+- `lesson-problem-solving-and-decision-making/` — Problem Solving & Decision Making lesson
 - `SPOKES Builder/` — design system + template assets
 
 ### SPOKES Builder
@@ -61,11 +100,41 @@ All lesson releases must pass:
 
 See `SPOKES-Agent-Execution-Spec.md` for full gate criteria and severity/SLA policy.
 
+## Offline copy for teachers
+
+Teachers can run the released lessons with no internet, from a flash drive or a
+folder on their computer. Build the copy:
+
+```bash
+python3 scripts/build-offline-package.py
+```
+
+It writes `dist/SPOKES-Lessons-Offline-<date>/` and a zip of that folder, about
+550 MB. Only lessons marked `ready` in `lesson-registry.json` go in, with their
+Handouts, Teacher-Resources and print pictures. Source Material, BeSpoke and the
+build tools stay out. Chrome and Edge won't load caption files from a local
+folder, so the build embeds each caption file in its lesson page. It stops if
+any link in the copy points at a file the copy doesn't have.
+
+Open the copy in a browser before you share the zip:
+
+```bash
+node scripts/check-offline-package.mjs dist/SPOKES-Lessons-Offline-<date>
+```
+
+Teachers unzip it and open `START HERE.html`, which carries their instructions.
+A copy never updates itself. Build and share a new one after lessons change.
+`scripts/quality.sh` runs the build tests and the browser check, so a lesson
+change that would break the offline copy fails the gate.
+
 ## Current Status (high level)
 
 - Existing lessons: 3 (mixed quality state)
 - Program target: 18 lessons total
 - Ongoing work: template stabilization, lesson remediation, production batching
+- Phase 1: 6 lessons, all out of QA and ready for teaching (September 23, 2026)
+- Phase 2 (Round 2): 6 lessons in instructor-team planning, soft target March 2027
+- Program target: 18 lessons total; lessons 13–18 not yet named
 
 ## Operational Docs in This Repo
 

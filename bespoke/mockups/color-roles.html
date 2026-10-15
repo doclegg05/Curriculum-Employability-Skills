@@ -1,0 +1,407 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>BeSpoke color roles — mockup</title>
+<link rel="icon" href="../../SPOKES-Logo.png">
+<style>
+@font-face { font-family: "DM Serif Display"; src: url("../../fonts/dm-serif-display-latin.woff2") format("woff2"); font-display: swap; }
+@font-face { font-family: "Outfit"; src: url("../../fonts/outfit-latin.woff2") format("woff2"); font-weight: 300 800; font-display: swap; }
+
+/* Mockup chrome. Slide colors come only from the SPOKES palette (CLR-01). */
+:root {
+  --primary: #007baf; --accent: #37b550; --dark: #004071; --light: #ffffff; --muted: #edf3f7;
+  --gray: #60636b; --gold: #d3b257; --royal: #00133f; --mauve: #a7253f; --offwhite: #d1d3d4; --muted-gold: #ad8806;
+  --ink: #00133f; --line: rgba(0, 64, 113, 0.14);
+}
+* { box-sizing: border-box; }
+body { margin: 0; font-family: "Outfit", system-ui, sans-serif; color: var(--ink); background: linear-gradient(165deg, #fff, var(--muted)); min-height: 100vh; }
+.banner { background: var(--royal); color: #fff; padding: 0.55rem 1.25rem; font-size: 0.9rem; }
+.banner strong { color: var(--gold); }
+.layout { display: grid; grid-template-columns: minmax(340px, 440px) 1fr; gap: 1.25rem; padding: 1rem 1.25rem; max-width: 1600px; margin: 0 auto; }
+.panel { background: #fff; border: 1px solid var(--line); border-radius: 14px; padding: 1rem 1.1rem; }
+h1 { font-family: "DM Serif Display", Georgia, serif; font-weight: 400; font-size: 1.55rem; margin: 0 0 0.3rem; }
+h2 { font-size: 0.95rem; margin: 1.1rem 0 0.5rem; }
+.lead { margin: 0; color: var(--gray); font-size: 0.92rem; line-height: 1.45; }
+.steps { display: flex; gap: 0.35rem; margin-bottom: 0.9rem; }
+.steps span { flex: 1; height: 4px; border-radius: 2px; background: var(--line); }
+.steps span.on { background: var(--gold); }
+
+/* Palette */
+.palette { display: grid; grid-template-columns: repeat(auto-fill, minmax(84px, 1fr)); gap: 0.45rem; }
+.chip { position: relative; appearance: none; border: 2px solid var(--line); border-radius: 10px; background: #fff; padding: 0.35rem; text-align: left; cursor: pointer; font: inherit; color: inherit; min-height: 44px; }
+.chip i { display: block; height: 34px; border-radius: 6px; border: 1px solid rgba(0,0,0,0.08); }
+.chip b { display: block; font-size: 0.78rem; margin-top: 0.3rem; }
+.chip[aria-pressed="true"] { border-color: var(--royal); }
+.chip .tag { position: absolute; top: 4px; right: 4px; font-size: 0.62rem; font-weight: 700; padding: 0.05rem 0.35rem; border-radius: 999px; background: var(--royal); color: #fff; }
+.chip .tag.secondary { background: var(--muted); color: var(--royal); border: 1px solid var(--royal); }
+.hint { font-size: 0.8rem; color: var(--gray); margin: 0.4rem 0 0; }
+
+/* Roles */
+.roles { display: grid; gap: 0.5rem; }
+.role { display: grid; grid-template-columns: 1fr auto; gap: 0.2rem 0.6rem; align-items: center; padding: 0.5rem 0.6rem; border: 1px solid var(--line); border-radius: 10px; }
+.role label { font-weight: 600; font-size: 0.88rem; }
+.role small { grid-column: 1 / -1; color: var(--gray); font-size: 0.75rem; }
+.role select { font: inherit; font-size: 0.85rem; padding: 0.35rem 0.45rem; border-radius: 8px; border: 1.5px solid var(--line); min-height: 36px; }
+.ratio { grid-column: 1 / -1; font-size: 0.74rem; font-weight: 600; }
+.ratio.pass { color: #1d6b2f; }
+.ratio.fail { color: var(--mauve); }
+
+/* History */
+.history { list-style: none; margin: 0; padding: 0; display: grid; gap: 0.3rem; max-height: 11rem; overflow: auto; }
+.history li { display: flex; justify-content: space-between; gap: 0.5rem; align-items: center; font-size: 0.8rem; padding: 0.3rem 0.45rem; background: var(--muted); border-radius: 8px; }
+.history button, .btn { appearance: none; font: inherit; font-size: 0.8rem; font-weight: 600; border: 1.5px solid var(--line); background: #fff; border-radius: 8px; padding: 0.25rem 0.55rem; cursor: pointer; color: var(--dark); min-height: 32px; }
+.btn.primary { background: var(--royal); color: #fff; border-color: var(--royal); }
+.row { display: flex; gap: 0.5rem; flex-wrap: wrap; margin-top: 0.6rem; }
+
+/* Preview: two slides built only from the chosen roles */
+.preview { display: grid; gap: 1rem; align-content: start; }
+.preview-head { display: flex; justify-content: space-between; align-items: baseline; flex-wrap: wrap; gap: 0.5rem; }
+.preview-head h2 { margin: 0; font-family: "DM Serif Display", Georgia, serif; font-weight: 400; font-size: 1.15rem; }
+.frame { container-type: inline-size; border-radius: 10px; overflow: hidden; box-shadow: 0 16px 36px rgba(0,19,63,0.14); border: 1px solid var(--line); }
+.slide { aspect-ratio: 16 / 9; display: flex; font-size: 1.25cqi; }
+.sb { width: 21.875%; background: var(--r-sidebar); color: var(--r-sidebar-ink); padding: 2.2em 1.6em; display: flex; flex-direction: column; gap: 0.9em; }
+.sb .t { font-family: "DM Serif Display", Georgia, serif; font-size: 1.6em; line-height: 1.15; }
+.sb ol { list-style: none; margin: 0.6em 0 0; padding: 0; display: grid; gap: 0.7em; font-size: 1.05em; }
+.sb li { display: flex; gap: 0.6em; align-items: center; opacity: 0.85; }
+.sb li span { width: 1.8em; height: 1.8em; border-radius: 50%; border: 1.5px solid currentColor; display: grid; place-items: center; font-size: 0.8em; }
+.sb li.on { opacity: 1; font-weight: 600; }
+.sb li.on span { background: var(--r-marker); border-color: var(--r-marker); color: var(--r-marker-ink); }
+.main { flex: 1; position: relative; }
+.title { height: 100%; background: var(--r-titlebg); display: flex; flex-direction: column; align-items: center; justify-content: center; text-align: center; padding: 3em; }
+.title h3 { font-family: "DM Serif Display", Georgia, serif; font-weight: 400; font-size: 5em; margin: 0 0 0.3em; color: var(--r-titletext); line-height: 1.1; }
+.title .rule { width: 9em; height: 0.4em; background: var(--r-accent); margin-bottom: 1.4em; }
+.title p { margin: 0; font-size: 2em; color: var(--r-subtitle); }
+.content { height: 100%; background: var(--r-contentbg); padding: 3em 4em; display: flex; flex-direction: column; gap: 1.6em; }
+.content h3 { font-family: "DM Serif Display", Georgia, serif; font-weight: 400; font-size: 3em; margin: 0; color: var(--r-heading); }
+.content .rule { width: 7em; height: 0.35em; background: var(--r-accent); margin-top: -0.8em; }
+.cards { display: grid; grid-template-columns: repeat(3, 1fr); gap: 1.4em; }
+.card { background: #fff; border-left: 0.45em solid var(--r-accent); border-radius: 0.6em; padding: 1.4em; box-shadow: 0 0.3em 1em rgba(0,19,63,0.08); }
+.card b { display: block; font-size: 1.5em; color: var(--r-heading); margin-bottom: 0.4em; }
+.card p { margin: 0; font-size: 1.25em; color: var(--r-body); line-height: 1.4; }
+.foot { margin-top: auto; display: flex; justify-content: space-between; align-items: center; gap: 2em; }
+.foot p { margin: 0; font-size: 1.4em; color: var(--r-body); }
+.btn-slide { background: var(--r-button); color: var(--r-button-ink); padding: 0.8em 1.6em; border-radius: 0.6em; font-weight: 600; font-size: 1.2em; white-space: nowrap; }
+.pulse { animation: pulse 0.5s ease-out; }
+@keyframes pulse { from { box-shadow: 0 0 0 0.3rem rgba(211,178,87,0.8); } to { box-shadow: 0 0 0 0 rgba(211,178,87,0); } }
+@media (prefers-reduced-motion: reduce) { .pulse { animation: none; } }
+@media (max-width: 900px) { .layout { grid-template-columns: 1fr; } }
+</style>
+</head>
+<body>
+<p class="banner"><strong>Mockup</strong> · Color step of the proposed slide builder. Nothing here saves to your team design; choices are kept in this browser only.</p>
+<div class="layout">
+  <section class="panel" aria-labelledby="stepTitle">
+    <div class="steps" aria-hidden="true"><span class="on"></span><span></span><span></span><span></span><span></span></div>
+    <h1 id="stepTitle">1 · Colors</h1>
+    <p class="lead">Pick <strong>two primary</strong> and up to <strong>three secondary</strong> colors from the SPOKES palette, then decide which color does each job on the slides. Choices that would be hard to read are switched off, with the reason.</p>
+
+    <h2 id="paletteLabel">SPOKES palette</h2>
+    <div class="palette" id="palette" role="group" aria-labelledby="paletteLabel"></div>
+    <p class="hint" id="pickHint"></p>
+
+    <h2>Who does what</h2>
+    <div class="roles" id="roles"></div>
+
+    <h2>Changes</h2>
+    <ul class="history" id="history"></ul>
+    <div class="row">
+      <button type="button" class="btn" id="undo">Undo last change</button>
+      <button type="button" class="btn" id="reset">Start over</button>
+    </div>
+  </section>
+
+  <section class="preview" aria-label="Live preview">
+    <div class="preview-head">
+      <h2>Live preview</h2>
+      <span class="hint" id="lastChange">Every choice updates both slides.</span>
+    </div>
+    <div class="frame" id="frameTitle" aria-hidden="true">
+      <div class="slide">
+        <div class="sb"><div class="t">Money Management</div>
+          <ol><li class="on"><span>W</span>Warm-Up</li><li><span>I</span>Introduction</li><li><span>P1</span>Presentation 1</li><li><span>P2</span>Presentation 2</li><li><span>E</span>Evaluation</li></ol></div>
+        <div class="main"><div class="title"><h3>Money Management</h3><div class="rule"></div><p>Skills for Life</p></div></div>
+      </div>
+    </div>
+    <div class="frame" id="frameContent" aria-hidden="true">
+      <div class="slide">
+        <div class="sb"><div class="t">Money Management</div>
+          <ol><li><span>W</span>Warm-Up</li><li><span>I</span>Introduction</li><li class="on"><span>P1</span>Presentation 1</li><li><span>P2</span>Presentation 2</li><li><span>E</span>Evaluation</li></ol></div>
+        <div class="main"><div class="content">
+          <h3>Key points</h3><div class="rule"></div>
+          <div class="cards">
+            <div class="card"><b>Name one money goal</b><p>Myth: budgets are only for people in debt.</p></div>
+            <div class="card"><b>List your fixed costs</b><p>Rent, phone and bus fare come first.</p></div>
+            <div class="card"><b>Trim one expense</b><p>Small cuts add up over a month.</p></div>
+          </div>
+          <div class="foot"><p><strong>Takeaway:</strong> a budget is a plan that works for any income.</p><span class="btn-slide">Download handout</span></div>
+        </div></div>
+      </div>
+    </div>
+  </section>
+</div>
+
+<script>
+(() => {
+  "use strict";
+  const STORE = "bespoke-color-roles-mockup-v1";
+
+  /** The locked SPOKES palette (SPOKES-STANDARD CLR-01). */
+  const PALETTE = [
+    ["primary", "Blue", "#007baf"], ["dark", "Navy", "#004071"], ["royal", "Royal", "#00133f"],
+    ["accent", "Green", "#37b550"], ["gold", "Gold", "#d3b257"], ["muted-gold", "Deep gold", "#ad8806"],
+    ["mauve", "Mauve", "#a7253f"], ["gray", "Gray", "#60636b"], ["offwhite", "Silver", "#d1d3d4"],
+    ["muted", "Mist", "#edf3f7"], ["light", "White", "#ffffff"]
+  ];
+  const HEX = Object.fromEntries(PALETTE.map(([id, , hex]) => [id, hex]));
+  const NAME = Object.fromEntries(PALETTE.map(([id, name]) => [id, name]));
+  /** Neutrals are always available for backgrounds and text so every slide stays readable. */
+  const NEUTRALS = ["light", "muted", "royal", "dark", "gray"];
+  /** CLR-05 / CLR-06: gold and green are never used as text colors. */
+  const NOT_TEXT = new Set(["gold", "accent"]);
+
+  /**
+   * Each role: what it paints, what it sits on, and the contrast it needs.
+   * "text" roles need 4.5:1 (3:1 for large headings); "shape" roles need 3:1 against their background (WCAG 1.4.11).
+   */
+  const ROLES = [
+    { id: "sidebar", label: "Sidebar", note: "The chapter list on every slide.", kind: "surface" },
+    { id: "titlebg", label: "Title slide background", note: "The first thing learners see.", kind: "surface" },
+    { id: "titletext", label: "Title text", note: "Large lettering on the title slide.", kind: "text", on: "titlebg", min: 3 },
+    { id: "subtitle", label: "Subtitle", note: "The line under the title.", kind: "text", on: "titlebg", min: 4.5 },
+    { id: "contentbg", label: "Content slide background", note: "Behind most of the lesson.", kind: "surface", only: ["light", "muted"] },
+    { id: "heading", label: "Slide headings", note: "Headings on content slides.", kind: "text", on: "contentbg", min: 3 },
+    { id: "body", label: "Body text", note: "Paragraphs and card text.", kind: "text", on: "contentbg", min: 4.5, only: ["royal", "dark", "gray"] },
+    { id: "accent", label: "Accent", note: "Rules, card edges and the current chapter.", kind: "shape", on: "contentbg", min: 3 },
+    { id: "button", label: "Buttons", note: "Handout and video buttons. Text color is picked for you.", kind: "surface" }
+  ];
+
+  /** manual: roles the team set by hand. Those stay put; the rest follow the picked colors. */
+  const initial = () => ({ primary: [], secondary: [], roles: {}, manual: {}, history: [] });
+  let model = load();
+
+  function load() {
+    try { return { ...initial(), ...JSON.parse(localStorage.getItem(STORE) || "{}") }; }
+    catch { return initial(); }
+  }
+  function save() {
+    try { localStorage.setItem(STORE, JSON.stringify(model)); } catch { /* private mode: still works this session */ }
+  }
+
+  function luminance(hex) {
+    const c = [1, 3, 5].map((i) => parseInt(hex.slice(i, i + 2), 16) / 255)
+      .map((v) => (v <= 0.03928 ? v / 12.92 : ((v + 0.055) / 1.055) ** 2.4));
+    return 0.2126 * c[0] + 0.7152 * c[1] + 0.0722 * c[2];
+  }
+  function contrast(a, b) {
+    const [hi, lo] = [luminance(HEX[a]), luminance(HEX[b])].sort((x, y) => y - x);
+    return (hi + 0.05) / (lo + 0.05);
+  }
+  /** The palette ink that reads best on a color: white or royal. */
+  function inkOn(id) {
+    return contrast("light", id) >= contrast("royal", id) ? "light" : "royal";
+  }
+
+  const chosen = () => [...model.primary, ...model.secondary];
+
+  /** Options for a role, each with the reason it is off when it fails. */
+  function optionsFor(role) {
+    const pool = role.only || [...new Set([...chosen(), ...NEUTRALS])];
+    return pool.map((id) => {
+      if (role.kind === "text" && NOT_TEXT.has(id)) return { id, off: "not used for text (SPOKES rule)" };
+      if (!role.on) return { id };
+      const bg = model.roles[role.on];
+      if (!bg || bg === id) return bg === id ? { id, off: "same as its background" } : { id };
+      const ratio = contrast(id, bg);
+      return ratio >= role.min ? { id, ratio } : { id, ratio, off: `${ratio.toFixed(1)}:1 on ${NAME[bg]} — needs ${role.min}:1` };
+    });
+  }
+
+  /** Sensible defaults from the picks: first primary leads, second primary on the title, secondaries as accents. */
+  function autoAssign() {
+    const [p1, p2] = model.primary;
+    const s1 = model.secondary[0] || p2 || p1;
+    const want = {
+      sidebar: p1 || "dark", titlebg: p2 || p1 || "primary", contentbg: "light",
+      titletext: "light", subtitle: "light", heading: p1 || "dark", body: "royal",
+      accent: s1 || "gold", button: p1 || "primary"
+    };
+    for (const role of ROLES) {
+      if (model.manual[role.id] && isAllowed(role, model.roles[role.id])) continue;
+      const options = optionsFor(role).filter((o) => !o.off);
+      // The wanted color if it passes; else the team's own colors that pass (secondaries first for accents); else the most readable neutral.
+      const mine = role.id === "accent" ? [...model.secondary, ...model.primary] : chosen();
+      const pick = options.find((o) => o.id === want[role.id])
+        || mine.map((id) => options.find((o) => o.id === id)).find(Boolean)
+        || [...options].sort((a, b) => (b.ratio || 0) - (a.ratio || 0))[0];
+      if (pick) model.roles[role.id] = pick.id;
+    }
+  }
+  function isAllowed(role, id) {
+    const o = optionsFor(role).find((x) => x.id === id);
+    return Boolean(o && !o.off);
+  }
+
+  function record(text) {
+    model.history = [...model.history, { text, snapshot: JSON.stringify({ primary: model.primary, secondary: model.secondary, roles: model.roles, manual: model.manual }) }];
+    document.getElementById("lastChange").textContent = text;
+  }
+
+  function togglePalette(id) {
+    const before = JSON.stringify({ primary: model.primary, secondary: model.secondary, roles: model.roles, manual: model.manual });
+    if (model.primary.includes(id)) {
+      model.primary = model.primary.filter((x) => x !== id);
+      record(`Removed ${NAME[id]} from primaries`);
+    } else if (model.secondary.includes(id)) {
+      model.secondary = model.secondary.filter((x) => x !== id);
+      record(`Removed ${NAME[id]} from secondaries`);
+    } else if (model.primary.length < 2) {
+      model.primary = [...model.primary, id];
+      record(`Primary color: ${NAME[id]}`);
+    } else if (model.secondary.length < 3) {
+      model.secondary = [...model.secondary, id];
+      record(`Secondary color: ${NAME[id]}`);
+    } else {
+      document.getElementById("pickHint").textContent = "All five slots are full. Remove a color first.";
+      return;
+    }
+    model.history[model.history.length - 1].before = before;
+    autoAssign();
+    commit();
+  }
+
+  function setRole(role, id) {
+    const before = JSON.stringify({ primary: model.primary, secondary: model.secondary, roles: model.roles, manual: model.manual });
+    model.roles = { ...model.roles, [role.id]: id };
+    model.manual = { ...model.manual, [role.id]: true };
+    record(`${role.label} → ${NAME[id]}`);
+    model.history[model.history.length - 1].before = before;
+    autoAssign();
+    commit();
+  }
+
+  function undo() {
+    const last = model.history[model.history.length - 1];
+    if (!last) return;
+    const prior = JSON.parse(last.before || JSON.stringify(initial()));
+    model = { ...model, ...prior, history: model.history.slice(0, -1) };
+    document.getElementById("lastChange").textContent = `Undid: ${last.text}`;
+    commit();
+  }
+
+  function commit() {
+    save();
+    render();
+    for (const f of document.querySelectorAll(".frame")) {
+      f.classList.remove("pulse"); void f.offsetWidth; f.classList.add("pulse");
+    }
+  }
+
+  function renderPalette() {
+    const host = document.getElementById("palette");
+    host.replaceChildren(...PALETTE.map(([id, name, hex]) => {
+      const b = document.createElement("button");
+      b.type = "button";
+      b.className = "chip";
+      const p = model.primary.indexOf(id), s = model.secondary.indexOf(id);
+      b.setAttribute("aria-pressed", p >= 0 || s >= 0 ? "true" : "false");
+      b.setAttribute("aria-label", `${name}${p >= 0 ? `, primary ${p + 1}` : s >= 0 ? `, secondary ${s + 1}` : ""}`);
+      b.innerHTML = `<i style="background:${hex}"></i><b>${name}</b>${p >= 0 ? `<span class="tag">P${p + 1}</span>` : s >= 0 ? `<span class="tag secondary">S${s + 1}</span>` : ""}`;
+      b.addEventListener("click", () => togglePalette(id));
+      return b;
+    }));
+    const need = 2 - model.primary.length;
+    document.getElementById("pickHint").textContent = need > 0
+      ? `Choose ${need} more primary color${need === 1 ? "" : "s"}. Click a chosen color again to remove it.`
+      : `${model.secondary.length} of 3 secondary colors chosen. Click a chosen color again to remove it.`;
+  }
+
+  function renderRoles() {
+    const host = document.getElementById("roles");
+    host.replaceChildren(...ROLES.map((role) => {
+      const row = document.createElement("div");
+      row.className = "role";
+      const id = `role-${role.id}`;
+      const select = document.createElement("select");
+      select.id = id;
+      for (const o of optionsFor(role)) {
+        const opt = document.createElement("option");
+        opt.value = o.id;
+        opt.textContent = o.off ? `${NAME[o.id]} — ${o.off}` : NAME[o.id];
+        opt.disabled = Boolean(o.off);
+        opt.selected = model.roles[role.id] === o.id;
+        select.appendChild(opt);
+      }
+      select.addEventListener("change", () => setRole(role, select.value));
+      const label = document.createElement("label");
+      label.htmlFor = id;
+      label.textContent = role.label;
+      const note = document.createElement("small");
+      note.textContent = role.note;
+      row.append(label, select, note);
+      const current = model.roles[role.id];
+      if (role.on && current && model.roles[role.on]) {
+        const r = contrast(current, model.roles[role.on]);
+        const ratio = document.createElement("span");
+        ratio.className = `ratio ${r >= role.min ? "pass" : "fail"}`;
+        ratio.textContent = `${r.toFixed(1)}:1 on ${NAME[model.roles[role.on]]} (${r >= role.min ? "readable" : `needs ${role.min}:1`})`;
+        row.appendChild(ratio);
+      }
+      return row;
+    }));
+  }
+
+  function renderHistory() {
+    const host = document.getElementById("history");
+    if (!model.history.length) {
+      const li = document.createElement("li");
+      li.textContent = "No changes yet.";
+      host.replaceChildren(li);
+      return;
+    }
+    host.replaceChildren(...model.history.slice().reverse().map((h, i) => {
+      const li = document.createElement("li");
+      li.textContent = `${model.history.length - i}. ${h.text}`;
+      return li;
+    }));
+  }
+
+  function applyPreview() {
+    const r = model.roles;
+    const set = (name, id) => document.documentElement.style.setProperty(`--r-${name}`, HEX[id] || "#ccc");
+    ["sidebar", "titlebg", "titletext", "subtitle", "contentbg", "heading", "body", "accent", "button"].forEach((k) => set(k, r[k]));
+    set("sidebar-ink", r.sidebar ? inkOn(r.sidebar) : "light");
+    set("button-ink", r.button ? inkOn(r.button) : "light");
+    // The current-chapter marker uses the accent unless it would vanish into the sidebar.
+    const marker = ["accent", "gold", "light"].map((k) => (k === "accent" ? r.accent : k))
+      .find((id) => id && r.sidebar && contrast(id, r.sidebar) >= 3) || "light";
+    set("marker", marker);
+    set("marker-ink", inkOn(marker));
+  }
+
+  function render() {
+    renderPalette();
+    renderRoles();
+    renderHistory();
+    applyPreview();
+    document.getElementById("undo").disabled = !model.history.length;
+  }
+
+  document.getElementById("undo").addEventListener("click", undo);
+  document.getElementById("reset").addEventListener("click", () => {
+    if (!confirm("Clear every color choice in this mockup?")) return;
+    model = initial();
+    document.getElementById("lastChange").textContent = "Started over.";
+    commit();
+  });
+
+  if (!model.primary.length) {
+    model.roles = {};
+    autoAssign();
+  }
+  render();
+})();
+</script>
+</body>
+</html>

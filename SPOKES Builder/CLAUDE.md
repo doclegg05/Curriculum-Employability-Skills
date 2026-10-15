@@ -6,7 +6,7 @@ You are building an interactive HTML slideshow presentation for **SPOKES** (Stra
 
 ## What You Build
 
-A **single self-contained `index.html` file** that is a fully interactive classroom presentation. No build tools, no frameworks, no external dependencies beyond Google Fonts. The CSS and JavaScript are embedded in the file.
+A **single self-contained `index.html` file** that is a fully interactive classroom presentation. No build tools, no frameworks, no external CDN dependencies. Fonts are **self-hosted** via `@font-face` (TYP-05). The CSS and JavaScript are embedded in the file.
 
 **Output:** A complete project folder ready to serve and deploy.
 
@@ -22,6 +22,7 @@ These files are in this directory (`SPOKES Builder/`):
 | `build-process.md`            | Step-by-step workflow, WIPPEA mapping, and verification checklist.                              |
 | `AGENT_THEMING_GUIDELINES.md` | Brand color enforcement, font pairing rules, video placeholders, and template variant guidance. |
 | `content-intake-template.md`  | Structured form for human content teams to deliver lesson content ready for building.           |
+| `../docs/briefs/instructor-to-html-intake-2026-09-17.md` | KEEP VERBATIM rules. Instructors own meaning, AI owns format. Capture only. |
 
 ## Design Philosophy
 
@@ -69,23 +70,23 @@ Additional Presentation chapters (P4, P5, etc.) may be added if the lesson has m
 
 ### Step 3: Read Theme Package
 
-1. Look up the lesson in `theme-registry.json`
+1. Look up the lesson in `theme-registry.json` (the entry may originate from a **merged Bespoke PR** that ran `bespoke-apply-selection.py` — honor `varyByChapter` card styles when present)
 2. Read Layer 1 properties: colorLead, sidebarColor, backgroundTexture, titleSlide, fontPairing
 3. Read Layer 2 chapterStyles: per-chapter divider, cards, leadComponent, secondaryAccent
 4. If the lesson is not in the registry, STOP — do not build without a theme package
 
 ### Step 4: Copy Template & Apply Theme
 
-1. Copy `template.html` to the new project directory as `index.html`
-2. Add lesson-specific Google Font `<link>` tags in `<head>` (look up import URL in `font-pairings.md`)
-3. Generate a `<style id="theme-override">` block AFTER the main CSS block by assembling snippets from `theme-library.css`:
+1. Copy `template.html` to the new project directory as `index.html`, and copy `SPOKES Builder/print/manifest.js` to `print/manifest.js` in the new project. The template loads that placeholder, and the validator's REF-01 rule blocks every edit to `index.html` while it is missing.
+2. Add lesson-specific **self-hosted** `@font-face` rules in `<head>` (or a local CSS block) for the assigned pairing — look up file names in `font-pairings.md` / the repo `fonts/` directory. **Do not** add Google Fonts `<link>` tags (TYP-05). Use `font-display: swap`.
+3. Generate a `<style id="theme-override">` block AFTER the main CSS block by assembling snippets from `theme-library.css` (generated from `theme-options.json`):
    - Font family overrides
    - Background texture for the assigned `backgroundTexture`
    - Color lead overrides for the assigned `colorLead`
    - Sidebar color override if `sidebarColor` is "royal"
    - Dark theme inversion if `backgroundTexture` is "dark-royal" (add `class="theme-dark"` to `.main`)
    - Title slide design CSS for the assigned `titleSlide`
-   - Per-chapter card style CSS scoped to `[data-chapter="N"]` (replace SCOPE prefix)
+   - Per-chapter card style CSS scoped to `[data-chapter="N"]` (replace SCOPE prefix) — when Bespoke set `varyByChapter`, each chapter may use a different card slug
    - Per-chapter section divider CSS scoped to `.slide-section[data-chapter="N"]` (replace DIVIDER_SCOPE prefix)
    - Per-chapter secondary accent overrides
    - Video placeholder CSS
@@ -136,6 +137,7 @@ Lesson-Name/
   SPOKES-Logo.png
   Handouts/           (student PDFs)
   Teacher-Resources/  (teacher guides)
+  print/              (manifest.js placeholder, then print pictures from Step 10)
   .claude/launch.json
   .gitignore
 ```
@@ -151,6 +153,7 @@ Use the preview server to confirm:
 - Closing slide triggers confetti
 - No console errors
 - **No off-brand colors** — check all CSS values against the 11-color palette in `SPOKES-STANDARD.md`
+- **Print slides.** Once the deck is final, register the lesson in `lesson-registry.json`, write `print/print-settings.json` (`{}` unless a video slide keeps its text or a tab holds answers), run `node scripts/capture-print-slides.mjs lesson-<slug>`, then print both versions in all three layouts and confirm the Student workbook shows no answers. Details: `build-process.md` Phase 5 step 8. `scripts/quality.sh` fails until the pictures match the lesson.
 
 ## Component Selection Decision Guide
 
@@ -173,7 +176,7 @@ Simple arrow-pointed list?             --> content-list
 
 ## Design System Rules
 
-See `SPOKES-STANDARD.md` for the complete rule inventory covering colors (Section 1), typography (Section 2), accessibility (Section 3), components (Section 4), navigation engine (Section 5), theme system (Section 6), mobile/touch (Section 7), performance (Section 8), engagement (Section 9), and reduced motion (Section 10).
+See `SPOKES-STANDARD.md` for the complete rule inventory covering colors (Section 1), typography (Section 2), accessibility (Section 3), components (Section 4), navigation engine (Section 5), theme system (Section 6), mobile/touch (Section 7), performance (Section 8), engagement (Section 9), reduced motion (Section 10), and print (Section 11).
 
 ### Global Design Standards
 

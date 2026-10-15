@@ -1,0 +1,13 @@
+{
+  "name": "curriculum-employability-skills",
+  "version": "1.0.0",
+  "private": true,
+  "description": "SPOKES employability lesson decks (static file:// HTML). Node is only the a11y test harness; the decks themselves need no build and no server.",
+  "scripts": {
+    "a11y": "node scripts/a11y-check.mjs"
+  },
+  "devDependencies": {
+    "axe-core": "4.13.0",
+    "playwright": "1.60.0"
+  }
+}

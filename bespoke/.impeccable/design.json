@@ -1,0 +1,487 @@
+{
+  "schemaVersion": 2,
+  "generatedAt": "2026-09-24T12:59:01.586Z",
+  "title": "Design System: BeSpoke guided builder",
+  "extensions": {
+    "colorMeta": {
+      "navy": {
+        "role": "primary",
+        "displayName": "Navy ink",
+        "tonalRamp": [
+          "oklch(15.00% 0.0888 260.91)",
+          "oklch(26.43% 0.0888 260.91)",
+          "oklch(37.86% 0.0888 260.91)",
+          "oklch(49.29% 0.0888 260.91)",
+          "oklch(60.71% 0.0888 260.91)",
+          "oklch(72.14% 0.0888 260.91)",
+          "oklch(83.57% 0.0888 260.91)",
+          "oklch(95.00% 0.0888 260.91)"
+        ]
+      },
+      "blue": {
+        "role": "primary",
+        "displayName": "Blue action",
+        "tonalRamp": [
+          "oklch(15.00% 0.1018 249.43)",
+          "oklch(26.43% 0.1018 249.43)",
+          "oklch(37.86% 0.1018 249.43)",
+          "oklch(49.29% 0.1018 249.43)",
+          "oklch(60.71% 0.1018 249.43)",
+          "oklch(72.14% 0.1018 249.43)",
+          "oklch(83.57% 0.1018 249.43)",
+          "oklch(95.00% 0.1018 249.43)"
+        ]
+      },
+      "action": {
+        "role": "primary",
+        "displayName": "Action blue",
+        "tonalRamp": [
+          "oklch(15.00% 0.1203 236.86)",
+          "oklch(26.43% 0.1203 236.86)",
+          "oklch(37.86% 0.1203 236.86)",
+          "oklch(49.29% 0.1203 236.86)",
+          "oklch(60.71% 0.1203 236.86)",
+          "oklch(72.14% 0.1203 236.86)",
+          "oklch(83.57% 0.1203 236.86)",
+          "oklch(95.00% 0.1203 236.86)"
+        ]
+      },
+      "mist": {
+        "role": "neutral",
+        "displayName": "Mist",
+        "tonalRamp": [
+          "oklch(15.00% 0.0084 236.56)",
+          "oklch(26.43% 0.0084 236.56)",
+          "oklch(37.86% 0.0084 236.56)",
+          "oklch(49.29% 0.0084 236.56)",
+          "oklch(60.71% 0.0084 236.56)",
+          "oklch(72.14% 0.0084 236.56)",
+          "oklch(83.57% 0.0084 236.56)",
+          "oklch(95.00% 0.0084 236.56)"
+        ]
+      },
+      "muted": {
+        "role": "neutral",
+        "displayName": "Muted text",
+        "tonalRamp": [
+          "oklch(15.00% 0.0337 250.09)",
+          "oklch(26.43% 0.0337 250.09)",
+          "oklch(37.86% 0.0337 250.09)",
+          "oklch(49.29% 0.0337 250.09)",
+          "oklch(60.71% 0.0337 250.09)",
+          "oklch(72.14% 0.0337 250.09)",
+          "oklch(83.57% 0.0337 250.09)",
+          "oklch(95.00% 0.0337 250.09)"
+        ]
+      },
+      "line": {
+        "role": "neutral",
+        "displayName": "Divider line",
+        "tonalRamp": [
+          "oklch(15.00% 0.0183 245.41)",
+          "oklch(26.43% 0.0183 245.41)",
+          "oklch(37.86% 0.0183 245.41)",
+          "oklch(49.29% 0.0183 245.41)",
+          "oklch(60.71% 0.0183 245.41)",
+          "oklch(72.14% 0.0183 245.41)",
+          "oklch(83.57% 0.0183 245.41)",
+          "oklch(95.00% 0.0183 245.41)"
+        ]
+      },
+      "paper": {
+        "role": "neutral",
+        "displayName": "Paper",
+        "tonalRamp": [
+          "oklch(15.00% 0.0000 89.88)",
+          "oklch(26.43% 0.0000 89.88)",
+          "oklch(37.86% 0.0000 89.88)",
+          "oklch(49.29% 0.0000 89.88)",
+          "oklch(60.71% 0.0000 89.88)",
+          "oklch(72.14% 0.0000 89.88)",
+          "oklch(83.57% 0.0000 89.88)",
+          "oklch(95.00% 0.0000 89.88)"
+        ]
+      },
+      "focus": {
+        "role": "secondary",
+        "displayName": "Mauve focus",
+        "tonalRamp": [
+          "oklch(15.00% 0.1650 15.18)",
+          "oklch(26.43% 0.1650 15.18)",
+          "oklch(37.86% 0.1650 15.18)",
+          "oklch(49.29% 0.1650 15.18)",
+          "oklch(60.71% 0.1650 15.18)",
+          "oklch(72.14% 0.1650 15.18)",
+          "oklch(83.57% 0.1650 15.18)",
+          "oklch(95.00% 0.1650 15.18)"
+        ]
+      },
+      "canvas": {
+        "role": "neutral",
+        "displayName": "Canvas",
+        "tonalRamp": [
+          "oklch(15.00% 0.0034 247.86)",
+          "oklch(26.43% 0.0034 247.86)",
+          "oklch(37.86% 0.0034 247.86)",
+          "oklch(49.29% 0.0034 247.86)",
+          "oklch(60.71% 0.0034 247.86)",
+          "oklch(72.14% 0.0034 247.86)",
+          "oklch(83.57% 0.0034 247.86)",
+          "oklch(95.00% 0.0034 247.86)"
+        ]
+      },
+      "rail": {
+        "role": "neutral",
+        "displayName": "Navigation rail",
+        "tonalRamp": [
+          "oklch(15.00% 0.0025 228.78)",
+          "oklch(26.43% 0.0025 228.78)",
+          "oklch(37.86% 0.0025 228.78)",
+          "oklch(49.29% 0.0025 228.78)",
+          "oklch(60.71% 0.0025 228.78)",
+          "oklch(72.14% 0.0025 228.78)",
+          "oklch(83.57% 0.0025 228.78)",
+          "oklch(95.00% 0.0025 228.78)"
+        ]
+      },
+      "selected": {
+        "role": "neutral",
+        "displayName": "Selected surface",
+        "tonalRamp": [
+          "oklch(15.00% 0.0109 234.82)",
+          "oklch(26.43% 0.0109 234.82)",
+          "oklch(37.86% 0.0109 234.82)",
+          "oklch(49.29% 0.0109 234.82)",
+          "oklch(60.71% 0.0109 234.82)",
+          "oklch(72.14% 0.0109 234.82)",
+          "oklch(83.57% 0.0109 234.82)",
+          "oklch(95.00% 0.0109 234.82)"
+        ]
+      },
+      "input-line": {
+        "role": "neutral",
+        "displayName": "Input line",
+        "tonalRamp": [
+          "oklch(15.00% 0.0303 251.56)",
+          "oklch(26.43% 0.0303 251.56)",
+          "oklch(37.86% 0.0303 251.56)",
+          "oklch(49.29% 0.0303 251.56)",
+          "oklch(60.71% 0.0303 251.56)",
+          "oklch(72.14% 0.0303 251.56)",
+          "oklch(83.57% 0.0303 251.56)",
+          "oklch(95.00% 0.0303 251.56)"
+        ]
+      },
+      "preview-mat": {
+        "role": "neutral",
+        "displayName": "Preview mat",
+        "tonalRamp": [
+          "oklch(15.00% 0.0119 239.91)",
+          "oklch(26.43% 0.0119 239.91)",
+          "oklch(37.86% 0.0119 239.91)",
+          "oklch(49.29% 0.0119 239.91)",
+          "oklch(60.71% 0.0119 239.91)",
+          "oklch(72.14% 0.0119 239.91)",
+          "oklch(83.57% 0.0119 239.91)",
+          "oklch(95.00% 0.0119 239.91)"
+        ]
+      },
+      "notice": {
+        "role": "neutral",
+        "displayName": "Notice surface",
+        "tonalRamp": [
+          "oklch(15.00% 0.0405 91.71)",
+          "oklch(26.43% 0.0405 91.71)",
+          "oklch(37.86% 0.0405 91.71)",
+          "oklch(49.29% 0.0405 91.71)",
+          "oklch(60.71% 0.0405 91.71)",
+          "oklch(72.14% 0.0405 91.71)",
+          "oklch(83.57% 0.0405 91.71)",
+          "oklch(95.00% 0.0405 91.71)"
+        ]
+      },
+      "readability": {
+        "role": "neutral",
+        "displayName": "Readability surface",
+        "tonalRamp": [
+          "oklch(15.00% 0.0130 41.20)",
+          "oklch(26.43% 0.0130 41.20)",
+          "oklch(37.86% 0.0130 41.20)",
+          "oklch(49.29% 0.0130 41.20)",
+          "oklch(60.71% 0.0130 41.20)",
+          "oklch(72.14% 0.0130 41.20)",
+          "oklch(83.57% 0.0130 41.20)",
+          "oklch(95.00% 0.0130 41.20)"
+        ]
+      },
+      "readability-ink": {
+        "role": "neutral",
+        "displayName": "Readability ink",
+        "tonalRamp": [
+          "oklch(15.00% 0.1041 10.38)",
+          "oklch(26.43% 0.1041 10.38)",
+          "oklch(37.86% 0.1041 10.38)",
+          "oklch(49.29% 0.1041 10.38)",
+          "oklch(60.71% 0.1041 10.38)",
+          "oklch(72.14% 0.1041 10.38)",
+          "oklch(83.57% 0.1041 10.38)",
+          "oklch(95.00% 0.1041 10.38)"
+        ]
+      },
+      "lesson-green": {
+        "role": "lesson-palette",
+        "displayName": "Lesson Green",
+        "tonalRamp": [
+          "oklch(15.00% 0.1787 146.63)",
+          "oklch(26.43% 0.1787 146.63)",
+          "oklch(37.86% 0.1787 146.63)",
+          "oklch(49.29% 0.1787 146.63)",
+          "oklch(60.71% 0.1787 146.63)",
+          "oklch(72.14% 0.1787 146.63)",
+          "oklch(83.57% 0.1787 146.63)",
+          "oklch(95.00% 0.1787 146.63)"
+        ]
+      },
+      "lesson-gold": {
+        "role": "lesson-palette",
+        "displayName": "Lesson Gold",
+        "tonalRamp": [
+          "oklch(15.00% 0.1165 89.55)",
+          "oklch(26.43% 0.1165 89.55)",
+          "oklch(37.86% 0.1165 89.55)",
+          "oklch(49.29% 0.1165 89.55)",
+          "oklch(60.71% 0.1165 89.55)",
+          "oklch(72.14% 0.1165 89.55)",
+          "oklch(83.57% 0.1165 89.55)",
+          "oklch(95.00% 0.1165 89.55)"
+        ]
+      },
+      "lesson-deep-gold": {
+        "role": "lesson-palette",
+        "displayName": "Lesson Deep gold",
+        "tonalRamp": [
+          "oklch(15.00% 0.1303 89.11)",
+          "oklch(26.43% 0.1303 89.11)",
+          "oklch(37.86% 0.1303 89.11)",
+          "oklch(49.29% 0.1303 89.11)",
+          "oklch(60.71% 0.1303 89.11)",
+          "oklch(72.14% 0.1303 89.11)",
+          "oklch(83.57% 0.1303 89.11)",
+          "oklch(95.00% 0.1303 89.11)"
+        ]
+      },
+      "lesson-gray": {
+        "role": "lesson-palette",
+        "displayName": "Lesson Gray",
+        "tonalRamp": [
+          "oklch(15.00% 0.0132 269.42)",
+          "oklch(26.43% 0.0132 269.42)",
+          "oklch(37.86% 0.0132 269.42)",
+          "oklch(49.29% 0.0132 269.42)",
+          "oklch(60.71% 0.0132 269.42)",
+          "oklch(72.14% 0.0132 269.42)",
+          "oklch(83.57% 0.0132 269.42)",
+          "oklch(95.00% 0.0132 269.42)"
+        ]
+      },
+      "lesson-silver": {
+        "role": "lesson-palette",
+        "displayName": "Lesson Silver",
+        "tonalRamp": [
+          "oklch(15.00% 0.0026 228.79)",
+          "oklch(26.43% 0.0026 228.79)",
+          "oklch(37.86% 0.0026 228.79)",
+          "oklch(49.29% 0.0026 228.79)",
+          "oklch(60.71% 0.0026 228.79)",
+          "oklch(72.14% 0.0026 228.79)",
+          "oklch(83.57% 0.0026 228.79)",
+          "oklch(95.00% 0.0026 228.79)"
+        ]
+      }
+    },
+    "typographyMeta": {
+      "headline": {
+        "displayName": "Panel heading",
+        "purpose": "The current step title."
+      },
+      "title": {
+        "displayName": "Section heading",
+        "purpose": "Groups of controls or supporting content."
+      },
+      "preview-title": {
+        "displayName": "Preview heading",
+        "purpose": "The active reusable slide type, outside the artifact."
+      },
+      "body": {
+        "displayName": "Panel explanation",
+        "purpose": "Brief guidance for the current choice."
+      },
+      "label": {
+        "displayName": "Field label",
+        "purpose": "Names editable controls."
+      },
+      "helper": {
+        "displayName": "Helper text",
+        "purpose": "Secondary explanation and recovery guidance."
+      }
+    },
+    "shadows": [
+      {
+        "name": "recovery-menu",
+        "value": "0 10px 24px #00133f20",
+        "purpose": "Lift the files and recovery menu above the workspace."
+      },
+      {
+        "name": "slide-artifact",
+        "value": "0 6px 18px #00133f1f",
+        "purpose": "Separate the authored slide from its preview mat."
+      }
+    ],
+    "motion": [],
+    "breakpoints": [
+      {
+        "name": "wide-workspace",
+        "value": "min-width: 1500px"
+      },
+      {
+        "name": "compact-desktop",
+        "value": "761px–1100px"
+      },
+      {
+        "name": "mobile-surfaces",
+        "value": "max-width: 760px"
+      },
+      {
+        "name": "generated-slide",
+        "value": "max-width: 600px"
+      }
+    ],
+    "focus": {
+      "value": "3px solid var(--focus)",
+      "offset": "3px",
+      "purpose": "Global keyboard focus; the programmatically focused step panel has no outline."
+    },
+    "notes": [
+      "Scope is the guided builder in bespoke/ only. Lesson preview styles are generated by builder-model.mjs and are separate from application chrome.",
+      "Tonal ramps are synthesized OKLCH display aids for the documentation panel, not new runtime palette tokens or extra selectable colors.",
+      "Component snippets are static visual examples. Application event handlers, tab keyboard behavior, draft logic, and role-contrast validation remain in builder-app.mjs and builder-model.mjs.",
+      "No authored transition or animation token exists in the current chrome. Reduced-motion preferences disable animation, transitions, and smooth scrolling."
+    ]
+  },
+  "components": [
+    {
+      "name": "Primary action",
+      "kind": "button",
+      "refersTo": "button-primary",
+      "description": "Visible save and review actions, with the existing dark-blue hover.",
+      "html": "<div class=\"ds-root\"><button class=\"ds-button ds-primary\" type=\"button\">Save shared design</button></div>",
+      "css": ".ds-root{font-family:\"Outfit\",system-ui,sans-serif;color:var(--navy,#00133f)}.ds-button{display:inline-flex;justify-content:center;align-items:center;min-height:40px;padding:9px 14px;border:1px solid var(--line,#cad5df);border-radius:6px;font:500 .9rem/1.2 \"Outfit\",system-ui,sans-serif;cursor:pointer}.ds-button:disabled{opacity:.5;cursor:default}.ds-primary{background:var(--blue,#004071);border-color:var(--blue,#004071);color:var(--paper,#fff)}.ds-primary:hover{background:var(--navy,#00133f)}.ds-root :focus-visible{outline:3px solid var(--focus,#a7253f);outline-offset:3px}"
+    },
+    {
+      "name": "Secondary action",
+      "kind": "button",
+      "refersTo": "button-secondary",
+      "description": "Open, backup, and navigation actions.",
+      "html": "<div class=\"ds-root\"><button class=\"ds-button ds-secondary\" type=\"button\">Open team design</button></div>",
+      "css": ".ds-root{font-family:\"Outfit\",system-ui,sans-serif;color:var(--navy,#00133f)}.ds-button{display:inline-flex;justify-content:center;align-items:center;min-height:40px;padding:9px 14px;border:1px solid var(--line,#cad5df);border-radius:6px;font:500 .9rem/1.2 \"Outfit\",system-ui,sans-serif;cursor:pointer}.ds-button:disabled{opacity:.5;cursor:default}.ds-secondary{background:var(--paper,#fff);color:var(--navy,#00133f)}.ds-secondary:hover{background:var(--mist,#edf3f7)}.ds-root :focus-visible{outline:3px solid var(--focus,#a7253f);outline-offset:3px}"
+    },
+    {
+      "name": "Inline action",
+      "kind": "button",
+      "refersTo": "text-link",
+      "description": "An underlined recovery or repair action in surrounding copy.",
+      "html": "<div class=\"ds-root\"><button type=\"button\" class=\"ds-link\">Go to color controls</button></div>",
+      "css": ".ds-root{font-family:\"Outfit\",system-ui,sans-serif;color:var(--navy,#00133f)}.ds-link{border:0;padding:0;background:transparent;text-decoration:underline;text-underline-offset:3px;color:var(--blue,#004071);font:inherit;cursor:pointer}.ds-root :focus-visible{outline:3px solid var(--focus,#a7253f);outline-offset:3px}"
+    },
+    {
+      "name": "Labeled field",
+      "kind": "input",
+      "refersTo": "field",
+      "description": "A label above an editable text field; native inputs retain their semantics.",
+      "html": "<div class=\"ds-root\"><label class=\"ds-field\">Sample title<input value=\"Make room for your next step\"></label></div>",
+      "css": ".ds-root{font-family:\"Outfit\",system-ui,sans-serif;color:var(--navy,#00133f)}.ds-field{display:flex;flex-direction:column;gap:7px;font-size:.87rem;font-weight:500;margin-bottom:20px;max-width:340px}.ds-field input{font:.93rem \"Outfit\",system-ui,sans-serif;color:var(--navy,#00133f);font-weight:400;width:100%;padding:10px;border:1px solid #8f9eaf;border-radius:5px;background:var(--paper,#fff);min-height:43px}.ds-root :focus-visible{outline:3px solid var(--focus,#a7253f);outline-offset:3px}"
+    },
+    {
+      "name": "Current design step",
+      "kind": "nav",
+      "refersTo": "step-current",
+      "description": "Numbered navigation names the ordered task and marks the current step.",
+      "html": "<nav class=\"ds-root ds-steps\" aria-label=\"Design steps\"><button type=\"button\" class=\"ds-step\" aria-current=\"step\"><span class=\"ds-num\">3</span><span>Paint your elements</span></button><button type=\"button\" class=\"ds-step\"><span class=\"ds-num\">4</span><span>Fonts &amp; background</span></button></nav>",
+      "css": ".ds-root{font-family:\"Outfit\",system-ui,sans-serif;color:var(--navy,#00133f)}.ds-steps{display:grid;gap:4px;max-width:220px}.ds-step{display:flex;gap:8px;align-items:center;text-align:left;border:0;background:transparent;width:100%;padding:10px 8px;font:.84rem/1.25 \"Outfit\",system-ui,sans-serif;border-radius:5px;color:#44536a;min-height:42px;cursor:pointer}.ds-step:hover{background:#e6edf3}.ds-step[aria-current]{background:var(--blue,#004071);color:white}.ds-num{display:inline-flex;align-items:center;justify-content:center;font-size:.7rem;min-width:19px;height:19px;border:1px solid currentColor;border-radius:50%}.ds-root :focus-visible{outline:3px solid var(--focus,#a7253f);outline-offset:3px}"
+    },
+    {
+      "name": "Selected design choice",
+      "kind": "button",
+      "refersTo": "choice-selected",
+      "description": "A pressed decision button retains a selected surface, border, and visible check.",
+      "html": "<div class=\"ds-root\"><button class=\"ds-choice\" type=\"button\" aria-pressed=\"true\"><span>Centered</span><svg class=\"ds-check\" width=\"12\" height=\"12\" viewBox=\"0 0 12 12\" aria-hidden=\"true\"><path d=\"m2 6 2.5 2.5L10 3\" fill=\"none\" stroke=\"currentColor\" stroke-width=\"1.5\"/></svg></button></div>",
+      "css": ".ds-root{font-family:\"Outfit\",system-ui,sans-serif;color:var(--navy,#00133f)}.ds-choice{position:relative;min-height:43px;min-width:130px;padding:10px 8px;font:.87rem/1.2 \"Outfit\",system-ui,sans-serif;border:1px solid var(--line,#cad5df);background:var(--paper,#fff);border-radius:6px;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:8px;color:inherit;cursor:pointer}.ds-choice:hover{border-color:var(--action,#007baf)}.ds-choice[aria-pressed=true]{background:#edf5fa;border-color:var(--blue,#004071);font-weight:500}.ds-check{position:absolute;top:4px;right:6px}.ds-root :focus-visible{outline:3px solid var(--focus,#a7253f);outline-offset:3px}"
+    },
+    {
+      "name": "Selected palette color",
+      "kind": "chip",
+      "refersTo": "paint-chip-selected",
+      "description": "A named circular swatch with selected marker. All approved colors remain visible in the real palette.",
+      "html": "<div class=\"ds-root\"><button class=\"ds-paint\" type=\"button\" aria-label=\"Navy selected\" aria-pressed=\"true\"><span class=\"ds-swatch\"><span class=\"ds-mark\"><svg class=\"ds-check\" width=\"12\" height=\"12\" viewBox=\"0 0 12 12\" aria-hidden=\"true\"><path d=\"m2 6 2.5 2.5L10 3\" fill=\"none\" stroke=\"currentColor\" stroke-width=\"1.5\"/></svg></span></span><span>Navy</span></button></div>",
+      "css": ".ds-root{font-family:\"Outfit\",system-ui,sans-serif;color:var(--navy,#00133f)}.ds-paint{border:1px solid transparent;border-radius:5px;padding:4px 2px;background:white;font:.7rem/1.1 \"Outfit\",system-ui,sans-serif;display:flex;align-items:center;flex-direction:column;gap:6px;min-width:60px;cursor:pointer}.ds-paint[aria-pressed=true]{border-color:var(--blue,#004071);background:var(--mist,#edf3f7)}.ds-paint:hover{border-color:#a2b4c5}.ds-swatch{display:block;position:relative;width:38px;height:38px;border-radius:50%;border:1px solid #8191a3;background:var(--blue,#004071)}.ds-mark{position:absolute;bottom:-2px;right:-4px;border-radius:50%;background:var(--navy,#00133f);color:white;display:grid;place-items:center;width:19px;height:19px}.ds-paint[aria-disabled=true] .ds-swatch:after{content:\"\";position:absolute;left:0;top:18px;width:100%;height:2px;background:var(--navy,#00133f);transform:rotate(-45deg);box-shadow:0 1px 0 white}@media(max-width:760px){.ds-swatch{width:44px;height:44px}.ds-paint{font-size:.75rem}.ds-paint[aria-disabled=true] .ds-swatch:after{top:21px}}.ds-root :focus-visible{outline:3px solid var(--focus,#a7253f);outline-offset:3px}"
+    },
+    {
+      "name": "Editable preset",
+      "kind": "card",
+      "refersTo": "preset",
+      "description": "A starting-look button samples its actual title palette and heading font.",
+      "html": "<div class=\"ds-root\"><button class=\"ds-preset\" type=\"button\" aria-pressed=\"true\"><span class=\"ds-sample\"><i></i><span>Aa</span><b></b></span><strong>Professional</strong><span>Clear structure with a warm accent.</span></button></div>",
+      "css": ".ds-root{font-family:\"Outfit\",system-ui,sans-serif;color:var(--navy,#00133f)}.ds-preset{border:1px solid var(--line,#cad5df);padding:0 0 12px;border-radius:6px;overflow:hidden;background:white;display:flex;flex-direction:column;gap:7px;text-align:left;font:.77rem/1.35 \"Outfit\",system-ui,sans-serif;width:210px;cursor:pointer;color:inherit}.ds-preset[aria-pressed=true]{outline:2px solid var(--blue,#004071);outline-offset:1px}.ds-preset>strong,.ds-preset>span:not(.ds-sample){margin:0 10px}.ds-preset strong{font-size:.92rem}.ds-sample{height:84px;width:100%;display:flex;position:relative;align-items:center;background:var(--blue,#004071);color:var(--paper,#fff)}.ds-sample>span{font-family:\"Merriweather\",serif;font-size:2.2rem;z-index:1;margin-left:30px}.ds-sample i{position:absolute;left:0;top:0;bottom:0;width:15px;background:var(--blue,#004071)}.ds-sample b{position:absolute;right:14px;bottom:17px;background:var(--focus,#a7253f);width:33px;height:4px}.ds-root :focus-visible{outline:3px solid var(--focus,#a7253f);outline-offset:3px}"
+    },
+    {
+      "name": "Preview tabs",
+      "kind": "nav",
+      "refersTo": "preview-tab-selected",
+      "description": "Slide-type tabs use an underline and text color to mark the selected artifact view.",
+      "html": "<div class=\"ds-root ds-tabs\" role=\"tablist\" aria-label=\"Slide preview\"><button type=\"button\" role=\"tab\" aria-selected=\"true\">Title</button><button type=\"button\" role=\"tab\" aria-selected=\"false\" tabindex=\"-1\">Divider</button><button type=\"button\" role=\"tab\" aria-selected=\"false\" tabindex=\"-1\">Text boxes</button></div>",
+      "css": ".ds-root{font-family:\"Outfit\",system-ui,sans-serif;color:var(--navy,#00133f)}.ds-tabs{display:flex;gap:3px;border-bottom:1px solid var(--line,#cad5df);margin-bottom:18px;overflow-x:auto}.ds-tabs button{border:0;border-bottom:3px solid transparent;white-space:nowrap;padding:11px 12px;background:transparent;font:.85rem \"Outfit\",system-ui,sans-serif;min-height:42px;color:var(--muted,#526273);cursor:pointer}.ds-tabs button[aria-selected=true]{border-color:var(--blue,#004071);color:var(--blue,#004071);font-weight:500}.ds-root :focus-visible{outline:3px solid var(--focus,#a7253f);outline-offset:3px}"
+    }
+  ],
+  "narrative": {
+    "northStar": "The guided design workbench",
+    "overview": "This is the code-defined design system for the guided builder at `bespoke/index.html`. Its working surfaces use the existing SPOKES navy, blue, white, bridge logo, and locally hosted Outfit type. Controls are compact, explicit, and steady while the lesson preview carries the user's expressive choices.\n\nThe interface and the authored lesson design are separate layers. `builder.css` governs the builder chrome; `builder-catalog.json` supplies the editable choices; `builder-model.mjs` renders the shared lesson model. This document applies to the guided builder only. It does not restyle the dashboard, the original wizard, or any released lesson. Root `PRODUCT.md` describes the dashboard and is not a surface brief for this builder.",
+    "keyCharacteristics": [
+      "Stable SPOKES controls surround a visibly changing lesson artifact.",
+      "Labels and sample previews explain choices before specialist vocabulary is needed.",
+      "Color roles and heading/body fonts remain independently editable.",
+      "State, recovery, readability, and comparison information sit near the task they explain."
+    ],
+    "rules": [
+      {
+        "name": "The Two Layers Rule",
+        "body": "Lesson choices change the shared preview model; they never repaint the builder's navigation, fields, or status surfaces.",
+        "section": "colors"
+      },
+      {
+        "name": "The Visible Choice Rule",
+        "body": "Keep every approved color visible. Explain an unavailable text choice in place, and preserve the rest of the draft while the user repairs a contrast conflict.",
+        "section": "colors"
+      },
+      {
+        "name": "The Independent Type Rule",
+        "body": "Preserve both 12-family selectors. Never reintroduce the original wizard's fixed font-pair restrictions.",
+        "section": "typography"
+      }
+    ],
+    "dos": [
+      "Do preserve the SPOKES logo, Outfit chrome, and existing navy-blue-white identity.",
+      "Do render previews from the shared model so guided controls, editable presets, and saved designs describe the same artifact.",
+      "Do keep all 11 palette choices visible and all 12 font families available independently for headings and body.",
+      "Do retain focus, open disclosures, undo history, and recoverable sample text when a choice changes.",
+      "Do label sample content, local-test states, contrast repairs, and advisory comparison honestly."
+    ],
+    "donts": [
+      "Don't apply the selected lesson palette or fonts to application chrome.",
+      "Don't treat presets as locked themes or restore fixed font-pair restrictions.",
+      "Don't hide unsafe text colors without explaining why they are unavailable.",
+      "Don't describe the comparison as a perceptual score or a requirement to pass.",
+      "Don't treat a saved design or review request as authorization to build or publish a lesson.",
+      "Don't extend this document's authority to the dashboard, original wizard, or released lessons."
+    ]
+  }
+}

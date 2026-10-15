@@ -1,4 +1,32 @@
-lesson-controlling-anger/Teacher-Resources/Controlling Anger 2026 Presentation.pptx
-Communicating Public/Communicating with the Public PowerPoint Example 2026.pptx
-Communicating Public/Communicating with the Public Lesson Plan Updated 2026.docx
-scripts/__pycache__/
+# OS junk
+.DS_Store
+Thumbs.db
+desktop.ini
+
+# Temp/backup files
+~$*
+*.tmp
+*.bak
+
+# Python bytecode
+__pycache__/
+*.pyc
+
+# Claude Code worktrees (local state)
+.claude/worktrees/
+
+# Impeccable session state (local server pids/ports, not project history)
+.impeccable/questions/
+
+# Node a11y test harness (devDependencies only; decks need no node_modules)
+node_modules
+
+# Netlify local state (the handoff token is a site secret, never a file here)
+.netlify
+
+# Offline lessons package (scripts/build-offline-package.py output)
+dist/
+
+# Original module files (pptx, pdf, docx) kept on disk for reference; too large for git
+/Employability Modules/
+/lesson-*/Old */

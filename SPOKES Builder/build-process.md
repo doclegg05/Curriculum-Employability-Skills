@@ -92,7 +92,7 @@ Additional Presentation chapters (P4, P5, etc.) may be added with sequential dat
 
 #### Step B: Copy Template & Apply Theme
 
-1. Copy `template.html` to the new project directory as `index.html`
+1. Copy `template.html` to the new project directory as `index.html`, and copy `SPOKES Builder/print/manifest.js` to `print/manifest.js` in the new project. The template loads that placeholder, and the validator's REF-01 rule blocks every edit to `index.html` while it is missing.
 2. Add lesson-specific Google Font `<link>` tags in `<head>` (look up import URL in `font-pairings.md`)
 3. Generate a `<style id="theme-override">` block AFTER the main CSS block by assembling snippets from `theme-library.css`:
    - Font family overrides
@@ -170,6 +170,12 @@ Is there a simple list?
 7. **Set the closing slide:**
    - Choose an inspirational quote related to the lesson topic
    - Set the closing statement
+8. **Take the print pictures (after the deck is final):**
+   - Register the lesson in `lesson-registry.json` so the picture script finds it
+   - Write `print/print-settings.json`: `{}` by default; list slide numbers in `keepVideoSlides` to keep a video slide's text, and answer tab panel ids in `teacherOnlyTabs`
+   - Run `node scripts/capture-print-slides.mjs lesson-<slug>`
+   - Print the lesson to PDF in all three layouts, both versions, and check that the Student workbook shows no answers
+   - Retake the pictures after any later edit to `index.html`; `scripts/quality.sh` fails until you do
 
 ### Phase 6: Brand Compliance Check
 
@@ -177,7 +183,7 @@ Is there a simple list?
 
 - Search the entire file for any hex color (`#`) that is not one of the 11 approved brand colors: `#007baf`, `#37b550`, `#004071`, `#FFFFFF`, `#EDF3F7`, `#60636b`, `#d3b257`, `#00133f`, `#a7253f`, `#d1d3d4`, `#ad8806`
 - Opacity variations of brand colors are OK (e.g., `rgba(0, 123, 175, 0.1)`)
-- Consult `brand-palette.md` for the full prohibited colors list and contrast reference
+- Consult `../SPOKES-STANDARD.md` for the full prohibited colors list and contrast reference
 - No colors outside the 11-color palette should exist
 - Verify theme-override block was generated from theme-library.css — no custom CSS outside the library
 - Verify card styles change between chapters (check [data-chapter] scoping)
@@ -201,6 +207,10 @@ New-Lesson-Project/
   videos/                 <-- All local video files (.mp4)
     video_file_name.mp4
     ...
+  print/                  <-- Print slides pictures (generated, see Phase 5 step 8)
+    print-settings.json
+    manifest.js
+    s01.jpg ...
   .claude/
     launch.json           <-- Preview server config (see below)
   .gitignore              <-- Standard ignore file (see below)
@@ -245,6 +255,7 @@ Run through this checklist before delivering:
 - [ ] **Video placeholder slides** display styled placeholder box, or **Local video slides** play successfully from the `videos/` folder (no broken iframes)
 - [ ] **All download buttons** link to correct PDFs
 - [ ] **Resources sidebar** links work
+- [ ] **Print slides** button prints both versions in all three layouts, and `node scripts/capture-print-slides.mjs --check` passes
 - [ ] **Keyboard navigation** works (ArrowRight, ArrowLeft, Space)
 - [ ] **Closing slide** triggers confetti and success sound
 - [ ] **No console errors** in browser dev tools
@@ -259,3 +270,16 @@ Run through this checklist before delivering:
 - [ ] **IntersectionObserver reveals** tested — `.reveal-item` elements stagger in on slide entry; scrollable slides trigger on scroll
 - [ ] **View Transitions** graceful fallback confirmed — Chrome/Edge smooth cross-fade; Firefox/Safari use existing slideIn animation
 - [ ] **Optional per-lesson effects** (if used) are gated on `prefersReduced` and pause when slide is not active
+
+
+## BeSpoke team handoff and design acceptance
+
+For an approved Round 2 team file, follow
+[the builder handoff](../docs/bespoke/builder-handoff.md) before beginning a build.
+The validated proposal contains immutable selection.json, canonical intake,
+design.css and build-contract.json. Preserve the team's complete Word intake and
+source versions; preview samples are not the finished curriculum. Britt's reviewed
+merge is required before lesson construction. After building, run the design
+contract checker as well as the normal lesson/quality gates and obtain teacher
+acceptance of the rendered result. No new lesson is authorized merely by receiving
+a file.

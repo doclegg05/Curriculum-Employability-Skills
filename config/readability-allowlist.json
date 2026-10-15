@@ -1,0 +1,7 @@
+{
+  "description": "Allowlist for scripts/readability-gate.mjs. Proper nouns and program names replaced with a neutral one-syllable word before Flesch-Kincaid scoring, so unavoidable names do not distort syllable counts. Only names that cannot be reworded belong here; this file is not for silencing prose that should be rewritten.",
+  "terms": [
+    "SPOKES",
+    "WV Adult Basic Education"
+  ]
+}

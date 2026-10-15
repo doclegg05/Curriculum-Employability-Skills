@@ -93,11 +93,11 @@ Each rule has:
 - **Rule:** All body selectors must use `var(--font-body)`, not hardcoded font names.
 - **Rationale:** Same reasoning as TYP-03 — body text must respond to theme font pairing changes through the variable system rather than hardcoded values.
 
-### TYP-05 — Google Fonts Display Swap
+### TYP-05 — Self-Hosted Fonts With Display Swap
 - **Severity:** WARN
 - **Validation:** deterministic
-- **Rule:** Google Fonts links must include `display=swap`.
-- **Rationale:** `display=swap` prevents invisible text during font loading (FOIT). Without it, users on slow connections see blank text until the web font loads, degrading the classroom presentation experience.
+- **Rule:** All fonts must be self-hosted from the repo `fonts/` directory via `@font-face` rules with `font-display: swap`. External font CDN links (`fonts.googleapis.com` / `fonts.gstatic.com`) are prohibited.
+- **Rationale:** Self-hosted fonts render identically offline, over `file://`, and behind school content filters — CDN links fail silently in all three cases, degrading each lesson's registered typography to fallback stacks. `font-display: swap` still applies so text is never invisible while local files load. (Updated 2026-08-17; previously this rule required Google Fonts links to carry `display=swap`.)
 
 ---
 
@@ -373,14 +373,15 @@ Generation D merges the best features from three incompatible navigation engine 
 ### MOB-02 — Sidebar Toggle Tap Target
 - **Severity:** CRITICAL
 - **Validation:** deterministic
-- **Rule:** Sidebar toggle must be at least 44x44px (WCAG 2.5.8 Level AA).
-- **Rationale:** The sidebar toggle was 36x36px across all lessons, violating WCAG 2.5.8's minimum target size of 44x44px. Undersized targets cause repeated mis-taps, especially for users with motor impairments.
+- **Rule:** Sidebar toggle must be at least 44x44 CSS px (the SPOKES project minimum).
+- **Rationale:** SPOKES deliberately requires a larger target for reliable classroom and touch use. WCAG 2.2 SC 2.5.8 (Level AA) requires 24x24 CSS px or an applicable exception; SC 2.5.5 (Level AAA) specifies 44x44 CSS px with exceptions. A 36x36px toggle fails this project's 44px rule, but its size alone does not establish an AA violation. Undersized targets cause repeated mis-taps, especially for users with motor impairments.
+- **Sources:** [W3C SC 2.5.8 Target Size (Minimum)](https://www.w3.org/WAI/WCAG22/Understanding/target-size-minimum), [W3C SC 2.5.5 Target Size](https://www.w3.org/WAI/WCAG21/Understanding/target-size).
 
 ### MOB-03 — Navigation Button Tap Target
 - **Severity:** CRITICAL
 - **Validation:** deterministic
-- **Rule:** Navigation prev/next buttons must be at least 44x44px (WCAG 2.5.8 Level AA).
-- **Rationale:** Same reasoning as MOB-02 — navigation buttons are the most frequently tapped elements and must meet the 44x44px minimum for reliable touch interaction.
+- **Rule:** Navigation prev/next buttons must be at least 44x44 CSS px (the SPOKES project minimum).
+- **Rationale:** Same reasoning and W3C references as MOB-02: navigation buttons are frequently tapped and must meet the stricter SPOKES 44x44px minimum for reliable touch interaction. This project rule must not be described as the 24x24px WCAG SC 2.5.8 AA threshold.
 
 ### MOB-04 — Touch Feedback for Hover Effects
 - **Severity:** WARN
@@ -404,11 +405,11 @@ Generation D merges the best features from three incompatible navigation engine 
 - **Rule:** Active slide video loading via `data-src` to `src` swap in `showSlide()` is recommended.
 - **Rationale:** Even with `preload="none"`, browsers may still download video metadata. Deferring the `src` attribute entirely until the slide is active eliminates all unnecessary network requests for off-screen videos.
 
-### PRF-03 — Google Fonts Preconnect
+### PRF-03 — External Origin Preconnect
 - **Severity:** WARN
 - **Validation:** deterministic
-- **Rule:** Google Fonts must use `preconnect` hints in `<head>`.
-- **Rationale:** `preconnect` establishes the TCP connection and TLS handshake with Google Fonts servers before the font CSS is parsed, reducing font load time by 100-300ms. This is a low-effort performance win.
+- **Rule:** With self-hosted fonts (TYP-05) decks need no `preconnect` hints. If an external origin is ever reintroduced, it must carry a `preconnect` hint in `<head>`.
+- **Rationale:** `preconnect` establishes the TCP connection and TLS handshake before the resource is requested, reducing load time by 100-300ms per origin. Self-hosted assets make this moot — zero external origins is the preferred state. (Updated 2026-08-17; previously required preconnect hints for Google Fonts.)
 
 ---
 
@@ -477,3 +478,13 @@ Generation D merges the best features from three incompatible navigation engine 
 - **Validation:** heuristic
 - **Rule:** `showSlide()` must skip `document.startViewTransition()` when `prefersReduced` is true. The View Transitions API operates outside the CSS `transition` property system and is not suppressed by RDM-01's CSS rule.
 - **Rationale:** The View Transitions API creates cross-fade animations between DOM states. Unlike CSS transitions, these are not governed by the `transition` property and therefore are not suppressed by RDM-01's `0.01ms` override. An explicit JS check is the only way to prevent these animations for reduced-motion users.
+
+---
+
+## Section 11: Print
+
+### PRT-01 — Print Slides Loaded
+- **Severity:** WARN
+- **Validation:** deterministic
+- **Rule:** Every lesson loads `print/manifest.js` and then `../scripts/print-slides.js`, after its other scripts. Freshness is separate: `node scripts/capture-print-slides.mjs --check` in `scripts/quality.sh` fails when `index.html` changed after the print pictures were taken.
+- **Rationale:** Teachers print lessons as stapled or binder workbooks in a Student version and a Teacher version with answers. The Print slides button prints saved pictures of each slide, because the live slides size themselves from the screen and do not survive a paper page.

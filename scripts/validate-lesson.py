@@ -162,6 +162,11 @@ def _css_outside_root(css: str) -> str:
     return re.sub(r':root\s*\{[^}]*\}', '', css, flags=re.DOTALL)
 
 
+def _css_without_font_faces(css: str) -> str:
+    """Return CSS without @font-face declarations used to define local fonts."""
+    return re.sub(r'@font-face\s*\{[^}]*\}', '', css, flags=re.DOTALL | re.IGNORECASE)
+
+
 def _css_outside_root_with_override(doc: Document) -> str:
     """Return all CSS (including theme-override) with :root blocks removed."""
     return _css_outside_root(_all_css_with_override(doc))
@@ -345,7 +350,9 @@ def check_typography(doc: Document) -> list[Result]:
         results.append(Result("TYP-02", "PASS", "No font overrides in :root block", 0))
 
     # TYP-03: Hardcoded heading font outside :root and theme-override
-    outside = _css_outside_root(css)
+    # Declaring a self-hosted font in @font-face necessarily names the family;
+    # TYP-03/04 are intended to catch selector usage that bypasses the tokens.
+    outside = _css_without_font_faces(_css_outside_root(css))
     if re.search(r"""['"]DM Serif Display['"]""", outside):
         results.append(Result("TYP-03", "WARN", "Hardcoded 'DM Serif Display' found outside :root — use var(--font-heading)", 0))
     else:
@@ -357,16 +364,19 @@ def check_typography(doc: Document) -> list[Result]:
     else:
         results.append(Result("TYP-04", "PASS", "No hardcoded body font outside :root", 0))
 
-    # TYP-05: Google Fonts display=swap
-    fonts_links = [e for e in doc.link_elements if 'fonts.googleapis.com' in (e.attrs.get('href') or '') and e.attrs.get('rel') != 'preconnect']
-    if fonts_links:
-        all_have_swap = all('display=swap' in (e.attrs.get('href') or '') for e in fonts_links)
-        if all_have_swap:
-            results.append(Result("TYP-05", "PASS", "Google Fonts links include display=swap", 0))
+    # TYP-05: Self-hosted fonts with font-display: swap (no font CDN links)
+    cdn_links = [e for e in doc.link_elements if 'fonts.googleapis.com' in (e.attrs.get('href') or '') or 'fonts.gstatic.com' in (e.attrs.get('href') or '')]
+    font_faces = re.findall(r'@font-face\s*\{[^}]*\}', css)
+    if cdn_links:
+        results.append(Result("TYP-05", "WARN", "External Google Fonts link found — fonts must be self-hosted via @font-face (offline/file:// support)", 0))
+    elif font_faces:
+        missing_swap = [f for f in font_faces if not re.search(r'font-display\s*:\s*swap', f)]
+        if missing_swap:
+            results.append(Result("TYP-05", "WARN", f"{len(missing_swap)} @font-face rule(s) missing font-display: swap", 0))
         else:
-            results.append(Result("TYP-05", "WARN", "Google Fonts link missing display=swap", 0))
+            results.append(Result("TYP-05", "PASS", f"Self-hosted fonts: {len(font_faces)} @font-face rule(s), all with font-display: swap", 0))
     else:
-        results.append(Result("TYP-05", "PASS", "No Google Fonts links to check (or fonts loaded differently)", 0))
+        results.append(Result("TYP-05", "WARN", "No self-hosted @font-face rules found — deck fonts must be self-hosted from fonts/", 0))
 
     return results
 
@@ -1019,6 +1029,28 @@ def report(results: list[Result], caption_grace: bool = False) -> int:
 
 
 # ---------------------------------------------------------------------------
+# Check: Print (PRT-01)
+# ---------------------------------------------------------------------------
+def check_print(doc: Document) -> list[Result]:
+    """PRT-01: the lesson loads its print pictures list, then the shared print script."""
+    lines = {"print/manifest.js": None, "../scripts/print-slides.js": None}
+    for element in doc.elements:
+        if element.tag != "script":
+            continue
+        src = (element.attrs.get("src") or "").split("?")[0]
+        for name in lines:
+            if src.endswith(name) and lines[name] is None:
+                lines[name] = element.line
+    missing = [name for name, line in lines.items() if line is None]
+    if missing:
+        return [Result("PRT-01", "WARN", f"Print slides not loaded: missing {', '.join(missing)}", 0)]
+    if lines["../scripts/print-slides.js"] < lines["print/manifest.js"]:
+        return [Result("PRT-01", "WARN", "Load print/manifest.js before ../scripts/print-slides.js, not after",
+                       lines["../scripts/print-slides.js"])]
+    return [Result("PRT-01", "PASS", "Print slides manifest and script loaded in order", 0)]
+
+
+# ---------------------------------------------------------------------------
 # Main
 # ---------------------------------------------------------------------------
 def main() -> None:
@@ -1041,7 +1073,7 @@ def main() -> None:
     for check_fn in [check_colors, check_typography, check_accessibility,
                      check_components, check_navigation, check_theme,
                      check_mobile, check_performance, check_references, check_engagement,
-                     check_reduced_motion]:
+                     check_reduced_motion, check_print]:
         results.extend(check_fn(doc))
 
     exit_code = report(results, caption_grace=args.caption_grace)
