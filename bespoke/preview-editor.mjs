@@ -41,6 +41,7 @@ export function createPreviewEditor(host) {
   if(kind==='cards'&&id.startsWith('body'))return `${target} selected · Formatting affects ALL box text on Text boxes slides. Sample words remain independent.`;
   if(kind==='divider'&&id.startsWith('body'))return `${target} selected · Formatting affects the chapter label and supporting text on Chapter divider slides.`;
   if(kind==='activity'&&id.startsWith('heading'))return `${target} selected · Formatting affects the heading and activity label on Activity slides.`;
+  if(!host.onlySlide())return `${target} selected · Color picks apply to every slide that shares that color. Fonts, sizes and finish stay on ${names[kind]}. Turn on Only this slide to keep a color here.`;
   return `${target} selected · ${names[kind]} only. Other slide types and shared defaults stay unchanged.`;
  }
  function field(id,title,value,options,onChange,{color=false}={}){
@@ -53,6 +54,12 @@ export function createPreviewEditor(host) {
   if(rich&&color)return void dest.append(colorWell({id,title,select,swatches:host.catalog.palette,value,editable,onChoose:onChange}));
   if(rich&&SEGMENTED_FIELDS.includes(id)&&options.length>=2&&options.length<=MAX_SEGMENTS)return void dest.append(segmentedControl({id,title,select,options,value,editable,onChoose:onChange}));
   const wrapper=document.createElement('label');wrapper.className='toolbar-field';wrapper.append(document.createTextNode(title),select);dest.append(wrapper);
+ }
+ function check(id,title,value,onChange){
+  const wrapper=document.createElement('label');wrapper.className='toolbar-field toolbar-check';
+  const box=document.createElement('input');box.type='checkbox';box.id='context-'+id;box.checked=value;box.disabled=!host.context().editable;
+  box.onchange=()=>{onChange(box.checked);document.getElementById(box.id)?.focus({preventScroll:true});};
+  wrapper.append(box,document.createTextNode(' '+title));place(id).append(wrapper);
  }
  function renderToolbar(){
   if(editingText)return;
@@ -91,7 +98,8 @@ export function createPreviewEditor(host) {
   document.getElementById('context-element').id='selectedElement';
   const saved={...host.model.roleStyleDefaults(host.catalog,design,kind),...design.roleStyles?.[kind]};
   const effective=host.model.effectiveRoleStyle(host.catalog,design,kind);
-  const apply=(key,value)=>host.change(`${names[kind]}: ${key.replace(/([A-Z])/g,' $1').toLowerCase()}`,d=>Object.assign(d,host.model.setRoleStyle(host.catalog,d,kind,key,value)));
+  const shared=['primary','secondary','headingColor','bodyColor'];
+  const apply=(key,value)=>host.change(`${names[kind]}: ${key.replace(/([A-Z])/g,' $1').toLowerCase()}`,d=>Object.assign(d,(shared.includes(key)&&!host.onlySlide()?host.model.setSharedColor:host.model.setRoleStyle)(host.catalog,d,kind,key,value)));
   const colors=()=>host.catalog.palette.map(c=>({id:c.id,label:c.name}));
   const colorField=(id,title,value,callback)=>{field(id,title,value,colors(),callback,{color:true});const input=document.getElementById('context-'+id);input.style.borderLeft='12px solid '+host.catalog.palette.find(c=>c.id===value).hex;};
   const feature=(id,key,value)=>host.change(label(selected)+': '+key,d=>Object.assign(d,host.model.setFeatureStyle(host.catalog,d,id,key,value)));
@@ -135,6 +143,7 @@ export function createPreviewEditor(host) {
    field('font','Font',effective[type+'Font'],host.catalog.fonts.map(f=>({id:f.id,label:f.label})),v=>apply(type+'Font',v));
    field('size','Size',saved[type+'Size'],[{id:'small',label:'Smaller'},{id:'default',label:'Medium'},{id:'large',label:'Larger'}],v=>apply(type+'Size',v));
    colorField('color','Text color',effective[type+'Color'],v=>apply(type+'Color',v));
+   check('only-slide','Only this slide',host.onlySlide(),v=>host.setOnlySlide(v));
    field('align','Align',effective[type+'Alignment'],['left','center','right'].map(id=>({id,label:id[0].toUpperCase()+id.slice(1)})),v=>apply(type+'Alignment',v));
    field('placement','Place in text area',saved[type+'Placement']==='layout'?(kind==='title'&&design.slides.title.layout==='bottom'?'bottom':kind==='title'&&['corner','headline','masthead'].includes(design.slides.title.layout)?'top':'middle'):saved[type+'Placement'],['top','middle','bottom'].map(id=>({id,label:id[0].toUpperCase()+id.slice(1)})),v=>apply(type+'Placement',v));
    const target=targets.find(t=>t.id===selected)?.node;
@@ -161,6 +170,7 @@ export function createPreviewEditor(host) {
    field('finish','Background',effective.backgroundMode,[{id:'solid',label:'Solid'},{id:'gradient',label:'Gradient'}],v=>apply('backgroundMode',v));
    colorField('background',effective.backgroundMode==='gradient'?'Start color':'Background color',effective.primary,v=>apply('primary',v));
    if(effective.backgroundMode==='gradient')colorField('second','End color',effective.secondary,v=>apply('secondary',v));
+   check('only-slide','Only this slide',host.onlySlide(),v=>host.setOnlySlide(v));
    field('pattern','Texture',effective.pattern,host.catalog.backgrounds.map(p=>({id:p.id,label:p.label})),v=>apply('pattern',v));
    decision(kind,'layout');
   }

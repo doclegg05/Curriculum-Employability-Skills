@@ -1,5 +1,17 @@
 # BeSpoke decisions
 
+## PR #56 merged with main: October 15, 2026
+
+Britt chose main's twelve layout presets (Editorial, Split stage, Centered, Grounded,
+Framed, Headline, Side rule, Horizon, Corner, Masthead, Two columns and Inset) over the
+twelve brand presets on this branch. Open Air, Gold Standard, Slate, Harvest, Bold
+Statement and Fresh Start are not shipped, so the preset rows in the October 2 table
+below no longer apply. Team edit codes are main's 8-character codes, and
+`--reissue all|<lesson-id>` replaces `--rotate-team-codes`. View codes keep this
+branch's hardening: a separate `view:` hash, a broken view table turns off only view
+links, and a view never shows the Team Leader's email, the review notes or the archived
+original. The flow is main's four stages; Quick pick and the step path stay specs.
+
 ## Lesson & team stage, October 9, 2026
 
 Britt chose a separate first stage for Lesson & team, over a top-bar chip or a
@@ -16,6 +28,29 @@ blocks navigation or Save. Send to Britt still needs the spokesperson name and
 returns people to this page when it is missing. A saved draft reopens on the stage
 it was left on. Earlier drafts that were saved on the starting looks still open there.
 
+## Colors follow every slide: October 7, 2026
+
+Britt found that a color picked on one slide, or in one Guide me question, did not carry
+to the other slides, so choices seemed to disappear as a team moved through the steps.
+Color picks in the slide toolbar and in Guide me now apply to every slide that shares
+that color. A title background also sets the divider background, as Quick pick's
+Background choice will. Content slides share one tint, one heading color and one body
+color. An Only this slide switch keeps a color on a single slide. This reverses the
+September 24 rule that a slide edit stays on that slide, for colors only. Fonts, sizes
+and finish still stay on the slide. The More options panel keeps its explicit
+This slide or Shared default choice, which still starts on This slide.
+
+## Quick pick is advisory input: October 7, 2026
+
+Britt: BeSpoke gathers opinions from teams who want a say in how the slides look. It is
+not the final pass. The final design comes from Britt and the administrator, with
+Claude Design, and may borrow from what teams suggest. Quick pick therefore gates
+nothing on readability or accessibility and shows no readability warnings, and ugly
+color combinations are acceptable. This supersedes the October 6 plan to test every
+combination for readability, and the September 24 line that defaults and presets meet
+the contrast guidance, for the three new presets only. The full builder keeps its
+advisory notes. Spec: `docs/superpowers/specs/2026-10-06-bespoke-quick-pick-design.md`.
+
 ## Current simplification — October 7, 2026
 
 Britt authorized implementation in an isolated worktree: twelve distinct layout
@@ -27,6 +62,24 @@ Customize, Review & save replaces the earlier primary path; the detailed guide a
 editors remain optional. Orientation does not mean rotation. New values must
 survive existing Save/Open/recovery and generated design handoff. No merge,
 deployment or curriculum construction is authorized by this implementation.
+
+## Start flow, step path and presets: October 2, 2026
+
+Britt approved the design in `docs/superpowers/specs/2026-10-02-bespoke-start-path-presets-design.md`. It replaces these earlier rows. Everything not listed here stands.
+
+| Earlier decision | Now |
+|---|---|
+| Six presets (September 18) | Nine presets. Open Air, Gold Standard and Slate are new, and every preset is redesigned. `scripts/build-bespoke-presets.mjs` is the source. |
+| Sidebar text color is chosen for you (September 24) | Optional choice saved as `design.roles.sidebarText`. Absent means Automatic. Advisory at 4.5 to 1. |
+| Start is one page with Lesson & team, Build my own and six presets (September 24) | A four-screen intake wizard (lesson team, Team Leader, who is building, how the team works), then scratch or preset. Replaced on October 6 by Quick pick; see the October 7 entry above. |
+| Guide me walks slide by slide with four suggested colors (September 30) | Step by step walks twelve steps: colors, layout, fonts. Every color screen shows all eleven. Ships in the second pull request. |
+| Guide me owns the preview while it runs (October 1) | A preview click opens the matching step or the preview editor. Ships in the second pull request. |
+| One private link per team, and it edits (September 22) | Two links per team. The builder link edits. The team view link opens the latest saved design read-only. |
+| The spokesperson operates the preview (September 22) | The saved design names a Team Leader and, when different, one builder as `team.builder.name`. The team decides together on a Teams call with the builder sharing their screen. |
+| A private team link is pinned in the team's channel (September 22) | The team view link is pinned. The builder link goes privately to the Team Leader, who passes it to the one builder. Existing edit codes can be replaced with `--rotate-team-codes` without touching the encryption key. |
+| A view of a design is a frozen snapshot link | The team view link always opens the latest saved design. It leaves out the Team Leader's email, the review notes and any old wizard draft. |
+
+The saved format stays `bespoke-selection/v2`. The service is redeployed before the first pull request merges, because it bundles the schema and the catalog.
 
 ## Prior direction — September 24, 2026
 
