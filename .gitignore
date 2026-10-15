@@ -1,19 +1,4 @@
-# OS junk
-.DS_Store
-Thumbs.db
-desktop.ini
-
-# Temp/backup files
-~$*
-*.tmp
-*.bak
-
-# Python bytecode
-__pycache__/
-*.pyc
-
-# Claude Code worktrees (local state)
-.claude/worktrees/
-
-# Impeccable session state (local server pids/ports, not project history)
-.impeccable/questions/
+lesson-controlling-anger/Teacher-Resources/Controlling Anger 2026 Presentation.pptx
+Communicating Public/Communicating with the Public PowerPoint Example 2026.pptx
+Communicating Public/Communicating with the Public Lesson Plan Updated 2026.docx
+scripts/__pycache__/

@@ -2,8 +2,8 @@
 
 Compiled from: 4 skill evaluations (design-system, accessibility, visual-design, project-planner), Gemini team review, and user direction.
 
-**Date:** 2026-02-27 (last updated: 2026-04-03)
-**Status:** Sprints 1-2 complete. Sprint 3 partially complete. Two new lessons built (Communicating with the Public, Controlling Anger) — in QA.
+**Date:** 2026-02-27 (last updated: 2026-04-30)
+**Status:** Historical action plan. Current planning state is maintained in `docs/current-roadmap.md`: 18 lessons planned, 6 lessons currently tagged QA, 0 lessons currently tagged Ready, 12 lessons remaining to build/add.
 
 ---
 
@@ -11,7 +11,7 @@ Compiled from: 4 skill evaluations (design-system, accessibility, visual-design,
 
 ### CRITICAL — Must fix before any lesson ships
 
-**All critical issues resolved as of 2026-03-01.** All 3 lessons release-approved with 5/5 quality gates passing.
+**All original critical issues resolved as of 2026-03-01.** Earlier QA records marked the first three lessons release-approved. Current dashboard/registry status now tracks all six existing lessons as QA pending refreshed release decisions.
 
 | #   | Issue                                           | Status       | Resolution                                                     |
 | --- | ----------------------------------------------- | ------------ | -------------------------------------------------------------- |
@@ -28,7 +28,7 @@ Compiled from: 4 skill evaluations (design-system, accessibility, visual-design,
 | #   | Issue                                      | Status       | Resolution                                                                                 |
 | --- | ------------------------------------------ | ------------ | ------------------------------------------------------------------------------------------ |
 | H1  | No `--font-heading` / `--font-body` tokens | **RESOLVED** | Font tokens added to template and lessons                                                  |
-| H2  | Template variants don't exist              | **OPEN**     | Registry defines 4 variant names but CSS not yet documented. See Task 1.3 in project plan. |
+| H2  | Template variants don't exist              | **DEPRIORITIZED** | Registry defines 4 variant names, but current design direction relies on theme registry plus per-lesson remixing. Component/visual variety tracking is the more useful next artifact. |
 | H3  | Off-palette hex values in template         | **RESOLVED** | All off-palette colors replaced with brand palette                                         |
 | H4  | No skip link                               | **RESOLVED** | Skip link added                                                                            |
 | H5  | No focus management on slide change        | **RESOLVED** | Focus moves to active slide heading on navigation                                          |
@@ -95,28 +95,32 @@ Compiled from: 4 skill evaluations (design-system, accessibility, visual-design,
 
 **Still open from Sprint 2:** H8 (duplicate video URL in Time Management) — awaiting user input on D5.
 
-### Sprint 3: Template Variants + Font Library — PARTIALLY COMPLETE
+### Sprint 3: Template Variants + Font Library — PARTIALLY COMPLETE / RE-SCOPED
 
 | Task                                                                        | Issues Addressed | Status                                                                                                                     |
 | --------------------------------------------------------------------------- | ---------------- | -------------------------------------------------------------------------------------------------------------------------- |
-| Design and implement 3-4 template variants as documented CSS class systems. | H2               | **TODO** — variant names defined in registry but CSS not documented                                                        |
+| Design and implement 3-4 template variants as documented CSS class systems. | H2               | **DEPRIORITIZED** — variant names exist, but visual differentiation is now better handled through theme registry, remix patterns, and a component tracker |
 | Curate a library of 18+ Google Font pairings.                               | Project plan     | **DONE** — `SPOKES Builder/font-pairings.md` created 2026-04-02 with 20 pairings (18 available)                            |
 | Create `lesson-registry.json` manifest.                                     | M6               | **DONE** — registry active with variant, font, color, combinatorics, and gate tracking                                     |
 | Add new components to `components.md`.                                      | M7               | **DONE** — 6 advanced components added (glass card, stagger reveal, gradient divider, clip-path, magnetic button, counter) |
 | Document combinatorics design system.                                       | New              | **DONE** — added to `AGENT_THEMING_GUIDELINES.md`, `build-process.md`, `CLAUDE.md` (2026-03-09)                            |
 
-### Sprint 4: New Lesson Builds — IN PROGRESS
+### Sprint 4: New Lesson Builds — QA SET REACHED
 
-Two lessons built 2026-04-02, font CSS variables fixed 2026-04-03:
+The current registry contains six lessons, all tagged QA:
 
-| Lesson | Slides | Interactions | Videos | Status |
-|--------|--------|-------------|--------|--------|
-| Communicating with the Public | 33 (7 ch) | 8 (tabs, accordion, flip cards, matrix, prompts, video grid, checkpoint, reveals) | 8 embedded | QA |
-| Controlling Anger | 31 (7 ch) | 6 (tabs, spinner wheel, accordion, Jeopardy, matrix, checkpoint) | 4 embedded | QA |
+| Lesson | Status |
+|--------|--------|
+| Time Management | QA |
+| Interview Skills | QA |
+| Employee Accountability | QA |
+| Communicating with the Public | QA |
+| Controlling Anger | QA |
+| Problem Solving & Decision Making | QA |
 
-Both use `--font-heading` / `--font-body` CSS variables. Quality gates pending formal pass.
+Next action is QA evidence reconciliation: validator results, registry quality gates, dashboard status, and release decisions should be made consistent.
 
-### Sprint 5-8: Production (13 Remaining Lessons)
+### Sprint 5-8: Production (12 Remaining Lessons)
 
 Build in batches of 3, with 2-3 lessons in parallel per batch. Each batch follows:
 

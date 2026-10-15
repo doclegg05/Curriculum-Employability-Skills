@@ -1,5 +1,7 @@
 # Critical Shortfall Remediation — Agent Team Plan
 
+**Current status note (2026-04-30):** Completed/superseded. The 2026-04-21 critical shortfall remediation has a verification report and is not the active roadmap. Current planning lives in `docs/current-roadmap.md`.
+
 > **For agentic workers:** REQUIRED SUB-SKILL: Use `superpowers:subagent-driven-development` to execute this plan. Each Wave-1 task is independent and runs in its own subagent. Steps use checkbox (`- [ ]`) syntax for tracking.
 
 **Source review:** Accessibility review + code review run 2026-04-21 against `feat/design-system-strengthening` (merge-base `a4b5a1c`).

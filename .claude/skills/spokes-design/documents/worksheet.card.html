@@ -1,0 +1,100 @@
+<!-- @dsCard group="Documents" viewport="816x1056" name="Lesson Worksheet" subtitle="Print-ready Letter handout — header, prompts, reflection, SMART grid" -->
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <link rel="stylesheet" href="../styles.css" />
+    <style>
+      @page { size: letter; margin: 0; }
+      * { box-sizing: border-box; }
+      html, body { margin: 0; background: #e9edf1; }
+      .sheet { width: 816px; min-height: 1056px; margin: 0 auto; background: var(--light); padding: 56px 60px 48px; font-family: var(--font-body); color: var(--dark); position: relative; }
+
+      .head { display: flex; align-items: flex-start; justify-content: space-between; border-bottom: 2px solid var(--dark); padding-bottom: 18px; }
+      .head img { height: 46px; display: block; }
+      .head .stage { text-align: right; }
+      .chip { display: inline-block; font-size: 0.62rem; font-weight: 700; letter-spacing: 1.5px; text-transform: uppercase; background: var(--gold); color: var(--dark); padding: 0.3rem 0.6rem; border-radius: 4px; }
+      .head .mod { font-size: 0.72rem; letter-spacing: 0.2em; text-transform: uppercase; color: var(--gray); margin-top: 8px; }
+
+      h1 { font-family: var(--font-display); font-weight: 400; font-size: 2.4rem; color: var(--primary); margin: 26px 0 4px; }
+      .sub { font-size: 1rem; color: var(--gray); margin: 0 0 24px; }
+
+      .names { display: flex; gap: 28px; margin: 0 0 26px; }
+      .field { flex: 1; }
+      .field .l { font-size: 0.68rem; letter-spacing: 0.14em; text-transform: uppercase; color: var(--gray); margin-bottom: 20px; }
+      .field .line { border-bottom: 1.5px solid var(--offwhite); }
+
+      .block { margin-bottom: 22px; }
+      .block .bh { display: flex; align-items: center; gap: 10px; margin-bottom: 10px; }
+      .block .num { width: 26px; height: 26px; border-radius: 50%; background: var(--primary); color: #fff; font-size: 0.9rem; font-weight: 700; display: flex; align-items: center; justify-content: center; flex-shrink: 0; }
+      .block .num.alt { background: var(--gold); color: var(--dark); }
+      .block h3 { font-family: var(--font-display); font-weight: 400; font-size: 1.25rem; color: var(--dark); margin: 0; }
+      .block p { font-size: 0.92rem; color: var(--gray); margin: 0 0 12px 36px; }
+      .writeline { border-bottom: 1px solid var(--offwhite); height: 30px; margin: 0 0 0 36px; }
+
+      .reflect { background: rgba(211,178,87,0.1); border: 1.5px solid var(--gold); border-radius: 10px; padding: 16px 20px; margin-bottom: 22px; }
+      .reflect .rl { font-size: 0.68rem; letter-spacing: 0.14em; text-transform: uppercase; color: var(--muted-gold); font-weight: 700; margin-bottom: 6px; }
+      .reflect p { font-size: 0.92rem; color: var(--dark); margin: 0 0 14px; }
+      .reflect .writeline { margin-left: 0; border-color: rgba(211,178,87,0.4); }
+
+      .smart { border: 1px solid var(--offwhite); border-radius: 10px; overflow: hidden; }
+      .smart .sr { display: grid; grid-template-columns: 44px 1fr; border-bottom: 1px solid var(--offwhite); }
+      .smart .sr:last-child { border-bottom: none; }
+      .smart .letter { background: var(--muted); color: var(--primary); font-family: var(--font-display); font-size: 1.3rem; display: flex; align-items: center; justify-content: center; }
+      .smart .sc { padding: 10px 14px; }
+      .smart .sc .t { font-size: 0.82rem; font-weight: 600; color: var(--dark); }
+      .smart .sc .wl { border-bottom: 1px solid var(--offwhite); height: 20px; margin-top: 6px; }
+
+      .foot { position: absolute; left: 60px; right: 60px; bottom: 30px; display: flex; justify-content: space-between; align-items: center; border-top: 1px solid var(--offwhite); padding-top: 12px; font-size: 0.72rem; color: var(--gray); }
+      .foot b { color: var(--muted-gold); }
+    </style>
+  </head>
+  <body>
+    <div class="sheet" data-screen-label="Worksheet">
+      <div class="head">
+        <img src="../assets/SPOKES-Logo.png" alt="SPOKES — Skills for Life" />
+        <div class="stage"><span class="chip">Warm-Up</span><div class="mod">Module 03 · Worksheet</div></div>
+      </div>
+
+      <h1>Time Management</h1>
+      <p class="sub">Warm-Up: Where does your time go?</p>
+
+      <div class="names">
+        <div class="field"><div class="l">Name</div><div class="line"></div></div>
+        <div class="field"><div class="l">Date</div><div class="line"></div></div>
+      </div>
+
+      <div class="block">
+        <div class="bh"><span class="num">1</span><h3>List your evening</h3></div>
+        <p>Write everything you did yesterday between 5&nbsp;PM and 9&nbsp;PM.</p>
+        <div class="writeline"></div><div class="writeline"></div>
+      </div>
+
+      <div class="block">
+        <div class="bh"><span class="num alt">2</span><h3>Chosen or automatic?</h3></div>
+        <p>Mark each item above as a choice (C) or a habit (H).</p>
+        <div class="writeline"></div>
+      </div>
+
+      <div class="reflect">
+        <div class="rl">Reflection</div>
+        <p>Which hour would you most like back — and what would you do with it?</p>
+        <div class="writeline"></div><div class="writeline"></div>
+      </div>
+
+      <div class="block">
+        <div class="bh"><span class="num">3</span><h3>Set one SMART goal</h3></div>
+        <p>Turn one intention into a specific, trackable goal for this week.</p>
+      </div>
+      <div class="smart">
+        <div class="sr"><div class="letter">S</div><div class="sc"><div class="t">Specific — what exactly?</div><div class="wl"></div></div></div>
+        <div class="sr"><div class="letter">M</div><div class="sc"><div class="t">Measurable — how will you track it?</div><div class="wl"></div></div></div>
+        <div class="sr"><div class="letter">A</div><div class="sc"><div class="t">Achievable — is it realistic?</div><div class="wl"></div></div></div>
+        <div class="sr"><div class="letter">R</div><div class="sc"><div class="t">Relevant — why does it matter?</div><div class="wl"></div></div></div>
+        <div class="sr"><div class="letter">T</div><div class="sc"><div class="t">Time-bound — by when?</div><div class="wl"></div></div></div>
+      </div>
+
+      <div class="foot"><span>SPOKES · <b>Skills for Life</b></span><span>Copyright © 2026 WV Adult Basic Education</span></div>
+    </div>
+  </body>
+</html>

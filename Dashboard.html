@@ -5,27 +5,10 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>SPOKES Employability Skills Curriculum</title>
     <link rel="icon" href="SPOKES-Logo.png">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=DM+Serif+Display:ital@0;1&family=Outfit:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
     <style>
-        /* Faces are self-hosted (both SIL Open Font License, latin subset,
-           49 KB total). A school content filter, a dead network, or a machine
-           opening this file directly no longer silently swaps the headings for
-           Georgia and the body for system sans. Verified loading over both
-           http:// and file:// — same-directory woff2 is not CORS-blocked. */
-        @font-face {
-            font-family: "DM Serif Display";
-            src: url("fonts/dm-serif-display-latin.woff2") format("woff2");
-            font-weight: 400;
-            font-style: normal;
-            font-display: swap;
-        }
-        @font-face {
-            font-family: "Outfit";
-            src: url("fonts/outfit-latin.woff2") format("woff2");
-            font-weight: 300 800;
-            font-style: normal;
-            font-display: swap;
-        }
-
         :root {
             --primary: #007baf;
             --accent: #37b550;
@@ -38,16 +21,6 @@
             --mauve: #a7253f;
             --offwhite: #d1d3d4;
             --muted-gold: #ad8806;
-            /* spacing scale — every gap on this page snaps to one of these */
-            --s1: 0.25rem;
-            --s2: 0.375rem;
-            --s3: 0.5rem;
-            --s4: 0.75rem;
-            --s5: 1rem;
-            --s6: 1.25rem;
-            --s7: 1.5rem;
-            --s8: 2rem;
-
             --font-heading: "DM Serif Display", Georgia, serif;
             --font-body: "Outfit", system-ui, sans-serif;
         }
@@ -65,7 +38,11 @@
             min-height: 100vh;
             font-family: var(--font-body);
             color: var(--royal);
-            background: linear-gradient(135deg, var(--light) 0%, var(--muted) 58%, rgba(211, 178, 87, 0.16) 100%);
+            background:
+                linear-gradient(90deg, rgba(0, 64, 113, 0.06) 1px, transparent 1px),
+                linear-gradient(0deg, rgba(0, 64, 113, 0.06) 1px, transparent 1px),
+                linear-gradient(135deg, var(--light) 0%, var(--muted) 58%, rgba(211, 178, 87, 0.16) 100%);
+            background-size: 44px 44px, 44px 44px, auto;
             overflow-x: hidden;
         }
 
@@ -83,7 +60,7 @@
             left: 1rem;
             top: -4rem;
             z-index: 100;
-            padding: var(--s4) var(--s5);
+            padding: 0.7rem 1rem;
             border-radius: 0 0 8px 8px;
             background: var(--royal);
             color: var(--light);
@@ -116,11 +93,23 @@
         .hero {
             position: relative;
             overflow: hidden;
-            padding: var(--s4) clamp(var(--s5), 3vw, var(--s8)) var(--s5);
+            padding: 0.85rem clamp(1rem, 3vw, 3rem) 3.1rem;
             color: var(--light);
             background:
                 linear-gradient(125deg, rgba(0, 19, 63, 0.98), rgba(0, 64, 113, 0.96) 56%, rgba(0, 123, 175, 0.9));
-            box-shadow: 0 10px 30px rgba(0, 19, 63, 0.14);
+            box-shadow: 0 22px 60px rgba(0, 19, 63, 0.18);
+        }
+
+        .hero::before {
+            content: "";
+            position: absolute;
+            inset: 0;
+            background:
+                linear-gradient(90deg, rgba(255, 255, 255, 0.08) 1px, transparent 1px),
+                linear-gradient(0deg, rgba(255, 255, 255, 0.08) 1px, transparent 1px);
+            background-size: 48px 48px;
+            mask-image: linear-gradient(90deg, rgba(0, 0, 0, 0.8), transparent 78%);
+            pointer-events: none;
         }
 
         .hero::after {
@@ -130,18 +119,13 @@
             right: 0;
             bottom: 0;
             height: 6px;
-            background: linear-gradient(90deg,
-                var(--primary) 0 16.66%,
-                var(--mauve) 16.66% 33.33%,
-                var(--accent) 33.33% 50%,
-                var(--dark) 50% 66.66%,
-                var(--muted-gold) 66.66% 83.33%,
-                var(--gold) 83.33%);
+            background: linear-gradient(90deg, var(--mauve), var(--gold), var(--accent), var(--primary));
         }
 
         .topbar,
+        .hero-grid,
         footer {
-            width: min(1740px, calc(100% - 2rem));
+            width: min(1180px, calc(100% - 2rem));
             margin-inline: auto;
         }
 
@@ -154,41 +138,25 @@
             position: relative;
             z-index: 1;
             display: flex;
-            justify-content: flex-start;
+            justify-content: space-between;
             align-items: center;
-            gap: var(--s5);
+            gap: 1rem;
+            margin-bottom: clamp(1.2rem, 3vw, 2.4rem);
         }
-
-        /* the right half of the band was empty; it now carries the one fact an
-           instructor wants on arrival, in their language rather than the
-           pipeline's */
-        .hero-count {
-            margin: 0 0 0 auto;
-            padding-left: var(--s6);
-            border-left: 1px solid rgba(255, 255, 255, 0.28);
-            color: var(--light);
-            font-size: 0.78rem;
-            font-weight: 700;
-            letter-spacing: 0.1em;
-            text-transform: uppercase;
-            white-space: nowrap;
-        }
-        .hero-count:empty { display: none; }
 
         .brand-lockup {
             display: inline-flex;
             align-items: center;
-            gap: var(--s6);
             min-width: 0;
         }
 
         .logo-frame {
-            width: 112px;
-            height: 70px;
+            width: 184px;
+            height: 112px;
             display: grid;
             place-items: center;
             flex: 0 0 auto;
-            padding: var(--s3) var(--s4);
+            padding: 0.7rem 0.85rem;
             border-radius: 8px;
             background: var(--light);
             overflow: hidden;
@@ -203,68 +171,213 @@
             transform: translateY(-1px);
         }
 
-        .hero-title {
-            min-width: 0;
+        .build-pill {
+            flex: 0 0 auto;
+            border: 1px solid rgba(255, 255, 255, 0.22);
+            border-radius: 999px;
+            padding: 0.55rem 0.9rem;
+            color: var(--light);
+            background: rgba(255, 255, 255, 0.08);
+            font-weight: 700;
+            font-size: 0.84rem;
+            letter-spacing: 0.04em;
+            text-transform: uppercase;
+        }
+
+        .hero-grid {
+            position: relative;
+            z-index: 1;
+            display: grid;
+            grid-template-columns: minmax(0, 1fr) minmax(280px, 420px);
+            align-items: center;
+            gap: clamp(1.5rem, 4vw, 3rem);
+        }
+
+        .eyebrow {
+            display: inline-block;
+            margin-bottom: 0.9rem;
+            color: var(--gold);
+            font-size: 0.85rem;
+            font-weight: 800;
+            letter-spacing: 0.22em;
+            text-transform: uppercase;
         }
 
         h1 {
+            max-width: 780px;
             margin: 0;
             font-family: var(--font-heading);
-            font-size: clamp(1.9rem, 2.6vw, 2.7rem);
+            font-size: clamp(2.4rem, 4.7vw, 4.95rem);
             font-weight: 400;
-            line-height: 1.05;
+            line-height: 0.94;
             letter-spacing: 0;
             color: var(--light);
+            text-shadow: 0 20px 46px rgba(0, 19, 63, 0.32);
         }
 
-        .hero-note {
-            margin: var(--s2) 0 0;
-            color: rgba(255, 255, 255, 0.85);
-            font-size: clamp(0.95rem, 1.2vw, 1.05rem);
+        .subtitle {
+            max-width: 670px;
+            margin: 0.9rem 0 0;
+            color: rgba(255, 255, 255, 0.84);
+            font-size: clamp(1rem, 1.4vw, 1.15rem);
+            line-height: 1.45;
+        }
+
+        .summary-panel {
+            border: 1px solid rgba(255, 255, 255, 0.22);
+            border-radius: 8px;
+            background: rgba(255, 255, 255, 0.1);
+            box-shadow: 0 18px 42px rgba(0, 19, 63, 0.22);
+            overflow: hidden;
+        }
+
+        .summary-panel h2 {
+            margin: 0;
+            padding: 1rem 1.1rem;
+            color: var(--light);
+            font-size: 0.82rem;
+            letter-spacing: 0.16em;
+            text-transform: uppercase;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.16);
+        }
+
+        .metric-grid {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+        }
+
+        .metric {
+            padding: 0.9rem;
+            min-width: 0;
+        }
+
+        .metric + .metric {
+            border-left: 1px solid rgba(255, 255, 255, 0.16);
+        }
+
+        .metric strong {
+            display: block;
+            color: var(--light);
+            font-size: 1.65rem;
+            line-height: 1;
+        }
+
+        .metric span {
+            display: block;
+            margin-top: 0.35rem;
+            color: rgba(255, 255, 255, 0.76);
+            font-size: 0.78rem;
+            font-weight: 700;
+            letter-spacing: 0.08em;
+            text-transform: uppercase;
         }
 
         .dashboard-main {
             position: relative;
             z-index: 2;
             flex: 1;
-            margin-top: var(--s6);
-            padding-bottom: var(--s8);
+            margin-top: -2rem;
+            padding-bottom: 3rem;
         }
 
-        .noscript-list {
-            margin: 0 0 var(--s5);
-            padding: var(--s5) var(--s6);
-            border: 1px solid rgba(0, 64, 113, 0.18);
+        .toolbar {
+            display: grid;
+            grid-template-columns: minmax(240px, 1fr) auto;
+            gap: 1rem;
+            align-items: center;
+            margin-bottom: 1rem;
+            padding: 0.75rem;
+            border: 1px solid rgba(0, 64, 113, 0.14);
             border-radius: 8px;
             background: rgba(255, 255, 255, 0.94);
+            box-shadow: 0 18px 46px rgba(0, 64, 113, 0.12);
         }
 
-        .noscript-list p {
-            margin: 0 0 var(--s3);
-            font-weight: 700;
+        .search-field {
+            position: relative;
+        }
+
+        .search-field svg {
+            position: absolute;
+            left: 1rem;
+            top: 50%;
+            width: 20px;
+            height: 20px;
+            transform: translateY(-50%);
+            color: var(--gray);
+            pointer-events: none;
+        }
+
+        .search-field input {
+            width: 100%;
+            min-height: 44px;
+            border: 1px solid rgba(0, 64, 113, 0.18);
+            border-radius: 8px;
+            padding: 0.8rem 1rem 0.8rem 2.85rem;
+            color: var(--royal);
+            background: var(--light);
+            outline: none;
+            transition: border-color 0.2s ease, box-shadow 0.2s ease;
+        }
+
+        .search-field input:focus {
+            border-color: var(--primary);
+            box-shadow: 0 0 0 4px rgba(0, 123, 175, 0.12);
+        }
+
+        .filter-group {
+            display: flex;
+            gap: 0.5rem;
+            flex-wrap: wrap;
+            justify-content: flex-end;
+        }
+
+        .filter-button {
+            min-height: 40px;
+            border: 1px solid rgba(0, 64, 113, 0.18);
+            border-radius: 999px;
+            padding: 0.6rem 0.95rem;
             color: var(--dark);
+            background: var(--light);
+            font-weight: 800;
+            cursor: pointer;
+            transition: background 0.2s ease, border-color 0.2s ease, color 0.2s ease, transform 0.2s ease;
         }
 
-        .noscript-list ul {
-            margin: 0;
-            padding-left: 1.2rem;
+        .filter-button:hover {
+            transform: translateY(-1px);
+            border-color: var(--primary);
         }
 
-        .noscript-list li {
-            margin: var(--s1) 0;
+        .filter-button:focus-visible {
+            outline: 3px solid rgba(211, 178, 87, 0.7);
+            outline-offset: 2px;
         }
 
-        .noscript-list a {
-            color: var(--primary);
+        .filter-button[aria-pressed="true"] {
+            color: var(--light);
+            border-color: var(--royal);
+            background: var(--royal);
+        }
+
+        .dashboard-meta {
+            display: flex;
+            justify-content: flex-start;
+            align-items: center;
+            gap: 1rem;
+            margin: 0 0 0.7rem;
+            color: var(--gray);
             font-weight: 700;
+        }
+
+        .dashboard-meta strong {
+            color: var(--dark);
         }
 
         .dashboard-grid {
             display: grid;
-            /* three-up is the working default: it divides six evenly today and
-               eighteen evenly later, and keeps the card near 400px wide */
-            grid-template-columns: repeat(3, minmax(0, 1fr));
-            gap: var(--s5);
+            grid-template-columns: repeat(6, minmax(0, 1fr));
+            gap: 0.85rem;
         }
 
         .module-card {
@@ -272,7 +385,7 @@
             --card-soft: rgba(0, 123, 175, 0.1);
             position: relative;
             display: flex;
-            min-height: 262px;
+            min-height: 370px;
             flex-direction: column;
             overflow: hidden;
             border: 1px solid rgba(0, 64, 113, 0.14);
@@ -299,7 +412,7 @@
             content: "";
             position: absolute;
             inset: 0 0 auto 0;
-            height: 106px;
+            height: 210px;
             background:
                 linear-gradient(180deg, rgba(0, 19, 63, 0.04) 0%, rgba(0, 19, 63, 0.2) 100%);
             pointer-events: none;
@@ -327,8 +440,8 @@
 
         .card-art {
             position: relative;
-            min-height: 106px;
-            flex: 0 0 106px;
+            min-height: 154px;
+            flex: 0 0 154px;
             overflow: hidden;
             background: var(--card-soft);
         }
@@ -336,7 +449,7 @@
         .card-art img {
             width: 100%;
             height: 100%;
-            min-height: 106px;
+            min-height: 154px;
             display: block;
             object-fit: cover;
             object-position: var(--image-position, center);
@@ -350,13 +463,73 @@
             transform: scale(1.055);
         }
 
+        .card-topline {
+            position: absolute;
+            inset: 1rem 1rem auto 1rem;
+            z-index: 2;
+            display: flex;
+            align-items: flex-start;
+            justify-content: flex-end;
+            gap: 0.75rem;
+        }
+
+        .card-icon {
+            width: 46px;
+            height: 46px;
+            display: grid;
+            place-items: center;
+            flex: 0 0 auto;
+            border-radius: 8px;
+            color: var(--light);
+            background: rgba(0, 19, 63, 0.54);
+            border: 1px solid rgba(255, 255, 255, 0.22);
+            backdrop-filter: blur(10px);
+        }
+
+        .card-icon svg {
+            width: 24px;
+            height: 24px;
+            stroke: currentColor;
+            stroke-width: 1.85;
+            fill: none;
+            stroke-linecap: round;
+            stroke-linejoin: round;
+        }
+
+        .status-badge {
+            align-self: flex-start;
+            border-radius: 999px;
+            padding: 0.38rem 0.7rem;
+            font-size: 0.72rem;
+            font-weight: 800;
+            letter-spacing: 0.08em;
+            text-transform: uppercase;
+        }
+
+        .status-badge--ready,
+        .status-badge--qa {
+            color: var(--light);
+            background: rgba(0, 19, 63, 0.6);
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            backdrop-filter: blur(10px);
+        }
+
+        .status-badge--qa {
+            background: rgba(173, 136, 6, 0.82);
+        }
+
+        .status-badge--planned {
+            color: var(--gray);
+            background: rgba(96, 99, 107, 0.12);
+        }
+
         .card-body {
             position: relative;
             z-index: 2;
             display: flex;
             flex: 1;
             flex-direction: column;
-            padding: var(--s4) var(--s4) var(--s3);
+            padding: 1rem 1rem 0.9rem;
             background:
                 linear-gradient(180deg, rgba(0, 19, 63, 0.98), rgba(0, 19, 63, 1));
         }
@@ -365,82 +538,54 @@
             margin: 0;
             color: var(--light);
             font-family: var(--font-heading);
-            font-size: clamp(1.1rem, 1.3vw, 1.34rem);
+            font-size: clamp(1.26rem, 1.45vw, 1.58rem);
             font-weight: 400;
-            line-height: 1.08;
+            line-height: 1.05;
             letter-spacing: 0;
             overflow-wrap: anywhere;
             text-wrap: balance;
         }
 
         .theme-communication .module-name {
-            font-size: clamp(1rem, 1.18vw, 1.2rem);
-            line-height: 1.06;
+            font-size: clamp(1.14rem, 1.3vw, 1.42rem);
+            line-height: 1.02;
         }
 
         .module-desc {
-            margin: var(--s2) 0 0;
+            margin: 0.65rem 0 0;
             color: rgba(255, 255, 255, 0.86);
-            font-size: 0.84rem;
-            line-height: 1.4;
-            display: -webkit-box;
-            -webkit-line-clamp: 2;
-            -webkit-box-orient: vertical;
-            overflow: hidden;
-        }
-
-        .card-chips {
-            display: flex;
-            flex-wrap: wrap;
-            gap: var(--s2);
-            margin: var(--s4) 0 0;
-            padding: 0;
-            list-style: none;
-        }
-
-        .card-chips li {
-            border: 1px solid rgba(255, 255, 255, 0.22);
-            border-radius: 999px;
-            padding: var(--s1) var(--s3);
-            color: rgba(255, 255, 255, 0.92);
-            background: rgba(255, 255, 255, 0.08);
-            font-size: 0.68rem;
-            font-weight: 700;
-            letter-spacing: 0.04em;
-            text-transform: uppercase;
+            font-size: 0.9rem;
+            line-height: 1.44;
         }
 
         .card-footer {
             position: relative;
             z-index: 2;
             display: flex;
-            justify-content: flex-start;
+            justify-content: space-between;
             align-items: center;
-            gap: var(--s4);
-            padding: 0 var(--s4) var(--s4);
+            gap: 0.75rem;
+            padding: 0.8rem 1rem 1rem;
+            border-top: 1px solid rgba(255, 255, 255, 0.14);
         }
 
         .launch-cta {
             display: inline-flex;
             align-items: center;
-            gap: var(--s3);
-            min-height: 44px;
+            gap: 0.55rem;
+            min-height: 36px;
             border-radius: 999px;
-            padding: var(--s3) var(--s6);
+            padding: 0.5rem 0.72rem;
             color: var(--button-text, var(--light));
             background: var(--button-accent, var(--card-accent));
-            font-size: 0.86rem;
-            font-weight: 700;
-            letter-spacing: 0.005em;
-            /* one shadow for all six colours, so a gold button carries the same
-               optical weight as a mauve one */
-            box-shadow: 0 2px 6px rgba(0, 19, 63, 0.28);
+            font-size: 0.82rem;
+            font-weight: 800;
             transition: transform 0.24s ease, box-shadow 0.24s ease;
         }
 
         .module-card:hover .launch-cta {
-            transform: translateY(-1px);
-            box-shadow: 0 6px 16px rgba(0, 19, 63, 0.34);
+            transform: translateX(2px);
+            box-shadow: 0 12px 24px rgba(0, 64, 113, 0.18);
         }
 
         .arrow-icon {
@@ -460,7 +605,7 @@
 
         .empty-state {
             grid-column: 1 / -1;
-            padding: var(--s8);
+            padding: 2rem;
             border: 1px dashed rgba(0, 64, 113, 0.24);
             border-radius: 8px;
             color: var(--gray);
@@ -470,7 +615,7 @@
         }
 
         footer {
-            padding: 0 0 var(--s8);
+            padding: 0 0 2rem;
             color: var(--gray);
             font-size: 0.9rem;
         }
@@ -479,17 +624,6 @@
             margin: 0;
             padding-top: 1.25rem;
             border-top: 1px solid rgba(0, 64, 113, 0.16);
-        }
-
-        .offline-note {
-            display: block;
-            margin-top: 0.4rem;
-            font-weight: 700;
-            color: var(--dark);
-        }
-
-        .offline-note[hidden] {
-            display: none;
         }
 
         .theme-time {
@@ -507,7 +641,6 @@
         .theme-accountability {
             --card-accent: var(--accent);
             --button-accent: var(--accent);
-            --button-text: var(--royal);
             --card-soft: rgba(55, 181, 80, 0.14);
         }
 
@@ -520,7 +653,6 @@
         .theme-anger {
             --card-accent: var(--mauve);
             --button-accent: var(--muted-gold);
-            --button-text: var(--royal);
             --card-soft: rgba(167, 37, 63, 0.1);
         }
 
@@ -551,50 +683,68 @@
             }
         }
 
-        @media (min-width: 1501px) {
-            .dashboard-grid {
-                grid-template-columns: repeat(4, minmax(0, 1fr));
+        @media (max-width: 900px) {
+            .hero-grid {
+                grid-template-columns: 1fr;
+            }
+
+            .summary-panel {
+                max-width: 520px;
+            }
+
+            .toolbar {
+                grid-template-columns: 1fr;
+            }
+
+            .filter-group {
+                justify-content: flex-start;
             }
         }
 
-        @media (max-width: 900px) {
+        @media (max-width: 1500px) {
+            .dashboard-grid {
+                grid-template-columns: repeat(3, minmax(0, 1fr));
+            }
+        }
+
+        @media (max-width: 1050px) {
             .dashboard-grid {
                 grid-template-columns: repeat(2, minmax(0, 1fr));
             }
         }
 
-        /* below this the nowrap count starves the brand lockup, so it drops to
-           its own line instead of squeezing the title */
-        @media (max-width: 820px) {
-            .topbar {
-                flex-wrap: wrap;
-            }
-
-            .hero-count {
-                width: 100%;
-                margin: var(--s3) 0 0;
-                padding-left: 0;
-                border-left: 0;
-            }
-        }
-
         @media (max-width: 640px) {
             .hero {
-                padding: var(--s4) var(--s5) var(--s5);
+                padding: 1rem 1rem 3.75rem;
+            }
+
+            .topbar {
+                align-items: flex-start;
+                flex-direction: column;
+                margin-bottom: 2.3rem;
             }
 
             .brand-lockup {
-                gap: var(--s4);
+                align-items: flex-start;
             }
 
             .logo-frame {
-                width: 96px;
-                height: 62px;
-                padding: var(--s2) var(--s3);
+                width: 142px;
+                height: 90px;
             }
 
             h1 {
-                font-size: clamp(1.35rem, 6.4vw, 1.8rem);
+                max-width: 100%;
+                font-size: clamp(2.45rem, 13.4vw, 3.25rem);
+            }
+
+            .metric-grid {
+                grid-template-columns: 1fr;
+            }
+
+            .metric + .metric {
+                border-top: 1px solid rgba(255, 255, 255, 0.16);
+                border-left: 0;
             }
 
             .dashboard-main {
@@ -603,6 +753,15 @@
 
             .dashboard-grid {
                 grid-template-columns: 1fr;
+            }
+
+            .toolbar {
+                padding: 0.75rem;
+            }
+
+            .dashboard-meta {
+                align-items: flex-start;
+                flex-direction: column;
             }
 
             .module-card {
@@ -621,111 +780,130 @@
                     <div class="logo-frame">
                         <img src="SPOKES-Logo.png" alt="SPOKES logo" class="spokes-logo">
                     </div>
-                    <div class="hero-title">
-                        <h1>Employability Skills Curriculum</h1>
-                        <p class="hero-note">Interactive lessons for the classroom &mdash; choose one to launch.</p>
-                    </div>
                 </div>
-                <p class="hero-count" id="heroCount"></p>
+                <div class="build-pill" id="buildPill">Curriculum Hub</div>
+            </div>
+
+            <div class="hero-grid">
+                <div>
+                    <h1>Employability Skills Curriculum</h1>
+                </div>
+
+                <section class="summary-panel" aria-labelledby="summaryHeading">
+                    <h2 id="summaryHeading">Project Status</h2>
+                    <div class="metric-grid">
+                        <div class="metric">
+                            <strong id="totalCount">18</strong>
+                            <span>Lessons Planned</span>
+                        </div>
+                        <div class="metric">
+                            <strong id="readyCount">0</strong>
+                            <span>Ready</span>
+                        </div>
+                        <div class="metric">
+                            <strong id="qaCount">6</strong>
+                            <span>Lessons QA</span>
+                        </div>
+                    </div>
+                </section>
             </div>
         </header>
 
         <main class="dashboard-main">
-            <noscript>
-                <div class="noscript-list">
-                    <p>Lessons (JavaScript is off, so here are direct links):</p>
-                    <ul>
-                        <li><a href="lesson-time-management/index.html">Time Management</a></li>
-                        <li><a href="lesson-interview-skills/index.html">Interview Skills</a></li>
-                        <li><a href="lesson-employee-accountability/index.html">Employee Accountability</a></li>
-                        <li><a href="lesson-communicating-with-the-public/index.html">Communicating with the Public</a></li>
-                        <li><a href="lesson-controlling-anger/index.html">Controlling Anger</a></li>
-                        <li><a href="lesson-problem-solving-and-decision-making/index.html">Problem Solving &amp; Decision Making</a></li>
-                    </ul>
+            <section class="toolbar" aria-label="Dashboard controls">
+                <label class="search-field">
+                    <span class="sr-only">Search lessons</span>
+                    <svg viewBox="0 0 24 24" aria-hidden="true" focusable="false">
+                        <circle cx="11" cy="11" r="7" fill="none" stroke="currentColor" stroke-width="2"></circle>
+                        <path d="m16.5 16.5 4 4" fill="none" stroke="currentColor" stroke-linecap="round" stroke-width="2"></path>
+                    </svg>
+                    <input id="lessonSearch" type="search" autocomplete="off" placeholder="Search QA lessons">
+                </label>
+                <div class="filter-group" id="statusFilters" aria-label="Filter lessons by status">
+                    <button class="filter-button" type="button" data-filter="all" aria-pressed="true">All</button>
+                    <button class="filter-button" type="button" data-filter="qa" aria-pressed="false">QA</button>
                 </div>
-            </noscript>
+            </section>
+
+            <div class="dashboard-meta" aria-live="polite">
+                <span><strong id="visibleCount">0</strong> lessons shown</span>
+            </div>
 
             <div class="dashboard-grid" id="dashboardGrid"></div>
         </main>
 
         <footer>
-            <p>&copy; 2026 WV Adult Basic Education. All rights reserved.
-                <span class="offline-note" id="offlineNote" hidden>Showing the built-in lesson list (offline copy, last synced 2026-08-04).</span>
-            </p>
+            <p>&copy; 2026 WV Adult Basic Education. All rights reserved.</p>
         </footer>
     </div>
 
     <script>
-        // Keep FALLBACK_LESSONS (and this sync date) in sync with
-        // lesson-registry.json — this list is what file:// and offline users see.
-        const FALLBACK_SYNCED = '2026-08-04';
+        const ICON_MAP = {
+            briefcase: '<svg viewBox="0 0 24 24" aria-hidden="true" focusable="false"><rect x="3" y="7" width="18" height="13" rx="2"></rect><path d="M9 7V5a1 1 0 0 1 1-1h4a1 1 0 0 1 1 1v2"></path><path d="M3 12h18"></path><path d="M10 12v2h4v-2"></path></svg>',
+            clock: '<svg viewBox="0 0 24 24" aria-hidden="true" focusable="false"><circle cx="12" cy="12" r="8"></circle><path d="M12 8v4l3 2"></path><path d="M9 3h6"></path></svg>',
+            checkCircle: '<svg viewBox="0 0 24 24" aria-hidden="true" focusable="false"><circle cx="12" cy="12" r="9"></circle><path d="m8.5 12 2.2 2.2 4.8-4.8"></path></svg>',
+            chat: '<svg viewBox="0 0 24 24" aria-hidden="true" focusable="false"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"></path></svg>',
+            messageCircle: '<svg viewBox="0 0 24 24" aria-hidden="true" focusable="false"><path d="M21 11.5a8.38 8.38 0 0 1-.9 3.8 8.5 8.5 0 0 1-7.6 4.7 8.38 8.38 0 0 1-3.8-.9L3 21l1.9-5.7a8.38 8.38 0 0 1-.9-3.8 8.5 8.5 0 0 1 4.7-7.6 8.38 8.38 0 0 1 3.8-.9h.5a8.48 8.48 0 0 1 8 8v.5z"></path></svg>',
+            flame: '<svg viewBox="0 0 24 24" aria-hidden="true" focusable="false"><path d="M8.5 14.5A2.5 2.5 0 0 0 11 12c0-1.38-.5-2-1-3-1.07-2.14 0-5.5 3-7 .5 2.5 2 4.9 4 6.5 2 1.6 3 3.5 3 5.5a7 7 0 1 1-14 0c0-1.153.433-2.294 1-3a2.5 2.5 0 0 0 1.5 3z"></path></svg>',
+            lightbulb: '<svg viewBox="0 0 24 24" aria-hidden="true" focusable="false"><path d="M9 18h6"></path><path d="M10 22h4"></path><path d="M12 2a7 7 0 0 0-4 12.7V17h8v-2.3A7 7 0 0 0 12 2z"></path></svg>',
+            star: '<svg viewBox="0 0 24 24" aria-hidden="true" focusable="false"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"></polygon></svg>',
+            book: '<svg viewBox="0 0 24 24" aria-hidden="true" focusable="false"><path d="M4 19.5A2.5 2.5 0 0 1 6.5 17H20"></path><path d="M6.5 2H20v20H6.5A2.5 2.5 0 0 1 4 19.5v-15A2.5 2.5 0 0 1 6.5 2z"></path></svg>'
+        };
 
         const FALLBACK_LESSONS = [
             {
                 id: 'lesson-time-management',
                 title: 'Time Management',
                 description: 'Master prioritization, scheduling, and daily planning strategies for workplace success.',
+                icon: 'clock',
                 themeKey: 'time',
                 path: 'lesson-time-management/index.html',
-                status: 'ready',
-                slides: 37,
-                videos: 5,
-                interactions: { implemented: 3 }
+                status: 'qa'
             },
             {
                 id: 'lesson-interview-skills',
                 title: 'Interview Skills',
                 description: 'Build confidence and master techniques for successful job interviews.',
+                icon: 'briefcase',
                 themeKey: 'interview',
                 path: 'lesson-interview-skills/index.html',
-                status: 'ready',
-                slides: 36,
-                videos: 2,
-                interactions: { implemented: 5 }
+                status: 'qa'
             },
             {
                 id: 'lesson-employee-accountability',
                 title: 'Employee Accountability',
                 description: 'Develop personal responsibility, goal-setting, and professional growth habits.',
+                icon: 'checkCircle',
                 themeKey: 'accountability',
                 path: 'lesson-employee-accountability/index.html',
-                status: 'ready',
-                slides: 35,
-                videos: 0,
-                interactions: { implemented: 3 }
+                status: 'qa'
             },
             {
                 id: 'lesson-communicating-with-the-public',
                 title: 'Communicating with the Public',
-                description: 'Master active listening, communication styles, congruent messaging, and self-advocacy.',
+                description: 'Master active listening, communication styles, congruent messaging, and self-advocacy skills for workplace and personal success.',
+                icon: 'messageCircle',
                 themeKey: 'communication',
                 path: 'lesson-communicating-with-the-public/index.html',
-                status: 'qa',
-                slides: 33,
-                videos: 8,
-                interactions: { implemented: 8 }
+                status: 'qa'
             },
             {
                 id: 'lesson-controlling-anger',
                 title: 'Controlling Anger',
-                description: 'Recognize anger triggers and work through them with the Embrace-Express-Work Through framework.',
+                description: 'Recognize anger triggers, practice healthy expression, and build coping strategies for the workplace.',
+                icon: 'flame',
                 themeKey: 'anger',
                 path: 'lesson-controlling-anger/index.html',
-                status: 'qa',
-                slides: 33,
-                videos: 4,
-                interactions: { implemented: 6 }
+                status: 'qa'
             },
             {
                 id: 'lesson-problem-solving-and-decision-making',
                 title: 'Problem Solving & Decision Making',
-                description: 'Apply structured frameworks, critical thinking, and group decision-making techniques.',
+                description: 'Apply structured problem-solving frameworks, critical thinking strategies, and group decision-making techniques for workplace success.',
+                icon: 'lightbulb',
                 themeKey: 'problemSolving',
                 path: 'lesson-problem-solving-and-decision-making/index.html',
-                status: 'qa',
-                slides: 28,
-                videos: 4,
-                interactions: { implemented: 6 }
+                status: 'qa'
             }
         ];
 
@@ -763,14 +941,55 @@
         };
 
         let allLessons = [];
+        let activeFilter = 'all';
+        let activeQuery = '';
+
+        const STATUS_ORDER = ['qa', 'ready', 'in-progress', 'planned'];
+
+        function isLaunchable(status) {
+            const statusKey = normalizeStatus(status);
+            return statusKey === 'complete' || statusKey === 'ready' || statusKey === 'qa';
+        }
+
+        function isReady(status) {
+            return statusFilterKey(status) === 'ready';
+        }
+
+        function isQa(status) {
+            return statusFilterKey(status) === 'qa';
+        }
+
+        function isPlanned(status) {
+            const statusKey = normalizeStatus(status);
+            return statusKey === 'planned' || statusKey === 'in-progress';
+        }
 
         function normalizeStatus(status) {
             return String(status || 'planned').trim().toLowerCase();
         }
 
-        function isLaunchable(status) {
+        function titleCaseStatus(status) {
+            return normalizeStatus(status)
+                .split('-')
+                .filter(Boolean)
+                .map(word => word.charAt(0).toUpperCase() + word.slice(1))
+                .join(' ');
+        }
+
+        function statusFilterKey(status) {
             const statusKey = normalizeStatus(status);
-            return statusKey === 'complete' || statusKey === 'ready' || statusKey === 'qa';
+            if (statusKey === 'complete') return 'ready';
+            return statusKey;
+        }
+
+        function statusFilterLabel(filterKey) {
+            if (filterKey === 'qa') return 'QA';
+            if (filterKey === 'ready') return 'Ready';
+            return titleCaseStatus(filterKey);
+        }
+
+        function statusMatchesFilter(status, filterKey) {
+            return filterKey === 'all' || statusFilterKey(status) === filterKey;
         }
 
         function escapeHtml(value) {
@@ -794,6 +1013,10 @@
             return encodeURI(rawPath);
         }
 
+        function getIcon(iconKey) {
+            return ICON_MAP[iconKey] || ICON_MAP.book;
+        }
+
         function getThemeClass(themeKey, index) {
             const known = ['time', 'interview', 'accountability', 'communication', 'anger', 'problemSolving'];
             if (known.includes(themeKey)) return `theme-${themeKey}`;
@@ -808,16 +1031,17 @@
             };
         }
 
-        function buildChips(lesson) {
-            const chips = [];
-            const slides = Number(lesson.slides);
-            const videos = Number(lesson.videos);
-            const activities = Number(lesson.interactions && lesson.interactions.implemented);
-            if (Number.isFinite(slides) && slides > 0) chips.push(slides + ' slides');
-            if (Number.isFinite(videos) && videos > 0) chips.push(videos + (videos === 1 ? ' video' : ' videos'));
-            if (Number.isFinite(activities) && activities > 0) chips.push(activities + (activities === 1 ? ' activity' : ' activities'));
-            if (!chips.length) return '';
-            return `<ul class="card-chips">${chips.map(chip => `<li>${escapeHtml(chip)}</li>`).join('')}</ul>`;
+        function statusLabel(status) {
+            const filterKey = statusFilterKey(status);
+            if (filterKey === 'planned') return 'Coming Soon';
+            return statusFilterLabel(filterKey);
+        }
+
+        function statusBadgeClass(status, isLaunchableLesson) {
+            const filterKey = statusFilterKey(status);
+            if (filterKey === 'qa') return 'status-badge--qa';
+            if (filterKey === 'ready' && isLaunchableLesson) return 'status-badge--ready';
+            return 'status-badge--planned';
         }
 
         function buildCard(lesson, index) {
@@ -825,29 +1049,44 @@
             const safePath = launchable ? sanitizeLessonPath(lesson.path) : '';
             const isLaunchableLesson = launchable && !!safePath;
             const tag = isLaunchableLesson ? 'a' : 'div';
-            const titleId = 'lesson-title-' + index;
-            const hrefAttr = tag === 'a' ? ` href="${safePath}" aria-labelledby="${titleId}"` : '';
+            const hrefAttr = tag === 'a' ? ` href="${safePath}" rel="noopener noreferrer"` : '';
             const plannedClass = isLaunchableLesson ? '' : ' module-card--planned';
-            const safeTitle = escapeHtml(lesson.title || 'Untitled Lesson');
+            const statusClass = statusBadgeClass(lesson.status, isLaunchableLesson);
+            const safeTitle = escapeHtml(lesson.title || 'Untitled Module');
             const safeDescription = escapeHtml(lesson.description || '');
             const lessonImage = getLessonImage(lesson);
             const imageSrc = escapeHtml(encodeURI(lessonImage.src));
+            const imageAlt = escapeHtml(lessonImage.alt);
             const imagePosition = escapeHtml(lessonImage.position || 'center');
             const footerContent = isLaunchableLesson
-                ? `<span class="launch-cta">Launch Lesson <span class="arrow-icon" aria-hidden="true">&rarr;</span></span>`
+                ? `<span class="launch-cta">Launch Module <span class="arrow-icon" aria-hidden="true">&rarr;</span></span>`
                 : `<span class="planned-label">Coming Soon</span>`;
 
             return `<${tag}${hrefAttr} class="module-card ${getThemeClass(lesson.themeKey, index)}${plannedClass}" style="--i: ${index}; --image-position: ${imagePosition};">
                 <div class="card-art">
-                    <img src="${imageSrc}" alt="" loading="lazy">
+                    <img src="${imageSrc}" alt="${imageAlt}" loading="lazy">
+                    <div class="card-topline">
+                        <span class="status-badge ${statusClass}">${statusLabel(lesson.status)}</span>
+                    </div>
                 </div>
                 <div class="card-body">
-                    <h3 class="module-name" id="${titleId}">${safeTitle}</h3>
+                    <h3 class="module-name">${safeTitle}</h3>
                     <p class="module-desc">${safeDescription}</p>
-                    ${buildChips(lesson)}
                 </div>
                 <div class="card-footer">${footerContent}</div>
             </${tag}>`;
+        }
+
+        function updateMetrics(lessons, data = {}) {
+            const active = visibleLessons(lessons);
+            const configuredTotal = Number(data.lessonsPlanned ?? data.totalLessonsPlanned ?? data.rules?.lessonsPlanned);
+            const plannedTotal = Number.isFinite(configuredTotal) && configuredTotal > 0
+                ? Math.max(configuredTotal, active.length)
+                : active.length;
+
+            document.getElementById('totalCount').textContent = plannedTotal;
+            document.getElementById('readyCount').textContent = countByFilter(active, 'ready');
+            document.getElementById('qaCount').textContent = countByFilter(active, 'qa');
         }
 
         function visibleLessons(lessons) {
@@ -856,31 +1095,111 @@
             });
         }
 
+        function activeLessons() {
+            return visibleLessons(allLessons);
+        }
+
+        function countByFilter(lessons, filterKey) {
+            return lessons.filter(lesson => statusMatchesFilter(lesson.status, filterKey)).length;
+        }
+
+        function statusFilterOptions(lessons) {
+            const active = visibleLessons(lessons);
+            const presentFilters = [...new Set(active.map(lesson => statusFilterKey(lesson.status)))]
+                .sort(function (a, b) {
+                    const aIndex = STATUS_ORDER.indexOf(a);
+                    const bIndex = STATUS_ORDER.indexOf(b);
+                    if (aIndex === -1 && bIndex === -1) return a.localeCompare(b);
+                    if (aIndex === -1) return 1;
+                    if (bIndex === -1) return -1;
+                    return aIndex - bIndex;
+                });
+            const options = [{ key: 'all', label: `All ${active.length}` }];
+
+            presentFilters.forEach(function (filterKey) {
+                const count = countByFilter(active, filterKey);
+                if (count > 0) options.push({ key: filterKey, label: `${statusFilterLabel(filterKey)} ${count}` });
+            });
+
+            return options;
+        }
+
+        function renderStatusFilters() {
+            const filters = statusFilterOptions(allLessons);
+            if (!filters.some(filter => filter.key === activeFilter)) activeFilter = 'all';
+            document.getElementById('statusFilters').innerHTML = filters.map(function (filter) {
+                return `<button class="filter-button" type="button" data-filter="${filter.key}" aria-pressed="${filter.key === activeFilter}">${filter.label}</button>`;
+            }).join('');
+        }
+
+        function updateSearchPlaceholder() {
+            const active = activeLessons();
+            const presentFilters = [...new Set(active.map(lesson => statusFilterKey(lesson.status)))];
+            const input = document.getElementById('lessonSearch');
+
+            if (presentFilters.length === 1 && active.length > 0) {
+                input.placeholder = `Search ${active.length} ${statusFilterLabel(presentFilters[0])} lessons`;
+            } else {
+                input.placeholder = `Search ${active.length || ''} lessons`.trim();
+            }
+        }
+
+        function filteredLessons() {
+            return allLessons.filter(function (lesson) {
+                if (!lesson || lesson.status === 'blocked') return false;
+                if (!statusMatchesFilter(lesson.status, activeFilter)) return false;
+                if (!activeQuery) return true;
+                const haystack = `${lesson.title || ''} ${lesson.description || ''} ${lesson.themeKey || ''}`.toLowerCase();
+                return haystack.includes(activeQuery);
+            });
+        }
+
         function renderDashboard() {
-            const lessons = visibleLessons(allLessons);
+            const lessons = filteredLessons();
             const grid = document.getElementById('dashboardGrid');
+            document.getElementById('visibleCount').textContent = lessons.length;
             grid.innerHTML = lessons.length
                 ? lessons.map((lesson, i) => buildCard(lesson, i)).join('')
-                : '<div class="empty-state">No lessons found &mdash; the lesson registry may be empty or unreadable.</div>';
+                : '<div class="empty-state">No lessons match the current view.</div>';
+        }
 
-            // states the real number of launchable lessons, so the band stays
-            // true as the curriculum grows
-            const ready = lessons.filter(lesson => isLaunchable(lesson.status)).length;
-            const counter = document.getElementById('heroCount');
-            if (counter) {
-                counter.textContent = ready
-                    ? `${ready} ${ready === 1 ? 'lesson' : 'lessons'} ready to teach`
-                    : '';
-            }
+        function setFilter(filter) {
+            activeFilter = filter;
+            document.querySelectorAll('.filter-button').forEach(function (button) {
+                button.setAttribute('aria-pressed', String(button.dataset.filter === filter));
+            });
+            renderDashboard();
+        }
+
+        function initControls() {
+            document.getElementById('lessonSearch').addEventListener('input', function (event) {
+                activeQuery = event.target.value.trim().toLowerCase();
+                renderDashboard();
+            });
+
+            document.getElementById('statusFilters').addEventListener('click', function (event) {
+                const button = event.target.closest('.filter-button');
+                if (!button) return;
+                setFilter(button.dataset.filter);
+            });
         }
 
         function initDashboard(data) {
             allLessons = Array.isArray(data.lessons) ? data.lessons : FALLBACK_LESSONS;
+            updateMetrics(allLessons, data);
+            renderStatusFilters();
+            updateSearchPlaceholder();
+            const registryLabel = data.version ? `Registry ${data.version}` : 'Curriculum Hub';
+            document.getElementById('buildPill').textContent = data.lastUpdated
+                ? `${registryLabel} · ${data.lastUpdated}`
+                : registryLabel;
             renderDashboard();
         }
 
         document.addEventListener('DOMContentLoaded', function () {
-            fetch('lesson-registry.json', { cache: 'no-store' })
+            initControls();
+            const registryUrl = `lesson-registry.json?v=${Date.now()}`;
+            fetch(registryUrl, { cache: 'no-store' })
                 .then(function (res) {
                     if (!res.ok) throw new Error('HTTP ' + res.status);
                     return res.json();
@@ -888,13 +1207,13 @@
                 .then(function (data) {
                     initDashboard(data);
                 })
-                .catch(function (error) {
-                    // Be honest about the failure: label the page as the
-                    // offline copy and leave maintainers a breadcrumb
-                    console.warn('Lesson registry unavailable — showing the built-in offline copy (synced ' + FALLBACK_SYNCED + ').', error);
-                    const offlineNote = document.getElementById('offlineNote');
-                    if (offlineNote) offlineNote.hidden = false;
-                    initDashboard({ lessons: FALLBACK_LESSONS });
+                .catch(function () {
+                    initDashboard({
+                        version: '1.1.0',
+                        lastUpdated: '2026-05-01',
+                        lessons: FALLBACK_LESSONS,
+                        lessonsPlanned: 18
+                    });
                 });
         });
     </script>

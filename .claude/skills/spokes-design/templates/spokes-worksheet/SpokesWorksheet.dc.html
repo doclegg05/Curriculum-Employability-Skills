@@ -1,0 +1,73 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<script src="./support.js"></script>
+</head>
+<body>
+<x-dc>
+<!-- @template name="SPOKES Worksheet" description="Print-ready Letter lesson worksheet — header, numbered prompts, reflection callout, SMART grid. Edit prompts and print." -->
+<helmet>
+  <script src="./ds-base.js"></script>
+  <style>
+    @page { size: letter; margin: 0; }
+    body { margin: 0; background: #e9edf1; }
+  </style>
+</helmet>
+<div style="width:816px;min-height:1056px;margin:0 auto;background:var(--light);padding:56px 60px 48px;font-family:var(--font-body);color:var(--dark);position:relative;box-sizing:border-box;">
+  <div style="display:flex;align-items:flex-start;justify-content:space-between;border-bottom:2px solid var(--dark);padding-bottom:18px;">
+    <img src="../../assets/SPOKES-Logo.png" alt="SPOKES — Skills for Life" style="height:46px;display:block;" />
+    <div style="text-align:right;">
+      <span style="display:inline-block;font-size:0.62rem;font-weight:700;letter-spacing:1.5px;text-transform:uppercase;background:var(--gold);color:var(--dark);padding:0.3rem 0.6rem;border-radius:4px;white-space:nowrap;">Warm-Up</span>
+      <div style="font-size:0.72rem;letter-spacing:0.2em;text-transform:uppercase;color:var(--gray);margin-top:8px;">Module 00 · Worksheet</div>
+    </div>
+  </div>
+
+  <h1 style="font-family:var(--font-display);font-weight:400;font-size:2.4rem;color:var(--primary);margin:26px 0 4px;">Lesson Title</h1>
+  <p style="font-size:1rem;color:var(--gray);margin:0 0 24px;">Warm-Up: a short activity prompt.</p>
+
+  <div style="display:flex;gap:28px;margin:0 0 26px;">
+    <div style="flex:1;"><div style="font-size:0.68rem;letter-spacing:0.14em;text-transform:uppercase;color:var(--gray);margin-bottom:20px;">Name</div><div style="border-bottom:1.5px solid var(--offwhite);"></div></div>
+    <div style="flex:1;"><div style="font-size:0.68rem;letter-spacing:0.14em;text-transform:uppercase;color:var(--gray);margin-bottom:20px;">Date</div><div style="border-bottom:1.5px solid var(--offwhite);"></div></div>
+  </div>
+
+  <div style="margin-bottom:22px;">
+    <div style="display:flex;align-items:center;gap:10px;margin-bottom:10px;"><span style="width:26px;height:26px;border-radius:50%;background:var(--primary);color:#fff;font-size:0.9rem;font-weight:700;display:flex;align-items:center;justify-content:center;flex-shrink:0;">1</span><h3 style="font-family:var(--font-display);font-weight:400;font-size:1.25rem;color:var(--dark);margin:0;">First prompt heading</h3></div>
+    <p style="font-size:0.92rem;color:var(--gray);margin:0 0 12px 36px;">A one-line instruction for the learner.</p>
+    <div style="border-bottom:1px solid var(--offwhite);height:30px;margin:0 0 0 36px;"></div>
+    <div style="border-bottom:1px solid var(--offwhite);height:30px;margin:0 0 0 36px;"></div>
+  </div>
+
+  <div style="margin-bottom:22px;">
+    <div style="display:flex;align-items:center;gap:10px;margin-bottom:10px;"><span style="width:26px;height:26px;border-radius:50%;background:var(--gold);color:var(--dark);font-size:0.9rem;font-weight:700;display:flex;align-items:center;justify-content:center;flex-shrink:0;">2</span><h3 style="font-family:var(--font-display);font-weight:400;font-size:1.25rem;color:var(--dark);margin:0;">Second prompt heading</h3></div>
+    <p style="font-size:0.92rem;color:var(--gray);margin:0 0 12px 36px;">Another short instruction.</p>
+    <div style="border-bottom:1px solid var(--offwhite);height:30px;margin:0 0 0 36px;"></div>
+  </div>
+
+  <div style="background:rgba(211,178,87,0.1);border:1.5px solid var(--gold);border-radius:10px;padding:16px 20px;margin-bottom:22px;">
+    <div style="font-size:0.68rem;letter-spacing:0.14em;text-transform:uppercase;color:var(--muted-gold);font-weight:700;margin-bottom:6px;">Reflection</div>
+    <p style="font-size:0.92rem;color:var(--dark);margin:0 0 14px;">A reflective question that ties the activity to the learner's own life.</p>
+    <div style="border-bottom:1px solid rgba(211,178,87,0.4);height:30px;"></div>
+    <div style="border-bottom:1px solid rgba(211,178,87,0.4);height:30px;"></div>
+  </div>
+
+  <div style="margin-bottom:14px;">
+    <div style="display:flex;align-items:center;gap:10px;margin-bottom:10px;"><span style="width:26px;height:26px;border-radius:50%;background:var(--primary);color:#fff;font-size:0.9rem;font-weight:700;display:flex;align-items:center;justify-content:center;flex-shrink:0;">3</span><h3 style="font-family:var(--font-display);font-weight:400;font-size:1.25rem;color:var(--dark);margin:0;">Set one SMART goal</h3></div>
+    <p style="font-size:0.92rem;color:var(--gray);margin:0 0 12px 36px;">Turn one intention into a specific, trackable goal.</p>
+  </div>
+  <div style="border:1px solid var(--offwhite);border-radius:10px;overflow:hidden;">
+    <div style="display:grid;grid-template-columns:44px 1fr;border-bottom:1px solid var(--offwhite);"><div style="background:var(--muted);color:var(--primary);font-family:var(--font-display);font-size:1.3rem;display:flex;align-items:center;justify-content:center;">S</div><div style="padding:10px 14px;"><div style="font-size:0.82rem;font-weight:600;color:var(--dark);">Specific — what exactly?</div><div style="border-bottom:1px solid var(--offwhite);height:20px;margin-top:6px;"></div></div></div>
+    <div style="display:grid;grid-template-columns:44px 1fr;border-bottom:1px solid var(--offwhite);"><div style="background:var(--muted);color:var(--primary);font-family:var(--font-display);font-size:1.3rem;display:flex;align-items:center;justify-content:center;">M</div><div style="padding:10px 14px;"><div style="font-size:0.82rem;font-weight:600;color:var(--dark);">Measurable — how will you track it?</div><div style="border-bottom:1px solid var(--offwhite);height:20px;margin-top:6px;"></div></div></div>
+    <div style="display:grid;grid-template-columns:44px 1fr;border-bottom:1px solid var(--offwhite);"><div style="background:var(--muted);color:var(--primary);font-family:var(--font-display);font-size:1.3rem;display:flex;align-items:center;justify-content:center;">A</div><div style="padding:10px 14px;"><div style="font-size:0.82rem;font-weight:600;color:var(--dark);">Achievable — is it realistic?</div><div style="border-bottom:1px solid var(--offwhite);height:20px;margin-top:6px;"></div></div></div>
+    <div style="display:grid;grid-template-columns:44px 1fr;border-bottom:1px solid var(--offwhite);"><div style="background:var(--muted);color:var(--primary);font-family:var(--font-display);font-size:1.3rem;display:flex;align-items:center;justify-content:center;">R</div><div style="padding:10px 14px;"><div style="font-size:0.82rem;font-weight:600;color:var(--dark);">Relevant — why does it matter?</div><div style="border-bottom:1px solid var(--offwhite);height:20px;margin-top:6px;"></div></div></div>
+    <div style="display:grid;grid-template-columns:44px 1fr;"><div style="background:var(--muted);color:var(--primary);font-family:var(--font-display);font-size:1.3rem;display:flex;align-items:center;justify-content:center;">T</div><div style="padding:10px 14px;"><div style="font-size:0.82rem;font-weight:600;color:var(--dark);">Time-bound — by when?</div><div style="border-bottom:1px solid var(--offwhite);height:20px;margin-top:6px;"></div></div></div>
+  </div>
+
+  <div style="position:absolute;left:60px;right:60px;bottom:30px;display:flex;justify-content:space-between;align-items:center;border-top:1px solid var(--offwhite);padding-top:12px;font-size:0.72rem;color:var(--gray);">
+    <span>SPOKES · <b style="color:var(--muted-gold);">Skills for Life</b></span><span>Copyright © 2026 WV Adult Basic Education</span>
+  </div>
+</div>
+</x-dc>
+</body>
+</html>

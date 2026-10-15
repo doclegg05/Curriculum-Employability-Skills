@@ -1,0 +1,75 @@
+<h2>Consolidated Instruction Architecture</h2>
+<p class="subtitle">How the unified spec, validator, and hook layer together</p>
+
+<div style="max-width: 800px; margin: 2rem auto; font-family: system-ui, sans-serif;">
+
+  <div style="display: flex; flex-direction: column; gap: 0;">
+
+    <div style="background: linear-gradient(135deg, #1a1a2e, #16213e); color: #e0e0e0; padding: 1.5rem 2rem; border-radius: 12px 12px 0 0; border: 2px solid #0f3460; position: relative;">
+      <div style="position: absolute; top: -12px; left: 20px; background: #0f3460; color: #e94560; font-size: 0.7rem; font-weight: 700; padding: 2px 10px; border-radius: 4px; text-transform: uppercase; letter-spacing: 1px;">Always Loaded</div>
+      <h3 style="margin: 0 0 0.5rem; color: #e94560; font-size: 1.2rem;">CLAUDE.md</h3>
+      <p style="margin: 0; font-size: 0.9rem; opacity: 0.85;">Agent entry point. Hard rules inline. <code style="background: rgba(233,69,96,0.15); padding: 2px 6px; border-radius: 3px;">MUST read SPOKES-STANDARD.md</code> directive. File org rules, project-level constraints.</p>
+    </div>
+
+    <div style="text-align: center; font-size: 1.5rem; color: #666; line-height: 1; padding: 0.25rem 0;">&#9660; references</div>
+
+    <div style="background: linear-gradient(135deg, #0f3460, #1a1a5e); color: #e0e0e0; padding: 1.5rem 2rem; border: 2px solid #533483; position: relative;">
+      <div style="position: absolute; top: -12px; left: 20px; background: #533483; color: #fff; font-size: 0.7rem; font-weight: 700; padding: 2px 10px; border-radius: 4px; text-transform: uppercase; letter-spacing: 1px;">Source of Truth</div>
+      <h3 style="margin: 0 0 0.75rem; color: #a855f7; font-size: 1.2rem;">SPOKES-STANDARD.md</h3>
+      <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 0.5rem; font-size: 0.8rem;">
+        <div style="background: rgba(168,85,247,0.1); padding: 0.5rem 0.75rem; border-radius: 6px; border-left: 3px solid #a855f7;">1. Color System <span style="opacity: 0.6;">(11 palette + prohibited + contrast)</span></div>
+        <div style="background: rgba(168,85,247,0.1); padding: 0.5rem 0.75rem; border-radius: 6px; border-left: 3px solid #a855f7;">2. Typography <span style="opacity: 0.6;">(variables, scale, overrides)</span></div>
+        <div style="background: rgba(168,85,247,0.1); padding: 0.5rem 0.75rem; border-radius: 6px; border-left: 3px solid #e94560;">3. Accessibility <span style="opacity: 0.6;">(ARIA, keyboard, captions, focus)</span></div>
+        <div style="background: rgba(168,85,247,0.1); padding: 0.5rem 0.75rem; border-radius: 6px; border-left: 3px solid #a855f7;">4. Components <span style="opacity: 0.6;">(catalog + required attrs)</span></div>
+        <div style="background: rgba(168,85,247,0.1); padding: 0.5rem 0.75rem; border-radius: 6px; border-left: 3px solid #e94560;">5. Nav Engine <span style="opacity: 0.6;">(canonical spec, required features)</span></div>
+        <div style="background: rgba(168,85,247,0.1); padding: 0.5rem 0.75rem; border-radius: 6px; border-left: 3px solid #a855f7;">6. Theme System <span style="opacity: 0.6;">(Layer 1 + Layer 2 rules)</span></div>
+        <div style="background: rgba(168,85,247,0.1); padding: 0.5rem 0.75rem; border-radius: 6px; border-left: 3px solid #e94560;">7. Mobile / Touch <span style="opacity: 0.6;">(tap targets, touch parity)</span></div>
+        <div style="background: rgba(168,85,247,0.1); padding: 0.5rem 0.75rem; border-radius: 6px; border-left: 3px solid #a855f7;">8. Performance <span style="opacity: 0.6;">(video loading, persistence)</span></div>
+        <div style="background: rgba(168,85,247,0.1); padding: 0.5rem 0.75rem; border-radius: 6px; border-left: 3px solid #e94560;">9. Engagement <span style="opacity: 0.6;">(checkpoints, post-video prompts)</span></div>
+        <div style="background: rgba(168,85,247,0.1); padding: 0.5rem 0.75rem; border-radius: 6px; border-left: 3px solid #a855f7;">10. Reduced Motion <span style="opacity: 0.6;">(CSS + JS requirements)</span></div>
+      </div>
+      <p style="margin: 0.75rem 0 0; font-size: 0.8rem; opacity: 0.6; font-style: italic;">Each section: RULE (testable) &rarr; RATIONALE (why) &rarr; VALIDATOR-ID (links to script check)</p>
+    </div>
+
+    <div style="text-align: center; font-size: 1.5rem; color: #666; line-height: 1; padding: 0.25rem 0;">&#9660; enforced by</div>
+
+    <div style="background: linear-gradient(135deg, #1b4332, #2d6a4f); color: #e0e0e0; padding: 1.5rem 2rem; border: 2px solid #40916c; position: relative;">
+      <div style="position: absolute; top: -12px; left: 20px; background: #40916c; color: #fff; font-size: 0.7rem; font-weight: 700; padding: 2px 10px; border-radius: 4px; text-transform: uppercase; letter-spacing: 1px;">Automated</div>
+      <h3 style="margin: 0 0 0.5rem; color: #52b788; font-size: 1.2rem;">scripts/validate-lesson.py</h3>
+      <div style="display: flex; gap: 1rem; font-size: 0.8rem; flex-wrap: wrap;">
+        <div style="background: rgba(82,183,136,0.15); padding: 0.4rem 0.75rem; border-radius: 20px;">Color scan</div>
+        <div style="background: rgba(82,183,136,0.15); padding: 0.4rem 0.75rem; border-radius: 20px;">ARIA audit</div>
+        <div style="background: rgba(82,183,136,0.15); padding: 0.4rem 0.75rem; border-radius: 20px;">Keyboard check</div>
+        <div style="background: rgba(82,183,136,0.15); padding: 0.4rem 0.75rem; border-radius: 20px;">Tap targets</div>
+        <div style="background: rgba(82,183,136,0.15); padding: 0.4rem 0.75rem; border-radius: 20px;">Video preload</div>
+        <div style="background: rgba(82,183,136,0.15); padding: 0.4rem 0.75rem; border-radius: 20px;">Captions</div>
+        <div style="background: rgba(82,183,136,0.15); padding: 0.4rem 0.75rem; border-radius: 20px;">Font vars</div>
+        <div style="background: rgba(82,183,136,0.15); padding: 0.4rem 0.75rem; border-radius: 20px;">Reduced motion</div>
+        <div style="background: rgba(82,183,136,0.15); padding: 0.4rem 0.75rem; border-radius: 20px;">Focus-visible</div>
+        <div style="background: rgba(82,183,136,0.15); padding: 0.4rem 0.75rem; border-radius: 20px;">Contrast fixes</div>
+      </div>
+      <p style="margin: 0.75rem 0 0; font-size: 0.8rem; opacity: 0.7;">Exits non-zero on CRITICAL. Outputs PASS / WARN / FAIL per rule with line numbers.</p>
+    </div>
+
+    <div style="text-align: center; font-size: 1.5rem; color: #666; line-height: 1; padding: 0.25rem 0;">&#9660; triggered by</div>
+
+    <div style="background: linear-gradient(135deg, #7f4f24, #936639); color: #e0e0e0; padding: 1.5rem 2rem; border-radius: 0 0 12px 12px; border: 2px solid #b08968; position: relative;">
+      <div style="position: absolute; top: -12px; left: 20px; background: #b08968; color: #fff; font-size: 0.7rem; font-weight: 700; padding: 2px 10px; border-radius: 4px; text-transform: uppercase; letter-spacing: 1px;">Enforcement</div>
+      <h3 style="margin: 0 0 0.5rem; color: #ddb892; font-size: 1.2rem;">.claude/settings.local.json</h3>
+      <p style="margin: 0; font-size: 0.9rem; opacity: 0.85;">PostToolUse hook on <code style="background: rgba(221,184,146,0.2); padding: 2px 6px; border-radius: 3px;">Write</code> and <code style="background: rgba(221,184,146,0.2); padding: 2px 6px; border-radius: 3px;">Edit</code> to <code style="background: rgba(221,184,146,0.2); padding: 2px 6px; border-radius: 3px;">lesson-*/index.html</code>. Agent gets immediate feedback. Blocks on CRITICAL.</p>
+    </div>
+  </div>
+
+  <div style="margin-top: 2rem; padding: 1.25rem; background: rgba(255,255,255,0.03); border: 1px solid rgba(255,255,255,0.1); border-radius: 8px;">
+    <h3 style="margin: 0 0 0.75rem; font-size: 1rem; color: #e94560;">Replaces These Scattered Sources</h3>
+    <div style="display: flex; flex-wrap: wrap; gap: 0.5rem; font-size: 0.75rem;">
+      <span style="background: rgba(233,69,96,0.15); padding: 0.3rem 0.6rem; border-radius: 4px; text-decoration: line-through; opacity: 0.7;">SPOKES Builder/brand-palette.md</span>
+      <span style="background: rgba(233,69,96,0.15); padding: 0.3rem 0.6rem; border-radius: 4px; text-decoration: line-through; opacity: 0.7;">SPOKES Builder/CLAUDE.md (partial)</span>
+      <span style="background: rgba(233,69,96,0.15); padding: 0.3rem 0.6rem; border-radius: 4px; text-decoration: line-through; opacity: 0.7;">lesson-communicating/STYLING-GUIDE.md</span>
+      <span style="background: rgba(233,69,96,0.15); padding: 0.3rem 0.6rem; border-radius: 4px; text-decoration: line-through; opacity: 0.7;">prototype-structural-redesign/GUARDRAILS.md</span>
+      <span style="background: rgba(233,69,96,0.15); padding: 0.3rem 0.6rem; border-radius: 4px; text-decoration: line-through; opacity: 0.7;">docs/superpowers/specs/design-system-strengthening.md</span>
+      <span style="background: rgba(233,69,96,0.15); padding: 0.3rem 0.6rem; border-radius: 4px; text-decoration: line-through; opacity: 0.7;">docs/repo-standards.md (partial)</span>
+    </div>
+    <p style="margin: 0.5rem 0 0; font-size: 0.75rem; opacity: 0.5;">Content absorbed into SPOKES-STANDARD.md. Original files archived.</p>
+  </div>
+</div>

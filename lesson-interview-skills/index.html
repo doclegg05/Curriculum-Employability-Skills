@@ -1401,10 +1401,6 @@
   <!-- Layer 1: colorLead=royal, sidebarColor=royal, backgroundTexture=diagonal, titleSlide=split-hero, fontPairing=playfair-display-inter -->
   <!-- Layer 2: Per-chapter card styles, dividers, and secondary accents from theme-registry.json -->
   <style id="theme-override">
-    /* MOB-03 / WCAG 2.5.8: prev/next controls must meet the 44px floor */
-    .key-icon { min-width: 44px; min-height: 44px; }
-
-
     /* ================================================================
        FONT PAIRING: playfair-display-inter
        ================================================================ */
@@ -3117,16 +3113,6 @@
       line-height: 1.5;
       margin: 0;
     }
-    /* Classroom-scale typography: sizing is rem-based, so scaling the root
-       font grows content proportionally on large presentation displays.
-       Scoped above the fit-to-slide-guard's 900px height regime so the two
-       never fight. */
-    @media (min-width: 1600px) and (min-height: 920px) {
-      html { font-size: 19px; }
-      /* px-sized imagery doesn't scale with the root font — grow it here */
-      .pitch-object-icon { width: 210px; height: 210px; }
-      .pitch-step-icon { width: 64px; height: 64px; }
-    }
   </style>
     <style id="fit-to-slide-guard">
       @media (min-width: 769px) and (max-height: 900px) {
@@ -3425,7 +3411,7 @@
 
       <!-- Slide 7 — Big Statement -->
       <section class="slide big-statement" data-chapter="2">
-        <h2>Every interview is a chance to grow. <br><span class="mauve">Practice</span> builds <span class="highlight">confidence</span>, <br>and confidence <span class="gold">gets the job.</span></h2>
+        <h2>Every interview is a chance to grow.<br><span class="mauve">Practice</span> builds <span class="highlight">confidence</span>,<br>and confidence <span class="gold">gets the job.</span></h2>
       </section>
 
       <!-- ============================================================
@@ -3503,7 +3489,7 @@
 
       <!-- Slide 11 — Big Statement -->
       <section class="slide big-statement" data-chapter="3">
-        <h2>Walk in <span class="gold">prepared</span>. <br>Walk out <span class="mauve">confident</span>.</h2>
+        <h2>Walk in <span class="gold">prepared</span>.<br>Walk out <span class="mauve">confident</span>.</h2>
       </section>
 
       <!-- ============================================================
@@ -4138,7 +4124,6 @@
     const progressBar = document.getElementById('progressBar');
 
     let currentIndex = 0;
-    let confettiTriggered = false;
     const prefersReduced = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
     let sidebarCollapsed = false;
     const sidebarEl = document.querySelector('.sidebar');
@@ -4216,7 +4201,7 @@
         const badgeLetter = wippeaLabels[info.badge] || 'P';
 
         html += '<li class="chapter-item" data-chapter="' + chapterNum + '">' +
-          '<div class="chapter-header" tabindex="0" role="button" aria-expanded="false">' +
+          '<div class="chapter-header" tabindex="0" role="button">' +
             '<span class="chapter-arrow">&#9654;</span>' +
             '<span class="wippea-badge ' + info.badge + '">' + badgeLetter + '</span>' +
             '<span>' + info.name + '</span>' +
@@ -4233,17 +4218,14 @@
       chapterListEl.innerHTML = html;
 
       document.querySelectorAll('.chapter-header').forEach(header => {
-        // NAV-13: header activation toggles expansion ONLY — navigation
-        // happens through the slide items
         function activateChapter() {
           const chapterItem = header.parentElement;
           const wasExpanded = chapterItem.classList.contains('expanded');
           document.querySelectorAll('.chapter-item').forEach(item => item.classList.remove('expanded'));
-          document.querySelectorAll('.chapter-header').forEach(h => h.setAttribute('aria-expanded', 'false'));
-          if (!wasExpanded) {
-            chapterItem.classList.add('expanded');
-            header.setAttribute('aria-expanded', 'true');
-          }
+          if (!wasExpanded) chapterItem.classList.add('expanded');
+          const chapter = chapterItem.dataset.chapter;
+          const targetIndex = Array.from(slides).findIndex(slide => slide.dataset.chapter === chapter);
+          if (targetIndex !== -1) showSlide(targetIndex);
         }
         header.addEventListener('click', activateChapter);
         header.addEventListener('keydown', e => {
@@ -4292,9 +4274,6 @@
           const isActive = item.dataset.chapter === currentChapter;
           item.classList.toggle('active', isActive);
           if (isActive) item.classList.add('expanded');
-          // NAV-13: keep disclosure state truthful on auto-expand
-          const h = item.querySelector('.chapter-header');
-          if (h) h.setAttribute('aria-expanded', String(item.classList.contains('expanded')));
         });
 
         document.querySelectorAll('.slide-item').forEach(item => {
@@ -4321,12 +4300,7 @@
           brandingLogo.style.display = 'block';
         }
 
-        if (!slides[index].classList.contains('slide-closing')) {
-          confettiTriggered = false;
-        }
-
-        if (slides[index].classList.contains('slide-closing') && !confettiTriggered) {
-          confettiTriggered = true;
+        if (slides[index].classList.contains('slide-closing')) {
           triggerGoldStars();
           playSuccessSound();
         }

@@ -1,0 +1,147 @@
+<h2>Section 2: Theme Matrix — Title Slide Designs</h2>
+<p class="subtitle">The first slide of every lesson — the first impression. Currently identical across all lessons. These options change the layout while keeping the same elements: logo, title, subtitle, copyright.</p>
+
+<div style="display:grid; grid-template-columns:1fr 1fr; gap:1.5rem; margin-top:1.5rem;">
+
+  <!-- 1. Centered Gradient (current) -->
+  <div style="border-radius:12px; overflow:hidden; border:2px solid #ddd;">
+    <div style="height:180px; background:linear-gradient(135deg, #004071 0%, #007baf 100%); display:flex; align-items:center; justify-content:center; position:relative;">
+      <div style="text-align:center; z-index:1;">
+        <div style="width:35px; height:35px; background:rgba(255,255,255,0.15); border-radius:8px; margin:0 auto 0.5rem; display:flex; align-items:center; justify-content:center; font-size:0.6rem; color:white;">🎓</div>
+        <div style="font-size:1.4rem; color:white; font-weight:700; font-family:serif;">Lesson Title</div>
+        <div style="width:40px; height:2px; background:#d3b257; margin:0.4rem auto;"></div>
+        <div style="font-size:0.65rem; color:rgba(255,255,255,0.8);">Subtitle text here</div>
+        <div style="font-size:0.45rem; color:rgba(255,255,255,0.5); margin-top:0.75rem;">Copyright © 2026 WV Adult Basic Education</div>
+      </div>
+    </div>
+    <div style="background:#f8f8f8; padding:0.6rem; text-align:center; border-top:1px solid #eee;">
+      <div style="font-size:0.85rem; font-weight:700; color:#333;">Centered Gradient</div>
+      <div style="font-size:0.65rem; color:#60636b;">Current default. Everything centered on a diagonal gradient.</div>
+    </div>
+  </div>
+
+  <!-- 2. Split Hero -->
+  <div style="border-radius:12px; overflow:hidden; border:2px solid #ddd;">
+    <div style="height:180px; display:flex; position:relative;">
+      <div style="width:45%; background:#00133f; display:flex; align-items:center; justify-content:center; padding:1rem;">
+        <div>
+          <div style="width:35px; height:35px; background:rgba(211,178,87,0.15); border:1px solid rgba(211,178,87,0.3); border-radius:8px; margin-bottom:0.5rem; display:flex; align-items:center; justify-content:center; font-size:0.6rem;">🎓</div>
+          <div style="font-size:1.2rem; color:white; font-weight:700; font-family:serif; line-height:1.2;">Lesson<br>Title</div>
+          <div style="width:30px; height:2px; background:#d3b257; margin:0.4rem 0;"></div>
+          <div style="font-size:0.55rem; color:rgba(255,255,255,0.7);">Subtitle text</div>
+        </div>
+      </div>
+      <div style="flex:1; background:linear-gradient(135deg, #007baf 0%, #004071 100%); display:flex; align-items:center; justify-content:center; position:relative; overflow:hidden;">
+        <div style="position:absolute; font-size:10rem; font-weight:900; color:rgba(255,255,255,0.03); line-height:1;">S</div>
+        <div style="font-size:0.45rem; color:rgba(255,255,255,0.5); position:absolute; bottom:0.75rem; right:1rem;">© 2026 WV ABE</div>
+      </div>
+    </div>
+    <div style="background:#f8f8f8; padding:0.6rem; text-align:center; border-top:1px solid #eee;">
+      <div style="font-size:0.85rem; font-weight:700; color:#333;">Split Hero</div>
+      <div style="font-size:0.65rem; color:#60636b;">Left panel with text, right panel with gradient + watermark. Cinematic.</div>
+    </div>
+  </div>
+
+  <!-- 3. Full-Bleed Color -->
+  <div style="border-radius:12px; overflow:hidden; border:2px solid #ddd;">
+    <div style="height:180px; background:#a7253f; display:flex; align-items:center; justify-content:center; position:relative; overflow:hidden;">
+      <div style="position:absolute; top:-20px; right:-20px; width:200px; height:200px; border-radius:50%; background:rgba(211,178,87,0.08);"></div>
+      <div style="position:absolute; bottom:-30px; left:-30px; width:150px; height:150px; border-radius:50%; background:rgba(0,19,63,0.15);"></div>
+      <div style="text-align:center; z-index:1;">
+        <div style="width:35px; height:35px; background:rgba(255,255,255,0.15); border-radius:8px; margin:0 auto 0.5rem; display:flex; align-items:center; justify-content:center; font-size:0.6rem;">🎓</div>
+        <div style="font-size:1.4rem; color:white; font-weight:700; font-family:serif;">Lesson Title</div>
+        <div style="width:40px; height:2px; background:#d3b257; margin:0.4rem auto;"></div>
+        <div style="font-size:0.65rem; color:rgba(255,255,255,0.8);">Subtitle text here</div>
+        <div style="font-size:0.45rem; color:rgba(255,255,255,0.5); margin-top:0.75rem;">Copyright © 2026 WV Adult Basic Education</div>
+      </div>
+    </div>
+    <div style="background:#f8f8f8; padding:0.6rem; text-align:center; border-top:1px solid #eee;">
+      <div style="font-size:0.85rem; font-weight:700; color:#333;">Full-Bleed Color</div>
+      <div style="font-size:0.65rem; color:#60636b;">Lead color fills everything. Subtle geometric circles for depth. Bold first impression.</div>
+    </div>
+  </div>
+
+  <!-- 4. Bottom-Anchored -->
+  <div style="border-radius:12px; overflow:hidden; border:2px solid #ddd;">
+    <div style="height:180px; background:linear-gradient(180deg, #EDF3F7 0%, white 40%, white 60%, #004071 60%); display:flex; flex-direction:column; position:relative;">
+      <div style="flex:1; display:flex; align-items:center; justify-content:center; padding:1rem;">
+        <div style="text-align:center;">
+          <div style="width:35px; height:35px; background:#EDF3F7; border:1px solid #d1d3d4; border-radius:8px; margin:0 auto 0.5rem; display:flex; align-items:center; justify-content:center; font-size:0.6rem;">🎓</div>
+          <div style="font-size:1.4rem; color:#004071; font-weight:700; font-family:serif;">Lesson Title</div>
+          <div style="width:40px; height:2px; background:#d3b257; margin:0.4rem auto;"></div>
+          <div style="font-size:0.65rem; color:#60636b;">Subtitle text here</div>
+        </div>
+      </div>
+      <div style="background:#004071; padding:0.5rem; text-align:center;">
+        <div style="font-size:0.45rem; color:rgba(255,255,255,0.6);">Copyright © 2026 WV Adult Basic Education</div>
+      </div>
+    </div>
+    <div style="background:#f8f8f8; padding:0.6rem; text-align:center; border-top:1px solid #eee;">
+      <div style="font-size:0.85rem; font-weight:700; color:#333;">Bottom-Anchored</div>
+      <div style="font-size:0.65rem; color:#60636b;">Light content area, dark footer band. Clean, modern, airy.</div>
+    </div>
+  </div>
+
+  <!-- 5. Offset Left -->
+  <div style="border-radius:12px; overflow:hidden; border:2px solid #ddd;">
+    <div style="height:180px; background:linear-gradient(135deg, #004071 0%, #00133f 100%); display:flex; align-items:center; position:relative; overflow:hidden; padding-left:2rem;">
+      <div style="position:absolute; right:1rem; top:50%; transform:translateY(-50%); width:120px; height:120px; border-radius:50%; border:2px solid rgba(211,178,87,0.2); display:flex; align-items:center; justify-content:center;">
+        <div style="width:90px; height:90px; border-radius:50%; border:1px solid rgba(211,178,87,0.1); display:flex; align-items:center; justify-content:center;">
+          <div style="width:60px; height:60px; border-radius:50%; background:rgba(211,178,87,0.08); display:flex; align-items:center; justify-content:center; font-size:1.5rem;">🎓</div>
+        </div>
+      </div>
+      <div style="z-index:1;">
+        <div style="font-size:1.4rem; color:white; font-weight:700; font-family:serif; line-height:1.2;">Lesson Title</div>
+        <div style="width:40px; height:2px; background:#d3b257; margin:0.4rem 0;"></div>
+        <div style="font-size:0.65rem; color:rgba(255,255,255,0.8);">Subtitle text here</div>
+        <div style="font-size:0.45rem; color:rgba(255,255,255,0.5); margin-top:0.75rem;">© 2026 WV Adult Basic Education</div>
+      </div>
+    </div>
+    <div style="background:#f8f8f8; padding:0.6rem; text-align:center; border-top:1px solid #eee;">
+      <div style="font-size:0.85rem; font-weight:700; color:#333;">Offset Left</div>
+      <div style="font-size:0.65rem; color:#60636b;">Left-aligned text, decorative concentric circles right. Asymmetric, dynamic.</div>
+    </div>
+  </div>
+
+  <!-- 6. Stacked Minimal -->
+  <div style="border-radius:12px; overflow:hidden; border:2px solid #ddd;">
+    <div style="height:180px; background:white; display:flex; align-items:center; justify-content:center; position:relative;">
+      <div style="position:absolute; left:0; top:0; bottom:0; width:6px; background:linear-gradient(180deg, #007baf, #d3b257, #37b550);"></div>
+      <div style="text-align:center; z-index:1;">
+        <div style="font-size:0.55rem; color:#007baf; letter-spacing:4px; margin-bottom:0.3rem; font-weight:600;">SPOKES</div>
+        <div style="font-size:1.5rem; color:#004071; font-weight:700; font-family:serif;">Lesson Title</div>
+        <div style="font-size:0.7rem; color:#60636b; margin-top:0.3rem;">Subtitle text here</div>
+        <div style="width:80px; height:3px; background:linear-gradient(90deg, #007baf, #d3b257); margin:0.75rem auto 0; border-radius:2px;"></div>
+        <div style="font-size:0.45rem; color:#d1d3d4; margin-top:0.75rem;">Copyright © 2026 WV Adult Basic Education</div>
+      </div>
+    </div>
+    <div style="background:#f8f8f8; padding:0.6rem; text-align:center; border-top:1px solid #eee;">
+      <div style="font-size:0.85rem; font-weight:700; color:#333;">Stacked Minimal</div>
+      <div style="font-size:0.65rem; color:#60636b;">White background, rainbow accent bar left edge. Typography-forward.</div>
+    </div>
+  </div>
+
+</div>
+
+<div style="margin-top:1.5rem; padding:1rem; background:#EDF3F7; border-radius:8px; border-left:4px solid #007baf;">
+  <h3 style="margin-top:0; font-size:0.9rem;">Title Slides + Color Leads</h3>
+  <p style="font-size:0.8rem; margin:0;">Like section dividers, title slide layouts compose with the color lead. "Full-Bleed Color" with a green lead fills green. "Split Hero" with a gold lead uses gold tones. The layout is the structure; the color lead provides the palette.</p>
+</div>
+
+<h3 style="margin-top:1.5rem;">Do these 6 title slide designs work?</h3>
+<div class="options">
+  <div class="option" data-choice="approve-titles" onclick="toggleSelect(this)">
+    <div class="letter">✓</div>
+    <div class="content">
+      <h3>Looks Good</h3>
+      <p>6 title slide options. Move to the final summary.</p>
+    </div>
+  </div>
+  <div class="option" data-choice="revise-titles" onclick="toggleSelect(this)">
+    <div class="letter">✎</div>
+    <div class="content">
+      <h3>Needs Changes</h3>
+      <p>I want to adjust — I'll explain in the terminal.</p>
+    </div>
+  </div>
+</div>

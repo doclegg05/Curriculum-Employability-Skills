@@ -1,0 +1,138 @@
+<h2>Section 2: Theme Matrix — Additional Card Styles</h2>
+<p class="subtitle">3 more card styles to add to the original 5, bringing the total to 8. Each one shows cards + takeaway numbers.</p>
+
+<div style="display:grid; grid-template-columns:1fr 1fr 1fr; gap:1.5rem; margin-top:1.5rem;">
+
+  <!-- 6. Gradient Fill -->
+  <div style="border-radius:12px; overflow:hidden; border:2px solid #ddd;">
+    <div style="height:200px; background:white; padding:1.25rem;">
+      <div style="font-size:0.75rem; color:#007baf; font-weight:700; font-family:serif; margin-bottom:0.75rem;">Gradient Fill</div>
+      <div style="display:grid; grid-template-columns:1fr 1fr; gap:8px; margin-bottom:0.75rem;">
+        <div style="background:linear-gradient(135deg, #007baf, #004071); padding:10px; border-radius:8px;">
+          <div style="font-size:0.6rem; font-weight:600; color:white; margin-bottom:2px;">Card Title</div>
+          <div style="font-size:0.5rem; color:rgba(255,255,255,0.8);">Description text here.</div>
+        </div>
+        <div style="background:linear-gradient(135deg, #d3b257, #ad8806); padding:10px; border-radius:8px;">
+          <div style="font-size:0.6rem; font-weight:600; color:white; margin-bottom:2px;">Card Title</div>
+          <div style="font-size:0.5rem; color:rgba(255,255,255,0.8);">Description text here.</div>
+        </div>
+      </div>
+      <div style="display:flex; align-items:center; gap:8px; margin-bottom:4px;">
+        <div style="width:22px; height:22px; border-radius:50%; background:linear-gradient(135deg, #007baf, #004071); color:white; display:flex; align-items:center; justify-content:center; font-size:0.5rem; font-weight:700; flex-shrink:0;">1</div>
+        <div style="font-size:0.5rem; color:#60636b;">Numbered step item</div>
+      </div>
+      <div style="display:flex; align-items:center; gap:8px;">
+        <div style="width:22px; height:22px; border-radius:50%; background:linear-gradient(135deg, #d3b257, #ad8806); color:white; display:flex; align-items:center; justify-content:center; font-size:0.5rem; font-weight:700; flex-shrink:0;">2</div>
+        <div style="font-size:0.5rem; color:#60636b;">Numbered step item</div>
+      </div>
+    </div>
+    <div style="background:#f8f8f8; padding:0.6rem; text-align:center; border-top:1px solid #eee;">
+      <div style="font-size:0.85rem; font-weight:700; color:#333;">Gradient Fill</div>
+      <div style="font-size:0.65rem; color:#60636b;">Cards filled with lead color gradients, white text. Bold, vibrant.</div>
+    </div>
+  </div>
+
+  <!-- 7. Pill -->
+  <div style="border-radius:12px; overflow:hidden; border:2px solid #ddd;">
+    <div style="height:200px; background:#EDF3F7; padding:1.25rem;">
+      <div style="font-size:0.75rem; color:#004071; font-weight:700; font-family:serif; margin-bottom:0.75rem;">Pill</div>
+      <div style="display:grid; grid-template-columns:1fr 1fr; gap:8px; margin-bottom:0.75rem;">
+        <div style="background:white; padding:10px; border-radius:24px; border:1px solid #d1d3d4;">
+          <div style="font-size:0.6rem; font-weight:600; color:#004071; margin-bottom:2px; padding-left:4px;">Card Title</div>
+          <div style="font-size:0.5rem; color:#60636b; padding-left:4px;">Description text here.</div>
+        </div>
+        <div style="background:white; padding:10px; border-radius:24px; border:1px solid #d1d3d4;">
+          <div style="font-size:0.6rem; font-weight:600; color:#004071; margin-bottom:2px; padding-left:4px;">Card Title</div>
+          <div style="font-size:0.5rem; color:#60636b; padding-left:4px;">Description text here.</div>
+        </div>
+      </div>
+      <div style="display:flex; align-items:center; gap:8px; margin-bottom:4px;">
+        <div style="width:22px; height:22px; border-radius:50%; background:#004071; color:white; display:flex; align-items:center; justify-content:center; font-size:0.5rem; font-weight:700; flex-shrink:0;">1</div>
+        <div style="font-size:0.5rem; color:#60636b; background:white; padding:3px 10px; border-radius:12px; border:1px solid #d1d3d4;">Numbered step item</div>
+      </div>
+      <div style="display:flex; align-items:center; gap:8px;">
+        <div style="width:22px; height:22px; border-radius:50%; background:#d3b257; color:white; display:flex; align-items:center; justify-content:center; font-size:0.5rem; font-weight:700; flex-shrink:0;">2</div>
+        <div style="font-size:0.5rem; color:#60636b; background:white; padding:3px 10px; border-radius:12px; border:1px solid #d1d3d4;">Numbered step item</div>
+      </div>
+    </div>
+    <div style="background:#f8f8f8; padding:0.6rem; text-align:center; border-top:1px solid #eee;">
+      <div style="font-size:0.85rem; font-weight:700; color:#333;">Pill</div>
+      <div style="font-size:0.65rem; color:#60636b;">High border-radius, soft, friendly. Modern app feel.</div>
+    </div>
+  </div>
+
+  <!-- 8. Layered -->
+  <div style="border-radius:12px; overflow:hidden; border:2px solid #ddd;">
+    <div style="height:200px; background:white; padding:1.25rem;">
+      <div style="font-size:0.75rem; color:#a7253f; font-weight:700; font-family:serif; margin-bottom:0.75rem;">Layered</div>
+      <div style="display:grid; grid-template-columns:1fr 1fr; gap:12px; margin-bottom:0.75rem;">
+        <div style="position:relative;">
+          <div style="position:absolute; top:3px; left:3px; right:-3px; bottom:-3px; background:#007baf; border-radius:6px; opacity:0.15;"></div>
+          <div style="position:relative; background:white; border:1px solid #d1d3d4; padding:10px; border-radius:6px;">
+            <div style="font-size:0.6rem; font-weight:600; color:#004071; margin-bottom:2px;">Card Title</div>
+            <div style="font-size:0.5rem; color:#60636b;">Description text here.</div>
+          </div>
+        </div>
+        <div style="position:relative;">
+          <div style="position:absolute; top:3px; left:3px; right:-3px; bottom:-3px; background:#d3b257; border-radius:6px; opacity:0.2;"></div>
+          <div style="position:relative; background:white; border:1px solid #d1d3d4; padding:10px; border-radius:6px;">
+            <div style="font-size:0.6rem; font-weight:600; color:#004071; margin-bottom:2px;">Card Title</div>
+            <div style="font-size:0.5rem; color:#60636b;">Description text here.</div>
+          </div>
+        </div>
+      </div>
+      <div style="display:flex; align-items:center; gap:8px; margin-bottom:4px;">
+        <div style="position:relative;">
+          <div style="position:absolute; top:1px; left:1px; width:22px; height:22px; border-radius:50%; background:#007baf; opacity:0.2;"></div>
+          <div style="position:relative; width:22px; height:22px; border-radius:50%; background:#007baf; color:white; display:flex; align-items:center; justify-content:center; font-size:0.5rem; font-weight:700;">1</div>
+        </div>
+        <div style="font-size:0.5rem; color:#60636b;">Numbered step item</div>
+      </div>
+      <div style="display:flex; align-items:center; gap:8px;">
+        <div style="position:relative;">
+          <div style="position:absolute; top:1px; left:1px; width:22px; height:22px; border-radius:50%; background:#d3b257; opacity:0.2;"></div>
+          <div style="position:relative; width:22px; height:22px; border-radius:50%; background:#d3b257; color:white; display:flex; align-items:center; justify-content:center; font-size:0.5rem; font-weight:700;">2</div>
+        </div>
+        <div style="font-size:0.5rem; color:#60636b;">Numbered step item</div>
+      </div>
+    </div>
+    <div style="background:#f8f8f8; padding:0.6rem; text-align:center; border-top:1px solid #eee;">
+      <div style="font-size:0.85rem; font-weight:700; color:#333;">Layered</div>
+      <div style="font-size:0.65rem; color:#60636b;">Colored shadow offset behind cards. Depth, playful, tactile.</div>
+    </div>
+  </div>
+
+</div>
+
+<div style="margin-top:2rem; padding:1rem; background:#EDF3F7; border-radius:8px; border-left:4px solid #007baf;">
+  <h3 style="margin-top:0; font-size:0.9rem;">Full Card Style Menu (8 total)</h3>
+  <div style="display:grid; grid-template-columns:repeat(4, 1fr); gap:8px; margin-top:0.5rem;">
+    <div style="text-align:center; padding:6px; background:white; border-radius:6px; font-size:0.65rem;">1. Left Border</div>
+    <div style="text-align:center; padding:6px; background:white; border-radius:6px; font-size:0.65rem;">2. Shadow Float</div>
+    <div style="text-align:center; padding:6px; background:white; border-radius:6px; font-size:0.65rem;">3. Sharp Border</div>
+    <div style="text-align:center; padding:6px; background:white; border-radius:6px; font-size:0.65rem;">4. Glass</div>
+    <div style="text-align:center; padding:6px; background:white; border-radius:6px; font-size:0.65rem;">5. Outlined</div>
+    <div style="text-align:center; padding:6px; background:white; border-radius:6px; font-size:0.65rem; border:1px solid #007baf;">6. Gradient Fill ✱</div>
+    <div style="text-align:center; padding:6px; background:white; border-radius:6px; font-size:0.65rem; border:1px solid #007baf;">7. Pill ✱</div>
+    <div style="text-align:center; padding:6px; background:white; border-radius:6px; font-size:0.65rem; border:1px solid #007baf;">8. Layered ✱</div>
+  </div>
+  <p style="font-size:0.7rem; color:#60636b; margin-top:0.5rem; margin-bottom:0;">✱ = new additions. With 18 lessons and 8 styles, each style gets ~2 lessons.</p>
+</div>
+
+<h3 style="margin-top:1.5rem;">How do the 3 new additions look?</h3>
+<div class="options">
+  <div class="option" data-choice="approve-all-8" onclick="toggleSelect(this)">
+    <div class="letter">✓</div>
+    <div class="content">
+      <h3>All 8 Look Good</h3>
+      <p>Lock in 8 card styles. Move to title slides.</p>
+    </div>
+  </div>
+  <div class="option" data-choice="revise-new-cards" onclick="toggleSelect(this)">
+    <div class="letter">✎</div>
+    <div class="content">
+      <h3>Needs Changes</h3>
+      <p>I want to adjust — I'll explain in the terminal.</p>
+    </div>
+  </div>
+</div>

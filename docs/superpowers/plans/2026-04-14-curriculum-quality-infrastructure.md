@@ -1,5 +1,7 @@
 # Curriculum Quality Infrastructure — Implementation Plan
 
+**Current status note (2026-04-30):** Completed/superseded. The core standard, validator, fixtures, and validation workflow now exist. Keep this file as historical implementation context, not as the active roadmap. Current planning lives in `docs/current-roadmap.md`.
+
 > **For agentic workers:** REQUIRED SUB-SKILL: Use superpowers:subagent-driven-development (recommended) or superpowers:executing-plans to implement this plan task-by-task. Steps use checkbox (`- [ ]`) syntax for tracking.
 
 **Goal:** Build the enforcement infrastructure (SPOKES-STANDARD.md, validate-lesson.py, PostToolUse hook, CLAUDE.md updates) that enables automated quality checking of all SPOKES lessons.

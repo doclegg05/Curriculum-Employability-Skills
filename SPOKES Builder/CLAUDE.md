@@ -16,7 +16,7 @@ These files are in this directory (`SPOKES Builder/`):
 
 | File                          | Purpose                                                                                         |
 | ----------------------------- | ----------------------------------------------------------------------------------------------- |
-| `brand-palette.md`            | **ARCHIVED** — absorbed into `SPOKES-STANDARD.md` (project root). Kept for historical reference only. |
+| `brand-palette.md`            | Canonical 11-color system, CSS variable block, contrast reference, and guardrails. |
 | `template.html`               | Base skeleton HTML with all CSS/JS intact. Copy this and fill in content.                       |
 | `components.md`               | Copy-paste HTML patterns for every slide type and component.                                    |
 | `build-process.md`            | Step-by-step workflow, WIPPEA mapping, and verification checklist.                              |

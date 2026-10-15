@@ -1706,10 +1706,6 @@
   <!-- Layer 1: dual-gold-green lead, dark sidebar, plain texture, offset-left title, bitter-raleway fonts -->
   <!-- Layer 2: Per-chapter card styles, dividers, and secondary accents from theme-registry.json -->
   <style id="theme-override">
-    /* MOB-03 / WCAG 2.5.8: prev/next controls must meet the 44px floor */
-    .key-icon { min-width: 44px; min-height: 44px; }
-
-
     /* ================================================================
        FONT PAIRING: bitter-raleway
        ================================================================ */
@@ -2287,10 +2283,6 @@
       letter-spacing: 0;
       line-height: 0.98;
     }
-
-    /* Must follow the .slide h2 ink rule above, or the closing heading
-       renders dark-on-dark (same-specificity cascade). */
-    .closing-box h2 { color: var(--light); }
 
     .slide h2::after {
       content: "";
@@ -3008,13 +3000,6 @@
       }
     }
 
-    /* Classroom-scale typography: sizing is rem-based, so scaling the root
-       font grows content proportionally on large presentation displays.
-       Scoped above the fit-to-slide-guard's 900px height regime so the two
-       never fight. */
-    @media (min-width: 1600px) and (min-height: 920px) {
-      html { font-size: 19px; }
-    }
   </style>
     <style id="fit-to-slide-guard">
       @media (min-width: 769px) and (max-height: 900px) {
@@ -3736,7 +3721,7 @@
 
       <!-- Slide 22: Big Statement -->
       <section class="slide big-statement" data-chapter="5">
-        <h2>Every problem is a chance to <br><span class="highlight">think differently.</span></h2>
+        <h2>Every problem is a chance to<br><span class="highlight">think differently.</span></h2>
       </section>
 
       <!-- ======================== -->
@@ -3982,8 +3967,6 @@
         header.className = "chapter-header";
         header.setAttribute('tabindex', '0');
         header.setAttribute('role', 'button');
-        // NAV-13: headers are disclosure controls — expose state
-        header.setAttribute('aria-expanded', 'false');
         header.addEventListener('keydown', function(e) {
           if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); this.click(); }
         });
@@ -4026,18 +4009,15 @@
 
       chapterListEl.appendChild(fragment);
 
-      // NAV-13: chapter-header activation toggles expansion ONLY —
-      // navigation happens through the slide items
       document.querySelectorAll(".chapter-header").forEach(function(header) {
         header.addEventListener("click", function() {
           var chapterItem = header.parentElement;
           var wasExpanded = chapterItem.classList.contains("expanded");
           document.querySelectorAll(".chapter-item").forEach(function(item) { item.classList.remove("expanded"); });
-          document.querySelectorAll(".chapter-header").forEach(function(h) { h.setAttribute('aria-expanded', 'false'); });
-          if (!wasExpanded) {
-            chapterItem.classList.add("expanded");
-            header.setAttribute('aria-expanded', 'true');
-          }
+          if (!wasExpanded) chapterItem.classList.add("expanded");
+          var chapter = chapterItem.dataset.chapter;
+          var targetIndex = Array.from(slides).findIndex(function(slide) { return slide.dataset.chapter === chapter; });
+          if (targetIndex !== -1) showSlide(targetIndex);
         });
       });
 
@@ -4116,9 +4096,6 @@
           var isActive = item.dataset.chapter === currentChapter;
           item.classList.toggle("active", isActive);
           if (isActive) item.classList.add("expanded");
-          // NAV-13: keep disclosure state truthful on auto-expand
-          var h = item.querySelector('.chapter-header');
-          if (h) h.setAttribute('aria-expanded', String(item.classList.contains('expanded')));
         });
 
         document.querySelectorAll(".slide-item").forEach(function(item) {

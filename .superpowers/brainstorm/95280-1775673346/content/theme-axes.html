@@ -1,0 +1,149 @@
+<h2>What Makes Up a Theme Package?</h2>
+<p class="subtitle">Each axis below creates visual distinction. Which ones should be part of every theme? Click all that apply.</p>
+
+<div class="options" data-multiselect>
+
+  <!-- Axis 1: Color Emphasis -->
+  <div class="option" data-choice="color-emphasis" onclick="toggleSelect(this)">
+    <div class="letter">1</div>
+    <div class="content">
+      <h3>Color Emphasis Shift</h3>
+      <p>Which of the 11 brand colors leads each lesson. Example:</p>
+      <div style="display:flex; gap:8px; margin-top:8px;">
+        <div style="display:flex; flex-direction:column; align-items:center; gap:4px;">
+          <div style="width:50px; height:50px; border-radius:8px; background:linear-gradient(135deg, #007baf, #004071);"></div>
+          <span style="font-size:0.65rem;">Blue-led</span>
+        </div>
+        <div style="display:flex; flex-direction:column; align-items:center; gap:4px;">
+          <div style="width:50px; height:50px; border-radius:8px; background:linear-gradient(135deg, #a7253f, #00133f);"></div>
+          <span style="font-size:0.65rem;">Mauve-led</span>
+        </div>
+        <div style="display:flex; flex-direction:column; align-items:center; gap:4px;">
+          <div style="width:50px; height:50px; border-radius:8px; background:linear-gradient(135deg, #d3b257, #004071);"></div>
+          <span style="font-size:0.65rem;">Gold-led</span>
+        </div>
+        <div style="display:flex; flex-direction:column; align-items:center; gap:4px;">
+          <div style="width:50px; height:50px; border-radius:8px; background:linear-gradient(135deg, #37b550, #004071);"></div>
+          <span style="font-size:0.65rem;">Green-led</span>
+        </div>
+        <div style="display:flex; flex-direction:column; align-items:center; gap:4px;">
+          <div style="width:50px; height:50px; border-radius:8px; background:linear-gradient(135deg, #00133f, #004071);"></div>
+          <span style="font-size:0.65rem;">Royal-led</span>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Axis 2: Background Texture -->
+  <div class="option" data-choice="bg-texture" onclick="toggleSelect(this)">
+    <div class="letter">2</div>
+    <div class="content">
+      <h3>Background Texture</h3>
+      <p>Subtle CSS patterns on the content area. Example:</p>
+      <div style="display:flex; gap:8px; margin-top:8px;">
+        <div style="width:70px; height:50px; border-radius:6px; background:white; border:1px solid #ddd; display:flex; align-items:center; justify-content:center; font-size:0.5rem; color:#999;">Plain</div>
+        <div style="width:70px; height:50px; border-radius:6px; background-color:white; background-image:radial-gradient(#007baf 0.5px, transparent 0.5px); background-size:12px 12px; border:1px solid #ddd; display:flex; align-items:center; justify-content:center; font-size:0.5rem; color:#999;">Dot grid</div>
+        <div style="width:70px; height:50px; border-radius:6px; background-color:white; background-image:repeating-linear-gradient(45deg, rgba(211,178,87,0.06), rgba(211,178,87,0.06) 1px, transparent 1px, transparent 12px); border:1px solid #ddd; display:flex; align-items:center; justify-content:center; font-size:0.5rem; color:#999;">Diagonal</div>
+        <div style="width:70px; height:50px; border-radius:6px; background-color:#EDF3F7; background-image:linear-gradient(rgba(0,64,113,0.03) 1px, transparent 1px), linear-gradient(90deg, rgba(0,64,113,0.03) 1px, transparent 1px); background-size:20px 20px; border:1px solid #ddd; display:flex; align-items:center; justify-content:center; font-size:0.5rem; color:#999;">Grid</div>
+        <div style="width:70px; height:50px; border-radius:6px; background:linear-gradient(135deg, #00133f, #004071); border:1px solid #ddd; display:flex; align-items:center; justify-content:center; font-size:0.5rem; color:#d3b257;">Dark royal</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Axis 3: Sidebar Style -->
+  <div class="option" data-choice="sidebar-style" onclick="toggleSelect(this)">
+    <div class="letter">3</div>
+    <div class="content">
+      <h3>Sidebar / Navigation Style</h3>
+      <p>Not just a dark-blue sidebar every time. Options:</p>
+      <div style="display:flex; gap:8px; margin-top:8px;">
+        <div style="display:flex; flex-direction:column; align-items:center; gap:4px;">
+          <div style="width:55px; height:50px; border-radius:6px; display:flex; overflow:hidden; border:1px solid #ddd;">
+            <div style="width:30%; background:#004071;"></div>
+            <div style="flex:1; background:white;"></div>
+          </div>
+          <span style="font-size:0.55rem;">Left sidebar</span>
+        </div>
+        <div style="display:flex; flex-direction:column; align-items:center; gap:4px;">
+          <div style="width:55px; height:50px; border-radius:6px; display:flex; overflow:hidden; border:1px solid #ddd;">
+            <div style="flex:1; background:white;"></div>
+            <div style="width:30%; background:#00133f;"></div>
+          </div>
+          <span style="font-size:0.55rem;">Right sidebar</span>
+        </div>
+        <div style="display:flex; flex-direction:column; align-items:center; gap:4px;">
+          <div style="width:55px; height:50px; border-radius:6px; display:flex; flex-direction:column; overflow:hidden; border:1px solid #ddd;">
+            <div style="height:20%; background:#004071;"></div>
+            <div style="flex:1; background:white;"></div>
+          </div>
+          <span style="font-size:0.55rem;">Top nav</span>
+        </div>
+        <div style="display:flex; flex-direction:column; align-items:center; gap:4px;">
+          <div style="width:55px; height:50px; border-radius:6px; display:flex; overflow:hidden; border:1px solid #ddd;">
+            <div style="width:8%; background:#004071;"></div>
+            <div style="flex:1; background:white;"></div>
+          </div>
+          <span style="font-size:0.55rem;">Collapsed rail</span>
+        </div>
+        <div style="display:flex; flex-direction:column; align-items:center; gap:4px;">
+          <div style="width:55px; height:50px; border-radius:6px; display:flex; overflow:hidden; border:1px solid #ddd;">
+            <div style="width:30%; background:#a7253f;"></div>
+            <div style="flex:1; background:white;"></div>
+          </div>
+          <span style="font-size:0.55rem;">Colored sidebar</span>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Axis 4: Section Divider Style -->
+  <div class="option" data-choice="section-dividers" onclick="toggleSelect(this)">
+    <div class="letter">4</div>
+    <div class="content">
+      <h3>Section Divider / Chapter Transition Style</h3>
+      <p>How chapter breaks look — currently identical across all lessons. Options:</p>
+      <div style="display:flex; gap:8px; margin-top:8px;">
+        <div style="width:90px; height:50px; border-radius:6px; background:linear-gradient(135deg, #004071, #007baf); display:flex; align-items:center; justify-content:center; font-size:0.6rem; color:white; font-weight:600;">Gradient</div>
+        <div style="width:90px; height:50px; border-radius:6px; background:#00133f; display:flex; align-items:center; justify-content:center; font-size:0.6rem; color:#d3b257; font-weight:600; border:2px solid #d3b257;">Framed</div>
+        <div style="width:90px; height:50px; border-radius:6px; background:white; display:flex; align-items:center; justify-content:center; font-size:0.6rem; color:#004071; font-weight:600; border-bottom:4px solid #a7253f;">Minimal</div>
+        <div style="width:90px; height:50px; border-radius:6px; background:linear-gradient(135deg, #a7253f, #00133f); display:flex; align-items:center; justify-content:center; font-size:0.6rem; color:white; font-weight:600;">Bold color</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Axis 5: Card/Component Styling -->
+  <div class="option" data-choice="card-styles" onclick="toggleSelect(this)">
+    <div class="letter">5</div>
+    <div class="content">
+      <h3>Card &amp; Component Styling</h3>
+      <p>How cards, lists, and interactive elements are styled — borders, shadows, shapes:</p>
+      <div style="display:flex; gap:8px; margin-top:8px;">
+        <div style="width:80px; height:45px; border-radius:4px; background:#EDF3F7; border-left:3px solid #37b550; display:flex; align-items:center; justify-content:center; font-size:0.5rem;">Left border</div>
+        <div style="width:80px; height:45px; border-radius:12px; background:white; box-shadow:0 4px 15px rgba(0,0,0,0.1); display:flex; align-items:center; justify-content:center; font-size:0.5rem;">Shadow float</div>
+        <div style="width:80px; height:45px; border-radius:0; background:white; border:2px solid #004071; display:flex; align-items:center; justify-content:center; font-size:0.5rem;">Sharp border</div>
+        <div style="width:80px; height:45px; border-radius:4px; background:rgba(237,243,247,0.6); backdrop-filter:blur(8px); border:1px solid rgba(255,255,255,0.3); display:flex; align-items:center; justify-content:center; font-size:0.5rem;">Glass</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Axis 6: Typography -->
+  <div class="option" data-choice="typography" onclick="toggleSelect(this)">
+    <div class="letter">6</div>
+    <div class="content">
+      <h3>Typography Pairing</h3>
+      <p>Already defined — 20 font pairings in the library, 5 assigned. Each lesson gets a unique pair that sets the reading mood.</p>
+    </div>
+  </div>
+
+  <!-- Axis 7: Title Slide -->
+  <div class="option" data-choice="title-slide" onclick="toggleSelect(this)">
+    <div class="letter">7</div>
+    <div class="content">
+      <h3>Title Slide Design</h3>
+      <p>The first impression. Currently all identical blue gradients. Could vary: split layouts, full-bleed color, image backgrounds, centered vs. offset text.</p>
+    </div>
+  </div>
+
+</div>
+
+<p style="margin-top:1rem; font-size:0.85rem; color:#666;">Click all axes that should be part of each theme package. Multi-select enabled.</p>

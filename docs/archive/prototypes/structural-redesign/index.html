@@ -1,0 +1,864 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Crimson+Pro:wght@400;600;700&family=IBM+Plex+Mono:wght@400;500&family=Work+Sans:wght@400;500;600;700&display=swap"
+      rel="stylesheet"
+    />
+    <title>Communicating with the Public — Structural Redesign Pilot — SPOKES</title>
+    <style>
+      * { box-sizing: border-box; margin: 0; padding: 0; }
+      :root {
+        --primary: #007baf;
+        --accent: #37b550;
+        --dark: #004071;
+        --light: #ffffff;
+        --muted: #edf3f7;
+        --gray: #60636b;
+        --gold: #d3b257;
+        --royal: #00133f;
+        --mauve: #a7253f;
+        --paper: #f7f4ec;
+        --ink: #173148;
+        --shadow: 0 18px 44px rgba(0, 19, 63, 0.14);
+        --tight: 0 8px 22px rgba(0, 64, 113, 0.12);
+        --display: "Crimson Pro", serif;
+        --body: "Work Sans", sans-serif;
+        --mono: "IBM Plex Mono", monospace;
+      }
+      body {
+        font-family: var(--body);
+        background:
+          radial-gradient(circle at top left, rgba(211, 178, 87, 0.18), transparent 24%),
+          radial-gradient(circle at bottom right, rgba(0, 123, 175, 0.16), transparent 30%),
+          linear-gradient(135deg, #03172b 0%, var(--royal) 100%);
+        color: var(--ink);
+        min-height: 100vh;
+        overflow: hidden;
+      }
+      .app { display: flex; min-height: 100vh; }
+      .sidebar {
+        width: 308px;
+        padding: 2rem 1.5rem 1.35rem;
+        background:
+          linear-gradient(180deg, rgba(0, 64, 113, 0.96), rgba(0, 19, 63, 0.98)),
+          repeating-linear-gradient(135deg, rgba(255, 255, 255, 0.035), rgba(255, 255, 255, 0.035) 1px, transparent 1px, transparent 24px);
+        color: rgba(255, 255, 255, 0.82);
+        display: flex;
+        flex-direction: column;
+        gap: 1.2rem;
+        border-right: 1px solid rgba(255, 255, 255, 0.08);
+      }
+      .brand { display: grid; gap: 0.95rem; }
+      .brand img {
+        width: 108px;
+        border-radius: 18px;
+        padding: 0.65rem;
+        background: rgba(255, 255, 255, 0.92);
+        box-shadow: var(--tight);
+      }
+      .chip {
+        display: inline-flex;
+        align-items: center;
+        gap: 0.55rem;
+        width: fit-content;
+        padding: 0.42rem 0.75rem;
+        border-radius: 999px;
+        background: rgba(255, 255, 255, 0.12);
+        color: var(--gold);
+        font: 0.68rem var(--mono);
+        letter-spacing: 0.12em;
+        text-transform: uppercase;
+      }
+      .chip::before {
+        content: "Pilot";
+        padding: 0.16rem 0.45rem;
+        border-radius: 999px;
+        background: rgba(211, 178, 87, 0.18);
+        color: var(--light);
+      }
+      .sidebar h1 {
+        font-family: var(--display);
+        font-size: 2rem;
+        line-height: 1;
+        color: var(--light);
+      }
+      .sidebar p { line-height: 1.55; color: rgba(255, 255, 255, 0.7); }
+      .note {
+        padding: 1rem 1rem 1.05rem;
+        border-radius: 18px;
+        background: rgba(255, 255, 255, 0.08);
+      }
+      .note strong { display: block; margin-bottom: 0.45rem; color: var(--light); }
+      .nav { display: grid; gap: 0.5rem; overflow-y: auto; padding-right: 0.2rem; }
+      .nav-item {
+        width: 100%;
+        padding: 0.78rem 0.9rem;
+        border: none;
+        border-radius: 18px;
+        background: rgba(255, 255, 255, 0.05);
+        color: inherit;
+        cursor: pointer;
+        text-align: left;
+        display: grid;
+        gap: 0.35rem;
+        transition: transform 0.2s ease, background 0.2s ease, box-shadow 0.2s ease;
+      }
+      .nav-item:hover { transform: translateX(4px); background: rgba(255, 255, 255, 0.1); }
+      .nav-item.active {
+        background: linear-gradient(135deg, rgba(255, 255, 255, 0.16), rgba(255, 255, 255, 0.08));
+        box-shadow: var(--tight);
+      }
+      .nav-top { display: flex; align-items: center; gap: 0.7rem; }
+      .phase {
+        min-width: 2rem;
+        height: 2rem;
+        border-radius: 999px;
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        font: 0.72rem var(--mono);
+        letter-spacing: 0.08em;
+        color: var(--light);
+        background: rgba(255, 255, 255, 0.14);
+      }
+      .w { background: rgba(211, 178, 87, 0.24); color: #ffefc1; }
+      .i { background: rgba(0, 123, 175, 0.28); }
+      .p { background: rgba(55, 181, 80, 0.24); }
+      .e { background: rgba(167, 37, 63, 0.26); }
+      .a { background: rgba(255, 255, 255, 0.15); }
+      .nav-item strong { font-size: 0.98rem; color: var(--light); }
+      .nav-item span:last-child { color: rgba(255, 255, 255, 0.62); font-size: 0.86rem; }
+      .footer { margin-top: auto; display: grid; gap: 0.8rem; }
+      .footer label {
+        font: 0.7rem var(--mono);
+        letter-spacing: 0.1em;
+        text-transform: uppercase;
+        color: rgba(255, 255, 255, 0.62);
+      }
+      .track { height: 8px; border-radius: 999px; overflow: hidden; background: rgba(255, 255, 255, 0.08); }
+      .fill {
+        width: 10%;
+        height: 100%;
+        border-radius: inherit;
+        background: linear-gradient(90deg, var(--gold), var(--accent));
+        transition: width 0.3s ease;
+      }
+      .stage { flex: 1; padding: 1.1rem; }
+      .frame {
+        position: relative;
+        height: calc(100vh - 2.2rem);
+        border-radius: 28px;
+        background:
+          linear-gradient(180deg, rgba(247, 244, 236, 0.98), rgba(240, 243, 247, 0.98)),
+          repeating-linear-gradient(0deg, rgba(0, 64, 113, 0.03), rgba(0, 64, 113, 0.03) 1px, transparent 1px, transparent 30px);
+        box-shadow: 0 28px 60px rgba(0, 0, 0, 0.2), inset 0 1px 0 rgba(255, 255, 255, 0.6);
+        overflow: hidden;
+      }
+      .frame-head {
+        position: absolute;
+        inset: 0 0 auto 0;
+        z-index: 4;
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        padding: 1rem 1.35rem;
+        background: linear-gradient(180deg, rgba(247, 244, 236, 0.96), rgba(247, 244, 236, 0));
+      }
+      .frame-label {
+        display: inline-flex;
+        align-items: center;
+        gap: 0.5rem;
+        font: 0.72rem var(--mono);
+        letter-spacing: 0.12em;
+        text-transform: uppercase;
+        color: rgba(23, 49, 72, 0.64);
+      }
+      .frame-label strong { color: var(--dark); }
+      .top-btns { display: flex; gap: 0.5rem; }
+      .ghost {
+        width: 40px;
+        height: 40px;
+        border: none;
+        border-radius: 999px;
+        background: rgba(0, 64, 113, 0.08);
+        color: var(--dark);
+        cursor: pointer;
+      }
+      .slides { position: absolute; inset: 0; }
+      .slide {
+        position: absolute;
+        inset: 0;
+        display: none;
+        padding: 4.7rem 4rem 4rem;
+        overflow-y: auto;
+      }
+      .slide.active { display: block; }
+      .eyebrow {
+        display: inline-flex;
+        align-items: center;
+        gap: 0.65rem;
+        margin-bottom: 1rem;
+        font: 0.74rem var(--mono);
+        letter-spacing: 0.12em;
+        text-transform: uppercase;
+        color: rgba(23, 49, 72, 0.65);
+      }
+      .eyebrow::before { content: ""; width: 28px; height: 1px; background: rgba(0, 64, 113, 0.35); }
+      h2, h3, h4 { font-family: var(--display); color: var(--dark); }
+      .slide h2 { font-size: clamp(2.6rem, 4vw, 4.6rem); line-height: 0.95; letter-spacing: -0.02em; }
+      .slide p, .slide li { font-size: 1.05rem; line-height: 1.7; color: rgba(23, 49, 72, 0.84); }
+      .lede { max-width: 58rem; margin-top: 1rem; font-size: 1.18rem; }
+      .kicker {
+        font: 0.74rem var(--mono);
+        letter-spacing: 0.14em;
+        text-transform: uppercase;
+        color: rgba(0, 64, 113, 0.55);
+      }
+      .panel { background: rgba(255, 255, 255, 0.8); border-radius: 24px; box-shadow: var(--shadow); }
+      .highlight { color: var(--primary); font-weight: 700; }
+      .accent { color: var(--accent); font-weight: 700; }
+      .gold { color: var(--mauve); font-weight: 700; }
+      .cover, .sheet, .impact, .atlas, .reflect { display: grid; gap: 1.7rem; grid-template-columns: 1.05fr 0.95fr; }
+      .studio, .kit { display: grid; gap: 1.2rem; grid-template-columns: repeat(3, 1fr); }
+      .process { display: grid; gap: 1rem; grid-template-columns: repeat(5, 1fr); }
+      .cover-left, .stack { display: grid; gap: 1rem; }
+      .hero {
+        padding: 2.2rem 2.4rem;
+        border-radius: 34px;
+        color: var(--light);
+        background:
+          linear-gradient(135deg, rgba(0, 64, 113, 0.95), rgba(0, 19, 63, 0.95)),
+          radial-gradient(circle at top right, rgba(211, 178, 87, 0.28), transparent 32%);
+        box-shadow: var(--shadow);
+      }
+      .hero h2 { color: var(--light); font-size: clamp(4.1rem, 6.4vw, 6.8rem); }
+      .hero p { color: rgba(255, 255, 255, 0.84); }
+      .band {
+        margin-top: 1.8rem;
+        display: grid;
+        gap: 0.8rem;
+        grid-template-columns: repeat(3, 1fr);
+      }
+      .band div, .prompt, .node, .tower, .ticket, .score-row, .pocket, .resource {
+        background: rgba(255, 255, 255, 0.9);
+        border-radius: 18px;
+        box-shadow: var(--tight);
+      }
+      .band div { padding: 1rem 0.95rem; background: rgba(255, 255, 255, 0.08); }
+      .band strong { display: block; margin-bottom: 0.35rem; color: var(--light); }
+      .quote { margin-top: 1.4rem; padding: 1rem 1.15rem; border-radius: 18px; background: rgba(255, 255, 255, 0.08); color: var(--light); font: 1.35rem var(--display); }
+      .sheet-page, .resource-stack, .worksheet, .poster { padding: 1.7rem 1.9rem; }
+      .sheet-page, .worksheet, .resource-stack {
+        background:
+          linear-gradient(180deg, rgba(255, 255, 255, 0.92), rgba(255, 255, 255, 0.78)),
+          repeating-linear-gradient(0deg, rgba(0, 64, 113, 0.06), rgba(0, 64, 113, 0.06) 1px, transparent 1px, transparent 34px);
+      }
+      .prompt-list, .ribbons, .tickets, .support, .scores, .resource-links { display: grid; gap: 0.85rem; }
+      .prompt, .resource, .pocket { padding: 1rem 1.05rem; }
+      .prompt strong, .resource strong, .pocket strong { display: block; margin-bottom: 0.35rem; color: var(--dark); }
+      .ring { padding: 1.7rem; min-height: 100%; background: radial-gradient(circle at center, rgba(255, 255, 255, 0.9), rgba(237, 243, 247, 0.75)); }
+      .ring-core { aspect-ratio: 1; max-width: 22rem; margin: 0 auto; border-radius: 999px; background: radial-gradient(circle at center, rgba(255, 255, 255, 0.95) 0 22%, transparent 22%), radial-gradient(circle at center, rgba(0, 123, 175, 0.08) 0 46%, transparent 46%), radial-gradient(circle at center, rgba(55, 181, 80, 0.12) 0 68%, transparent 68%); position: relative; }
+      .ring-center { position: absolute; inset: 50% auto auto 50%; transform: translate(-50%, -50%); text-align: center; }
+      .ring-center strong { display: block; font: 2rem var(--display); color: var(--dark); }
+      .tag-row { display: flex; flex-wrap: wrap; gap: 0.55rem; justify-content: center; margin-top: 1.4rem; }
+      .tag { padding: 0.42rem 0.7rem; border-radius: 999px; background: rgba(255, 255, 255, 0.92); box-shadow: var(--tight); font-size: 0.86rem; }
+      .ribbons { margin-top: 1.5rem; }
+      .ribbon { padding: 1rem 1.1rem; border-radius: 18px; color: var(--light); box-shadow: var(--tight); }
+      .ribbon:nth-child(1) { width: 88%; background: linear-gradient(135deg, var(--dark), #0b5b85); }
+      .ribbon:nth-child(2) { width: 100%; margin-left: auto; background: linear-gradient(135deg, var(--primary), #1e91c1); }
+      .ribbon:nth-child(3) { width: 82%; background: linear-gradient(135deg, var(--accent), #57c16d); }
+      .ribbon:nth-child(4) { width: 94%; margin-left: auto; background: linear-gradient(135deg, var(--mauve), #cf4767); }
+      .ribbon strong { display: block; margin-bottom: 0.25rem; }
+      .video-solo-slide,
+      .video-compare-slide {
+        padding-left: 3rem;
+        padding-right: 3rem;
+      }
+      .video-solo-slide .eyebrow,
+      .video-compare-slide .eyebrow {
+        width: fit-content;
+        margin-left: auto;
+        margin-right: auto;
+      }
+      .video-solo-slide h2,
+      .video-compare-slide h2,
+      .video-solo-slide .video-intro,
+      .video-compare-slide .video-intro {
+        margin-left: auto;
+        margin-right: auto;
+        text-align: center;
+      }
+      .video-solo {
+        display: grid;
+        gap: 1.1rem;
+        align-content: start;
+        justify-items: center;
+        min-height: calc(100% - 0.5rem);
+      }
+      .video-intro {
+        max-width: 62rem;
+        font-size: 1.12rem;
+        color: rgba(23, 49, 72, 0.82);
+      }
+      .video-solo-frame {
+        width: min(100%, 1420px);
+        margin: 0 auto;
+        padding: 1rem;
+        border-radius: 30px;
+        background: rgba(255, 255, 255, 0.84);
+        box-shadow: var(--shadow);
+      }
+      .video-solo-frame video {
+        display: block;
+        width: 100%;
+        aspect-ratio: 16 / 9;
+        object-fit: contain;
+        border-radius: 22px;
+        background: #000;
+        box-shadow: var(--tight);
+      }
+      .video-compare {
+        display: grid;
+        gap: 1.2rem;
+        align-content: start;
+        width: min(100%, 1280px);
+        margin: 0 auto;
+      }
+      .video-compare-grid {
+        display: grid;
+        gap: 1.25rem;
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+      }
+      .compare-card {
+        padding: 0.95rem;
+        background: rgba(255, 255, 255, 0.86);
+        border-radius: 24px;
+        box-shadow: var(--shadow);
+      }
+      .compare-card video {
+        display: block;
+        width: 100%;
+        aspect-ratio: 16 / 9;
+        object-fit: contain;
+        border-radius: 18px;
+        background: #000;
+        box-shadow: var(--tight);
+      }
+      .compare-card figcaption {
+        margin-top: 0.75rem;
+        text-align: center;
+        font-size: 0.94rem;
+        color: rgba(23, 49, 72, 0.74);
+      }
+      .node { padding: 1.05rem 0.95rem; position: relative; }
+      .node:not(:last-child)::after { content: ""; position: absolute; top: 50%; right: -0.7rem; width: 1.4rem; height: 2px; background: rgba(0, 64, 113, 0.28); }
+      .step { display: inline-flex; align-items: center; justify-content: center; width: 2rem; height: 2rem; border-radius: 999px; background: rgba(0, 123, 175, 0.12); color: var(--primary); font: 0.72rem var(--mono); margin-bottom: 0.75rem; }
+      .tower { padding: 1.35rem 1.2rem; border-radius: 26px 26px 18px 18px; }
+      .tower:nth-child(1) { background: linear-gradient(180deg, rgba(0, 123, 175, 0.18), rgba(255, 255, 255, 0.92)); min-height: 24rem; }
+      .tower:nth-child(2) { background: linear-gradient(180deg, rgba(55, 181, 80, 0.18), rgba(255, 255, 255, 0.92)); min-height: 29rem; }
+      .tower:nth-child(3) { background: linear-gradient(180deg, rgba(211, 178, 87, 0.22), rgba(255, 255, 255, 0.95)); min-height: 22rem; }
+      .tower h3 { margin: 0.55rem 0 0.8rem; font-size: 2rem; }
+      .tower ul { display: grid; gap: 0.72rem; }
+      .tower li { list-style: none; padding-left: 1rem; position: relative; }
+      .tower li::before { content: ""; position: absolute; left: 0; top: 0.78rem; width: 0.35rem; height: 0.35rem; border-radius: 999px; background: var(--dark); }
+      .orbit { min-height: 30rem; position: relative; background: radial-gradient(circle at center, rgba(255, 255, 255, 0.95) 0 18%, transparent 18%), radial-gradient(circle at center, rgba(0, 123, 175, 0.08) 0 35%, transparent 35%), radial-gradient(circle at center, rgba(211, 178, 87, 0.12) 0 56%, transparent 56%), radial-gradient(circle at center, rgba(55, 181, 80, 0.08) 0 74%, transparent 74%); }
+      .orbit-center { position: absolute; inset: 50% auto auto 50%; transform: translate(-50%, -50%); text-align: center; }
+      .orbit-center strong { display: block; font: 2.2rem var(--display); color: var(--dark); }
+      .orb { position: absolute; width: 11rem; padding: 1rem; border-radius: 20px; background: rgba(255, 255, 255, 0.92); box-shadow: var(--tight); }
+      .orb strong { display: block; margin-bottom: 0.35rem; color: var(--dark); }
+      .orb.one { top: 10%; left: 18%; }
+      .orb.two { top: 16%; right: 12%; }
+      .orb.three { bottom: 12%; left: 12%; }
+      .orb.four { bottom: 16%; right: 14%; }
+      .support .resource { background: rgba(255, 255, 255, 0.78); }
+      .reflect { grid-template-columns: 1fr 1fr; }
+      .scores { margin-top: 1rem; }
+      .score-row { display: grid; grid-template-columns: 1.1fr 0.45fr 0.45fr; gap: 0.75rem; align-items: center; padding: 0.9rem 1rem; background: rgba(0, 64, 113, 0.05); }
+      .before, .after { text-align: center; padding: 0.5rem 0.35rem; border-radius: 999px; font-weight: 700; }
+      .before { background: rgba(0, 123, 175, 0.12); color: var(--primary); }
+      .after { background: rgba(55, 181, 80, 0.16); color: #226331; }
+      .kit { grid-template-columns: 1.05fr 0.95fr; }
+      .links { display: grid; gap: 0.65rem; }
+      .links a {
+        display: inline-flex;
+        align-items: center;
+        justify-content: space-between;
+        gap: 0.7rem;
+        padding: 0.9rem 1rem;
+        border-radius: 18px;
+        text-decoration: none;
+        color: var(--dark);
+        background: rgba(0, 64, 113, 0.06);
+      }
+      .links a::after { content: "->"; font-family: var(--mono); }
+      .poster {
+        width: min(100%, 60rem);
+        margin: 3rem auto 0;
+        border-radius: 38px;
+        text-align: center;
+        color: var(--light);
+        background:
+          linear-gradient(135deg, rgba(0, 64, 113, 0.96), rgba(0, 19, 63, 0.98)),
+          radial-gradient(circle at top right, rgba(211, 178, 87, 0.3), transparent 35%);
+        box-shadow: var(--shadow);
+      }
+      .poster h2, .poster p, .poster strong { color: var(--light); }
+      .poster h2 { font-size: clamp(3.6rem, 6vw, 5.5rem); }
+      .poster .quote-line { width: min(100%, 44rem); margin: 1.4rem auto 0; font: 1.8rem/1.45 var(--display); color: rgba(255, 255, 255, 0.88); }
+      .poster-grid { margin-top: 1.7rem; display: grid; gap: 0.8rem; grid-template-columns: repeat(3, 1fr); }
+      .poster-grid div { padding: 1rem; border-radius: 18px; background: rgba(255, 255, 255, 0.08); }
+      .controls {
+        position: absolute;
+        right: 1.35rem;
+        bottom: 1.25rem;
+        z-index: 5;
+        display: flex;
+        gap: 0.65rem;
+      }
+      .controls button {
+        border: none;
+        border-radius: 999px;
+        padding: 0.75rem 1rem;
+        background: rgba(0, 64, 113, 0.9);
+        color: var(--light);
+        cursor: pointer;
+        font-weight: 600;
+        box-shadow: var(--tight);
+      }
+      .controls button:disabled, .ghost:disabled { opacity: 0.45; cursor: default; }
+      .slide.active [data-stagger] { animation: up 0.65s ease both; animation-delay: calc(var(--stagger, 0) * 110ms); }
+      @keyframes up { from { opacity: 0; transform: translateY(18px); } to { opacity: 1; transform: translateY(0); } }
+      @media (prefers-reduced-motion: reduce) { *, *::before, *::after { animation: none !important; transition: none !important; } }
+      @media (max-width: 1100px) {
+        .app { flex-direction: column; }
+        .sidebar { width: 100%; max-height: 36vh; }
+        .stage { padding: 0; }
+        .frame { height: auto; min-height: 64vh; border-radius: 0; }
+        .cover, .sheet, .impact, .atlas, .reflect, .studio, .process, .kit, .poster-grid, .video-compare-grid { grid-template-columns: 1fr; }
+        .slide { position: relative; inset: auto; min-height: 100vh; padding: 5.2rem 1.25rem 5.75rem; }
+        .video-solo-slide, .video-compare-slide { padding-left: 1.25rem; padding-right: 1.25rem; }
+        .controls { position: fixed; right: 1rem; bottom: 1rem; }
+      }
+    </style>
+  </head>
+  <body>
+    <div class="app">
+      <aside class="sidebar" aria-label="Prototype slide navigation">
+        <div class="brand">
+          <img src="../lesson-communicating-with-the-public/SPOKES-Logo.png" alt="SPOKES" />
+          <div class="chip">Structural redesign sample</div>
+          <div>
+            <h1>Structural Pilot</h1>
+            <p>
+              A sample deck that tests a new lesson grammar for <strong>Communicating with the Public</strong> without changing the live course.
+            </p>
+          </div>
+        </div>
+        <div class="note">
+          <strong>What this is testing</strong>
+          <p>More distinct slide types, clearer WIPPEA rhythm, less dependence on repeated cards, and tighter rules for when a video should stand alone.</p>
+        </div>
+        <div class="nav" id="navList">
+          <button class="nav-item active" data-index="0"><div class="nav-top"><span class="phase w">W</span><strong>Cover Spread</strong></div><span>Magazine-style opener</span></button>
+          <button class="nav-item" data-index="1"><div class="nav-top"><span class="phase w">W</span><strong>Listening Prompt</strong></div><span>Worksheet-style warm-up</span></button>
+          <button class="nav-item" data-index="2"><div class="nav-top"><span class="phase i">I</span><strong>Solo Video Screen</strong></div><span>Default full-frame video layout</span></button>
+          <button class="nav-item" data-index="3"><div class="nav-top"><span class="phase p">P1</span><strong>Cycle Blueprint</strong></div><span>Process ribbon instead of cards</span></button>
+          <button class="nav-item" data-index="4"><div class="nav-top"><span class="phase p">P2</span><strong>Styles Studio</strong></div><span>Comparative towers</span></button>
+          <button class="nav-item" data-index="5"><div class="nav-top"><span class="phase p">P2</span><strong>Comparison Video Wall</strong></div><span>Limited multi-view exception</span></button>
+          <button class="nav-item" data-index="6"><div class="nav-top"><span class="phase p">P3</span><strong>Advocacy Atlas</strong></div><span>Map of supports and choices</span></button>
+          <button class="nav-item" data-index="7"><div class="nav-top"><span class="phase e">E</span><strong>Reflection Sheet</strong></div><span>Before-and-after worksheet</span></button>
+          <button class="nav-item" data-index="8"><div class="nav-top"><span class="phase a">A</span><strong>Binder Build</strong></div><span>Application as an assembly board</span></button>
+          <button class="nav-item" data-index="9"><div class="nav-top"><span class="phase a">A</span><strong>Closing Manifesto</strong></div><span>Final takeaway poster</span></button>
+        </div>
+        <div class="footer">
+          <div>
+            <label for="progressFill">Prototype progress</label>
+            <div class="track"><div class="fill" id="progressFill"></div></div>
+          </div>
+          <p id="progressText">Slide 1 of 10</p>
+        </div>
+      </aside>
+      <main class="stage">
+        <div class="frame">
+          <div class="frame-head">
+            <div class="frame-label"><span>Structural redesign pilot</span><strong>Communicating with the Public</strong></div>
+            <div class="top-btns">
+              <button class="ghost" id="topPrev" aria-label="Previous slide">&#8592;</button>
+              <button class="ghost" id="topNext" aria-label="Next slide">&#8594;</button>
+            </div>
+          </div>
+          <div class="slides" id="slidesRoot">
+            <section class="slide active" data-index="0">
+              <div class="cover">
+                <div class="cover-left">
+                  <div class="eyebrow" data-stagger style="--stagger: 0">New lesson grammar</div>
+                  <div class="note panel" data-stagger style="--stagger: 1">
+                    <strong>Why prototype this way?</strong>
+                    <p>
+                      This sample keeps the lesson content, but changes the shape of the experience. The goal is to test whether structure, pacing, and page identity can make the curriculum feel more memorable.
+                    </p>
+                  </div>
+                  <div class="resource panel" data-stagger style="--stagger: 2">
+                    <strong>What learners should leave with</strong>
+                    <p>See communication as a system, not a list of tips.</p>
+                    <p>Practice reading the room as well as choosing words.</p>
+                    <p>Connect communication skills to advocacy and workplace confidence.</p>
+                  </div>
+                </div>
+                <div class="hero" data-stagger style="--stagger: 3">
+                  <div class="kicker">SPOKES structural sample deck</div>
+                  <h2>Communicating with the Public</h2>
+                  <p class="lede" style="color: rgba(255,255,255,0.84)">
+                    A concept prototype for making lessons feel like distinct editorial experiences rather than one repeated card template.
+                  </p>
+                  <div class="band">
+                    <div><strong>Listening</strong><span>Start with reflection and observation</span></div>
+                    <div><strong>Clarity</strong><span>Understand how a message travels</span></div>
+                    <div><strong>Advocacy</strong><span>Apply communication to real life choices</span></div>
+                  </div>
+                  <div class="quote">"The single biggest problem in communication is the illusion that it has taken place."</div>
+                </div>
+              </div>
+            </section>
+
+            <section class="slide" data-index="1">
+              <div class="eyebrow">Warm-Up | listening assessment</div>
+              <h2>Start on a worksheet, not a slide.</h2>
+              <p class="lede">
+                Instead of opening with stacked cards, the warm-up becomes a paper-like prompt sheet. The lesson feels more like a guided studio session from the first minute.
+              </p>
+              <div class="sheet" style="margin-top: 1.8rem">
+                <div class="sheet-page" data-stagger style="--stagger: 0">
+                  <div class="kicker">Prompt sheet</div>
+                  <div class="prompt-list" style="margin-top: 1.2rem">
+                    <div class="prompt">
+                      <strong>Rate yourself honestly.</strong>
+                      <p>Complete the first column of the Personal Listening Assessment before instruction begins.</p>
+                    </div>
+                    <div class="prompt">
+                      <strong>Recall one recent conversation.</strong>
+                      <p>Were you actually listening, or just waiting for your turn to speak?</p>
+                    </div>
+                    <div class="prompt">
+                      <strong>Prepare to share a reason.</strong>
+                      <p>Choose one rating you would defend in front of the class and explain why.</p>
+                    </div>
+                  </div>
+                </div>
+                <div class="ring panel" data-stagger style="--stagger: 1">
+                  <div class="ring-core">
+                    <div class="ring-center">
+                      <strong>Listen</strong>
+                      <span class="kicker">before you answer</span>
+                    </div>
+                  </div>
+                  <div class="tag-row">
+                    <span class="tag">attention</span>
+                    <span class="tag">eye contact</span>
+                    <span class="tag">tone</span>
+                    <span class="tag">patience</span>
+                    <span class="tag">feedback</span>
+                  </div>
+                </div>
+              </div>
+            </section>
+
+            <section class="slide video-solo-slide" data-index="2">
+              <div class="video-solo">
+                <div class="eyebrow">Introduction | default video screen</div>
+                <h2>Watch how effective communication changes the outcome.</h2>
+                <p class="video-intro" data-stagger style="--stagger: 0">
+                  This is the default video rule for the redesign: a brief introduction above the screen, then one large video with no competing cards, prompts, or side content on the page.
+                </p>
+                <div class="video-solo-frame" data-stagger style="--stagger: 1">
+                  <video controls preload="metadata">
+                    <source src="../lesson-communicating-with-the-public/videos/importance_of_effective_communication.mp4" type="video/mp4" />
+                    Your browser does not support the video tag.
+                  </video>
+                </div>
+              </div>
+            </section>
+
+            <section class="slide" data-index="3">
+              <div class="eyebrow">Presentation 1 | communication cycle</div>
+              <h2>Teach the cycle as a blueprint.</h2>
+              <p class="lede">
+                A process slide gives the concept its own visual grammar. It feels different from the warm-up and different from the later workshop slides.
+              </p>
+              <div class="process" style="margin-top: 1.7rem">
+                <div class="node" data-stagger style="--stagger: 0"><span class="step">01</span><h3>Sender</h3><p>The person who begins the message and chooses the intention.</p></div>
+                <div class="node" data-stagger style="--stagger: 1"><span class="step">02</span><h3>Encode</h3><p>Words, tone, posture, and format turn the idea into a signal.</p></div>
+                <div class="node" data-stagger style="--stagger: 2"><span class="step">03</span><h3>Channel</h3><p>Face-to-face, email, phone, or public announcement changes how the message lands.</p></div>
+                <div class="node" data-stagger style="--stagger: 3"><span class="step">04</span><h3>Decode</h3><p>The receiver interprets what they hear, see, and feel.</p></div>
+                <div class="node" data-stagger style="--stagger: 4"><span class="step">05</span><h3>Respond</h3><p>Feedback shows whether the meaning matched the intention.</p></div>
+              </div>
+              <div class="sheet" style="margin-top: 1.3rem">
+                <div class="resource panel" data-stagger style="--stagger: 5">
+                  <strong>Feedback loop</strong>
+                  <p>The message is not finished when it is spoken. It closes when the speaker checks whether the receiver understood it the way it was meant.</p>
+                </div>
+                <div class="resource panel" data-stagger style="--stagger: 6">
+                  <strong>Class prompt</strong>
+                  <p>Think of a time when your message was decoded differently than you intended. Which part of the cycle broke down: the words, the tone, the channel, or the follow-up?</p>
+                </div>
+              </div>
+            </section>
+
+            <section class="slide" data-index="4">
+              <div class="eyebrow">Presentation 2 | communication styles</div>
+              <h2>Compare the three styles as unequal towers.</h2>
+              <p class="lede">
+                Verbal, body, and voice can be taught as a studio comparison instead of tabs. The learner can read the relationships in one glance.
+              </p>
+              <div class="studio" style="margin-top: 1.9rem">
+                <div class="tower" data-stagger style="--stagger: 0">
+                  <div class="kicker">Verbal message</div>
+                  <h3>Words</h3>
+                  <ul>
+                    <li>Pronunciation and grammar shape credibility.</li>
+                    <li>Vocabulary should match the audience and the setting.</li>
+                    <li>Slang and swearing weaken professional public communication.</li>
+                  </ul>
+                </div>
+                <div class="tower" data-stagger style="--stagger: 1">
+                  <div class="kicker">Body message</div>
+                  <h3>Presence</h3>
+                  <ul>
+                    <li>Facial expression should support the message you want received.</li>
+                    <li>Posture, eye contact, and gestures signal confidence and care.</li>
+                    <li>People often believe your body before they believe your script.</li>
+                  </ul>
+                </div>
+                <div class="tower" data-stagger style="--stagger: 2">
+                  <div class="kicker">Voice message</div>
+                  <h3>Tone</h3>
+                  <ul>
+                    <li>Pitch, volume, and rate affect how quickly meaning is understood.</li>
+                    <li>Enunciation helps the public process information under pressure.</li>
+                    <li>Voice often reveals emotion even when words are controlled.</li>
+                  </ul>
+                </div>
+              </div>
+            </section>
+
+            <section class="slide video-compare-slide" data-index="5">
+              <div class="video-compare">
+                <div class="eyebrow">Presentation 2 | comparison video wall</div>
+                <h2>Compare how the same topic plays out in different scenarios.</h2>
+                <p class="video-intro" data-stagger style="--stagger: 0">
+                  This multi-view screen is a limited exception. Use it only when learners need to compare one communication problem across several related scenarios, not as the standard treatment for video in the curriculum.
+                </p>
+                <div class="video-compare-grid">
+                  <figure class="compare-card" data-stagger style="--stagger: 1">
+                    <video controls preload="metadata">
+                      <source src="../lesson-communicating-with-the-public/videos/poor_customer_service_satire.mp4" type="video/mp4" />
+                      Your browser does not support the video tag.
+                    </video>
+                    <figcaption>Cleveland, Ohio — Satire (3:00)</figcaption>
+                  </figure>
+                  <figure class="compare-card" data-stagger style="--stagger: 2">
+                    <video controls preload="metadata">
+                      <source src="../lesson-communicating-with-the-public/videos/poor_customer_service_scenario.mp4" type="video/mp4" />
+                      Your browser does not support the video tag.
+                    </video>
+                    <figcaption>Poor Customer Service (2:46)</figcaption>
+                  </figure>
+                  <figure class="compare-card" data-stagger style="--stagger: 3">
+                    <video controls preload="metadata">
+                      <source src="../lesson-communicating-with-the-public/videos/bad_customer_service.mp4" type="video/mp4" />
+                      Your browser does not support the video tag.
+                    </video>
+                    <figcaption>Bad Customer Service (1:12)</figcaption>
+                  </figure>
+                  <figure class="compare-card" data-stagger style="--stagger: 4">
+                    <video controls preload="metadata">
+                      <source src="../lesson-communicating-with-the-public/videos/bad_customer_service_rep.mp4" type="video/mp4" />
+                      Your browser does not support the video tag.
+                    </video>
+                    <figcaption>Bad Service Rep (2:32)</figcaption>
+                  </figure>
+                </div>
+              </div>
+            </section>
+
+            <section class="slide" data-index="6">
+              <div class="eyebrow">Presentation 3 | self-advocacy</div>
+              <h2>Frame advocacy as a map, not a list.</h2>
+              <div class="atlas" style="margin-top: 1.8rem">
+                <div data-stagger style="--stagger: 0">
+                  <p class="lede" style="margin-top: 0">
+                    Self-advocacy is the ability to <span class="highlight">express your needs</span>, <span class="accent">make informed choices</span>, and <span class="gold">seek support respectfully</span>. A map helps learners see that advocacy is built from several connected capacities.
+                  </p>
+                  <div class="support" style="margin-top: 1.3rem">
+                    <div class="resource panel"><strong>Know yourself</strong><p>Recognize strengths, needs, goals, and what support actually helps.</p></div>
+                    <div class="resource panel"><strong>Know your rights</strong><p>Understand workplace expectations, resources, and protections before you speak up.</p></div>
+                    <div class="resource panel"><strong>Know your ask</strong><p>State clearly what you need, why it matters, and what next step would help.</p></div>
+                  </div>
+                </div>
+                <div class="orbit panel" data-stagger style="--stagger: 1">
+                  <div class="orbit-center">
+                    <strong>Self-Advocacy</strong>
+                    <span class="kicker">center of action</span>
+                  </div>
+                  <div class="orb one"><strong>Personal</strong><p>Confidence and self-awareness.</p></div>
+                  <div class="orb two"><strong>Professional</strong><p>Asking for clarity, feedback, and opportunity.</p></div>
+                  <div class="orb three"><strong>Support</strong><p>Finding mentors, allies, and useful programs.</p></div>
+                  <div class="orb four"><strong>Action</strong><p>Speaking clearly, following up, and persisting respectfully.</p></div>
+                </div>
+              </div>
+            </section>
+
+            <section class="slide" data-index="7">
+              <div class="eyebrow">Evaluation | reflection sheet</div>
+              <h2>Evaluate with a comparison worksheet.</h2>
+              <p class="lede">
+                Instead of another stack of numbered items, the evaluation phase can feel like a real form learners complete and discuss.
+              </p>
+              <div class="reflect" style="margin-top: 1.8rem">
+                <div class="worksheet panel" data-stagger style="--stagger: 0">
+                  <div class="kicker">Before / after snapshot</div>
+                  <div class="scores">
+                    <div class="score-row"><strong>I listen without interrupting.</strong><span class="before">Pre</span><span class="after">Post</span></div>
+                    <div class="score-row"><strong>I notice body language and tone.</strong><span class="before">Pre</span><span class="after">Post</span></div>
+                    <div class="score-row"><strong>I can repair a confusing message.</strong><span class="before">Pre</span><span class="after">Post</span></div>
+                    <div class="score-row"><strong>I can speak up respectfully for what I need.</strong><span class="before">Pre</span><span class="after">Post</span></div>
+                  </div>
+                </div>
+                <div class="stack">
+                  <div class="resource panel" data-stagger style="--stagger: 1"><strong>Prompt for discussion</strong><p>Where did your score shift the most after the lesson? What concept or exercise made that shift happen?</p></div>
+                  <div class="resource panel" data-stagger style="--stagger: 2"><strong>Reflection</strong><p>What signal do you most need to improve next: words, body, or voice?</p></div>
+                  <div class="resource panel" data-stagger style="--stagger: 3"><strong>Transfer</strong><p>Where could better communication help you this week at home, in class, or at work?</p></div>
+                </div>
+              </div>
+            </section>
+
+            <section class="slide" data-index="8">
+              <div class="eyebrow">Application | binder build</div>
+              <h2>Turn the final phase into a build session.</h2>
+              <div class="kit" style="margin-top: 1.8rem">
+                <div class="stack" data-stagger style="--stagger: 0">
+                  <div class="pocket panel"><strong>Section 1 | Daily communication tools</strong><p>Personal Listening Assessment, communication cycle notes, and cue reminders for words, body, and voice.</p></div>
+                  <div class="pocket panel"><strong>Section 2 | Self-advocacy supports</strong><p>Graphic organizers, resource lists, and scripts for asking for help, feedback, or clarification.</p></div>
+                  <div class="pocket panel"><strong>Section 3 | Workplace use</strong><p>Role-play forms, customer-service strategies, and examples of professional public communication.</p></div>
+                </div>
+                <div class="resource-stack panel" data-stagger style="--stagger: 1">
+                  <strong>Prototype resource drawer</strong>
+                  <p>These links use the real lesson assets so you can judge the concept against actual curriculum materials.</p>
+                  <div class="links">
+                    <a href="../lesson-communicating-with-the-public/Handouts/Communicating with the Public 2026 Handouts.pdf" target="_blank" rel="noopener noreferrer">All handouts PDF</a>
+                    <a href="../lesson-communicating-with-the-public/Handouts/Communicating with the Public 2026 Handouts.pdf#page=3" target="_blank" rel="noopener noreferrer">Personal Listening Assessment</a>
+                    <a href="../lesson-communicating-with-the-public/Handouts/Communicating with the Public 2026 Handouts.pdf#page=30" target="_blank" rel="noopener noreferrer">Self-Advocacy Organizer</a>
+                    <a href="../lesson-communicating-with-the-public/Handouts/Communicating with the Public 2026 Handouts.pdf#page=10" target="_blank" rel="noopener noreferrer">Role-play evaluation form</a>
+                  </div>
+                </div>
+              </div>
+            </section>
+
+            <section class="slide" data-index="9">
+              <div class="poster panel" data-stagger style="--stagger: 0">
+                <div class="eyebrow" style="justify-content: center; color: rgba(255,255,255,0.68)">Structural redesign takeaway</div>
+                <h2>Different pages. Same curriculum.</h2>
+                <p class="quote-line">
+                  This pilot asks a simple question: if the lesson looked less like one template repeated and more like a sequence of purposeful pages, would the learning feel more memorable?
+                </p>
+                <div class="poster-grid">
+                  <div><strong>Structure changed</strong><p>Worksheet, ribbon, studio, board, atlas, and form each have a distinct job.</p></div>
+                  <div><strong>Content stayed real</strong><p>The concepts still come from the current lesson rather than from invented filler.</p></div>
+                  <div><strong>Decision question</strong><p>Does this feel meaningfully more identifiable and more useful than the current system?</p></div>
+                </div>
+              </div>
+            </section>
+          </div>
+          <div class="controls">
+            <button id="prevBtn">Previous</button>
+            <button id="nextBtn">Next</button>
+          </div>
+        </div>
+      </main>
+    </div>
+    <script>
+      const slides = Array.from(document.querySelectorAll(".slide"));
+      const navItems = Array.from(document.querySelectorAll(".nav-item"));
+      const progressFill = document.getElementById("progressFill");
+      const progressText = document.getElementById("progressText");
+      const prevBtn = document.getElementById("prevBtn");
+      const nextBtn = document.getElementById("nextBtn");
+      const topPrev = document.getElementById("topPrev");
+      const topNext = document.getElementById("topNext");
+      let currentIndex = 0;
+
+      function setActiveSlide(index) {
+        currentIndex = Math.max(0, Math.min(index, slides.length - 1));
+
+        slides.forEach(function(slide, slideIndex) {
+          slide.classList.toggle("active", slideIndex === currentIndex);
+        });
+
+        navItems.forEach(function(item, itemIndex) {
+          item.classList.toggle("active", itemIndex === currentIndex);
+        });
+
+        const percent = ((currentIndex + 1) / slides.length) * 100;
+        progressFill.style.width = percent + "%";
+        progressText.textContent = "Slide " + (currentIndex + 1) + " of " + slides.length;
+
+        const atStart = currentIndex === 0;
+        const atEnd = currentIndex === slides.length - 1;
+        prevBtn.disabled = atStart;
+        topPrev.disabled = atStart;
+        nextBtn.disabled = atEnd;
+        topNext.disabled = atEnd;
+      }
+
+      function goPrev() {
+        setActiveSlide(currentIndex - 1);
+      }
+
+      function goNext() {
+        setActiveSlide(currentIndex + 1);
+      }
+
+      navItems.forEach(function(item) {
+        item.addEventListener("click", function() {
+          setActiveSlide(Number(item.dataset.index));
+        });
+      });
+
+      prevBtn.addEventListener("click", goPrev);
+      topPrev.addEventListener("click", goPrev);
+      nextBtn.addEventListener("click", goNext);
+      topNext.addEventListener("click", goNext);
+
+      document.addEventListener("keydown", function(event) {
+        if (event.key === "ArrowRight" || event.key === " ") {
+          event.preventDefault();
+          goNext();
+        } else if (event.key === "ArrowLeft") {
+          event.preventDefault();
+          goPrev();
+        }
+      });
+
+      let touchStartX = 0;
+      document.addEventListener("touchstart", function(event) {
+        touchStartX = event.changedTouches[0].screenX;
+      });
+      document.addEventListener("touchend", function(event) {
+        const deltaX = touchStartX - event.changedTouches[0].screenX;
+        if (Math.abs(deltaX) < 50) return;
+        if (deltaX > 0) {
+          goNext();
+        } else {
+          goPrev();
+        }
+      });
+
+      setActiveSlide(0);
+    </script>
+  </body>
+</html>

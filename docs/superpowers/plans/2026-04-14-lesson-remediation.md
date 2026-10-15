@@ -1,5 +1,7 @@
 # Lesson Remediation — Implementation Plan
 
+**Current status note (2026-04-30):** Completed/superseded. The original critical remediation work is no longer an active plan; current lesson status and next actions are tracked in `docs/current-roadmap.md`.
+
 > **For agentic workers:** REQUIRED SUB-SKILL: Use superpowers:subagent-driven-development (recommended) or superpowers:executing-plans to implement this plan task-by-task. Steps use checkbox (`- [ ]`) syntax for tracking.
 
 **Goal:** Fix all CRITICAL validator failures across 6 SPOKES lessons, bringing the total from 83 FAIL to 0 FAIL.

@@ -2,7 +2,7 @@
 
 ## Required Reading
 
-Before creating or modifying any lesson, you MUST read `SPOKES-STANDARD.md` in full.
+Before creating or modifying any lesson, you MUST read `SPOKES-STANDARD.md` and `SPOKES Builder/brand-palette.md` in full.
 Violations of CRITICAL rules will be caught by automated hooks and block your work.
 
 ## File Organization Standards
