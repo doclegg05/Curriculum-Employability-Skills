@@ -193,7 +193,11 @@ try {
       const {origin, referer, ...headers} = route.request().headers();
       await route.fulfill({response: await route.fetch({url: server.baseUrl + url.pathname + url.search, headers})});
     });
-    await context.addInitScript(() => { window.__bespokeAutosave = {enabled: false}; });
+    // A hosted page stays on Lesson & team until it has a team code, so this page already has one.
+    await context.addInitScript(() => {
+      window.__bespokeAutosave = {enabled: false};
+      localStorage.setItem('bespoke-team-session-v2', JSON.stringify({lessonId: 'money-management', editCode: 'synthetic-review-test-access-code', revision: null, savedAt: null, baseSelectionKey: null, pendingSave: null}));
+    });
     const page = await context.newPage();
     page.on('pageerror', e => errors.push(e.message));
     await page.goto('http://bespoke.example.test/bespoke/');

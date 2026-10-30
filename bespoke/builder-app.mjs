@@ -318,6 +318,9 @@ const findOption=(family,slug)=>state.library?.families?.[family]?.options.find(
     panel.innerHTML = `
       ${heading ? `<h2>Lesson &amp; team</h2>
       <p class="panel-lead">One spokesperson saves the team’s decisions. Confirm the lesson and team for this design.</p>` : ""}
+      ${needsTeamCode() ? `<div class="team-code-first" id="teamCodeFirst"><h3>Start with your team code</h3>
+      <p>Enter your code first so your work saves as you go. It is in your team’s OneDrive folder.</p>
+      <button type="button" class="btn btn-primary" id="btnEnterTeamCode">Enter team code</button></div>` : ""}
       <div class="field-grid two">
         <label class="field">Lesson
           <select id="lessonSelect"></select>
@@ -336,6 +339,7 @@ const findOption=(family,slug)=>state.library?.families?.[family]?.options.find(
         </label>
       </div>
     `;
+    byId("btnEnterTeamCode")?.addEventListener("click", () => openOpenDialog());
     const select = byId("lessonSelect");
     state.meta.lessons.forEach((lesson) => {
       const opt = document.createElement("option");
@@ -596,9 +600,11 @@ const findOption=(family,slug)=>state.library?.families?.[family]?.options.find(
       }
       const previousLesson = state.lessonId;
       restoreTeamSession();
+      // As with a typed code, work built before the link belongs to the team opening it.
+      const keepWork = !ui.teamSession && hasUnclaimedWork();
       installTeamSession(team.lessonId, team.editCode);
       ui.mode = "edit";
-      if (lastSavedRaw && previousLesson !== team.lessonId) {
+      if (lastSavedRaw && previousLesson !== team.lessonId && !keepWork) {
         keepRecoveryCopy();
         resetDesignForLesson(team.lessonId);
         lastSavedRaw = null;
@@ -1132,15 +1138,18 @@ const findOption=(family,slug)=>state.library?.families?.[family]?.options.find(
         return;
       }
 
+      // Work built before the code is this team's when it has no saved design yet.
+      const keepWork = !ui.teamSession && !result.selection && hasUnclaimedWork();
       installTeamSession(lessonId, editCode);
       ui.mode = "edit";
       if (result.selection) applySelectionPayload(result.selection);
-      else resetDesignForLesson(lessonId);
+      else if (!keepWork) resetDesignForLesson(lessonId);
       state.lessonId = lessonId;
       ui.teamSession.revision = result.revision ?? null;
       ui.teamSession.savedAt = result.savedAt ?? null;
       ui.teamSession.pendingSave = null;
-      ui.teamSession.baseSelectionKey = result.selection?.schema === "bespoke-selection/v1" ? selectionKey(result.selection) : currentSelectionKey();
+      // Kept work has never been saved, so it has no baseline and Save still sends it.
+      ui.teamSession.baseSelectionKey = keepWork ? null : result.selection?.schema === "bespoke-selection/v1" ? selectionKey(result.selection) : currentSelectionKey();
       noteConversion(result.selection);
       ui.autosavePaused = Boolean(state.legacySelection);
       ui.cloudConflict = null;
@@ -1157,6 +1166,7 @@ const findOption=(family,slug)=>state.library?.families?.[family]?.options.find(
       byId("openDialog").close();
       render();
       if(result.selection)successNotice("Opened the latest shared design.");
+      else if(keepWork)successNotice("Team code accepted. Your work is kept.");
       else clearStrip();
     } finally {
       setHandoffBusy(false);
@@ -1524,6 +1534,9 @@ function showBuilderHelp(close=false){
  if(close){const menu=byId('filesRecovery');(menu.open?byId('btnHelp'):menu.querySelector(':scope > summary')).focus({preventScroll:true});return;}
  byId('builderHelpContent').innerHTML=builderGuidance();byId('builderHelpTitle').focus();
 }
+// A team enters its code before it builds, so its work is shared from the start. The local preview and view links have nothing to enter.
+function needsTeamCode(){return ui.mode==='edit'&&!ui.teamSession&&!ui.localPreview&&Boolean(handoffApiBase);}
+function hasUnclaimedWork(){return ui.meaningfulDesign||Boolean(state.teamName.trim()||state.spokespersonName.trim());}
 function goStage(id){if(ui.guide?.on&&id!=='slides')ui.guide={...ui.guide,on:false};state.step=stepIndex(id);render();}
 function renderTeamStage(panel){
  heading(panel,'Tell us about your team','Choose the lesson, name your team and say who speaks for it. One spokesperson saves the team’s decisions.');
@@ -1945,6 +1958,8 @@ function updatePreview(design=state.design,{quick=false}={}){
 function showNoteCount(count){byId('readabilityDetails').hidden=!count;byId('readabilitySummary').textContent=count+' readability '+(count===1?'note':'notes');}
 function showView(view){if(onStage('slides')){ui.editorRole=view;}state.previewView=view;ui.previewPinned=true;if(ui.sharedThemeOpen||onStage('slides'))render(false);else{updatePreview();saveDraft();}}
 function render(focus=true){
+ // Every route between stages ends here, so this one check holds them all at the code.
+ if(needsTeamCode()&&!onStage('team')){state.step=stepIndex('team');openOpenDialog();}
  if(byId('sharedTheme'))ui.sharedThemeOpen=byId('sharedTheme').open;
  const changed=ui.renderedStep!==state.step;if(changed){ui.renderedStep=state.step;ui.changedKinds=new Set();ui.sendFeedback='';ui.noteFrom=undefined;if(onStage('slides'))state.previewView=ui.editorRole;ui.previewPinned=false;}
  const active=document.activeElement,activeId=active?.id;

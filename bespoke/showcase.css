@@ -200,3 +200,6 @@
 .send-wait::backdrop{background:#00133f80}
 .send-wait h2{margin:0 0 8px;font-size:var(--fs-lg)}
 .send-wait p{margin:0 0 16px;line-height:1.5}
+.team-code-first{margin:0 0 20px;padding:16px;border:1px solid var(--line);border-radius:var(--radius-dialog);background:var(--mist)}
+.team-code-first h3{margin:0 0 6px;font-size:var(--fs-md)}
+.team-code-first p{margin:0 0 12px;line-height:1.5}

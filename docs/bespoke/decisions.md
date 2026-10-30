@@ -25,6 +25,8 @@ Britt decided these on October 22, 2026 for Part 1 of `docs/superpowers/specs/20
 
 | Date | Decision |
 |---|---|
+| 2026-10-30 | A team enters its team code before it builds. Until the code is accepted, BeSpoke stays on Lesson & team and any move to another stage opens the code dialog. This supersedes the October 9 line "The stage never blocks navigation or Save." The local preview and view links are exempt. Britt found that entering a code after building reset the design. |
+| 2026-10-30 | Entering a code or opening a team link never wipes work already in the browser when no saved design exists. The work stays and counts as unsaved, so Save sends it. A team with a saved design still opens that design, and the replaced browser work stays in the recovery copy. |
 | 2026-10-30 | **Send to Britt** opens a pop-up saying the click worked and the wait can take a minute or two. Britt's test showed the page looked idle for up to two minutes. The pop-up never claims arrival, and it closes on a receipt or a failure message. |
 | 2026-10-30 | Teams see no links to GitHub. The Sent view loses its Details disclosure. The band at the top of the page becomes a status line in plain words, with no receipt id. It reports only what BeSpoke knows: sent, waiting for review, or changed since sending. Showing Britt's review outcome or a written update needs a separate channel that does not exist yet. |
 

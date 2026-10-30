@@ -284,6 +284,7 @@ Text offers local heading/body colors, the lesson's heading or body font, size, 
 
 Four named stages are **Lesson & team**, **Pick a look**, **Make it yours**, and **Send**. Their internal ids stay `team`, `start`, `slides` and `review`. Each pill shows its number and name ("2 · Pick a look"), with a check mark once the stage is passed. Lesson & team is its own first page (decisions, October 9, 2026) and its pill is marked until the team is identified. Current stage navigation uses `aria-current="step"`, an accessible Stage N of 4 name, and a visible stage counter; Back and Continue controls name the destination. Undo, Redo, and Recent choices remain adjacent to navigation. Returning teams keep their design, and **Swap starting look** on Make it yours goes back to Pick a look.
 
+A team enters its code before it builds. Until a hosted session has a code, BeSpoke stays on Lesson & team, shows the **Start with your team code** block above the fields, and opens the code dialog on any move to another stage. One check in `render()` holds every route. The local preview and view links are exempt.
 
 Within the Slide options drawer, the distinct Slide design editors tablist offers **Title slide**, **Chapter divider**, **Text boxes**, **Video slide**, and **Activity**. All are optional. Selected editor tabs use Mist, a Blue border and a 3px inset bottom rule; the corresponding editor has a named tabpanel. Next slide type is a convenience action, with Send after Activity.
 
