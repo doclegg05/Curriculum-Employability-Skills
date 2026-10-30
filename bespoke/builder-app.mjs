@@ -10,8 +10,9 @@ import { CONVERTED_STATUS, CONVERTED_NOTE, convertedOnOpen } from './converted-o
 import { syncStageChrome } from './canvas-shell.mjs';
 import { createGuide } from './guide/guide.mjs';
 import { showToast } from './toast.mjs';
+import { openSendWait, closeSendWait } from './send-wait.mjs';
 import { renderPickALook, closePickALook } from './pick-a-look.mjs';
-import { slideOptions, designKey, changedKinds, lookDetail, designChanges, sentState, withSampleWords } from './showcase-model.mjs';
+import { slideOptions, designKey, changedKinds, lookDetail, designChanges, sentState, receiptStatus, withSampleWords } from './showcase-model.mjs';
 import { renderSendStage, renderSentView, closeSendStage } from './send-stage.mjs';
 import { scopeLineParts, startingFrom, renderStartingFrom, markRail, pulseRail } from './make-it-yours.mjs';
 import { createTeamView, isShareHash, isSnapshotHash, viewLinkToOpen } from './team-view.mjs';
@@ -237,17 +238,8 @@ const findOption=(family,slug)=>state.library?.families?.[family]?.options.find(
       : `${lesson?.title || session.lessonId} team session.${saved}${dirty}`;
     let delivered=byId('lastReviewReceipt');
     if(!delivered){delivered=document.createElement('p');delivered.id='lastReviewReceipt';delivered.className='review-receipt';panel.append(delivered);}
-    // The Sent view holds the receipt link in its Details, so the band steps aside there (the strip hides when it holds nothing else).
-    delivered.replaceChildren();delivered.hidden=!session.lastReceipt||(onStage("review")&&sendView()==="sent");
-    if(session.lastReceipt){
-      delivered.append(document.createTextNode('Last confirmed review package · '+session.lastReceipt.submissionId+'. '));
-      for(const [field,label] of [['url','Open review request'],['artifactUrl','Exact submitted artifact']]){
-        const value=session.lastReceipt[field];
-        if(typeof value!=='string'||!value.startsWith('https://github.com/doclegg05/Curriculum-Employability-Skills/'))continue;
-        const link=document.createElement('a');link.href=value;link.textContent=label;link.target='_blank';link.rel='noopener';delivered.append(link,document.createTextNode(' · '));
-      }
-      delivered.append(document.createTextNode('Ready for review; delivery does not confirm that the package has been reviewed.'));
-    }
+    // The Sent view says the same thing, so the band steps aside there (the strip hides when it holds nothing else).
+    delivered.textContent=receiptStatus(session.lastReceipt,designKey(state.design));delivered.hidden=!session.lastReceipt||(onStage("review")&&sendView()==="sent");
     byId("btnLoadLatest")?.toggleAttribute("hidden", !ui.cloudConflict);
     byId("btnKeepLocal")?.toggleAttribute("hidden", !ui.cloudConflict);
     byId("btnCheckStatus")?.toggleAttribute("hidden", !pendingSubmission());
@@ -326,6 +318,9 @@ const findOption=(family,slug)=>state.library?.families?.[family]?.options.find(
     panel.innerHTML = `
       ${heading ? `<h2>Lesson &amp; team</h2>
       <p class="panel-lead">One spokesperson saves the team’s decisions. Confirm the lesson and team for this design.</p>` : ""}
+      ${needsTeamCode() ? `<div class="team-code-first" id="teamCodeFirst"><h3>Start with your team code</h3>
+      <p>Enter your code first so your work saves as you go. It is in your team’s OneDrive folder.</p>
+      <button type="button" class="btn btn-primary" id="btnEnterTeamCode">Enter team code</button></div>` : ""}
       <div class="field-grid two">
         <label class="field">Lesson
           <select id="lessonSelect"></select>
@@ -344,6 +339,7 @@ const findOption=(family,slug)=>state.library?.families?.[family]?.options.find(
         </label>
       </div>
     `;
+    byId("btnEnterTeamCode")?.addEventListener("click", () => openOpenDialog());
     const select = byId("lessonSelect");
     state.meta.lessons.forEach((lesson) => {
       const opt = document.createElement("option");
@@ -394,6 +390,7 @@ const findOption=(family,slug)=>state.library?.families?.[family]?.options.find(
 
   // Save and send messages: warnings and errors keep the strip, and on Send they also show beside the buttons.
   function actionNotice(message) {
+    closeSendWait();
     fileNotice(message);
     sendFeedback(message);
   }
@@ -603,9 +600,11 @@ const findOption=(family,slug)=>state.library?.families?.[family]?.options.find(
       }
       const previousLesson = state.lessonId;
       restoreTeamSession();
+      // As with a typed code, work built before the link belongs to the team opening it.
+      const keepWork = !ui.teamSession && hasUnclaimedWork();
       installTeamSession(team.lessonId, team.editCode);
       ui.mode = "edit";
-      if (lastSavedRaw && previousLesson !== team.lessonId) {
+      if (lastSavedRaw && previousLesson !== team.lessonId && !keepWork) {
         keepRecoveryCopy();
         resetDesignForLesson(team.lessonId);
         lastSavedRaw = null;
@@ -950,6 +949,7 @@ const findOption=(family,slug)=>state.library?.families?.[family]?.options.find(
       persistTeamSession();
     }
     storePendingSubmission(null);
+    closeSendWait();
     ui.sendFeedback = "";
     // On Send the confirmation view is the news; elsewhere one toast says it and the view waits on Send.
     const shown = onStage("review") && sendView() === "sent";
@@ -1031,6 +1031,7 @@ const findOption=(family,slug)=>state.library?.families?.[family]?.options.find(
     };
     storePendingSubmission(pending);
     setHandoffBusy(true);
+    if (!followUp) openSendWait();
     pendingNotice("Requesting Britt’s review…");
     try {
       const result = await handoffRequest("send", pending);
@@ -1058,6 +1059,7 @@ const findOption=(family,slug)=>state.library?.families?.[family]?.options.find(
       }
     } finally {
       setHandoffBusy(false);
+      if (pendingSubmission()?.stage !== "receipt") closeSendWait();
     }
   }
 
@@ -1136,15 +1138,18 @@ const findOption=(family,slug)=>state.library?.families?.[family]?.options.find(
         return;
       }
 
+      // Work built before the code is this team's when it has no saved design yet.
+      const keepWork = !ui.teamSession && !result.selection && hasUnclaimedWork();
       installTeamSession(lessonId, editCode);
       ui.mode = "edit";
       if (result.selection) applySelectionPayload(result.selection);
-      else resetDesignForLesson(lessonId);
+      else if (!keepWork) resetDesignForLesson(lessonId);
       state.lessonId = lessonId;
       ui.teamSession.revision = result.revision ?? null;
       ui.teamSession.savedAt = result.savedAt ?? null;
       ui.teamSession.pendingSave = null;
-      ui.teamSession.baseSelectionKey = result.selection?.schema === "bespoke-selection/v1" ? selectionKey(result.selection) : currentSelectionKey();
+      // Kept work has never been saved, so it has no baseline and Save still sends it.
+      ui.teamSession.baseSelectionKey = keepWork ? null : result.selection?.schema === "bespoke-selection/v1" ? selectionKey(result.selection) : currentSelectionKey();
       noteConversion(result.selection);
       ui.autosavePaused = Boolean(state.legacySelection);
       ui.cloudConflict = null;
@@ -1161,6 +1166,7 @@ const findOption=(family,slug)=>state.library?.families?.[family]?.options.find(
       byId("openDialog").close();
       render();
       if(result.selection)successNotice("Opened the latest shared design.");
+      else if(keepWork)successNotice("Team code accepted. Your work is kept.");
       else clearStrip();
     } finally {
       setHandoffBusy(false);
@@ -1528,6 +1534,9 @@ function showBuilderHelp(close=false){
  if(close){const menu=byId('filesRecovery');(menu.open?byId('btnHelp'):menu.querySelector(':scope > summary')).focus({preventScroll:true});return;}
  byId('builderHelpContent').innerHTML=builderGuidance();byId('builderHelpTitle').focus();
 }
+// A team enters its code before it builds, so its work is shared from the start. The local preview and view links have nothing to enter.
+function needsTeamCode(){return ui.mode==='edit'&&!ui.teamSession&&!ui.localPreview&&Boolean(handoffApiBase);}
+function hasUnclaimedWork(){return ui.meaningfulDesign||Boolean(state.teamName.trim()||state.spokespersonName.trim());}
 function goStage(id){if(ui.guide?.on&&id!=='slides')ui.guide={...ui.guide,on:false};state.step=stepIndex(id);render();}
 function renderTeamStage(panel){
  heading(panel,'Tell us about your team','Choose the lesson, name your team and say who speaks for it. One spokesperson saves the team’s decisions.');
@@ -1829,7 +1838,7 @@ function sendHost(){
   fillAllSettings:el=>{renderReview(el);renderSharedTheme(el);},
   notesField:reviewNotesField,save:()=>cloudSave(),send:()=>cloudSend(),agreed:()=>ui.coordinatorAgreed,agree:value=>{ui.coordinatorAgreed=value;},feedback:()=>ui.sendFeedback||(pendingSubmission()?.stage==='receipt'?SENDING_NOTICE:''),
   openKind:kind=>{ui.editorRole=kind;ui.moreOptions=false;goStage('slides');},
-  receipt:()=>ui.teamSession?.lastReceipt||null,lessonTitle:()=>findMeta(state.meta?.lessons,state.lessonId)?.title||'',
+  lessonTitle:()=>findMeta(state.meta?.lessons,state.lessonId)?.title||'',
   sentNote:()=>sendView()==='changed'?ui.teamSession.lastReceipt.receivedAt:'',
   keepEditing:()=>{ui.moreOptions=false;goStage('slides');},downloadCopy:()=>saveTeamFile(),
   notes:()=>state.unspoken,editNote:value=>{state.unspoken=value;ui.noteFrom=undefined;saveDraft();},noteReady,sendNote,
@@ -1949,6 +1958,8 @@ function updatePreview(design=state.design,{quick=false}={}){
 function showNoteCount(count){byId('readabilityDetails').hidden=!count;byId('readabilitySummary').textContent=count+' readability '+(count===1?'note':'notes');}
 function showView(view){if(onStage('slides')){ui.editorRole=view;}state.previewView=view;ui.previewPinned=true;if(ui.sharedThemeOpen||onStage('slides'))render(false);else{updatePreview();saveDraft();}}
 function render(focus=true){
+ // Every route between stages ends here, so this one check holds them all at the code.
+ if(needsTeamCode()&&!onStage('team')){state.step=stepIndex('team');openOpenDialog();}
  if(byId('sharedTheme'))ui.sharedThemeOpen=byId('sharedTheme').open;
  const changed=ui.renderedStep!==state.step;if(changed){ui.renderedStep=state.step;ui.changedKinds=new Set();ui.sendFeedback='';ui.noteFrom=undefined;if(onStage('slides'))state.previewView=ui.editorRole;ui.previewPinned=false;}
  const active=document.activeElement,activeId=active?.id;

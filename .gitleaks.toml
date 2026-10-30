@@ -13,3 +13,11 @@ regex = '''\b\d{3}-\d{2}-\d{4}\b'''
 id = "elevenlabs-api-key"
 description = "ElevenLabs API key"
 regex = '''sk_[a-f0-9]{40,}'''
+
+# BeSpoke review packages embed their fonts as base64, and a font's bytes can spell a
+# key pattern (PR #68 failed on one). This skips only lines holding an embedded font;
+# team notes and sample text in the same package are still scanned.
+[allowlist]
+description = "Base64 fonts embedded in BeSpoke review packages"
+regexTarget = "line"
+regexes = ['''data:font/woff2;base64,''']

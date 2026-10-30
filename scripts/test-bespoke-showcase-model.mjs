@@ -1,7 +1,7 @@
 import assert from 'node:assert/strict';
 import catalog from '../bespoke/builder-catalog.json' with { type: 'json' };
 import * as Model from '../bespoke/builder-model.mjs';
-import { MOODS, MOOD_ORDER, MOOD_LABELS, moodOf, displayTitle, slideOptions, lookDetail, designChanges, sharedParts, changedKinds, designKey, sentState, withSampleWords } from '../bespoke/showcase-model.mjs';
+import { MOODS, MOOD_ORDER, MOOD_LABELS, moodOf, displayTitle, slideOptions, lookDetail, designChanges, sharedParts, changedKinds, designKey, receiptStatus, sentState, withSampleWords } from '../bespoke/showcase-model.mjs';
 
 let failed = false;
 const test = (name, fn) => {
@@ -121,6 +121,14 @@ test('withSampleWords keeps the team\'s typed words on the default design and no
   assert.deepEqual(typed, before, 'the team design is not changed');
   assert.deepEqual(base, baseBefore, 'the default design is not changed');
   assert.equal(Object.hasOwn(withSampleWords(catalog, Model, base, def), 'roleStyles'), false, 'no typed words adds no roleStyles');
+});
+
+test('the status band says where the sent design stands, in plain words', () => {
+  const receipt = {submissionId: '2026-10-30-136d4285220ee85d', url: 'https://github.com/example/pull/1', receivedAt: '2026-10-30T16:00:00Z', designKey: 'sent'};
+  assert.equal(receiptStatus(receipt, 'sent'), 'Sent to Britt on October 30, 2026. It is waiting for review.');
+  assert.equal(receiptStatus(receipt, 'edited'), 'Sent to Britt on October 30, 2026. You have changed your design since then. Send it again when you are ready.');
+  assert.equal(receiptStatus(null, 'sent'), '');
+  assert.doesNotMatch(receiptStatus(receipt, 'sent'), /github|package|2026-10-30-/i, 'no links, receipt ids or review jargon');
 });
 
 if (failed) process.exit(1);

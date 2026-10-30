@@ -13,7 +13,7 @@ acceptance; this revision has not been merged or deployed.
 
 BeSpoke opens on **Lesson & team**. Choose the lesson, name the team and enter the
 spokesperson's name and email. The stage pill stays marked until the team is
-identified. Nothing blocks you from moving on, but Send to Britt needs the
+identified. A team enters its code before it can leave this stage, and Send to Britt needs the
 spokesperson's name.
 
 1. **Pick a look:** a large stage shows the current look, with its name, layout,

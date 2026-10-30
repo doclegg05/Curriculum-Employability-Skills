@@ -130,6 +130,15 @@ export const designKey = design => JSON.stringify(design, sorted);
 
 export const sentState = (lastReceipt, currentKey) => !lastReceipt ? 'none' : lastReceipt.designKey === currentKey ? 'sent' : 'changed';
 
+// What a team reads in the status band. Plain words only: no receipt ids, and no links into the repository.
+export function receiptStatus(lastReceipt, currentKey) {
+  const state = sentState(lastReceipt, currentKey);
+  if (state === 'none') return '';
+  const day = new Date(lastReceipt.receivedAt).toLocaleDateString('en-US', { month: 'long', day: 'numeric', year: 'numeric' });
+  const next = state === 'sent' ? 'It is waiting for review.' : 'You have changed your design since then. Send it again when you are ready.';
+  return `Sent to Britt on ${day}. ${next}`;
+}
+
 // The words a team types on slides. Model.applyPreset keeps the same fields when a look is applied.
 const TYPED_WORDS = ['headingText', 'bodyText', 'labelText', 'watermarkText', 'extraText', 'boxHeadings'];
 
