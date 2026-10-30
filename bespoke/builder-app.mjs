@@ -10,8 +10,9 @@ import { CONVERTED_STATUS, CONVERTED_NOTE, convertedOnOpen } from './converted-o
 import { syncStageChrome } from './canvas-shell.mjs';
 import { createGuide } from './guide/guide.mjs';
 import { showToast } from './toast.mjs';
+import { openSendWait, closeSendWait } from './send-wait.mjs';
 import { renderPickALook, closePickALook } from './pick-a-look.mjs';
-import { slideOptions, designKey, changedKinds, lookDetail, designChanges, sentState, withSampleWords } from './showcase-model.mjs';
+import { slideOptions, designKey, changedKinds, lookDetail, designChanges, sentState, receiptStatus, withSampleWords } from './showcase-model.mjs';
 import { renderSendStage, renderSentView, closeSendStage } from './send-stage.mjs';
 import { scopeLineParts, startingFrom, renderStartingFrom, markRail, pulseRail } from './make-it-yours.mjs';
 import { createTeamView, isShareHash, isSnapshotHash, viewLinkToOpen } from './team-view.mjs';
@@ -237,17 +238,8 @@ const findOption=(family,slug)=>state.library?.families?.[family]?.options.find(
       : `${lesson?.title || session.lessonId} team session.${saved}${dirty}`;
     let delivered=byId('lastReviewReceipt');
     if(!delivered){delivered=document.createElement('p');delivered.id='lastReviewReceipt';delivered.className='review-receipt';panel.append(delivered);}
-    // The Sent view holds the receipt link in its Details, so the band steps aside there (the strip hides when it holds nothing else).
-    delivered.replaceChildren();delivered.hidden=!session.lastReceipt||(onStage("review")&&sendView()==="sent");
-    if(session.lastReceipt){
-      delivered.append(document.createTextNode('Last confirmed review package · '+session.lastReceipt.submissionId+'. '));
-      for(const [field,label] of [['url','Open review request'],['artifactUrl','Exact submitted artifact']]){
-        const value=session.lastReceipt[field];
-        if(typeof value!=='string'||!value.startsWith('https://github.com/doclegg05/Curriculum-Employability-Skills/'))continue;
-        const link=document.createElement('a');link.href=value;link.textContent=label;link.target='_blank';link.rel='noopener';delivered.append(link,document.createTextNode(' · '));
-      }
-      delivered.append(document.createTextNode('Ready for review; delivery does not confirm that the package has been reviewed.'));
-    }
+    // The Sent view says the same thing, so the band steps aside there (the strip hides when it holds nothing else).
+    delivered.textContent=receiptStatus(session.lastReceipt,designKey(state.design));delivered.hidden=!session.lastReceipt||(onStage("review")&&sendView()==="sent");
     byId("btnLoadLatest")?.toggleAttribute("hidden", !ui.cloudConflict);
     byId("btnKeepLocal")?.toggleAttribute("hidden", !ui.cloudConflict);
     byId("btnCheckStatus")?.toggleAttribute("hidden", !pendingSubmission());
@@ -394,6 +386,7 @@ const findOption=(family,slug)=>state.library?.families?.[family]?.options.find(
 
   // Save and send messages: warnings and errors keep the strip, and on Send they also show beside the buttons.
   function actionNotice(message) {
+    closeSendWait();
     fileNotice(message);
     sendFeedback(message);
   }
@@ -950,6 +943,7 @@ const findOption=(family,slug)=>state.library?.families?.[family]?.options.find(
       persistTeamSession();
     }
     storePendingSubmission(null);
+    closeSendWait();
     ui.sendFeedback = "";
     // On Send the confirmation view is the news; elsewhere one toast says it and the view waits on Send.
     const shown = onStage("review") && sendView() === "sent";
@@ -1031,6 +1025,7 @@ const findOption=(family,slug)=>state.library?.families?.[family]?.options.find(
     };
     storePendingSubmission(pending);
     setHandoffBusy(true);
+    if (!followUp) openSendWait();
     pendingNotice("Requesting Britt’s review…");
     try {
       const result = await handoffRequest("send", pending);
@@ -1058,6 +1053,7 @@ const findOption=(family,slug)=>state.library?.families?.[family]?.options.find(
       }
     } finally {
       setHandoffBusy(false);
+      if (pendingSubmission()?.stage !== "receipt") closeSendWait();
     }
   }
 
@@ -1829,7 +1825,7 @@ function sendHost(){
   fillAllSettings:el=>{renderReview(el);renderSharedTheme(el);},
   notesField:reviewNotesField,save:()=>cloudSave(),send:()=>cloudSend(),agreed:()=>ui.coordinatorAgreed,agree:value=>{ui.coordinatorAgreed=value;},feedback:()=>ui.sendFeedback||(pendingSubmission()?.stage==='receipt'?SENDING_NOTICE:''),
   openKind:kind=>{ui.editorRole=kind;ui.moreOptions=false;goStage('slides');},
-  receipt:()=>ui.teamSession?.lastReceipt||null,lessonTitle:()=>findMeta(state.meta?.lessons,state.lessonId)?.title||'',
+  lessonTitle:()=>findMeta(state.meta?.lessons,state.lessonId)?.title||'',
   sentNote:()=>sendView()==='changed'?ui.teamSession.lastReceipt.receivedAt:'',
   keepEditing:()=>{ui.moreOptions=false;goStage('slides');},downloadCopy:()=>saveTeamFile(),
   notes:()=>state.unspoken,editNote:value=>{state.unspoken=value;ui.noteFrom=undefined;saveDraft();},noteReady,sendNote,

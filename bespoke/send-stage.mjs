@@ -207,8 +207,6 @@ export function closeSendStage(root) {
   if (root.hidden) fanSettled = false;
 }
 
-// Only links into the curriculum repository are shown, as in the More menu's receipt.
-const RECEIPT_LINKS = 'https://github.com/doclegg05/Curriculum-Employability-Skills/';
 // The fan stacks activity, divider, then the title slide on top.
 const FAN = ['activity', 'divider', 'title'];
 
@@ -227,20 +225,6 @@ function buildFan(host) {
     fan.append(card);
   }
   return fan;
-}
-
-function sentDetails(receipt) {
-  const details = make('details', 'sent-details');
-  details.id = 'sentDetails';
-  details.append(make('summary', '', 'Details'));
-  const line = make('p', '');
-  const link = make('a', '', 'Open review request');
-  link.href = receipt.url;
-  link.target = '_blank';
-  link.rel = 'noopener';
-  line.append(link);
-  details.append(line);
-  return details;
 }
 
 const NOTE_SENT = 'Note sent.';
@@ -287,8 +271,6 @@ function buildSentText(host) {
   actions.append(button('btnKeepEditing', 'btn btn-secondary', 'Keep editing', () => host.keepEditing()),
     button('btnDownloadCopy', 'btn btn-secondary', 'Download a copy', () => host.downloadCopy()));
   text.append(make('div', 'sent-check', '\u2713'), heading, body, actions, buildFollowUp(host));
-  const receipt = host.receipt();
-  if (receipt?.url?.startsWith(RECEIPT_LINKS)) text.append(sentDetails(receipt));
   text.firstChild.setAttribute('aria-hidden', 'true');
   return text;
 }

@@ -43,15 +43,15 @@ try{
  const page=await context.newPage();page.on('console',m=>{if(m.type()==='error')console.error(m.text());});page.on('requestfailed',r=>console.error(r.url(),r.failure()));page.on('pageerror',e=>errors.push(e.message));page.setDefaultTimeout(10000);await page.goto('https://bespoke.test/bespoke/');await page.waitForFunction(()=>JSON.parse(localStorage.getItem('bespoke-draft-v2')||'null')?.alternatives?.active==='B').catch(async e=>{console.error(await page.locator('body').innerText(),errors);throw e;});
  // The team ticks the coordinator note on Send before any send can start.
  await page.locator('#stage-review').click();await page.locator('#coordinatorAgree').check();await page.locator('#stage-slides').click();
- await clickMenuItem(page, '#btnSend');await page.locator('#fileStatus').filter({hasText:'not a receipt yet'}).waitFor();assert.equal(await page.locator('#lastReviewReceipt').isVisible(),false);
+ await clickMenuItem(page, '#btnSend');await page.locator('#fileStatus').filter({hasText:'not a receipt yet'}).waitFor();assert.equal(await page.locator('#lastReviewReceipt').isVisible(),false);await page.locator('#sendWaitOk').click();
  // A pending send says so in the Send panel; a receipt confirmed on another stage is a toast, and the confirmation waits on Send.
  await page.locator('#stage-review').click();assert.equal(await page.locator('#sendFeedback').textContent(),'Sending to Britt…');assert.equal(await page.locator('#sentView').count(),0);
  await page.locator('#stage-slides').click();await page.locator('#workspace[data-stage=slides]').waitFor();
  ready=true;await page.locator('#btnCheckStatus').click();await page.locator('#lastReviewReceipt').waitFor();
- await page.locator('#toast').filter({hasText:'Sent to Britt.'}).waitFor();assert.equal(await page.locator('#sentView').isVisible(),false,'the confirmation view waits on Send');assert.match(await page.locator('#lastReviewReceipt').textContent(),/does not confirm/);assert.equal(await page.locator('#lastReviewReceipt a').last().getAttribute('href'),artifactUrl);
- await page.reload();await page.locator('#lastReviewReceipt').waitFor();assert.equal(await page.locator('#lastReviewReceipt a').first().getAttribute('href'),url);assert.equal(sends,1);
+ await page.locator('#toast').filter({hasText:'Sent to Britt.'}).waitFor();assert.equal(await page.locator('#sentView').isVisible(),false,'the confirmation view waits on Send');assert.match(await page.locator('#lastReviewReceipt').textContent(),/Sent to Britt on .* It is waiting for review\./);assert.equal(await page.locator('#lastReviewReceipt a').count(),0,'the band has no links');
+ await page.reload();await page.locator('#lastReviewReceipt').waitFor();assert.equal(await page.locator('#lastReviewReceipt a').count(),0,'the band has no links after a reload');assert.equal(sends,1);
  const session=await page.evaluate(()=>JSON.parse(localStorage.getItem('bespoke-team-session-v2')));assert.equal(session.lastReceipt.submissionId,receipt);assert.deepEqual(errors,[]);
- console.log('PASS processing is not delivery; verified PR and pinned artifact remain findable after reload; no automatic review claim');
+ console.log('PASS processing is not delivery; the status band stays in plain words with no links after a reload');
  // After Send: the confirmation replaces Send while the sent design is unchanged, and survives a reload.
  const sentView=async()=>{await page.locator('#stage-review').click();await page.locator('#sentView').waitFor();};
  await sentView();assert.match(await page.locator('#sentView').textContent(),/Sent to Britt/);
@@ -59,10 +59,10 @@ try{
  await settle(page);const fan=await frameGaps(page,'#sentView .send-frame');assert.equal(fan.length,3,'three fanned slides');for(const {name,gaps} of fan)assert.ok(gaps&&gaps.every(gap=>Math.abs(gap)<=1),`${name} fills its card: gaps ${gaps}`);
  assert.equal(await page.evaluate(()=>document.activeElement?.id),'sentHeading','entering the confirmation focuses its heading');
  assert.match(await page.locator('#sentView p').filter({hasText:'is on its way'}).textContent(),/^Your Money Management suggestion, .+, is on its way\. It is waiting for Britt's approval\.$/);
- assert.equal(await page.locator('#sentDetails a').getAttribute('href'),url);assert.equal(await page.locator('#sentDetails').evaluate(d=>d.open),false);
+ assert.equal(await page.locator('#sentView a').count(),0,'Sent to Britt has no links');assert.equal(await page.locator('#sentDetails').count(),0,'Sent to Britt has no Details');
  // On the confirmation the receipt link lives only in Details: the page-wide receipt band steps aside.
  assert.equal(await page.locator('#lastReviewReceipt').isVisible(),false,'no receipt band over the confirmation');assert.equal(await page.locator('#teamSessionBar').isVisible(),false,'the strip holds nothing else, so it hides');
- await page.locator('#sentDetails > summary').click();assert.deepEqual(await page.locator(`a[href="${url}"]:visible`).evaluateAll(l=>l.map(a=>a.closest('#sentDetails')?.id)),['sentDetails'],'Details holds the only visible receipt link');await page.locator('#sentDetails > summary').click();
+ assert.equal(await page.locator('a[href^="https://github.com"]').count(),0,'teams see no links to the repository');
  for(const id of ['btnKeepEditing','btnDownloadCopy'])assert.ok((await page.locator('#'+id).boundingBox()).height>=44,id+' is at least 44px tall');
  const download=page.waitForEvent('download');await page.locator('#btnDownloadCopy').click();assert.match((await download).suggestedFilename(),/^money-management-.+-selection\.json$/);
  await page.locator('#btnKeepEditing').click();await page.locator('#workspace[data-stage=slides]').waitFor();
@@ -74,7 +74,7 @@ try{
  assert.equal(await page.getByLabel('Add a note for Britt',{exact:true}).getAttribute('id'),'sentNote','the note box has a visible label');
  assert.equal(await noteBox.inputValue(),'','the box shows the notes already sent');
  assert.equal(await noteButton.textContent(),'Send note to Britt');assert.equal(await noteButton.isDisabled(),true,'nothing new to send until the note changes');
- assert.deepEqual(await page.evaluate(()=>['btnDownloadCopy','sentNote','btnSendNote','sentDetails'].map(id=>document.getElementById(id)).map((el,i,all)=>i===0||Boolean(all[i-1].compareDocumentPosition(el)&Node.DOCUMENT_POSITION_FOLLOWING))),[true,true,true,true],'the note sits under the buttons and above Details');
+ assert.deepEqual(await page.evaluate(()=>['btnDownloadCopy','sentNote','btnSendNote'].map(id=>document.getElementById(id)).map((el,i,all)=>i===0||Boolean(all[i-1].compareDocumentPosition(el)&Node.DOCUMENT_POSITION_FOLLOWING))),[true,true,true],'the note sits under the buttons');
  for(const [name,el] of [['note box',noteBox],['note button',noteButton]]){assert.ok((await el.boundingBox()).height>=44,name+' is at least 44px tall');assert.match(await el.evaluate(n=>getComputedStyle(n).fontFamily),/Outfit/,name+' uses Outfit');}
  const note='Please keep the gold heading on the title slide.';
  await noteBox.fill(note);assert.equal(await noteButton.isDisabled(),false,'a changed note can be sent');
@@ -83,7 +83,7 @@ try{
  let release;holdSend=new Promise(resolve=>{release=resolve;});calls.length=0;
  await noteButton.click();await noteLine.filter({hasText:'Sending to Britt…'}).waitFor();
  assert.equal(await noteButton.isDisabled(),true,'the button waits while the note is in flight');
- release();holdSend=null;await page.locator(`#sentDetails a[href="${noteUrl}"]`).waitFor({state:'attached'});
+ release();holdSend=null;await page.waitForFunction(u=>JSON.parse(localStorage.getItem('bespoke-team-session-v2'))?.lastReceipt?.url===u,noteUrl);
  assert.deepEqual(calls,['save','send'],'the note saves, then sends');assert.equal(sentNotes.at(-1),note,'the send carries the new note');
  assert.equal(await page.locator('#sentView').isVisible(),true,'the view stays Sent to Britt');
  assert.equal(await noteLine.textContent(),'Note sent.');assert.equal(await noteButton.isDisabled(),true,'the sent note is not sent twice');
@@ -106,7 +106,7 @@ try{
  for(const start=Date.now();!calls.includes('save');await page.waitForTimeout(50))assert.ok(Date.now()-start<5000,'autosave starts a save');
  assert.equal(await noteButton.isDisabled(),true,'the note button waits while an automatic save is in flight');
  releaseSave();holdSave=null;await page.waitForFunction(()=>document.getElementById('btnSendNote')?.disabled===false);
- calls.length=0;await noteButton.click();await page.locator(`#sentDetails a[href="${secondNoteUrl}"]`).waitFor({state:'attached'});
+ calls.length=0;await noteButton.click();await page.waitForFunction(u=>JSON.parse(localStorage.getItem('bespoke-team-session-v2'))?.lastReceipt?.url===u,secondNoteUrl);
  assert.deepEqual(calls,['save','send'],'after the automatic save the note saves, then sends');assert.equal(sentNotes.at(-1),followUp);
  assert.equal(await noteLine.textContent(),'Note sent.');assert.deepEqual(errors,[]);
  console.log('PASS an automatic save in flight holds the note button, which returns and sends when it ends');
