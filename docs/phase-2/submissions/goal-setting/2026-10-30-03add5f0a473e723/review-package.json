@@ -1,0 +1,14 @@
+{
+  "schema": "bespoke-review-package/v1",
+  "submissionId": "2026-10-30-03add5f0a473e723",
+  "selectionSha256": "03add5f0a473e723733b4155bfa42ad3d37ab616585ee01a8380ba837620aee7",
+  "chosenOption": null,
+  "files": {
+    "selection.json": "8031a27b3a566da78c8a13f0d3fa562bf57e063272fb5e424f1898463875a532",
+    "design.css": "402c1fbff3f9e05f3affd9e8321447f20ff4c7023a1138aa285703b76583f9b3",
+    "build-contract.json": "1c146e99a7a12f646c343ab94196a1e31472816c809ab58e62625da310541c39",
+    "component-samples.html": "5b7adab80cd04acca2f9239ce7754a32021bc808236533f1c396ebfe01941e16",
+    "review.html": "22b66342c0b13256ad7de984496c619147f3792ea51277f6af26ddd91f08f605"
+  },
+  "reviewStatus": "Ready for review on request."
+}
