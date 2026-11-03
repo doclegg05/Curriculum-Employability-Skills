@@ -16,6 +16,7 @@ import { slideOptions, designKey, changedKinds, lookDetail, designChanges, sentS
 import { renderSendStage, renderSentView, closeSendStage } from './send-stage.mjs';
 import { scopeLineParts, startingFrom, renderStartingFrom, markRail, pulseRail } from './make-it-yours.mjs';
 import { createTeamView, isShareHash, isSnapshotHash, viewLinkToOpen } from './team-view.mjs';
+import { pendingForSession } from './team-session.mjs';
 import { guideMark, indexForMark, keepsGuide } from './guide/questions.mjs';
 import { buildQuestions, normalizeGuide } from './guide/questions.mjs';
 
@@ -45,7 +46,7 @@ const LEGACY_STEPS = ['welcome','team','colors','fonts','title','divider','cards
 const onStage = id => STEPS[state.step].id === id;
 const teamIdentified = () => Boolean(state.teamName.trim() && state.spokespersonName.trim());
 const state = {step:0,stepId:'start',meta:null,library:null,lessonId:'money-management',teamName:'',spokespersonName:'',spokespersonEmail:'',builderName:'',lessonTitle:'',lessonSubtitle:'',unspoken:'',editCode:'',previewView:'title',design:null,legacySelection:null,alternatives:null,changes:[],redo:[]};
-const ui = {onlySlide:false,mode:'view',renderedStep:null,previewPinned:false,teamSession:null,cloudConflict:null,cloudBusy:false,autosavePaused:false,allowUnload:false,skipNextLocalSave:false,restoreNote:'',restoredFromLink:false,editCodeHash:'',activeRole:'sidebar',paintScope:'slide',themeScope:'slide',localPreview:false,editorRole:'title',sharedThemeOpen:false,meaningfulDesign:false,appliedLook:null,lookSnapshot:null,lookUndoAt:null,onStart:false,coordinatorAgreed:false};
+const ui = {onlySlide:false,mode:'view',renderedStep:null,previewPinned:false,teamSession:null,linkReplacedSession:null,cloudConflict:null,cloudBusy:false,autosavePaused:false,allowUnload:false,skipNextLocalSave:false,restoreNote:'',restoredFromLink:false,editCodeHash:'',activeRole:'sidebar',paintScope:'slide',themeScope:'slide',localPreview:false,editorRole:'title',sharedThemeOpen:false,meaningfulDesign:false,appliedLook:null,lookSnapshot:null,lookUndoAt:null,onStart:false,coordinatorAgreed:false};
 ui.guide = null;
 let guide = null;
 let previewEditor = null;
@@ -139,6 +140,22 @@ const findOption=(family,slug)=>state.library?.families?.[family]?.options.find(
     } catch { /* private mode */ }
   }
 
+  // A private link whose code proves to be a view code opens the team view. The
+  // browser keeps the team session the link replaced, and its pending Send, so the
+  // team's own link or a reload without the view still finds them.
+  function leaveSessionForView() {
+    const replaced = ui.linkReplacedSession;
+    ui.linkReplacedSession = null;
+    ui.teamSession = null;
+    ui.cloudConflict = null;
+    ui.convertedUnsaved = false;
+    state.editCode = "";
+    try {
+      if (replaced) localStorage.setItem(TEAM_SESSION_KEY, replaced);
+      else localStorage.removeItem(TEAM_SESSION_KEY);
+    } catch { /* private mode */ }
+  }
+
   function restoreTeamSession() {
     try {
       const saved = JSON.parse(localStorage.getItem(TEAM_SESSION_KEY) || "null");
@@ -157,6 +174,7 @@ const findOption=(family,slug)=>state.library?.families?.[family]?.options.find(
 
   function installTeamSession(lessonId, editCode) {
     teamView.end();
+    ui.linkReplacedSession = null;
     const sameLesson = Boolean(ui.teamSession) && ui.teamSession.lessonId === lessonId;
     if (!sameLesson) draftGeneration++;
     // The same lesson with a new code is the same team's design: keep its revision and baseline, swap only the code.
@@ -602,7 +620,11 @@ const findOption=(family,slug)=>state.library?.families?.[family]?.options.find(
       restoreTeamSession();
       // As with a typed code, work built before the link belongs to the team opening it.
       const keepWork = !ui.teamSession && hasUnclaimedWork();
+      let replaced = null;
+      try { replaced = localStorage.getItem(TEAM_SESSION_KEY); } catch { /* private mode */ }
       installTeamSession(team.lessonId, team.editCode);
+      // Until the service says this code edits, the session it replaced is kept aside.
+      ui.linkReplacedSession = replaced;
       ui.mode = "edit";
       if (lastSavedRaw && previousLesson !== team.lessonId && !keepWork) {
         keepRecoveryCopy();
@@ -768,7 +790,7 @@ const findOption=(family,slug)=>state.library?.families?.[family]?.options.find(
       }
       if (result.access === "view") {
         const { lessonId, editCode } = session;
-        forgetTeamSession();
+        leaveSessionForView();
         await teamView.open(lessonId + "." + encodeURIComponent(editCode), result);
         render();
         return false;
@@ -802,6 +824,7 @@ const findOption=(family,slug)=>state.library?.families?.[family]?.options.find(
       session.pendingSave = null;
       session.baseSelectionKey = result.selection?.schema === "bespoke-selection/v1" ? selectionKey(result.selection) : currentSelectionKey();
       ui.cloudConflict = null;
+      ui.linkReplacedSession = null;
       ui.autosavePaused = ui.autosavePaused || Boolean(state.legacySelection);
       noteConversion(result.selection);
       persistTeamSession();
@@ -930,8 +953,10 @@ const findOption=(family,slug)=>state.library?.families?.[family]?.options.find(
   }
 
   function pendingSubmission() {
-    try { return JSON.parse(localStorage.getItem(PENDING_SUBMISSION_STORAGE) || "null"); }
+    let stored;
+    try { stored = JSON.parse(localStorage.getItem(PENDING_SUBMISSION_STORAGE) || "null"); }
     catch { return null; }
+    return pendingForSession(stored, ui.teamSession);
   }
 
   function storePendingSubmission(value) {
