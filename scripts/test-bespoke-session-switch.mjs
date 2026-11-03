@@ -10,7 +10,7 @@ import {defaultDesign} from '../bespoke/builder-model.mjs';
 
 const EDIT = 'K7QX-M3PD', VIEW = 'V3WQ-8RTN', OTHER = 'R4TW-9HNC';
 const SESSION_KEY = 'bespoke-team-session-v2';
-const PENDING_KEY = 'bespoke-pending-submission-v2';
+const PENDING_STORAGE = 'bespoke-pending-submission-v2';
 const REVISION = 'b'.repeat(40);
 const sharedSelection = {
   schema: 'bespoke-selection/v2',
@@ -73,12 +73,12 @@ const stored = (page, key) => page.evaluate(k => JSON.parse(localStorage.getItem
 
 try {
   await scenario('C1: a builder link holding a view code keeps the team session and its pending Send',
-    {[SESSION_KEY]: editSession('money-management'), [PENDING_KEY]: pendingReceipt('money-management', EDIT)},
+    {[SESSION_KEY]: editSession('money-management'), [PENDING_STORAGE]: pendingReceipt('money-management', EDIT)},
     async (context, calls, open) => {
       const viewTab = await open(`#team=money-management.${VIEW}`);
       await viewTab.locator('#btnViewRefresh').waitFor();
       assert.equal((await stored(viewTab, SESSION_KEY))?.editCode, EDIT, 'the stored team session still holds the edit code');
-      assert.equal((await stored(viewTab, PENDING_KEY))?.submissionId, 'sub-1', 'the pending Send is still stored');
+      assert.equal((await stored(viewTab, PENDING_STORAGE))?.submissionId, 'sub-1', 'the pending Send is still stored');
       assert.equal(calls.some(call => call.action === 'status' && call.editCode === VIEW), false, 'the view never checks the Send');
       await viewTab.close();
       calls.length = 0;
@@ -90,7 +90,7 @@ try {
     });
 
   await scenario('C2: another team in the same browser does not see a pending Send it never made',
-    {[SESSION_KEY]: editSession('money-management'), [PENDING_KEY]: pendingReceipt('goal-setting', OTHER)},
+    {[SESSION_KEY]: editSession('money-management'), [PENDING_STORAGE]: pendingReceipt('goal-setting', OTHER)},
     async (context, calls, open) => {
       const page = await open();
       await page.waitForFunction(() => document.querySelector('#teamSessionBar') && !document.querySelector('#teamSessionBar').hidden);
@@ -100,11 +100,11 @@ try {
       await page.locator('#stage-review').click();
       await page.locator('#workspace[data-stage=review]').waitFor();
       assert.equal(await page.getByText('Sending to Britt…').count(), 0, 'Send is not stuck on another team');
-      assert.equal((await stored(page, PENDING_KEY))?.lessonId, 'goal-setting', 'the other team keeps its pending Send');
+      assert.equal((await stored(page, PENDING_STORAGE))?.lessonId, 'goal-setting', 'the other team keeps its pending Send');
     });
 
   await scenario('C2: a pending Send made under another code for the same lesson stays hidden',
-    {[SESSION_KEY]: editSession('money-management'), [PENDING_KEY]: pendingReceipt('money-management', OTHER)},
+    {[SESSION_KEY]: editSession('money-management'), [PENDING_STORAGE]: pendingReceipt('money-management', OTHER)},
     async (context, calls, open) => {
       const page = await open();
       await page.waitForFunction(() => document.querySelector('#teamSessionStatus')?.textContent.includes('Shared version saved'));
