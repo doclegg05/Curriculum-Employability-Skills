@@ -17,7 +17,11 @@ regex = '''sk_[a-f0-9]{40,}'''
 # BeSpoke review packages embed their fonts as base64, and a font's bytes can spell a
 # key pattern (PR #68 failed on one). This skips only lines holding an embedded font;
 # team notes and sample text in the same package are still scanned.
+#
+# The BeSpoke pending-Send storage name sits in a constant whose name ends in KEY, which
+# the generic-api-key rule reads as a secret (PR #69). It is a browser storage name, not
+# a credential; only lines holding that exact name are skipped.
 [allowlist]
-description = "Base64 fonts embedded in BeSpoke review packages"
+description = "Base64 fonts in BeSpoke review packages; the BeSpoke pending-Send storage name"
 regexTarget = "line"
-regexes = ['''data:font/woff2;base64,''']
+regexes = ['''data:font/woff2;base64,''', '''['"]bespoke-pending-submission-v2['"]''']
