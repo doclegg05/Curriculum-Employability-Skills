@@ -16,12 +16,12 @@ test('the banner says nothing was saved, and names no builder, after an open tha
 });
 
 test('the banner says only the team and View only when the open failed', () => {
-  assert.equal(viewBannerText({ lesson: 'Money Management', savedAt: null, builder: 'the Team Leader', opened: false }),
+  assert.equal(viewBannerText({ lesson: 'Money Management', savedAt: null, builder: 'the spokesperson', opened: false }),
     'Money Management team · View only');
 });
 
 test('the banner says only View only when the link named no lesson', () => {
-  assert.equal(viewBannerText({ lesson: '', savedAt: null, builder: 'the Team Leader', opened: false }), 'View only');
+  assert.equal(viewBannerText({ lesson: '', savedAt: null, builder: 'the spokesperson', opened: false }), 'View only');
 });
 
 test('snapshot hashes are the v, s, c and retired e kinds, with or without the leading #', () => {

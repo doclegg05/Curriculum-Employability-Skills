@@ -23,10 +23,11 @@ the escaped additional text and individual box headings, and `design.css` contai
 alignment and placement rules. Deploy the compatible catalog, schema and model
 with the service before accepting these new designs on a hosted installation.
 
-**September 24, 2026:** this implementation is prepared for local review. Service
-behavior has synthetic tests; the revised wizard/service have not been deployed
-or accepted on the hosted environment. September 22 live acceptance describes the
-previous v1 deployment. Do not infer hosted v2 readiness from it or from local tests.
+**November 4, 2026:** the v2 builder and service are deployed. Hosted Save, Open
+and Send passed on October 30: a synthetic Money Management design reached a
+draft proposal pull request through the live workflow (closed as a test). Team
+view links were checked on the deployed service on November 4. The September 22
+acceptance describes the earlier v1 deployment.
 
 The current user decisions are in [decisions.md](decisions.md). They supersede the
 September 23 spec's restricted palette, fixed font pairing and removal of presets.
@@ -93,7 +94,7 @@ submission timestamp, plus a complete `design`:
   visibility, sample words, chapter/activity labels and decorative watermarks.
   Explicit inherit values follow shared defaults. Hidden choices retain their values.
 - `design.roles.sidebarText` is optional. When present it is one of the eleven color ids and the generated CSS sets `--role-sidebar-ink` to it. When absent the model picks White or Royal for the sidebar text, as before. Do not add the field to a design that lacks it.
-- `team.builder.name` is optional. It names the one person who edits the design. When absent, the Team Leader in `team.spokesperson.name` is the builder.
+- `team.builder.name` is optional. It names the one person who edits the design. When absent, the spokesperson in `team.spokesperson.name` is the builder.
 
 Each present role record is closed and includes the original required fields;
 the October 7 additions are optional for backward compatibility. Designs without the extension

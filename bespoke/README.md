@@ -5,9 +5,11 @@ choices and a cumulative preview. It configures reusable title, chapter-divider,
 text-box, video and activity designs with sample copy. It does not write curriculum,
 build a complete deck, or publish lessons.
 
-**October 7, 2026 status:** the simplified workflow is implemented for local
-review in an isolated worktree. Synthetic local saving is separate from hosted
-acceptance; this revision has not been merged or deployed.
+**November 4, 2026 status:** live on GitHub Pages with the Netlify service
+deployed on October 30. Hosted Save, Open and Send passed on October 30 with a
+synthetic Money Management design. All six team view codes opened read-only on
+the deployed service on November 4. The checks across two devices and the
+Money Management pilot are still to come.
 
 ## Name the team, pick a look, make it yours, send
 
@@ -69,7 +71,7 @@ font defaults as though every slide used them.
 All eleven swatches stay visible, including White. Colors are assigned directly to
 sidebar, title background and its second color, title text, subtitle, content
 background, headings, body, accent, buttons and divider background. The sidebar
-text color is Automatic unless the Team Leader picks one. There is no
+text color is Automatic unless the spokesperson picks one. There is no
 preselected two-primary/three-secondary palette. All eleven colors, including Gold
 and Green, are selectable for every text and background role. Low-contrast combinations show an advisory, never a veto or hidden
 recoloring. Contrast is the difference between text and its background; low contrast
@@ -172,7 +174,7 @@ copy or downloaded backup is not a confirmed shared save.
 The connected workflow retains private team access, shared Save/Open, revision
 checks, history, retry protection and receipt-confirmed Send. One builder operates
 the design during a team call while the team decides together. When the builder is
-not the Team Leader, the saved design names them in `team.builder.name`. Shared autosave runs shortly after stage
+not the spokesperson, the saved design names them in `team.builder.name`. Shared autosave runs shortly after stage
 changes and after 30 seconds without a change; immediate Save is available. A failed, stale or
 pending save remains visible. Restored backups and earlier versions require explicit
 Save before shared autosave resumes. A stale revision is rejected rather than
@@ -189,7 +191,7 @@ original wizard remains at `bespoke/legacy.html`; its storage keys are separate.
 For the deployed workflow, each team has a private team code and a team view link.
 The code, kept in the team's OneDrive folder, grants real edit access; the one
 builder types it in **Open your team design**. The team view link is pinned in the team's channel and always opens the latest saved design
-read-only. It leaves out the Team Leader's email, the review notes and any older
+read-only. It leaves out the spokesperson's email, the review notes and any older
 wizard design kept for recovery. **Leave session** removes
 remembered access and local drafts, not shared work. A snapshot link made by the
 original wizard still opens read-only, does not follow later saves, and can

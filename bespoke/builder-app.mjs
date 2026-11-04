@@ -62,7 +62,7 @@ const AUTOSAVE=Object.freeze({enabled:true,idleMs:30000,stepMs:1500,...(window._
 let startupTeamLink=(()=>{const v=location.hash.startsWith('#team=')?location.hash.slice(6):'';if(v)history.replaceState(null,'',location.pathname+location.search);return v;})();
 let startupViewLink=(()=>{const v=location.hash.startsWith('#view=')?location.hash.slice(6):'';if(v)history.replaceState(null,'',location.pathname+location.search);return v;})();
 const teamView=createTeamView({request:(action,fields)=>handoffRequest(action,fields),apply:selection=>applySelectionPayload(selection),parseLink:value=>parseTeamLink(value),generation:()=>draftGeneration,get storage(){return sessionStorage;},render:()=>render(),
- lessonTitle:id=>findMeta(state.meta.lessons,id)?.title||'',builder:()=>state.builderName.trim()||state.spokespersonName.trim()||'the Team Leader',land:()=>{state.step=stepIndex('review');},note:text=>{ui.restoreNote=text;},enter:lessonId=>{ui.mode='view';if(lessonId)state.lessonId=lessonId;}});
+ lessonTitle:id=>findMeta(state.meta.lessons,id)?.title||'',builder:()=>state.builderName.trim()||state.spokespersonName.trim()||'the spokesperson',land:()=>{state.step=stepIndex('review');},note:text=>{ui.restoreNote=text;},enter:lessonId=>{ui.mode='view';if(lessonId)state.lessonId=lessonId;}});
 const clone = value => structuredClone(value);
 const escapeHtml = value => String(value ?? '').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
 // Every render shows the lesson's name as its title until the team types their own.
@@ -1458,7 +1458,7 @@ function applySelectionPayload(payload){
  Object.assign(state,{lessonId:payload.lesson.id,teamName:team.name||'',spokespersonName:team.spokesperson?.name||'',spokespersonEmail:team.spokesperson?.email||'',builderName:team.builder?.name||'',unspoken:payload.unspoken||'',changes:[],redo:[],alternatives:other.alternatives});
  if(payload.schema==='bespoke-selection/v1'){
   state.design=nextDesign;state.legacySelection=clone(payload);ui.autosavePaused=true;
-  ui.restoreNote=['Converted a copy of the older design. '+migrated.warnings.join(' ')+' The original is included in every backup and can be downloaded on Review. Review this conversion before saving.',standardNote].filter(Boolean).join(' ');
+  ui.restoreNote=['Converted a copy of the older design. '+migrated.warnings.join(' ')+' The original is included in every backup: choose Download backup in the ⋯ menu. Check this conversion before saving.',standardNote].filter(Boolean).join(' ');
  }else{state.design=nextDesign;state.legacySelection=payload.legacySelection?clone(payload.legacySelection):null;ui.restoreNote=standardNote;}
 }
 function recordChange(label,before){

@@ -134,7 +134,7 @@ removes it from the address bar and keeps it only for that tab, so a reload stay
 in the view. The banner shows the lesson, "View only", the save time and the
 builder's name, with a Refresh button for a newer save. A view code opens the
 latest saved design and nothing else. The service refuses history, saving and
-sending for it. Its answer leaves out the Team Leader's email, the notes for the
+sending for it. Its answer leaves out the spokesperson's email, the notes for the
 design review and any older wizard design kept for recovery. A view code typed
 into the Open dialog opens the same read-only view.
 
@@ -336,5 +336,12 @@ until the tests exercise the real Pages host, Netlify service, and GitHub workfl
 The initial deployment passed the live Pages → Netlify → GitHub Save/Open/Send
 flow on September 22, 2026. See [the verification record](verification-2026-09-22.md)
 for deployed versions, test proposal, cleanup, and the boundaries of testing.
+
+The v2 builder passed hosted Save, Open and Send on October 30, 2026, against
+service deploy `6ae4a32718993eaabe906eaf`; its test proposal was closed without
+merging. On November 4, 2026 all six team view codes opened their lesson with
+view access on that deploy, and history and status requests made with a view
+code were refused. The checks across two devices, the view banner and Leave
+session in a real browser are still to run.
 The initial GitHub token expires December 21, 2026; renew it before that date
 without changing the draft encryption key.
