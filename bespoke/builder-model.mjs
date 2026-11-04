@@ -101,7 +101,10 @@ export function effectiveFeatureStyle(catalog,design,feature) {
   const kind={box:'cards',titlebar:'cards',video:'video',activity:'activity'}[feature];
   const background=feature==='sidebar'||feature==='video'?design.roles.sidebar:feature==='button'?design.roles.button:effectiveRoleStyle(catalog,design,kind).primary;
   const saved=design.featureStyles?.[feature]||{};
-  const style={background,color:inkFor(catalog,saved.background&&saved.background!=='inherit'?saved.background:background),font:design.fonts.body,border:design.roles.accent};
+  const ownBackground=saved.background&&saved.background!=='inherit';
+  // The sidebar keeps its Shared theme text color until it gets a background of its own.
+  const color=feature==='sidebar'&&!ownBackground?sidebarInk(catalog,design):inkFor(catalog,ownBackground?saved.background:background);
+  const style={background,color,font:design.fonts.body,border:design.roles.accent};
   for(const key of FEATURE_FIELDS[feature])if(saved[key]&&saved[key]!=='inherit')style[key]=saved[key];
   if(style.font)style.font=resolveFont(design,style.font);
   return style;
