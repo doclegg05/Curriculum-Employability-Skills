@@ -4,7 +4,7 @@ import assert from 'node:assert/strict';
 import fs from 'node:fs';
 import path from 'node:path';
 import { fileURLToPath } from 'node:url';
-import { applyPreset, colorAvailability, contrast, contrastIssues, cssForDesign, defaultDesign, designSchema, effectiveRoleStyle, inkFor, migrateV1, patternFor, renderSlide, roleOptions, setRoleStyle, setSharedColor, setSidebarText, sidebarInk, structuralErrors, validateDesign } from '../bespoke/builder-model.mjs';
+import { applyPreset, colorAvailability, contrast, contrastIssues, cssForDesign, defaultDesign, designSchema, effectiveFeatureStyle, effectiveRoleStyle, inkFor, migrateV1, patternFor, renderSlide, roleOptions, setFeatureStyle, setRoleStyle, setSharedColor, setSidebarText, sidebarInk, structuralErrors, validateDesign } from '../bespoke/builder-model.mjs';
 import { compareDesign } from '../bespoke/similarity.mjs';
 
 const root = path.resolve(path.dirname(fileURLToPath(import.meta.url)), '..');
@@ -281,6 +281,19 @@ check('sidebar text is optional, automatic by default and advisory when hard to 
   const roles = designSchema(catalog).properties.roles;
   assert.equal(roles.required.includes('sidebarText'), false);
   assert.deepEqual(roles.properties.sidebarText.enum, catalog.palette.map(color => color.id));
+});
+
+check('a sidebar font edit keeps the Shared theme sidebar text color', () => {
+  const gold = setSidebarText(catalog, defaultDesign(catalog), 'gold');
+  const edited = setFeatureStyle(catalog, gold, 'sidebar', 'font', catalog.fonts[0].id);
+  assert.equal(effectiveFeatureStyle(catalog, edited, 'sidebar').color, 'gold');
+  const goldHex = catalog.palette.find(color => color.id === 'gold').hex;
+  assert.match(cssForDesign(catalog, edited), new RegExp(`slide-sidebar[^{]*\\{background:[^;]+;color:${goldHex}!important`, 'i'));
+
+  const ownColor = setFeatureStyle(catalog, edited, 'sidebar', 'color', 'royal');
+  assert.equal(effectiveFeatureStyle(catalog, ownColor, 'sidebar').color, 'royal', 'a sidebar text color picked on the slide still wins');
+  const newBackground = setFeatureStyle(catalog, edited, 'sidebar', 'background', 'offwhite');
+  assert.equal(effectiveFeatureStyle(catalog, newBackground, 'sidebar').color, inkFor(catalog, 'offwhite'), 'a new sidebar background picks readable text');
 });
 
 console.log(`BeSpoke builder model: ${checked} checks passed.`);
