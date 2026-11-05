@@ -61,7 +61,7 @@ test('the service accepts a role style that still holds a retired font id', () =
 test('a builder name is optional, bounded, and round-trips through save and open', async () => {
   const plain = payload();
   assert.equal(Object.hasOwn(plain.team, 'builder'), false);
-  assert.deepEqual(selectionErrors(plain, plain.lesson.id), [], 'no builder means the Team Leader builds');
+  assert.deepEqual(selectionErrors(plain, plain.lesson.id), [], 'no builder means the spokesperson builds');
   const named = payload();
   named.team.builder = { name: 'Dana Builder' };
   assert.deepEqual(selectionErrors(named, named.lesson.id), []);

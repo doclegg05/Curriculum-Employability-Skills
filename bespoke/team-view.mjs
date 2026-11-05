@@ -6,9 +6,9 @@ export const VIEW_SESSION_KEY = 'bespoke-view-session';
 // v, s and c carry a snapshot design; e is a retired edit link that opens read-only.
 const SNAPSHOT_KINDS = ['v', 's', 'c', 'e'];
 const NOTES = {
-  incomplete: 'This team view link is incomplete or out of date. Ask your Team Leader for the current one.',
+  incomplete: 'This team view link is incomplete or out of date. Ask your spokesperson for the current one.',
   retry: 'Could not open the team design. Try Refresh in a moment.',
-  unreadable: 'The team design could not be opened. Ask your Team Leader to save it again.',
+  unreadable: 'The team design could not be opened. Ask your spokesperson to save it again.',
   nothingSaved: "Your team has not saved a design yet. Check back after the builder's first save."
 };
 
