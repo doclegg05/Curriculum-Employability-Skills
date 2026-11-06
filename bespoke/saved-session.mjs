@@ -20,9 +20,16 @@ export function editFacts(session, ui, unsaved) {
   };
 }
 
+/** The card and badge to show. The local test page is a developer mode: badge only, no card (ledger R6). */
+export function savedView(facts, { localPreview = false } = {}) {
+  if (!facts) return { card: null, badge: null };
+  const { card, badge } = savedStatus(facts);
+  return { card: localPreview ? null : card, badge };
+}
+
 /** Draws the card and badge from `facts`, or hides both when `facts` is null. */
-export function drawSavedStatus({ section, button, facts, catalog, snapshot, handlers }) {
-  const { card, badge } = facts ? savedStatus(facts) : { card: null, badge: null };
+export function drawSavedStatus({ section, button, facts, localPreview, catalog, snapshot, handlers }) {
+  const { card, badge } = savedView(facts, { localPreview });
   const highlights = card && snapshot ? cardHighlights(catalog, snapshot) : null;
   if (section) renderSavedCard(section, card, highlights, handlers);
   if (button) renderBadge(button, badge, null);

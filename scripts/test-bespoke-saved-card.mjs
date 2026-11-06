@@ -174,9 +174,12 @@ try {
   {
     const save = hold();
     // Only the local test page lets a session change lessons while a save is pending.
+    // The local test page shows the badge only, never the card (ledger R6).
     await scenario("state 4: a late answer after switching lessons is ignored", {local: true, hooks: {save: [save]}}, async page => {
-      await savedState(page);
+      await showsBadge(page, 'Saved');
+      assert.equal(await page.locator('#savedCard').isHidden(), true, 'no card on the local test page');
       await paint(page, 'mauve');
+      await showsBadge(page, 'Changes not saved');
       const reply = saveResponse(page);
       await saveControl(page).click();
       await save.arrived;
@@ -189,7 +192,7 @@ try {
       assert.equal(stored.lessonId, 'goal-setting');
       assert.equal(stored.revision, null, 'the late answer did not land on the new lesson');
       assert.notEqual(await badge(page).isVisible() ? await badge(page).textContent() : '', 'Saved', 'the badge does not call the new lesson saved');
-      assert.equal(await page.locator('#savedCard').isVisible() ? await heading(page).textContent() : '', '', 'no card describes the old lesson');
+      assert.notEqual(await badge(page).isVisible() ? await badge(page).textContent() : '', 'Saving…', 'the old save no longer shows as saving');
     });
   }
 

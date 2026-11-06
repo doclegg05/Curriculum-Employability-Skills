@@ -3,7 +3,8 @@ process.env.TZ = 'America/New_York';
 import assert from 'node:assert/strict';
 import test from 'node:test';
 
-const { editFacts, validTime } = await import('../bespoke/saved-session.mjs');
+const editModule = await import('../bespoke/saved-session.mjs');
+const { editFacts, validTime } = editModule;
 const { savedStatus } = await import('../bespoke/saved-status.mjs');
 
 const SAVED_AT = '2026-11-06T14:10:00Z';
@@ -54,4 +55,14 @@ test('the open, save and card flags pass through; conflict waits for its own tas
   assert.deepEqual(
     { phase: facts.phase, saveFailed: facts.saveFailed, converted: facts.converted, aheadSaving: facts.aheadSaving, priorWork: facts.priorWork, dismissed: facts.dismissed, conflict: facts.conflict, keptChanges: facts.keptChanges, draftChangedAt: facts.draftChangedAt },
     { phase: 'failed', saveFailed: true, converted: true, aheadSaving: true, priorWork: true, dismissed: true, conflict: null, keptChanges: false, draftChangedAt: null });
+});
+
+test('the local test page keeps the badge but never shows the card', () => {
+  const { savedView } = editModule;
+  const facts = editFacts(session(), ui(), false);
+  assert.equal(savedView(facts, { localPreview: false }).card.heading, "You're looking at your team's saved design");
+  const local = savedView(facts, { localPreview: true });
+  assert.equal(local.card, null);
+  assert.equal(local.badge.text, 'Saved');
+  assert.deepEqual(savedView(null, { localPreview: false }), { card: null, badge: null });
 });

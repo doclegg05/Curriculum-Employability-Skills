@@ -255,7 +255,7 @@ const findOption=(family,slug)=>state.library?.families?.[family]?.options.find(
     const shown = Boolean(session) && isLeadSession() && ui.openPhase !== null && ui.openFor === session;
     // The first change to what opened closes the card for this opening.
     if (shown && ui.openPhase === "ready" && currentSelectionKey() !== ui.openedKey) ui.cardDismissed = true;
-    drawSavedStatus({ section: byId("savedCard"), button: byId("saveBadge"), facts: shown ? savedFacts() : null, catalog, snapshot: ui.savedSnapshot, handlers: savedCardHandlers });
+    drawSavedStatus({ section: byId("savedCard"), button: byId("saveBadge"), facts: shown ? savedFacts() : null, localPreview: ui.localPreview, catalog, snapshot: ui.savedSnapshot, handlers: savedCardHandlers });
   }
 
   // A successful open: the card describes this session's design as it now stands.
