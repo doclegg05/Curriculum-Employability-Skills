@@ -22,6 +22,8 @@ jobs:
     # cannot install Chromium there ("Playwright does not support chromium on ubuntu26.04-x64").
     # Return to ubuntu-latest once the pinned Playwright supports the newer image.
     runs-on: ubuntu-24.04
+    # A hung browser test once ran for over three hours; fail the job instead.
+    timeout-minutes: 45
     steps:
       - uses: actions/checkout@v4
         with:
