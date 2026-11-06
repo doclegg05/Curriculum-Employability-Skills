@@ -386,6 +386,22 @@ try {
     await showsBadge(page, 'Saved');
     assert.deepEqual(saves(calls).map(call => call.expectedRevision), [REVISION, NEXT_REVISION], 'each yes replaced exactly the version it named');
   });
+
+  await scenario('state 10: a view link shows the card and See all choices, no Save', {
+    seed: {[SESSION_KEY]: session()},
+    hooks: {open: [{reply: {json: {ok: true, access: 'view', revision: REVISION, savedAt: SAVED_AT, selection: savedSelection}}}]}
+  }, async page => {
+    await showsHeading(page, "You're looking at this team's saved design");
+    await page.locator('#savedChoices').waitFor();
+    await page.locator('#savedOk').waitFor();
+    await page.locator('#saveBadge').waitFor({state: 'hidden'});
+    assert.doesNotMatch(await cardText(page), /Make it yours|Save for the team/);
+    const enabledSave = await page.getByText('Save for the team').evaluateAll(nodes => nodes.filter(node => node.offsetParent && !node.disabled).length);
+    assert.equal(enabledSave, 0, 'no enabled Save for the team control');
+    await page.locator('#savedOk').click();
+    await page.locator('#savedCard').waitFor({state: 'hidden'});
+    await page.locator('#saveBadge').waitFor({state: 'hidden'});
+  });
 } finally {
   await server.close();
 }

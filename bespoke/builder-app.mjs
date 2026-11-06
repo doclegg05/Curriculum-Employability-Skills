@@ -66,7 +66,7 @@ const AUTOSAVE=Object.freeze({enabled:true,idleMs:30000,stepMs:1500,...(window._
 let startupTeamLink=(()=>{const v=location.hash.startsWith('#team=')?location.hash.slice(6):'';if(v)history.replaceState(null,'',location.pathname+location.search);return v;})();
 let startupViewLink=(()=>{const v=location.hash.startsWith('#view=')?location.hash.slice(6):'';if(v)history.replaceState(null,'',location.pathname+location.search);return v;})();
 const teamView=createTeamView({request:(action,fields)=>handoffRequest(action,fields),apply:selection=>applySelectionPayload(selection),parseLink:value=>parseTeamLink(value),generation:()=>draftGeneration,get storage(){return sessionStorage;},render:()=>render(),
- lessonTitle:id=>findMeta(state.meta.lessons,id)?.title||'',builder:()=>state.builderName.trim()||state.spokespersonName.trim()||'the spokesperson',land:()=>{state.step=stepIndex('review');},note:text=>{ui.restoreNote=text;},enter:lessonId=>{ui.mode='view';if(lessonId)state.lessonId=lessonId;}});
+ lessonTitle:id=>findMeta(state.meta.lessons,id)?.title||'',builder:()=>state.builderName.trim()||state.spokespersonName.trim()||'the spokesperson',land:()=>{state.step=stepIndex('review');},note:text=>{ui.restoreNote=text;},catalog:()=>catalog,design:()=>state.design,choices:()=>{},enter:lessonId=>{ui.mode='view';if(lessonId)state.lessonId=lessonId;}});
 const clone = value => structuredClone(value);
 const escapeHtml = value => String(value ?? '').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
 // Every render shows the lesson's name as its title until the team types their own.
@@ -258,6 +258,7 @@ const findOption=(family,slug)=>state.library?.families?.[family]?.options.find(
   };
 
   function updateSavedCard() {
+    if (!isLeadSession() && teamView.active()) { teamView.drawCard({ section: byId("savedCard"), badgeButton: byId("saveBadge") }); return; }
     const session = ui.teamSession;
     // Only the session whose open this page ran is described; another lesson's answer never is.
     const shown = Boolean(session) && isLeadSession() && ui.openPhase !== null && ui.openFor === session;
