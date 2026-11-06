@@ -19,6 +19,7 @@ import { createTeamView, isShareHash, isSnapshotHash, viewLinkToOpen } from './t
 import { pendingForSession } from './team-session.mjs';
 import { guideMark, indexForMark, keepsGuide } from './guide/questions.mjs';
 import { buildQuestions, normalizeGuide } from './guide/questions.mjs';
+import { editFacts, drawSavedStatus } from './saved-session.mjs';
 
 // Keep the established SPOKES identity. Preview selection edits the cumulative
 // design model; confirmed shared saves remain separate from browser drafts.
@@ -47,6 +48,8 @@ const onStage = id => STEPS[state.step].id === id;
 const teamIdentified = () => Boolean(state.teamName.trim() && state.spokespersonName.trim());
 const state = {step:0,stepId:'start',meta:null,library:null,lessonId:'money-management',teamName:'',spokespersonName:'',spokespersonEmail:'',builderName:'',lessonTitle:'',lessonSubtitle:'',unspoken:'',editCode:'',previewView:'title',design:null,legacySelection:null,alternatives:null,changes:[],redo:[]};
 const ui = {onlySlide:false,mode:'view',renderedStep:null,previewPinned:false,teamSession:null,linkReplacedSession:null,cloudConflict:null,cloudBusy:false,autosavePaused:false,allowUnload:false,skipNextLocalSave:false,restoreNote:'',restoredFromLink:false,editCodeHash:'',activeRole:'sidebar',paintScope:'slide',themeScope:'slide',localPreview:false,editorRole:'title',sharedThemeOpen:false,meaningfulDesign:false,appliedLook:null,lookSnapshot:null,lookUndoAt:null,onStart:false,coordinatorAgreed:false};
+// The saved-design card and badge (saved-status.mjs): which open they describe and what it found.
+Object.assign(ui,{openPhase:null,openFor:null,openReplace:false,openedKey:'',savedSnapshot:null,cardDismissed:false,priorWork:false,saveFailed:false,aheadSaving:false,savingFor:null});
 ui.guide = null;
 let guide = null;
 let previewEditor = null;
@@ -207,8 +210,8 @@ const findOption=(family,slug)=>state.library?.families?.[family]?.options.find(
     if (ui.convertedUnsaved && !ui.localPreview) setSaveStatus(CONVERTED_STATUS);
   }
 
-  function canAutosave() {
-    return AUTOSAVE.enabled && autosaveReady && isLeadSession() && Boolean(ui.teamSession) &&
+  function canAutosave(ready = autosaveReady) {
+    return AUTOSAVE.enabled && ready && ui.openPhase === "ready" && isLeadSession() && Boolean(ui.teamSession) &&
       Boolean(handoffApiBase) && !ui.cloudConflict && !ui.autosavePaused && !storageConflict;
   }
 
@@ -238,7 +241,40 @@ const findOption=(family,slug)=>state.library?.families?.[family]?.options.find(
     return canAutosave() ? "Sharing changes automatically" : "Browser draft saved";
   }
 
+  const savedFacts = () => editFacts(ui.teamSession, ui, hasUnsavedTeamWork());
+
+  // One handlers object for the card's life: renderSavedCard keeps the first draw's closures.
+  const savedCardHandlers = {
+    retry: async () => { await fetchSharedDesign({ replace: ui.openReplace }); await saveAheadWork(); },
+    ok: () => { ui.cardDismissed = true; updateCloudChrome(); }
+  };
+
+  function updateSavedCard() {
+    const session = ui.teamSession;
+    // Only the session whose open this page ran is described; another lesson's answer never is.
+    const shown = Boolean(session) && isLeadSession() && ui.openPhase !== null && ui.openFor === session;
+    // The first change to what opened closes the card for this opening.
+    if (shown && ui.openPhase === "ready" && currentSelectionKey() !== ui.openedKey) ui.cardDismissed = true;
+    drawSavedStatus({ section: byId("savedCard"), button: byId("saveBadge"), facts: shown ? savedFacts() : null, catalog, snapshot: ui.savedSnapshot, handlers: savedCardHandlers });
+  }
+
+  // A successful open: the card describes this session's design as it now stands.
+  function markOpened(snapshot) {
+    Object.assign(ui, { openPhase: "ready", openFor: ui.teamSession, openedKey: currentSelectionKey(), savedSnapshot: snapshot,
+      cardDismissed: false, priorWork: false, saveFailed: false, aheadSaving: false });
+  }
+
+  // State 6: browser work ahead of its own save (no newer save exists) is saved at once, not after the idle delay.
+  async function saveAheadWork() {
+    if (!ui.teamSession?.revision || !canAutosave(true) || !hasUnsavedTeamWork() || handoffBusy) return;
+    ui.aheadSaving = true;
+    await cloudSave({ auto: true });
+    // A failed save keeps the card's "only in this browser"; a save that never started claims nothing.
+    if (ui.aheadSaving && !ui.saveFailed) { ui.aheadSaving = false; updateCloudChrome(); }
+  }
+
   function updateCloudChrome() {
+    updateSavedCard();
     const session = ui.teamSession;
     const panel = byId("teamSessionBar");
     const status = byId("teamSessionStatus");
@@ -780,11 +816,15 @@ const findOption=(family,slug)=>state.library?.families?.[family]?.options.find(
     const generation = draftGeneration, openingKey = currentSelectionKey();
     setHandoffBusy(true);
     ui.cloudBusy = true;
+    Object.assign(ui, { openPhase: "checking", openFor: session, openReplace: replace, aheadSaving: false });
+    updateCloudChrome();
     if (announce) fileNotice("Checking the latest shared design…");
     try {
       const result = await handoffRequest("open", { lessonId: session.lessonId, editCode: session.editCode });
       if (session !== ui.teamSession || generation !== draftGeneration) return false;
       if (!result.ok) {
+        // A rejected code keeps the code-entry handling; the card claims nothing about it.
+        if (result.error === "code") ui.openPhase = null;
         fileNotice(result.message || "Could not open the shared design. Your browser draft is unchanged.");
         return false;
       }
@@ -811,6 +851,7 @@ const findOption=(family,slug)=>state.library?.families?.[family]?.options.find(
         } else {
           fileNotice("This browser has unsaved changes, so the shared design was not loaded. Save them or download a backup first.");
         }
+        markOpened(null);
         updateCloudChrome();
         return false;
       }
@@ -836,11 +877,14 @@ const findOption=(family,slug)=>state.library?.families?.[family]?.options.find(
         storageConflict = true;
         setSaveStatus("Browser storage unavailable");
       }
+      markOpened(result.selection ? clone(state.design) : null);
       render();
       if(result.selection)successNotice("Opened the latest shared design.");
       else clearStrip();
       return true;
     } finally {
+      // No connection, a service error, an unreadable answer or a throw: nothing was checked.
+      if (ui.openPhase === "checking" && ui.openFor === session) ui.openPhase = "failed";
       setHandoffBusy(false);
       ui.cloudBusy = false;
       updateCloudChrome();
@@ -867,7 +911,7 @@ const findOption=(family,slug)=>state.library?.families?.[family]?.options.find(
       if (!auto) actionNotice("This team access is locked to a different lesson. Your draft was not saved.");
       return;
     }
-    const requestKey = selectionKey(payload);
+    const requestKey = selectionKey(payload), savedDesign = clone(state.design);
     const generation = draftGeneration;
     let pending = session.pendingSave;
     if (!pending || pending.selectionKey !== requestKey || pending.expectedRevision !== session.revision) {
@@ -882,6 +926,8 @@ const findOption=(family,slug)=>state.library?.families?.[family]?.options.find(
     clearTimeout(autosaveTimer);
     autosaveTimer = null;
     setHandoffBusy(true);
+    ui.savingFor = session;
+    updateCloudChrome();
     if (auto) setSaveStatus("Saving to the shared design…");
     else if (!sendFeedback(SAVING_NOTICE)) fileNotice(SAVING_NOTICE);
     try {
@@ -904,6 +950,7 @@ const findOption=(family,slug)=>state.library?.families?.[family]?.options.find(
           updateCloudChrome();
           return;
         }
+        ui.saveFailed = true;
         if (auto) setSaveStatus("Automatic save will retry");
         else actionNotice(result.message || "Shared Save did not finish. Your browser draft is safe; try Save again.");
         return;
@@ -914,6 +961,9 @@ const findOption=(family,slug)=>state.library?.families?.[family]?.options.find(
       session.pendingSave = null;
       ui.cloudConflict = null;
       ui.convertedUnsaved = false;
+      Object.assign(ui, { saveFailed: false, aheadSaving: false, savedSnapshot: savedDesign });
+      // A save is an acknowledged state even for a session this page never opened (a local test lesson switch).
+      if (ui.openFor !== session) Object.assign(ui, { openPhase: "ready", openFor: session, openedKey: requestKey, cardDismissed: true });
       if (replacedDuringSave) {
         persistTeamSession();
         setSaveStatus(draftStatusText());
@@ -945,6 +995,7 @@ const findOption=(family,slug)=>state.library?.families?.[family]?.options.find(
       }
     } finally {
       setHandoffBusy(false);
+      ui.savingFor = null;
       // A save that ends without a message of its own must not leave "Saving…" beside the buttons.
       if (ui.sendFeedback === SAVING_NOTICE) sendFeedback("");
       updateCloudChrome();
@@ -1165,6 +1216,8 @@ const findOption=(family,slug)=>state.library?.families?.[family]?.options.find(
 
       // Work built before the code is this team's when it has no saved design yet.
       const keepWork = !ui.teamSession && !result.selection && hasUnclaimedWork();
+      // With a save to load, that work went to the recovery copy above (state 8).
+      const priorWork = !ui.teamSession && Boolean(result.selection) && hasUnclaimedWork();
       installTeamSession(lessonId, editCode);
       ui.mode = "edit";
       if (result.selection) applySelectionPayload(result.selection);
@@ -1189,6 +1242,8 @@ const findOption=(family,slug)=>state.library?.families?.[family]?.options.find(
       }
       if (err) err.textContent = "";
       byId("openDialog").close();
+      markOpened(result.selection ? clone(state.design) : null);
+      ui.priorWork = priorWork;
       render();
       if(result.selection)successNotice("Opened the latest shared design.");
       else if(keepWork)successNotice("Team code accepted. Your work is kept.");
@@ -2100,7 +2155,7 @@ async function init(){
  // Only share links reopen the page; the skip link and other in-page hashes change nothing.
  window.addEventListener('hashchange',()=>{if(isShareHash(hashBody()))openShareLink().then(()=>render()).catch(e=>fileNotice(e.message));});
  render();saveAnnounceReady=true;
- if(ui.teamSession&&!startup?.snapshot){await fetchSharedDesign({replace:mayReplace});await resumePendingSubmission();}
+ if(ui.teamSession&&!startup?.snapshot){await fetchSharedDesign({replace:mayReplace});await saveAheadWork();await resumePendingSubmission();}
  autosaveReady=true;scheduleAutosave(AUTOSAVE.idleMs);
  if(ui.localPreview){byId('localPreviewNotice').hidden=false;byId('btnSave').textContent='Save test design';byId('btnOpen').textContent='Open test design';byId('btnSend').hidden=true;}
 }
