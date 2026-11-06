@@ -15,8 +15,8 @@ const GAP = 16;
 export const MIN_SCALE = 0.45;
 // At the floor, at most this share of the scaled slide may sit below the fold.
 const BELOW_FOLD_SHARE = 1 / 5;
-// Bands above the workspace that come and go: notices, the session strip and help.
-const BANDS = ['#fileStatus', '#restoreNotice', '#accessBanner', '#teamSessionBar', '#builderHelp'];
+// Bands above the workspace that come and go: notices, the session strip, help and the saved-design card.
+const BANDS = ['#fileStatus', '#restoreNotice', '#accessBanner', '#teamSessionBar', '#builderHelp', '#savedCard'];
 // Browser default root text size. A larger one means the reader enlarged text, so the slide is never shrunk.
 const DEFAULT_ROOT_PX = 16;
 const ACTIVE = '.workspace[data-stage=slides][data-editor=true]';

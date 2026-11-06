@@ -99,6 +99,7 @@ async function scenario(name, {seed = {}, local = false, autosave = {enabled: fa
     } catch (error) {
       // A page file that failed to load is the likelier cause of a timeout, so say so.
       if (failedFetches.length) error.message += `\nPage files that failed to load: ${failedFetches.join('; ')}`;
+      error.message += `\n${await cardVisibility(page)}`;
       throw error;
     }
     finished = true;
@@ -116,6 +117,26 @@ async function scenario(name, {seed = {}, local = false, autosave = {enabled: fa
   }
 }
 
+// On a failure, says which stage the page is on and whether the card or any ancestor is hidden, so CI explains itself.
+async function cardVisibility(page) {
+  const report = page.evaluate(() => {
+    const stage = document.getElementById('workspace')?.dataset.stage ?? 'none';
+    const card = document.getElementById('savedCard');
+    if (!card) return `Stage ${stage}; #savedCard is not in the page.`;
+    const chain = [];
+    for (let node = card; node && node.nodeType === 1; node = node.parentElement) {
+      const style = getComputedStyle(node);
+      const name = node.tagName.toLowerCase() + (node.id ? `#${node.id}` : '') + (node.className && typeof node.className === 'string' ? `.${node.className.trim().split(/\s+/).join('.')}` : '');
+      chain.push(`${name} display=${style.display} visibility=${style.visibility}${node.hidden ? ' [hidden]' : ''}`);
+    }
+    return `Stage ${stage}; card text: ${JSON.stringify(card.innerText.slice(0, 120))}\n  ${chain.join('\n  ')}`;
+  });
+  return within(report, 'the card visibility report', 2000).catch(error => `Card visibility report failed: ${error.message}`);
+}
+// The stage the page landed on, so the card is checked where teams and view links actually arrive.
+async function onStage(page, stage) {
+  assert.equal(await page.locator('#workspace').getAttribute('data-stage'), stage, `the page is on the ${stage} stage`);
+}
 const heading = page => page.locator('#savedCard .saved-card-heading');
 const badge = page => page.locator('#saveBadge');
 const cardText = page => page.locator('#savedCard').innerText();
@@ -160,6 +181,7 @@ try {
     await scenario("state 1: the card says checking until the service answers", {seed: {[SESSION_KEY]: session()}, hooks: {open: [open]}}, async page => {
       await open.arrived;
       await showsHeading(page, "Checking your team's saved design…");
+      await onStage(page, 'team');
       await showsBadge(page, 'Checking…');
       assert.doesNotMatch(await cardText(page), /saved design$|hasn't saved/m, 'nothing claims a state while checking');
       open.release();
@@ -283,6 +305,8 @@ try {
       const opened = calls.find(call => call.action === 'open'), saved = calls.find(call => call.action === 'save');
       assert.ok(saved.at - opened.at < 1000, 'the save starts within a second of the open');
       await showsHeading(page, 'Your latest changes are being saved for the team');
+      // A draft with no stage of its own reopens on Pick a look, which hides the slide preview.
+      await onStage(page, 'start');
       await showsBadge(page, 'Saving…');
       save.release();
       await savedState(page);
@@ -466,6 +490,7 @@ try {
     hooks: {open: [{reply: {json: {ok: true, access: 'view', revision: REVISION, savedAt: SAVED_AT, selection: savedSelection}}}]}
   }, async page => {
     await showsHeading(page, "You're looking at this team's saved design");
+    await onStage(page, 'review');
     await page.locator('#savedChoices').waitFor();
     await page.locator('#savedOk').waitFor();
     await page.locator('#saveBadge').waitFor({state: 'hidden'});
