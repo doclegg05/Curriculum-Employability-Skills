@@ -3,16 +3,27 @@
 // The saved-design card and the top-bar badge say exactly what is on screen: checking, couldn't check,
 // saved, changes not saved, saving, no save yet, or opened with updates. One scenario per state.
 import assert from 'node:assert/strict';
+import {readFileSync} from 'node:fs';
 import {createDevServer} from './bespoke-dev-server.mjs';
 import {browserType} from './bespoke-test-browser.mjs';
 import {builderDestination, saveControl} from './bespoke-test-navigation.mjs';
 import catalog from '../bespoke/builder-catalog.json' with {type: 'json'};
 import {applyPreset, defaultDesign, roleStyleDefaults} from '../bespoke/builder-model.mjs';
 import {EDIT_LINE} from '../bespoke/saved-status.mjs';
+// hold(): `arrived` settles when the request reaches the fake service (or times out), `release()` lets it answer.
+import {hold, releaseHeld, within} from './bespoke-test-waits.mjs';
 
 const CODE = 'K7QX-M3PD';
-const SESSION_KEY = '[REDACTED]';
-const DRAFT_KEY = '[REDACTED]';
+// The storage keys come from the page itself. Typed here they were once replaced by a redaction
+// placeholder, so the seeded session went to the wrong key, the page never opened, and CI hung.
+const appSource = readFileSync(new URL('../bespoke/builder-app.mjs', import.meta.url), 'utf8');
+function appKey(name) {
+  const found = appSource.match(new RegExp(`^const ${name} = '([a-z0-9-]+)';$`, 'm'));
+  if (!found) throw new Error(`bespoke/builder-app.mjs no longer defines ${name} as a plain storage key.`);
+  return found[1];
+}
+const SESSION_KEY = appKey('TEAM_SESSION_KEY');
+const DRAFT_KEY = appKey('STORAGE_KEY');
 const REVISION = 'b'.repeat(40), NEXT_REVISION = 'c'.repeat(40);
 const SAVED_AT = '2026-11-06T14:10:00Z', NEXT_SAVED_AT = '2026-11-06T15:00:00Z';
 const LESSON = {id: 'money-management', title: 'Money Management'};
@@ -20,7 +31,7 @@ const TEAM = {name: 'Saved team', spokesperson: {name: 'Saved lead', email: 'sav
 const PRIOR_WORK_LINE = 'Work from this browser before you entered the code is in ⋯ > Recover previous draft.';
 // State 5: this browser last saw revision A; the team saved B (REVISION) since, and C (NEXT_REVISION) during the replace.
 const OLD_REVISION = 'a'.repeat(40), FINAL_REVISION = 'd'.repeat(40), FINAL_SAVED_AT = '2026-11-06T16:00:00Z';
-const BACKUP_DRAFT_KEY = 'bespoke-previous-' + 'draft-v2';
+const BACKUP_DRAFT_KEY = appKey('BACKUP_KEY');
 const CONFLICT_HEADING = "This browser has changes that aren't in the team's saved design.";
 const FULL_RECOVERY_NOTICE = "Your browser changes couldn't be kept as a recovery copy, so the saved design was not loaded. Download a backup first.";
 const replaceQuestion = time => `This will replace the design saved ${time}. Replace it?`;
@@ -35,16 +46,15 @@ const draft = design => JSON.stringify({design, lessonId: LESSON.id, teamName: '
 const session = (fields = {}) => JSON.stringify({lessonId: LESSON.id, editCode: CODE, revision: REVISION, savedAt: SAVED_AT, baseSelectionKey: null, pendingSave: null, ...fields});
 const server = await createDevServer({port: 0});
 
-function deferred() { let resolve; const promise = new Promise(r => { resolve = r; }); return {promise, resolve}; }
-// A held request: `arrived` settles when the request reaches the fake service, `release()` lets it answer.
-function hold() { const arrived = deferred(), gate = deferred(); return {arrived: arrived.promise, release: gate.resolve, wait: () => { arrived.resolve(); return gate.promise; }}; }
-
 // The fake service answers from `store`; `hooks[action]` may hold a request or replace its answer.
 async function scenario(name, {seed = {}, local = false, autosave = {enabled: false}, store = {}, hooks = {}}, run) {
   const browser = await browserType.launch({headless: true});
   const context = await browser.newContext({timezoneId: 'America/New_York', locale: 'en-US', viewport: {width: 1440, height: 1000}});
-  const errors = [], calls = [], unexpected = [];
+  const errors = [], calls = [], unexpected = [], failedFetches = [];
   const data = {revision: REVISION, savedAt: SAVED_AT, selection: savedSelection, ...store};
+  // Kept before the handlers shift them out, so finally can release any request still held.
+  const held = Object.values(hooks).flat();
+  let finished = false;
   try {
     await context.addInitScript(([entries, autosave]) => {
       window.__bespokeAutosave = autosave;
@@ -72,22 +82,37 @@ async function scenario(name, {seed = {}, local = false, autosave = {enabled: fa
       if (u.pathname === '/bespoke/handoff-config.json') return route.fulfill({json: {apiBase: 'https://bespoke.test/api/bespoke'}});
       let response;
       try { response = await route.fetch({url: server.baseUrl + u.pathname + u.search, headers: {...route.request().headers(), origin: server.baseUrl}}); }
-      // At teardown the static server can reset the connection: fail that one request instead of crashing Node.
-      catch { return route.abort().catch(() => { /* The page or context is already closed. */ }); }
+      catch (error) {
+        // A failed page file during the scenario fails the test; at teardown the static server can reset the connection.
+        if (!finished) failedFetches.push(`${u.pathname}: ${error.message.split('\n')[0]}`);
+        return route.abort().catch(() => { /* The page or context is already closed. */ });
+      }
       return route.fulfill({response});
     });
     const page = await context.newPage();
     page.on('pageerror', error => errors.push(error.message));
     page.on('dialog', dialog => dialog.accept());
     page.setDefaultTimeout(10000);
-    await page.goto(local ? server.baseUrl + '/bespoke/' : 'https://bespoke.test/bespoke/');
-    await run(page, calls);
+    try {
+      await page.goto(local ? server.baseUrl + '/bespoke/' : 'https://bespoke.test/bespoke/');
+      await run(page, calls);
+    } catch (error) {
+      // A page file that failed to load is the likelier cause of a timeout, so say so.
+      if (failedFetches.length) error.message += `\nPage files that failed to load: ${failedFetches.join('; ')}`;
+      throw error;
+    }
+    finished = true;
+    assert.deepEqual(failedFetches, [], 'every page file loaded');
     assert.deepEqual(errors, []);
     assert.deepEqual(unexpected, []);
     console.log(`PASS ${name}`);
   } finally {
-    await context.close();
-    await browser.close();
+    finished = true;
+    releaseHeld({held});
+    // A teardown that cannot finish is reported, without hiding the scenario's own error.
+    const teardownFailed = error => { console.error(error); process.exitCode = 1; };
+    await within(context.close(), `the browser context to close after "${name}"`).catch(teardownFailed);
+    await within(browser.close(), `the browser to close after "${name}"`).catch(teardownFailed);
   }
 }
 
@@ -131,7 +156,7 @@ const saveResponse = page => page.waitForResponse(response => response.url().end
 
 try {
   {
-    const open = hold();
+    const open = hold('the held open request');
     await scenario("state 1: the card says checking until the service answers", {seed: {[SESSION_KEY]: session()}, hooks: {open: [open]}}, async page => {
       await open.arrived;
       await showsHeading(page, "Checking your team's saved design…");
@@ -189,7 +214,7 @@ try {
   });
 
   {
-    const save = hold();
+    const save = hold('the held save request');
     await scenario("state 4: an edit closes the card and the badge tracks the save", {seed: {[SESSION_KEY]: session()}, hooks: {save: [save]}}, async page => {
       await savedState(page);
       await paint(page, 'mauve');
@@ -207,7 +232,7 @@ try {
   }
 
   {
-    const save = hold();
+    const save = hold('the held save request');
     await scenario("state 4: editing during a save leaves Changes not saved", {seed: {[SESSION_KEY]: session()}, hooks: {save: [save]}}, async page => {
       await savedState(page);
       await paint(page, 'mauve');
@@ -223,7 +248,7 @@ try {
   }
 
   {
-    const save = hold();
+    const save = hold('the held save request');
     // Only the local test page lets a session change lessons while a save is pending.
     // The local test page shows the badge only, never the card (ledger R6).
     await scenario("state 4: a late answer after switching lessons is ignored", {local: true, hooks: {save: [save]}}, async page => {
@@ -248,7 +273,7 @@ try {
   }
 
   {
-    const save = hold();
+    const save = hold('the held save request');
     await scenario("state 6: browser work ahead of its own save is saved at once", {
       seed: {[SESSION_KEY]: session({baseSelectionKey: 'an older key'}), [DRAFT_KEY]: draft(builtDesign)},
       autosave: {enabled: true, idleMs: 30000, stepMs: 30000},
@@ -454,6 +479,11 @@ try {
     await page.locator('#savedCard').waitFor({state: 'hidden'});
     await page.locator('#saveBadge').waitFor({state: 'hidden'});
   });
+} catch (error) {
+  console.error(error);
+  process.exitCode = 1;
 } finally {
-  await server.close();
+  await within(server.close(), 'the static server to close').catch(error => { console.error(error); process.exitCode = 1; });
 }
+// A browser left running after a failure keeps Node alive: end the run so CI reports it.
+if (process.exitCode) process.exit();
