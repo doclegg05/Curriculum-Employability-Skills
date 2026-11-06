@@ -311,14 +311,44 @@ try {
   await scenario('state 5: a mid-session conflict reopens the choice', {
     seed: {[SESSION_KEY]: session()},
     hooks: {save: [conflict409(NEXT_REVISION, NEXT_SAVED_AT)]}
-  }, async page => {
+  }, async (page, calls) => {
     await savedState(page);
     await paint(page, 'mauve');
     await page.locator('#savedCard').waitFor({state: 'hidden'});
     await saveControl(page).click();
     await showsConflict(page, 'Friday, November 6 at 10:00 AM');
+    assert.equal(saves(calls).length, 1, 'nothing else was saved');
     await paint(page, 'accent');
     await showsHeading(page, CONFLICT_HEADING);
+  });
+
+  // An older recovery copy (for example the work state 8 points to) survives a failed load.
+  const OLDER_RECOVERY = draft({...base, background: 'dot-grid'});
+  await scenario("state 5: a failed open after Use the team's saved design keeps the older recovery copy", {
+    seed: {...competing, [BACKUP_DRAFT_KEY]: OLDER_RECOVERY},
+    hooks: {open: [{}, {reply: {status: 503, json: {ok: false, error: 'store', message: 'The connected store could not complete this request.'}}}]}
+  }, async (page, calls) => {
+    await showsConflict(page, 'Friday, November 6 at 9:10 AM');
+    await page.locator('#savedUseSaved').click();
+    await showsHeading(page, "We couldn't check your team's saved design.");
+    assert.equal(calls.filter(call => call.action === 'open').length, 2);
+    assert.equal(await page.evaluate(key => localStorage.getItem(key), BACKUP_DRAFT_KEY), OLDER_RECOVERY, 'the older recovery copy is unchanged');
+    assert.deepEqual((await shownDesign(page)).fonts, builtDesign.fonts, 'the browser work is still on screen');
+    assert.deepEqual(saves(calls), []);
+  });
+
+  await scenario('state 5: a conflict after a failed open still offers the choice', {
+    seed: {[SESSION_KEY]: session()},
+    hooks: {
+      open: [{reply: {status: 503, json: {ok: false, error: 'store', message: 'The connected store could not complete this request.'}}}],
+      save: [conflict409(NEXT_REVISION, NEXT_SAVED_AT)]
+    }
+  }, async (page, calls) => {
+    await showsHeading(page, "We couldn't check your team's saved design.");
+    await paint(page, 'mauve');
+    await saveControl(page).click();
+    await showsConflict(page, 'Friday, November 6 at 10:00 AM');
+    assert.equal(saves(calls).length, 1);
   });
 
   await scenario('Replace it names one version', {

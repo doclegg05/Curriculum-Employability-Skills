@@ -248,9 +248,10 @@ const findOption=(family,slug)=>state.library?.families?.[family]?.options.find(
   const savedCardHandlers = {
     retry: async () => { await fetchSharedDesign({ replace: ui.openReplace }); await saveAheadWork(); },
     ok: () => { ui.cardDismissed = true; updateCloudChrome(); },
-    // State 5: the browser work goes to the recovery copy before the save loads, or nothing loads.
+    // State 5: nothing loads unless the browser work can go to the recovery copy. The copy itself is
+    // written only once the service has answered (fetchSharedDesign), so a failed open keeps the older copy.
     useSaved: async () => {
-      if (!keepRecoveryCopy()) { actionNotice(RECOVERY_FULL_NOTICE); return; }
+      if (!canKeepRecoveryCopy()) { actionNotice(RECOVERY_FULL_NOTICE); return; }
       await fetchSharedDesign({ replace: true });
     },
     keepChanges: () => { ui.keptChanges = true; fileNotice(KEPT_CHANGES_NOTICE); updateCloudChrome(); }
@@ -803,6 +804,18 @@ const findOption=(family,slug)=>state.library?.families?.[family]?.options.find(
     return payload;
   }
 
+  // Whether the recovery copy can be written, without replacing the copy already kept.
+  function canKeepRecoveryCopy() {
+    try {
+      const kept = localStorage.getItem(BACKUP_KEY);
+      localStorage.setItem(BACKUP_KEY, kept ?? "");
+      if (kept === null) localStorage.removeItem(BACKUP_KEY);
+      return true;
+    } catch {
+      return false;
+    }
+  }
+
   function keepRecoveryCopy() {
     try {
       const raw = localStorage.getItem(STORAGE_KEY);
@@ -965,8 +978,10 @@ const findOption=(family,slug)=>state.library?.families?.[family]?.options.find(
         if (replacedDuringSave) { session.pendingSave = null; persistTeamSession(); return; }
         if (result.httpStatus === 409 || result.error === "conflict") {
           ui.cloudConflict = { revision: result.revision, savedAt: result.savedAt };
+          // The 409 names the latest save, so the card can describe this session even if its open failed or never ran.
+          Object.assign(ui, { openPhase: "ready", openFor: session });
           // A plain save reopens the choice (state 5); a replace keeps the choice made and asks about the newer save.
-          if (!replacing) Object.assign(ui, { keptChanges: false, cardDismissed: false });
+          if (!replacing) Object.assign(ui, { keptChanges: false, cardDismissed: false, openedKey: currentSelectionKey() });
           session.pendingSave = null;
           persistTeamSession();
           actionNotice(replacing ? REPLACE_CONFLICT_NOTICE : SAVE_CONFLICT_NOTICE);
