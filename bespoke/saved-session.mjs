@@ -24,6 +24,17 @@ export function editFacts(session, ui, unsaved) {
 }
 
 /**
+ * What an acknowledged save changes about the opening. A save is an acknowledged state even for a
+ * session this page never opened (a local test lesson switch: card closed) or whose open failed or is
+ * still checking (the card now describes the save, so it stays up). `requestKey` is the saved design's key.
+ */
+export function afterAckedSave(ui, session, requestKey) {
+  if (ui.openFor !== session) return { openPhase: 'ready', openFor: session, openedKey: requestKey, cardDismissed: true };
+  if (ui.openPhase !== 'ready') return { openPhase: 'ready', openFor: session, openedKey: requestKey };
+  return {};
+}
+
+/**
  * The card and badge to show. The local test page is a developer mode: badge only, no card (ledger R6),
  * except the competing-versions choice, which nothing else on the page offers any more.
  */

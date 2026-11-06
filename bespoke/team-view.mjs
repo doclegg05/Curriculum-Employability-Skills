@@ -5,6 +5,7 @@
 import { savedStatus } from './saved-status.mjs';
 import { cardHighlights } from './choices-summary.mjs';
 import { renderSavedCard, renderBadge } from './saved-card.mjs';
+import { validTime } from './saved-session.mjs';
 import { convertToStandard } from './standard-conversion.mjs';
 
 export const VIEW_SESSION_KEY = 'bespoke-view-session';
@@ -152,10 +153,11 @@ export function createTeamView(host) {
   }
 
   // The saved-design card for a view: the same card as the edit page, with no badge and nothing that saves.
+  // A malformed save time is left off the card rather than allowed to break the page.
   function status() {
     if (!session || session.phase === 'none') return { card: null, badge: null };
     return savedStatus({
-      access: 'view', phase: session.phase, hasSave: session.hasSave, savedAt: session.savedAt, matchesSave: true,
+      access: 'view', phase: session.phase, hasSave: session.hasSave, savedAt: validTime(session.savedAt), matchesSave: true,
       saving: false, saveFailed: false, conflict: null, keptChanges: false, converted: session.converted,
       untouchedPresets: true, aheadSaving: false, priorWork: false, dismissed, draftChangedAt: null
     });

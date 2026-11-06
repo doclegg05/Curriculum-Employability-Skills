@@ -19,9 +19,9 @@ import { createTeamView, isShareHash, isSnapshotHash, viewLinkToOpen } from './t
 import { pendingForSession } from './team-session.mjs';
 import { guideMark, indexForMark, keepsGuide } from './guide/questions.mjs';
 import { buildQuestions, normalizeGuide } from './guide/questions.mjs';
-import { editFacts, drawSavedStatus, conflictSavedText, choiceLists } from './saved-session.mjs';
+import { editFacts, drawSavedStatus, conflictSavedText, choiceLists, afterAckedSave } from './saved-session.mjs';
 import { openChoices } from './saved-card.mjs';
-import { askReplace, OPEN_CONFLICT_NOTICE, CHOOSE_VERSION_NOTICE, SAVE_CONFLICT_NOTICE, REPLACE_CONFLICT_NOTICE, KEPT_CHANGES_NOTICE, RECOVERY_FULL_NOTICE } from './replace-confirm.mjs';
+import { askReplace, replaceEachNamed, REPLACE_STALE_NOTICE, OPEN_CONFLICT_NOTICE, CHOOSE_VERSION_NOTICE, SAVE_CONFLICT_NOTICE, REPLACE_CONFLICT_NOTICE, KEPT_CHANGES_NOTICE, RECOVERY_FULL_NOTICE } from './replace-confirm.mjs';
 
 // Keep the established SPOKES identity. Preview selection edits the cumulative
 // design model; confirmed shared saves remain separate from browser drafts.
@@ -926,13 +926,14 @@ const findOption=(family,slug)=>state.library?.families?.[family]?.options.find(
     }
   }
 
-  // After Keep these changes, each yes replaces exactly the save it named. A 409 names a newer save and asks again.
-  async function replaceSavedDesign() {
-    for (let named = ui.cloudConflict; named && ui.keptChanges; named = ui.cloudConflict) {
-      if (!await askReplace(document.body, conflictSavedText(named)) || named !== ui.cloudConflict) return;
-      await cloudSave({ replaceRevision: named.revision });
-      if (ui.cloudConflict === named) return;
-    }
+  // After Keep these changes, each yes replaces exactly the save it named; a newer save asks again.
+  function replaceSavedDesign() {
+    return replaceEachNamed({
+      current: () => (ui.keptChanges ? ui.cloudConflict : null),
+      ask: named => askReplace(document.body, conflictSavedText(named)),
+      save: named => cloudSave({ replaceRevision: named.revision }),
+      onStale: () => actionNotice(REPLACE_STALE_NOTICE)
+    });
   }
 
   async function cloudSave(options = {}) {
@@ -1015,8 +1016,8 @@ const findOption=(family,slug)=>state.library?.families?.[family]?.options.find(
       ui.cloudConflict = null;
       ui.convertedUnsaved = false;
       Object.assign(ui, { saveFailed: false, aheadSaving: false, keptChanges: false, savedSnapshot: savedDesign });
-      // A save is an acknowledged state even for a session this page never opened (a local test lesson switch).
-      if (ui.openFor !== session) Object.assign(ui, { openPhase: "ready", openFor: session, openedKey: requestKey, cardDismissed: true });
+      // A save is acknowledged even when this page never opened the session, or its open failed.
+      Object.assign(ui, afterAckedSave(ui, session, requestKey));
       if (replacedDuringSave) {
         persistTeamSession();
         setSaveStatus(draftStatusText());

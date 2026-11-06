@@ -23,7 +23,7 @@ function conflictCard(facts) {
   const lines = [];
   if (facts.draftChangedAt) lines.push(`The browser changes are from ${formatSavedTime(facts.draftChangedAt)}.`);
   lines.push(facts.conflict.savedAt
-    ? `The team's design was saved again ${formatSavedTime(facts.conflict.savedAt)}.`
+    ? `The team's design was saved again on ${formatSavedTime(facts.conflict.savedAt)}.`
     : "The team's design was saved again.");
   return card('conflict', "This browser has changes that aren't in the team's saved design.", lines, ['useSaved', 'keepChanges']);
 }

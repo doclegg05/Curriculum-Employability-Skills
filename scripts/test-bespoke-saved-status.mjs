@@ -103,7 +103,7 @@ test('state 5: a conflict names both times and offers the two choices', () => {
   check(facts({ matchesSave: false, conflict: { revision: 'r2', savedAt: CONFLICT_AT }, draftChangedAt: DRAFT_AT }),
     {
       kind: 'conflict', heading: "This browser has changes that aren't in the team's saved design.",
-      lines: [`The browser changes are from ${DRAFT_TEXT}.`, `The team's design was saved again ${CONFLICT_TEXT}.`],
+      lines: [`The browser changes are from ${DRAFT_TEXT}.`, `The team's design was saved again on ${CONFLICT_TEXT}.`],
       actions: ['useSaved', 'keepChanges'],
     }, 'Changes not saved');
 });
@@ -112,7 +112,7 @@ test('state 5: a conflict without a draft time leaves out the browser line', () 
   check(facts({ matchesSave: false, conflict: { revision: 'r2', savedAt: CONFLICT_AT } }),
     {
       kind: 'conflict', heading: "This browser has changes that aren't in the team's saved design.",
-      lines: [`The team's design was saved again ${CONFLICT_TEXT}.`], actions: ['useSaved', 'keepChanges'],
+      lines: [`The team's design was saved again on ${CONFLICT_TEXT}.`], actions: ['useSaved', 'keepChanges'],
     }, 'Changes not saved');
 });
 

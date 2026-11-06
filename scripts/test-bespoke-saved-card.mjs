@@ -102,12 +102,19 @@ async function paint(page, color) {
   await page.locator(`[data-color="${color}"]`).click();
 }
 const saves = calls => calls.filter(call => call.action === 'save');
+// Waits in Node for a fact about the fake service's calls.
+async function until(check, what, ms = 5000) {
+  for (const end = Date.now() + ms; !check();) {
+    if (Date.now() > end) throw new Error(`Timed out: ${what}`);
+    await new Promise(resolve => setTimeout(resolve, 25));
+  }
+}
 const conflict409 = (revision, savedAt) => ({reply: {status: 409, json: {ok: false, error: 'conflict', message: 'A newer design is saved.', revision, savedAt}}});
 // The design this page keeps as its browser draft: what the screen shows.
 const shownDesign = page => page.evaluate(key => JSON.parse(localStorage.getItem(key)).design, DRAFT_KEY);
 async function showsConflict(page, savedAgain) {
   await showsHeading(page, CONFLICT_HEADING);
-  assert.match(await cardText(page), new RegExp(`The team's design was saved again ${savedAgain}\\.`));
+  assert.match(await cardText(page), new RegExp(`The team's design was saved again on ${savedAgain}\\.`));
   await page.locator('#savedUseSaved').waitFor();
   await page.locator('#savedKeepChanges').waitFor();
   await showsBadge(page, 'Changes not saved');
@@ -144,6 +151,25 @@ try {
     await page.locator('#savedRetry').click();
     await savedState(page);
     assert.equal(calls.filter(call => call.action === 'open').length, 2, 'Try again opens again');
+  });
+
+  await scenario("state 2: a save for the team after a failed open shows the save and turns autosave back on", {
+    seed: {[SESSION_KEY]: session()},
+    autosave: {enabled: true, idleMs: 50, stepMs: 50},
+    hooks: {open: [{reply: {status: 503, json: {ok: false, error: 'store', message: 'The connected store could not complete this request.'}}}]}
+  }, async (page, calls) => {
+    await showsHeading(page, "We couldn't check your team's saved design.");
+    await paint(page, 'mauve');
+    await page.waitForTimeout(200);
+    assert.deepEqual(saves(calls), [], 'autosave stays off until a save is acknowledged');
+    const reply = saveResponse(page);
+    await saveControl(page).click();
+    await reply;
+    await savedState(page);
+    assert.match(await cardText(page), /Saved Friday, November 6 at 10:00 AM/, 'the card shows the new save time');
+    await paint(page, 'accent');
+    await until(() => saves(calls).length === 2, 'autosave sends the next change');
+    await showsBadge(page, 'Saved');
   });
 
   await scenario("state 3: an opened save shows its time, colors and the edit line", {seed: {[SESSION_KEY]: session()}}, async page => {

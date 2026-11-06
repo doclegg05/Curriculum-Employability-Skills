@@ -133,3 +133,73 @@ test('choiceLists with no save yet lists only the choices being edited', () => {
   assert.deepEqual(lists.map(list => list.title), ["Choices you're editing"]);
   assert.deepEqual(choiceLists({ saved: null, editing: null, converted: false, catalog: CATALOG }), []);
 });
+
+test('an acknowledged save after a failed open makes the card describe the save, and keeps it showing', () => {
+  const s = session();
+  const patch = editModule.afterAckedSave({ ...ui({ openPhase: 'failed' }), openFor: s }, s, 'key-2');
+  assert.deepEqual(patch, { openPhase: 'ready', openFor: s, openedKey: 'key-2' });
+  const facts = editFacts(s, { ...ui(), ...patch }, false);
+  const { card, badge } = savedStatus(facts);
+  assert.equal(card.kind, 'saved');
+  assert.equal(badge.text, 'Saved');
+});
+
+test('an acknowledged save for a session this page never opened is ready with the card closed', () => {
+  const s = session();
+  assert.deepEqual(editModule.afterAckedSave({ ...ui(), openFor: session() }, s, 'key-2'),
+    { openPhase: 'ready', openFor: s, openedKey: 'key-2', cardDismissed: true });
+});
+
+test('an acknowledged save for an open that already answered changes nothing about the opening', () => {
+  const s = session();
+  assert.deepEqual(editModule.afterAckedSave({ ...ui(), openFor: s }, s, 'key-2'), {});
+});
+
+// A fake page for replaceEachNamed: `conflict` is ui.cloudConflict while Keep these changes holds.
+function replaceRun({ answers, onAsk = () => {}, onSave = () => {} }) {
+  const page = { conflict: { revision: 'B', savedAt: 'b' }, asked: [], saved: [], stale: 0 };
+  return {
+    page,
+    run: async () => {
+      const { replaceEachNamed } = await import('../bespoke/replace-confirm.mjs');
+      await replaceEachNamed({
+        current: () => page.conflict,
+        ask: async named => { page.asked.push(named.revision); onAsk(page); return answers.shift() ?? false; },
+        save: async named => { page.saved.push(named.revision); onSave(page, named); },
+        onStale: () => { page.stale++; },
+      });
+    },
+  };
+}
+
+test('Replace it saves the version it named, and a 409 asks again about the newer one', async () => {
+  const { page, run } = replaceRun({
+    answers: [true, true],
+    onSave: (p, named) => { p.conflict = named.revision === 'B' ? { revision: 'C', savedAt: 'c' } : null; },
+  });
+  await run();
+  assert.deepEqual(page.asked, ['B', 'C']);
+  assert.deepEqual(page.saved, ['B', 'C']);
+});
+
+test('a newer save that lands while the question is open is never replaced by the earlier yes', async () => {
+  let first = true;
+  const { page, run } = replaceRun({
+    answers: [true, false],
+    onAsk: p => { if (first) { first = false; p.conflict = { revision: 'C', savedAt: 'c' }; } },
+  });
+  await run();
+  assert.deepEqual(page.saved, [], 'no save went through on the stale yes');
+  assert.deepEqual(page.asked, ['B', 'C'], 'the question was asked again about the newer save');
+  assert.equal(page.stale, 1, 'the team was told why it is asked again');
+});
+
+test('Cancel sends nothing, and a save that fails without a newer version stops asking', async () => {
+  const cancelled = replaceRun({ answers: [false] });
+  await cancelled.run();
+  assert.deepEqual(cancelled.page.saved, []);
+  const failed = replaceRun({ answers: [true, true] });
+  await failed.run();
+  assert.deepEqual(failed.page.saved, ['B']);
+  assert.deepEqual(failed.page.asked, ['B']);
+});

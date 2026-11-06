@@ -59,7 +59,7 @@ Fixed copy (the tests assert these exact strings; `<time>` is `formatSavedTime`)
 | 3 saved (edit) | saved | `You're looking at your team's saved design` | `Saved <time>`, EDIT_LINE; plus `Work from this browser before you entered the code is in ⋯ > Recover previous draft.` when `priorWork` | choices, ok | Saved |
 | 3 saved (view) | saved | `You're looking at this team's saved design` | `Saved <time>` | choices, ok | none |
 | 4 after a change | null | | | | Changes not saved / Saving… / Save failed |
-| 5 conflict | conflict | `This browser has changes that aren't in the team's saved design.` | `The browser changes are from <draft time>.` (only when `draftChangedAt`), `The team's design was saved again <time of conflict.savedAt>.` | useSaved, keepChanges | Changes not saved |
+| 5 conflict | conflict | `This browser has changes that aren't in the team's saved design.` | `The browser changes are from <draft time>.` (only when `draftChangedAt`), `The team's design was saved again on <time of conflict.savedAt>.` | useSaved, keepChanges | Changes not saved |
 | 6 ahead | ahead | `Your latest changes are being saved for the team` | none | none | Saving… |
 | 6 ahead failed | ahead | `Your latest changes are only in this browser.` | `Choose Save for the team to try again.` | ok | Save failed |
 | 7 empty, untouched | empty | `Your team hasn't saved a design yet.` | `You're looking at the starting presets.`, EDIT_LINE | ok | none |

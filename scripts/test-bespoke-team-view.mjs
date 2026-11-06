@@ -222,3 +222,11 @@ test('a view with nothing saved says so without the edit line', async () => {
   assert.equal(card.kind, 'empty');
   assert.equal(card.lines.includes(EDIT_LINE), false);
 });
+
+test('a view with an unreadable save time shows the saved card without a time instead of breaking', async () => {
+  const view = createTeamView(viewHost({ request: async () => ({ ok: true, savedAt: 'not a time', selection: SELECTION }) }));
+  await view.open(LINK);
+  const { card } = view.status();
+  assert.equal(card.kind, 'saved');
+  assert.equal(card.lines.some(line => line.startsWith('Saved ')), false);
+});
