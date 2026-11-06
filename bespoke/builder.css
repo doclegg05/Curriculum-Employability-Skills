@@ -291,6 +291,7 @@
 .save-badge[data-tone=ok]{border-color:#2f8f46;background:#eef8f0;color:#1d5c2e}
 .save-badge[data-tone=warn]{border-color:#ad8806;background:#fff8e1;color:#5c4700}
 .save-badge[data-tone=error]{border-color:var(--focus);background:#fff4f0;color:#6d2434}
+@media(max-width:760px){.save-badge{min-height:44px}}
 #choicesDialog{max-width:560px;max-height:85vh;overflow:auto}
 .choices-block h3{margin:0 0 8px;font-size:var(--fs-md)}.choices-block h4{margin:14px 0 4px;font-size:var(--fs-sm);color:var(--muted)}.choices-block+.choices-block{border-top:1px solid var(--line);margin-top:18px;padding-top:18px}
 .choices-list{display:grid;grid-template-columns:minmax(120px,max-content) 1fr;gap:4px 14px;margin:0;font-size:var(--fs-sm)}.choices-list dt{color:var(--muted)}.choices-list dd{margin:0}
