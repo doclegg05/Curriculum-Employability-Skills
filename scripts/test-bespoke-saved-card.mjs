@@ -36,8 +36,25 @@ const session = (fields = {}) => JSON.stringify({lessonId: LESSON.id, editCode: 
 const server = await createDevServer({port: 0});
 
 function deferred() { let resolve; const promise = new Promise(r => { resolve = r; }); return {promise, resolve}; }
-// A held request: `arrived` settles when the request reaches the fake service, `release()` lets it answer.
-function hold() { const arrived = deferred(), gate = deferred(); return {arrived: arrived.promise, release: gate.resolve, wait: () => { arrived.resolve(); return gate.promise; }}; }
+// A bare Node promise has no Playwright timeout, and the browser and dev server keep Node alive,
+// so a request the page never sends would hang the quality gate forever. Fail with a message instead.
+function within(promise, what, ms = 10000) {
+  let timer;
+  const limit = new Promise((_, reject) => { timer = setTimeout(() => reject(new Error(`Timed out after ${ms} ms: ${what}`)), ms); });
+  return Promise.race([promise, limit]).finally(() => clearTimeout(timer));
+}
+// A held request: `reached()` settles when the request reaches the fake service, `release()` lets it answer.
+function hold(action) {
+  const arrived = deferred(), gate = deferred();
+  return {reached: () => within(arrived.promise, `the page never sent its ${action} request`), release: gate.resolve, wait: () => { arrived.resolve(); return gate.promise; }};
+}
+// What the page showed when a scenario failed, so a CI log explains the failure without a rerun.
+async function pageState(page, calls, consoleErrors) {
+  const panel = await page.locator('#stepPanel').innerText({timeout: 2000}).catch(() => '(unreadable)');
+  return `\n  step panel: ${panel.replace(/\s+/g, ' ').slice(0, 300)}` +
+    `\n  service calls: ${calls.map(call => call.action).join(', ') || 'none'}` +
+    `\n  console errors: ${consoleErrors.join(' | ') || 'none'}`;
+}
 
 // The fake service answers from `store`; `hooks[action]` may hold a request or replace its answer.
 async function scenario(name, {seed = {}, local = false, autosave = {enabled: false}, store = {}, hooks = {}}, run) {
@@ -77,11 +94,17 @@ async function scenario(name, {seed = {}, local = false, autosave = {enabled: fa
       return route.fulfill({response});
     });
     const page = await context.newPage();
+    const consoleErrors = [];
     page.on('pageerror', error => errors.push(error.message));
+    page.on('console', message => { if (message.type() === 'error') consoleErrors.push(message.text()); });
     page.on('dialog', dialog => dialog.accept());
     page.setDefaultTimeout(10000);
-    await page.goto(local ? server.baseUrl + '/bespoke/' : 'https://bespoke.test/bespoke/');
-    await run(page, calls);
+    try {
+      await page.goto(local ? server.baseUrl + '/bespoke/' : 'https://bespoke.test/bespoke/');
+      await run(page, calls);
+    } catch (error) {
+      throw new Error(`${name}: ${error.message}${await pageState(page, calls, consoleErrors)}`, {cause: error});
+    }
     assert.deepEqual(errors, []);
     assert.deepEqual(unexpected, []);
     console.log(`PASS ${name}`);
@@ -131,9 +154,9 @@ const saveResponse = page => page.waitForResponse(response => response.url().end
 
 try {
   {
-    const open = hold();
+    const open = hold('open');
     await scenario("state 1: the card says checking until the service answers", {seed: {[SESSION_KEY]: session()}, hooks: {open: [open]}}, async page => {
-      await open.arrived;
+      await open.reached();
       await showsHeading(page, "Checking your team's saved design…");
       await showsBadge(page, 'Checking…');
       assert.doesNotMatch(await cardText(page), /saved design$|hasn't saved/m, 'nothing claims a state while checking');
@@ -189,7 +212,7 @@ try {
   });
 
   {
-    const save = hold();
+    const save = hold('save');
     await scenario("state 4: an edit closes the card and the badge tracks the save", {seed: {[SESSION_KEY]: session()}, hooks: {save: [save]}}, async page => {
       await savedState(page);
       await paint(page, 'mauve');
@@ -197,7 +220,7 @@ try {
       await showsBadge(page, 'Changes not saved');
       const reply = saveResponse(page);
       await saveControl(page).click();
-      await save.arrived;
+      await save.reached();
       await showsBadge(page, 'Saving…');
       save.release();
       await reply;
@@ -207,13 +230,13 @@ try {
   }
 
   {
-    const save = hold();
+    const save = hold('save');
     await scenario("state 4: editing during a save leaves Changes not saved", {seed: {[SESSION_KEY]: session()}, hooks: {save: [save]}}, async page => {
       await savedState(page);
       await paint(page, 'mauve');
       const reply = saveResponse(page);
       await saveControl(page).click();
-      await save.arrived;
+      await save.reached();
       await paint(page, 'accent');
       save.release();
       await reply;
@@ -223,7 +246,7 @@ try {
   }
 
   {
-    const save = hold();
+    const save = hold('save');
     // Only the local test page lets a session change lessons while a save is pending.
     // The local test page shows the badge only, never the card (ledger R6).
     await scenario("state 4: a late answer after switching lessons is ignored", {local: true, hooks: {save: [save]}}, async page => {
@@ -233,7 +256,7 @@ try {
       await showsBadge(page, 'Changes not saved');
       const reply = saveResponse(page);
       await saveControl(page).click();
-      await save.arrived;
+      await save.reached();
       await builderDestination(page, 'Start');
       await page.locator('#lessonSelect').selectOption('goal-setting');
       save.release();
@@ -248,13 +271,13 @@ try {
   }
 
   {
-    const save = hold();
+    const save = hold('save');
     await scenario("state 6: browser work ahead of its own save is saved at once", {
       seed: {[SESSION_KEY]: session({baseSelectionKey: 'an older key'}), [DRAFT_KEY]: draft(builtDesign)},
       autosave: {enabled: true, idleMs: 30000, stepMs: 30000},
       hooks: {save: [save]}
     }, async (page, calls) => {
-      await save.arrived;
+      await save.reached();
       const opened = calls.find(call => call.action === 'open'), saved = calls.find(call => call.action === 'save');
       assert.ok(saved.at - opened.at < 1000, 'the save starts within a second of the open');
       await showsHeading(page, 'Your latest changes are being saved for the team');

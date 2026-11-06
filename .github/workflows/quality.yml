@@ -22,6 +22,7 @@ jobs:
     # cannot install Chromium there ("Playwright does not support chromium on ubuntu26.04-x64").
     # Return to ubuntu-latest once the pinned Playwright supports the newer image.
     runs-on: ubuntu-24.04
+    # GitHub's default is 6 hours. Leave room for the gate's own 35-minute limit plus setup.
     timeout-minutes: 45
     steps:
       - uses: actions/checkout@v4
@@ -39,15 +40,8 @@ jobs:
           if [ -f .gitleaks.toml ]; then CONFIG_ARG="--config .gitleaks.toml"; fi
           ./gitleaks detect --source . $CONFIG_ARG --no-banner --redact --verbose
 
-      - name: "TEMP diagnose saved-card hang"
-        continue-on-error: true
-        timeout-minutes: 10
-        run: |
-          npm ci
-          npx playwright install --with-deps chromium
-          rc=0; DEBUG=pw:api timeout -k 10 240 node scripts/test-bespoke-saved-card.mjs || rc=$?; echo "saved-card exit=$rc"
-
       - name: repo quality gate
+        # Main takes 16 to 21 minutes (November 2026). A hung browser test fails here instead of running for hours.
         timeout-minutes: 35
         run: |
           if [ -x scripts/quality.sh ]; then
