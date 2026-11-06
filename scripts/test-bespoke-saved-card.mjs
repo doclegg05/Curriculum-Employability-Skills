@@ -70,7 +70,11 @@ async function scenario(name, {seed = {}, local = false, autosave = {enabled: fa
       if (u.pathname === '/api/bespoke') return answer(route, route.request().postDataJSON());
       if (local) return u.origin === server.baseUrl ? route.continue() : route.abort();
       if (u.pathname === '/bespoke/handoff-config.json') return route.fulfill({json: {apiBase: 'https://bespoke.test/api/bespoke'}});
-      return route.fulfill({response: await route.fetch({url: server.baseUrl + u.pathname + u.search, headers: {...route.request().headers(), origin: server.baseUrl}})});
+      let response;
+      try { response = await route.fetch({url: server.baseUrl + u.pathname + u.search, headers: {...route.request().headers(), origin: server.baseUrl}}); }
+      // At teardown the static server can reset the connection: fail that one request instead of crashing Node.
+      catch { return route.abort().catch(() => { /* The page or context is already closed. */ }); }
+      return route.fulfill({response});
     });
     const page = await context.newPage();
     page.on('pageerror', error => errors.push(error.message));
