@@ -24,6 +24,7 @@ FINISH: unreviewed and undocumented is unfinished; this build ends with the fini
  <div class="bar-end" id="barEnd">
   <div class="undo-actions"><button class="btn btn-ghost" id="btnUndo" aria-keyshortcuts="Control+Z Meta+Z" type="button">Undo</button><button class="btn btn-ghost" id="btnRedo" aria-keyshortcuts="Control+Shift+Z Meta+Shift+Z Control+Y" type="button">Redo</button></div>
   <p id="saveStatus" class="save-chip"></p>
+  <button type="button" class="save-badge" id="saveBadge" aria-live="polite" hidden></button>
   <button class="btn btn-primary" id="btnSave" type="button">Save for the team</button>
   <details class="more-menu" id="filesRecovery"><summary class="btn btn-ghost" aria-label="More actions" title="More actions"><span aria-hidden="true">⋯</span></summary><div class="more-menu-list">
    <p id="teamSessionStatus" class="menu-status"></p>
@@ -54,6 +55,7 @@ FINISH: unreviewed and undocumented is unfinished; this build ends with the fini
  </div>
  <section class="preview-pane" id="previewPane" aria-label="Cumulative design preview">
   <div id="startingFrom" class="starting-from" tabindex="-1"><span id="startingFromText"></span> <button id="btnSwapLook" class="text-link" type="button">Swap starting look</button></div>
+  <section id="savedCard" class="saved-card" role="region" aria-label="Saved design" aria-live="polite" hidden></section>
   <div class="preview-heading"><div><h2 id="previewName">Title slide</h2><span class="canvas-hint" aria-hidden="true">Click any part of the slide to edit it.</span></div><div class="preview-actions"><button class="btn btn-secondary" id="btnPresent" type="button">Present</button><button class="btn btn-secondary" id="btnTryVersion" type="button">Try another version</button><button class="btn btn-secondary" id="btnCompareVersions" type="button" hidden>Compare A &amp; B</button></div></div><p id="versionStatus" class="version-status" role="status" hidden></p>
   <div class="preview-tabs" id="previewTabs" role="tablist" aria-label="Slide preview"><button type="button" role="tab" data-view="title" data-rail-kind="title" aria-selected="true" aria-controls="modelStage">Title</button><button type="button" role="tab" data-view="divider" data-rail-kind="divider" aria-selected="false" aria-controls="modelStage">Divider</button><button type="button" role="tab" data-view="cards" data-rail-kind="cards" aria-selected="false" aria-controls="modelStage">Text boxes</button><button type="button" role="tab" data-view="video" data-rail-kind="video" aria-selected="false" aria-controls="modelStage">Video</button><button type="button" role="tab" data-view="activity" data-rail-kind="activity" aria-selected="false" aria-controls="modelStage">Activity</button></div>
   <div id="previewToolbarMount"><section id="contextToolbar" class="context-toolbar" aria-label="Editing toolbar"></section><p id="scopeLine" class="scope-line" hidden></p></div>
@@ -67,6 +69,7 @@ FINISH: unreviewed and undocumented is unfinished; this build ends with the fini
  <section id="showcase" class="showcase" aria-label="Pick a look" hidden></section>
 </main>
 <dialog id="openDialog" aria-labelledby="openDialogTitle"><form id="openForm"><h2 id="openDialogTitle">Open your team design</h2><p>Type the 8-character team code from your team's OneDrive folder. Lost it? Ask Britt for a new code.</p><label class="field">Lesson<select id="openLesson" required></select></label><label class="field">Team code<input id="openEditCode" type="password" autocomplete="off" minlength="8" maxlength="128" required></label><p id="openError" role="status"></p><div class="dialog-actions"><button type="submit" class="btn btn-primary" id="openConfirm">Open</button><button type="button" class="btn btn-secondary" id="openCancel">Cancel</button></div></form></dialog>
+<dialog id="choicesDialog" aria-labelledby="choicesTitle"><h2 id="choicesTitle">All choices</h2><div id="choicesLists"></div><form method="dialog" class="dialog-actions"><button class="btn btn-secondary" id="choicesClose">Close</button></form></dialog>
 <p id="toast" class="toast" role="status" aria-live="polite"></p>
 <script type="module" src="./builder-app.mjs"></script>
 </body></html>
