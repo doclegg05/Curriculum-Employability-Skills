@@ -125,7 +125,7 @@ export function createTeamView(host) {
 
   async function refresh() {
     if (!session?.code) return;
-    await load(false);
+    await load(!session.opened);
     host.render();
   }
 
@@ -168,5 +168,5 @@ export function createTeamView(host) {
     if (badgeButton) renderBadge(badgeButton, null, null);
   }
 
-  return { status, drawCard, active: () => Boolean(session), stored, end, open, refresh, draw };
+  return { status, drawCard, converted: () => Boolean(session?.converted), active: () => Boolean(session), stored, end, open, refresh, draw };
 }

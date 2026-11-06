@@ -4,7 +4,7 @@ import assert from 'node:assert/strict';
 import test from 'node:test';
 
 const editModule = await import('../bespoke/saved-session.mjs');
-const { editFacts, validTime } = editModule;
+const { editFacts, validTime, choiceLists } = editModule;
 const { savedStatus } = await import('../bespoke/saved-status.mjs');
 
 const SAVED_AT = '2026-11-06T14:10:00Z';
@@ -105,4 +105,31 @@ test('the replace question names the competing save time', () => {
 test('askReplace asks exactly the agreed question', async () => {
   const { replaceQuestion } = await import('../bespoke/replace-confirm.mjs');
   assert.equal(replaceQuestion('Thursday, November 5 at 2:15 PM'), 'This will replace the design saved Thursday, November 5 at 2:15 PM. Replace it?');
+});
+
+const CATALOG = (await import('../bespoke/builder-catalog.json', { with: { type: 'json' } })).default;
+const { applyPreset, defaultDesign } = await import('../bespoke/builder-model.mjs');
+const savedDesign = defaultDesign(CATALOG), editedDesign = applyPreset(CATALOG, 'modern', defaultDesign(CATALOG));
+
+test('choiceLists gives the saved design alone when nothing is being edited', () => {
+  const lists = choiceLists({ saved: savedDesign, editing: null, converted: false, catalog: CATALOG });
+  assert.deepEqual(lists.map(list => list.title), ['Choices in the saved design']);
+  assert.ok(lists[0].summary.length > 0);
+});
+
+test('choiceLists puts the saved design first, then the edited one', () => {
+  const lists = choiceLists({ saved: savedDesign, editing: editedDesign, converted: false, catalog: CATALOG });
+  assert.deepEqual(lists.map(list => list.title), ['Choices in the saved design', "Choices you're editing"]);
+  assert.notDeepEqual(lists[0].summary, lists[1].summary);
+});
+
+test('choiceLists titles a converted save "with updates"', () => {
+  const [list] = choiceLists({ saved: savedDesign, editing: null, converted: true, catalog: CATALOG });
+  assert.equal(list.title, 'Choices in the saved design, with updates');
+});
+
+test('choiceLists with no save yet lists only the choices being edited', () => {
+  const lists = choiceLists({ saved: null, editing: editedDesign, converted: false, catalog: CATALOG });
+  assert.deepEqual(lists.map(list => list.title), ["Choices you're editing"]);
+  assert.deepEqual(choiceLists({ saved: null, editing: null, converted: false, catalog: CATALOG }), []);
 });

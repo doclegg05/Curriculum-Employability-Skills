@@ -19,7 +19,8 @@ import { createTeamView, isShareHash, isSnapshotHash, viewLinkToOpen } from './t
 import { pendingForSession } from './team-session.mjs';
 import { guideMark, indexForMark, keepsGuide } from './guide/questions.mjs';
 import { buildQuestions, normalizeGuide } from './guide/questions.mjs';
-import { editFacts, drawSavedStatus, conflictSavedText } from './saved-session.mjs';
+import { editFacts, drawSavedStatus, conflictSavedText, choiceLists } from './saved-session.mjs';
+import { openChoices } from './saved-card.mjs';
 import { askReplace, OPEN_CONFLICT_NOTICE, CHOOSE_VERSION_NOTICE, SAVE_CONFLICT_NOTICE, REPLACE_CONFLICT_NOTICE, KEPT_CHANGES_NOTICE, RECOVERY_FULL_NOTICE } from './replace-confirm.mjs';
 
 // Keep the established SPOKES identity. Preview selection edits the cumulative
@@ -66,7 +67,7 @@ const AUTOSAVE=Object.freeze({enabled:true,idleMs:30000,stepMs:1500,...(window._
 let startupTeamLink=(()=>{const v=location.hash.startsWith('#team=')?location.hash.slice(6):'';if(v)history.replaceState(null,'',location.pathname+location.search);return v;})();
 let startupViewLink=(()=>{const v=location.hash.startsWith('#view=')?location.hash.slice(6):'';if(v)history.replaceState(null,'',location.pathname+location.search);return v;})();
 const teamView=createTeamView({request:(action,fields)=>handoffRequest(action,fields),apply:selection=>applySelectionPayload(selection),parseLink:value=>parseTeamLink(value),generation:()=>draftGeneration,get storage(){return sessionStorage;},render:()=>render(),
- lessonTitle:id=>findMeta(state.meta.lessons,id)?.title||'',builder:()=>state.builderName.trim()||state.spokespersonName.trim()||'the spokesperson',land:()=>{state.step=stepIndex('review');},note:text=>{ui.restoreNote=text;},catalog:()=>catalog,design:()=>state.design,choices:()=>{},enter:lessonId=>{ui.mode='view';if(lessonId)state.lessonId=lessonId;}});
+ lessonTitle:id=>findMeta(state.meta.lessons,id)?.title||'',builder:()=>state.builderName.trim()||state.spokespersonName.trim()||'the spokesperson',land:()=>{state.step=stepIndex('review');},note:text=>{ui.restoreNote=text;},catalog:()=>catalog,design:()=>state.design,choices:()=>showChoices(),enter:lessonId=>{ui.mode='view';if(lessonId)state.lessonId=lessonId;}});
 const clone = value => structuredClone(value);
 const escapeHtml = value => String(value ?? '').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
 // Every render shows the lesson's name as its title until the team types their own.
@@ -257,6 +258,19 @@ const findOption=(family,slug)=>state.library?.families?.[family]?.options.find(
     keepChanges: () => { ui.keptChanges = true; fileNotice(KEPT_CHANGES_NOTICE); updateCloudChrome(); }
   };
 
+  // Views list the design they applied; the editor lists its save, then what is being edited when that differs.
+  function showChoices() {
+    const viewing = !isLeadSession() && teamView.active();
+    const lists = choiceLists({
+      saved: viewing ? state.design : ui.savedSnapshot,
+      editing: !viewing && hasUnsavedTeamWork() ? state.design : null,
+      converted: viewing ? teamView.converted() : ui.convertedUnsaved,
+      catalog
+    });
+    if (lists.length) openChoices(byId("choicesDialog"), lists);
+  }
+  savedCardHandlers.choices = showChoices;
+
   function updateSavedCard() {
     if (!isLeadSession() && teamView.active()) { teamView.drawCard({ section: byId("savedCard"), badgeButton: byId("saveBadge") }); return; }
     const session = ui.teamSession;
@@ -266,7 +280,7 @@ const findOption=(family,slug)=>state.library?.families?.[family]?.options.find(
     // The competing-versions choice stays until a button is clicked.
     const choosing = Boolean(ui.cloudConflict) && !ui.keptChanges;
     if (shown && !choosing && ui.openPhase === "ready" && currentSelectionKey() !== ui.openedKey) ui.cardDismissed = true;
-    drawSavedStatus({ section: byId("savedCard"), button: byId("saveBadge"), facts: shown ? savedFacts() : null, localPreview: ui.localPreview, catalog, snapshot: ui.savedSnapshot, handlers: savedCardHandlers });
+    drawSavedStatus({ section: byId("savedCard"), button: byId("saveBadge"), facts: shown ? savedFacts() : null, localPreview: ui.localPreview, catalog, snapshot: ui.savedSnapshot, handlers: savedCardHandlers, onBadge: showChoices });
   }
 
   // A successful open: the card describes this session's design as it now stands.

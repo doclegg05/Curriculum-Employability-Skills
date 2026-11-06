@@ -387,6 +387,25 @@ try {
     assert.deepEqual(saves(calls).map(call => call.expectedRevision), [REVISION, NEXT_REVISION], 'each yes replaced exactly the version it named');
   });
 
+  await scenario('See all choices lists the saved design', {seed: {[SESSION_KEY]: session()}}, async page => {
+    await savedState(page);
+    await page.locator('#savedChoices').click();
+    const titles = page.locator('#choicesLists h3');
+    assert.deepEqual(await titles.allInnerTexts(), ['Choices in the saved design']);
+    assert.match(await page.locator('#choicesLists').innerText(), /Video/);
+    assert.match(await page.locator('#choicesLists').innerText(), /Heading words/);
+  });
+
+  await scenario('after an edit, See all choices shows both, saved first', {seed: {[SESSION_KEY]: session()}}, async page => {
+    await savedState(page);
+    await paint(page, 'mauve');
+    await showsBadge(page, 'Changes not saved');
+    await page.locator('#saveBadge').click();
+    assert.deepEqual(await page.locator('#choicesLists h3').allInnerTexts(), ['Choices in the saved design', "Choices you're editing"]);
+    const [saved, editing] = await page.locator('#choicesLists .choices-block').allInnerTexts();
+    assert.notEqual(saved, editing, 'the edited color shows only in the list of choices being edited');
+  });
+
   await scenario('state 10: a view link shows the card and See all choices, no Save', {
     seed: {[SESSION_KEY]: session()},
     hooks: {open: [{reply: {json: {ok: true, access: 'view', revision: REVISION, savedAt: SAVED_AT, selection: savedSelection}}}]}
@@ -395,6 +414,9 @@ try {
     await page.locator('#savedChoices').waitFor();
     await page.locator('#savedOk').waitFor();
     await page.locator('#saveBadge').waitFor({state: 'hidden'});
+    await page.locator('#savedChoices').click();
+    assert.deepEqual(await page.locator('#choicesLists h3').allInnerTexts(), ['Choices in the saved design']);
+    await page.locator('#choicesClose').click();
     assert.doesNotMatch(await cardText(page), /Make it yours|Save for the team/);
     const enabledSave = await page.getByText('Save for the team').evaluateAll(nodes => nodes.filter(node => node.offsetParent && !node.disabled).length);
     assert.equal(enabledSave, 0, 'no enabled Save for the team control');

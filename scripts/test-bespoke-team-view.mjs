@@ -196,6 +196,18 @@ test('a failed view open says we could not check this team\'s design, and Try ag
   assert.equal(view.status().card.kind, 'saved');
 });
 
+test('Try again after a failed first open lands on Review like a first open', async () => {
+  const answers = [{ ok: false, error: 'network' }];
+  const host = viewHost({ request: async () => answers.shift() ?? { ok: true, savedAt: SAVED_AT, selection: SELECTION } });
+  const view = createTeamView(host);
+  await view.open(LINK);
+  assert.equal(host.landed, 0);
+  await view.refresh();
+  assert.equal(host.landed, 1);
+  await view.refresh();
+  assert.equal(host.landed, 1, 'a later refresh keeps the viewer where they are');
+});
+
 test('an incomplete link and an ended session show no card', async () => {
   const view = createTeamView(viewHost());
   assert.deepEqual(view.status(), { card: null, badge: null });
