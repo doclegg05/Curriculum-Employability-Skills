@@ -114,7 +114,7 @@ try {
     await save(second);
     await clickMenuItem(first, '#btnOpen');
     await first.locator('#fileStatus').filter({ hasText: 'A newer shared version exists' }).waitFor();
-    await first.locator('#btnLoadLatest').click();
+    await first.locator('#savedUseSaved').click();
     await first.locator('#toast').filter({ hasText: 'Opened the latest shared design.' }).waitFor();
     const recovery = await first.evaluate(() => JSON.parse(localStorage.getItem('bespoke-previous-draft-v2')));
     assert.deepEqual(recovery.design, firstDesign, 'Recovery must retain the design being replaced in this tab, not a different tab’s storage.');
@@ -152,7 +152,7 @@ try {
     assert.equal((await api(server)).selection.design.roles.sidebar, 'royal', 'Explicit Save releases the review pause across reload.');
   });
 
-  await scenario('a delayed Load latest response cannot replace a newer browser draft', async ({ makePage, server }) => {
+  await scenario('a delayed Use the team saved design response cannot replace a newer browser draft', async ({ makePage, server }) => {
     const page = await makePage(); await team(page); await save(page);
     const other = await makePage(); await paint(other, 'mauve'); await save(other);
     await paint(page, 'accent'); await clickMenuItem(page, '#btnOpen');
@@ -162,7 +162,7 @@ try {
       if (route.request().postDataJSON()?.action !== 'open' || intercepted) return route.fallback();
       intercepted = true; const response = await route.fetch(); pending.resolve(); await release.promise; await route.fulfill({ response });
     });
-    await page.locator('#btnLoadLatest').click(); await pending.promise;
+    await page.locator('#savedUseSaved').click(); await pending.promise;
     await page.locator('.more-menu > summary').click(); await page.locator('#btnClear').click();
     const current = await draft(page);
     const reply = page.waitForResponse(response => response.url().endsWith('/api/bespoke') && response.request().postDataJSON()?.action === 'open');

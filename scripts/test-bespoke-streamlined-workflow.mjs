@@ -613,7 +613,7 @@ try {
     await clickMenuItem(second, '#btnHistory'); await second.locator('#historyPanel button').first().waitFor();
     assert.equal(await second.locator('#btnHistory').getAttribute('aria-expanded'), 'true', 'Previous versions is not intercepted by recovery overlay');
     await clickMenuItem(second, '#btnHistory');
-    await second.locator('#btnLoadLatest').click();
+    await second.locator('#savedUseSaved').click();
     await second.locator('#toast').filter({ hasText: 'Opened the latest shared design.' }).waitFor();
     assert.deepEqual(await design(second), (await remote(server)).selection.design);
     await upload(second, recovery);

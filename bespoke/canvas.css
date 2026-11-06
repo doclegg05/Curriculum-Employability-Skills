@@ -68,7 +68,7 @@ body:has(.workspace[data-editor=true]) #btnMenuOptions{display:flex}
 /* Notices stay slim; the session strip appears only when it holds a decision. */
 .notice{padding:8px 16px;font-size:var(--fs-sm)}
 .team-session{display:none;padding:8px 16px;background:#fff5d7;border-bottom:1px solid #d3b257;font-size:var(--fs-sm)}
-.team-session:has(#btnLoadLatest:not([hidden]),#btnKeepLocal:not([hidden]),#btnCheckStatus:not([hidden]),#historyPanel:not([hidden]),#lastReviewReceipt:not([hidden])){display:flex}
+.team-session:has(#btnCheckStatus:not([hidden]),#historyPanel:not([hidden]),#lastReviewReceipt:not([hidden])){display:flex}
 .team-session[hidden]{display:none}
 .team-session .review-receipt{margin:0}
 

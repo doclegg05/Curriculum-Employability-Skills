@@ -50,7 +50,7 @@ test('untouched presets means no save and no meaningful design', () => {
   assert.equal(editFacts(session(), ui({ meaningfulDesign: false }), false).untouchedPresets, false);
 });
 
-test('the open, save and card flags pass through; conflict waits for its own task', () => {
+test('the open, save and card flags pass through; no conflict means none', () => {
   const facts = editFacts(session(), ui({ openPhase: 'failed', saveFailed: true, convertedUnsaved: true, aheadSaving: true, priorWork: true, cardDismissed: true }), true);
   assert.deepEqual(
     { phase: facts.phase, saveFailed: facts.saveFailed, converted: facts.converted, aheadSaving: facts.aheadSaving, priorWork: facts.priorWork, dismissed: facts.dismissed, conflict: facts.conflict, keptChanges: facts.keptChanges, draftChangedAt: facts.draftChangedAt },
@@ -65,4 +65,44 @@ test('the local test page keeps the badge but never shows the card', () => {
   assert.equal(local.card, null);
   assert.equal(local.badge.text, 'Saved');
   assert.deepEqual(savedView(null, { localPreview: false }), { card: null, badge: null });
+});
+
+const CONFLICT_AT = '2026-11-05T19:15:00Z';
+
+test('a competing save and Keep these changes pass through to the facts', () => {
+  const conflict = { revision: 'r2', savedAt: CONFLICT_AT };
+  const waiting = editFacts(session(), ui({ cloudConflict: conflict }), true);
+  assert.deepEqual(waiting.conflict, { revision: 'r2', savedAt: CONFLICT_AT });
+  assert.equal(waiting.keptChanges, false);
+  assert.equal(savedStatus(waiting).card.kind, 'conflict');
+  assert.deepEqual(savedStatus(waiting).card.actions, ['useSaved', 'keepChanges']);
+  const kept = editFacts(session(), ui({ cloudConflict: conflict, keptChanges: true }), true);
+  assert.equal(kept.keptChanges, true);
+  assert.equal(savedStatus(kept).card, null, 'Keep these changes closes the choice');
+  assert.equal(savedStatus(kept).badge.text, 'Changes not saved');
+});
+
+test('a competing save with a malformed time names no date instead of throwing', () => {
+  const facts = editFacts(session(), ui({ cloudConflict: { revision: 'r2', savedAt: 'garbage' } }), true);
+  assert.equal(facts.conflict.savedAt, null);
+  const { card } = savedStatus(facts);
+  assert.equal(card.kind, 'conflict');
+  assert.doesNotMatch(card.lines.join(' '), /December 31|1969|1970/);
+});
+
+test('the local test page shows the competing-versions choice, since nothing else offers it', () => {
+  const { savedView } = editModule;
+  const facts = editFacts(session(), ui({ cloudConflict: { revision: 'r2', savedAt: CONFLICT_AT } }), true);
+  assert.equal(savedView(facts, { localPreview: true }).card.kind, 'conflict');
+});
+
+test('the replace question names the competing save time', () => {
+  const { conflictSavedText } = editModule;
+  assert.equal(conflictSavedText({ revision: 'r2', savedAt: CONFLICT_AT }), 'Thursday, November 5 at 2:15 PM');
+  assert.equal(conflictSavedText({ revision: 'r2', savedAt: null }), 'most recently');
+});
+
+test('askReplace asks exactly the agreed question', async () => {
+  const { replaceQuestion } = await import('../bespoke/replace-confirm.mjs');
+  assert.equal(replaceQuestion('Thursday, November 5 at 2:15 PM'), 'This will replace the design saved Thursday, November 5 at 2:15 PM. Replace it?');
 });

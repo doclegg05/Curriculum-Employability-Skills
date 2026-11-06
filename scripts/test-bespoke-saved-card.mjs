@@ -18,6 +18,12 @@ const SAVED_AT = '2026-11-06T14:10:00Z', NEXT_SAVED_AT = '2026-11-06T15:00:00Z';
 const LESSON = {id: 'money-management', title: 'Money Management'};
 const TEAM = {name: 'Saved team', spokesperson: {name: 'Saved lead', email: 'saved@example.org'}};
 const PRIOR_WORK_LINE = 'Work from this browser before you entered the code is in ⋯ > Recover previous draft.';
+// State 5: this browser last saw revision A; the team saved B (REVISION) since, and C (NEXT_REVISION) during the replace.
+const OLD_REVISION = 'a'.repeat(40), FINAL_REVISION = 'd'.repeat(40), FINAL_SAVED_AT = '2026-11-06T16:00:00Z';
+const BACKUP_DRAFT_KEY = 'bespoke-previous-' + 'draft-v2';
+const CONFLICT_HEADING = "This browser has changes that aren't in the team's saved design.";
+const FULL_RECOVERY_NOTICE = "Your browser changes couldn't be kept as a recovery copy, so the saved design was not loaded. Download a backup first.";
+const replaceQuestion = time => `This will replace the design saved ${time}. Replace it?`;
 const base = defaultDesign(catalog);
 const selectionOf = design => ({schema: 'bespoke-selection/v2', date: '2026-11-06', lesson: LESSON, team: TEAM, design});
 const savedSelection = selectionOf(base);
@@ -47,7 +53,7 @@ async function scenario(name, {seed = {}, local = false, autosave = {enabled: fa
       for (const [key, value] of entries) localStorage.setItem(key, value);
     }, [Object.entries(seed), autosave]);
     const answer = async (route, body) => {
-      calls.push({action: body.action, lessonId: body.lessonId, at: Date.now()});
+      calls.push({action: body.action, lessonId: body.lessonId, expectedRevision: body.expectedRevision, at: Date.now()});
       const hook = hooks[body.action]?.shift?.();
       if (hook?.wait) await hook.wait();
       if (hook?.reply) return route.fulfill(hook.reply);
@@ -95,6 +101,21 @@ async function paint(page, color) {
   await page.locator('#colorRole').selectOption('sidebar');
   await page.locator(`[data-color="${color}"]`).click();
 }
+const saves = calls => calls.filter(call => call.action === 'save');
+const conflict409 = (revision, savedAt) => ({reply: {status: 409, json: {ok: false, error: 'conflict', message: 'A newer design is saved.', revision, savedAt}}});
+// The design this page keeps as its browser draft: what the screen shows.
+const shownDesign = page => page.evaluate(key => JSON.parse(localStorage.getItem(key)).design, DRAFT_KEY);
+async function showsConflict(page, savedAgain) {
+  await showsHeading(page, CONFLICT_HEADING);
+  assert.match(await cardText(page), new RegExp(`The team's design was saved again ${savedAgain}\\.`));
+  await page.locator('#savedUseSaved').waitFor();
+  await page.locator('#savedKeepChanges').waitFor();
+  await showsBadge(page, 'Changes not saved');
+}
+async function asks(page, time) {
+  await page.waitForFunction(text => { const d = document.querySelector('#replaceDialog'); return d?.open && d.textContent.includes(text); }, replaceQuestion(time));
+}
+const closed = page => page.waitForFunction(() => !document.querySelector('#replaceDialog')?.open);
 const saveResponse = page => page.waitForResponse(response => response.url().endsWith('/api/bespoke') && response.request().postDataJSON()?.action === 'save');
 
 try {
@@ -249,6 +270,91 @@ try {
     await showsHeading(page, "Opened your team's saved design with updates.");
     assert.match(await cardText(page), /These updates haven't been saved yet\./);
     await showsBadge(page, 'Changes not saved');
+  });
+  // Browser work made on revision A, while the team has saved B since.
+  const competing = {[SESSION_KEY]: session({revision: OLD_REVISION, baseSelectionKey: 'an older key'}), [DRAFT_KEY]: draft(builtDesign)};
+  const quickAutosave = {enabled: true, idleMs: 50, stepMs: 50};
+
+  await scenario('state 5: competing versions wait for a click', {seed: competing, autosave: quickAutosave}, async (page, calls) => {
+    await showsConflict(page, 'Friday, November 6 at 9:10 AM');
+    await page.waitForTimeout(200);
+    assert.deepEqual(saves(calls), [], 'nothing is saved while two versions compete');
+    assert.deepEqual((await shownDesign(page)).fonts, builtDesign.fonts, 'the screen still shows the browser work');
+  });
+
+  await scenario("state 5: Use the team's saved design keeps a recovery copy", {seed: competing, autosave: quickAutosave}, async (page, calls) => {
+    await showsConflict(page, 'Friday, November 6 at 9:10 AM');
+    await page.locator('#savedUseSaved').click();
+    await savedState(page);
+    const recovery = await page.evaluate(key => JSON.parse(localStorage.getItem(key)), BACKUP_DRAFT_KEY);
+    assert.deepEqual(recovery.design.fonts, builtDesign.fonts, 'the browser work is in the recovery copy');
+    assert.deepEqual((await shownDesign(page)).fonts, base.fonts, 'the screen shows the team save');
+    assert.deepEqual(saves(calls), []);
+  });
+
+  await scenario('state 5: a full recovery store stops the load', {seed: competing}, async (page, calls) => {
+    await showsConflict(page, 'Friday, November 6 at 9:10 AM');
+    await page.evaluate(key => {
+      const setItem = Storage.prototype.setItem;
+      Storage.prototype.setItem = function (name, value) {
+        if (name === key) throw new DOMException('The recovery store is full.', 'QuotaExceededError');
+        return setItem.call(this, name, value);
+      };
+    }, BACKUP_DRAFT_KEY);
+    await page.locator('#savedUseSaved').click();
+    await page.locator('#fileStatus').filter({hasText: FULL_RECOVERY_NOTICE}).waitFor();
+    assert.deepEqual((await shownDesign(page)).fonts, builtDesign.fonts, 'nothing was loaded over the browser work');
+    assert.equal(calls.filter(call => call.action === 'open').length, 1, 'the saved design was not fetched');
+    await showsHeading(page, CONFLICT_HEADING);
+  });
+
+  await scenario('state 5: a mid-session conflict reopens the choice', {
+    seed: {[SESSION_KEY]: session()},
+    hooks: {save: [conflict409(NEXT_REVISION, NEXT_SAVED_AT)]}
+  }, async page => {
+    await savedState(page);
+    await paint(page, 'mauve');
+    await page.locator('#savedCard').waitFor({state: 'hidden'});
+    await saveControl(page).click();
+    await showsConflict(page, 'Friday, November 6 at 10:00 AM');
+    await paint(page, 'accent');
+    await showsHeading(page, CONFLICT_HEADING);
+  });
+
+  await scenario('Replace it names one version', {
+    seed: competing,
+    autosave: quickAutosave,
+    hooks: {save: [conflict409(NEXT_REVISION, NEXT_SAVED_AT), {reply: {json: {ok: true, revision: FINAL_REVISION, savedAt: FINAL_SAVED_AT}}}]}
+  }, async (page, calls) => {
+    await showsConflict(page, 'Friday, November 6 at 9:10 AM');
+    await page.locator('#savedKeepChanges').click();
+    await page.locator('#savedCard').waitFor({state: 'hidden'});
+    await showsBadge(page, 'Changes not saved');
+    await saveControl(page).click();
+    await asks(page, 'Friday, November 6 at 9:10 AM');
+    await page.locator('#replaceCancel').click();
+    await closed(page);
+    await saveControl(page).click();
+    await asks(page, 'Friday, November 6 at 9:10 AM');
+    await page.keyboard.press('Escape');
+    await closed(page);
+    await page.waitForTimeout(200);
+    assert.deepEqual(saves(calls), [], 'Cancel, Escape and the paused autosave send nothing');
+
+    await page.reload();
+    await showsConflict(page, 'Friday, November 6 at 9:10 AM');
+    assert.deepEqual((await shownDesign(page)).fonts, builtDesign.fonts, 'the reload kept the browser work');
+    await page.locator('#savedKeepChanges').click();
+    await saveControl(page).click();
+    await asks(page, 'Friday, November 6 at 9:10 AM');
+    await page.locator('#replaceConfirm').click();
+    // The service moved to C before the replace arrived: the request named B only, and BeSpoke asks again about C.
+    await asks(page, 'Friday, November 6 at 10:00 AM');
+    assert.deepEqual(saves(calls).map(call => call.expectedRevision), [REVISION]);
+    await page.locator('#replaceConfirm').click();
+    await closed(page);
+    await showsBadge(page, 'Saved');
+    assert.deepEqual(saves(calls).map(call => call.expectedRevision), [REVISION, NEXT_REVISION], 'each yes replaced exactly the version it named');
   });
 } finally {
   await server.close();

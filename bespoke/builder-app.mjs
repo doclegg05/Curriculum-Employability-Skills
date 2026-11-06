@@ -19,7 +19,8 @@ import { createTeamView, isShareHash, isSnapshotHash, viewLinkToOpen } from './t
 import { pendingForSession } from './team-session.mjs';
 import { guideMark, indexForMark, keepsGuide } from './guide/questions.mjs';
 import { buildQuestions, normalizeGuide } from './guide/questions.mjs';
-import { editFacts, drawSavedStatus } from './saved-session.mjs';
+import { editFacts, drawSavedStatus, conflictSavedText } from './saved-session.mjs';
+import { askReplace, OPEN_CONFLICT_NOTICE, CHOOSE_VERSION_NOTICE, SAVE_CONFLICT_NOTICE, REPLACE_CONFLICT_NOTICE, KEPT_CHANGES_NOTICE, RECOVERY_FULL_NOTICE } from './replace-confirm.mjs';
 
 // Keep the established SPOKES identity. Preview selection edits the cumulative
 // design model; confirmed shared saves remain separate from browser drafts.
@@ -49,7 +50,7 @@ const teamIdentified = () => Boolean(state.teamName.trim() && state.spokesperson
 const state = {step:0,stepId:'start',meta:null,library:null,lessonId:'money-management',teamName:'',spokespersonName:'',spokespersonEmail:'',builderName:'',lessonTitle:'',lessonSubtitle:'',unspoken:'',editCode:'',previewView:'title',design:null,legacySelection:null,alternatives:null,changes:[],redo:[]};
 const ui = {onlySlide:false,mode:'view',renderedStep:null,previewPinned:false,teamSession:null,linkReplacedSession:null,cloudConflict:null,cloudBusy:false,autosavePaused:false,allowUnload:false,skipNextLocalSave:false,restoreNote:'',restoredFromLink:false,editCodeHash:'',activeRole:'sidebar',paintScope:'slide',themeScope:'slide',localPreview:false,editorRole:'title',sharedThemeOpen:false,meaningfulDesign:false,appliedLook:null,lookSnapshot:null,lookUndoAt:null,onStart:false,coordinatorAgreed:false};
 // The saved-design card and badge (saved-status.mjs): which open they describe and what it found.
-Object.assign(ui,{openPhase:null,openFor:null,openReplace:false,openedKey:'',savedSnapshot:null,cardDismissed:false,priorWork:false,saveFailed:false,aheadSaving:false,savingFor:null});
+Object.assign(ui,{openPhase:null,openFor:null,openReplace:false,openedKey:'',savedSnapshot:null,cardDismissed:false,keptChanges:false,priorWork:false,saveFailed:false,aheadSaving:false,savingFor:null});
 ui.guide = null;
 let guide = null;
 let previewEditor = null;
@@ -211,7 +212,7 @@ const findOption=(family,slug)=>state.library?.families?.[family]?.options.find(
   }
 
   function canAutosave(ready = autosaveReady) {
-    return AUTOSAVE.enabled && ready && ui.openPhase === "ready" && isLeadSession() && Boolean(ui.teamSession) &&
+    return AUTOSAVE.enabled && ready && ui.openPhase === "ready" && ui.openFor === ui.teamSession && isLeadSession() && Boolean(ui.teamSession) &&
       Boolean(handoffApiBase) && !ui.cloudConflict && !ui.autosavePaused && !storageConflict;
   }
 
@@ -246,7 +247,13 @@ const findOption=(family,slug)=>state.library?.families?.[family]?.options.find(
   // One handlers object for the card's life: renderSavedCard keeps the first draw's closures.
   const savedCardHandlers = {
     retry: async () => { await fetchSharedDesign({ replace: ui.openReplace }); await saveAheadWork(); },
-    ok: () => { ui.cardDismissed = true; updateCloudChrome(); }
+    ok: () => { ui.cardDismissed = true; updateCloudChrome(); },
+    // State 5: the browser work goes to the recovery copy before the save loads, or nothing loads.
+    useSaved: async () => {
+      if (!keepRecoveryCopy()) { actionNotice(RECOVERY_FULL_NOTICE); return; }
+      await fetchSharedDesign({ replace: true });
+    },
+    keepChanges: () => { ui.keptChanges = true; fileNotice(KEPT_CHANGES_NOTICE); updateCloudChrome(); }
   };
 
   function updateSavedCard() {
@@ -254,14 +261,16 @@ const findOption=(family,slug)=>state.library?.families?.[family]?.options.find(
     // Only the session whose open this page ran is described; another lesson's answer never is.
     const shown = Boolean(session) && isLeadSession() && ui.openPhase !== null && ui.openFor === session;
     // The first change to what opened closes the card for this opening.
-    if (shown && ui.openPhase === "ready" && currentSelectionKey() !== ui.openedKey) ui.cardDismissed = true;
+    // The competing-versions choice stays until a button is clicked.
+    const choosing = Boolean(ui.cloudConflict) && !ui.keptChanges;
+    if (shown && !choosing && ui.openPhase === "ready" && currentSelectionKey() !== ui.openedKey) ui.cardDismissed = true;
     drawSavedStatus({ section: byId("savedCard"), button: byId("saveBadge"), facts: shown ? savedFacts() : null, localPreview: ui.localPreview, catalog, snapshot: ui.savedSnapshot, handlers: savedCardHandlers });
   }
 
   // A successful open: the card describes this session's design as it now stands.
   function markOpened(snapshot) {
     Object.assign(ui, { openPhase: "ready", openFor: ui.teamSession, openedKey: currentSelectionKey(), savedSnapshot: snapshot,
-      cardDismissed: false, priorWork: false, saveFailed: false, aheadSaving: false });
+      cardDismissed: false, keptChanges: false, priorWork: false, saveFailed: false, aheadSaving: false });
   }
 
   // State 6: browser work ahead of its own save (no newer save exists) is saved at once, not after the idle delay.
@@ -294,8 +303,6 @@ const findOption=(family,slug)=>state.library?.families?.[family]?.options.find(
     if(!delivered){delivered=document.createElement('p');delivered.id='lastReviewReceipt';delivered.className='review-receipt';panel.append(delivered);}
     // The Sent view says the same thing, so the band steps aside there (the strip hides when it holds nothing else).
     delivered.textContent=receiptStatus(session.lastReceipt,designKey(state.design));delivered.hidden=!session.lastReceipt||(onStage("review")&&sendView()==="sent");
-    byId("btnLoadLatest")?.toggleAttribute("hidden", !ui.cloudConflict);
-    byId("btnKeepLocal")?.toggleAttribute("hidden", !ui.cloudConflict);
     byId("btnCheckStatus")?.toggleAttribute("hidden", !pendingSubmission());
     refreshNoteButton();
   }
@@ -847,7 +854,7 @@ const findOption=(family,slug)=>state.library?.families?.[family]?.options.find(
       if (dirty && (!replace || openingKey !== currentSelectionKey())) {
         if (remoteChanged) {
           ui.cloudConflict = { revision: result.revision, savedAt: result.savedAt };
-          fileNotice("A newer shared version exists. This browser draft was kept. Download a backup, then load the latest shared design before recovering any local choices.");
+          fileNotice(OPEN_CONFLICT_NOTICE);
         } else {
           fileNotice("This browser has unsaved changes, so the shared design was not loaded. Save them or download a backup first.");
         }
@@ -891,13 +898,26 @@ const findOption=(family,slug)=>state.library?.families?.[family]?.options.find(
     }
   }
 
-  async function cloudSave({ auto = false } = {}) {
+  // After Keep these changes, each yes replaces exactly the save it named. A 409 names a newer save and asks again.
+  async function replaceSavedDesign() {
+    for (let named = ui.cloudConflict; named && ui.keptChanges; named = ui.cloudConflict) {
+      if (!await askReplace(document.body, conflictSavedText(named)) || named !== ui.cloudConflict) return;
+      await cloudSave({ replaceRevision: named.revision });
+      if (ui.cloudConflict === named) return;
+    }
+  }
+
+  async function cloudSave(options = {}) {
+    const { auto = false, replaceRevision = null } = options;
     if (!isLeadSession() || handoffBusy) return;
     const session = auto ? ui.teamSession : requireTeamSession();
     if (!session) return;
-    if (ui.cloudConflict) {
+    // Present, not non-null: a 409 for a deleted save names revision null, and that is still the version named.
+    const replacing = !auto && Object.hasOwn(options, 'replaceRevision');
+    if (ui.cloudConflict && !replacing) {
       if (auto) return;
-      actionNotice("A newer shared version exists. Download a backup and load the latest shared design before saving.");
+      if (ui.keptChanges) return replaceSavedDesign();
+      actionNotice(CHOOSE_VERSION_NOTICE);
       updateCloudChrome();
       return;
     }
@@ -913,11 +933,12 @@ const findOption=(family,slug)=>state.library?.families?.[family]?.options.find(
     }
     const requestKey = selectionKey(payload), savedDesign = clone(state.design);
     const generation = draftGeneration;
+    const expectedRevision = replacing ? replaceRevision : (session.revision ?? null);
     let pending = session.pendingSave;
-    if (!pending || pending.selectionKey !== requestKey || pending.expectedRevision !== session.revision) {
+    if (!pending || pending.selectionKey !== requestKey || pending.expectedRevision !== expectedRevision) {
       pending = {
         mutationId: newMutationId(),
-        expectedRevision: session.revision ?? null,
+        expectedRevision,
         selectionKey: requestKey
       };
       session.pendingSave = pending;
@@ -944,9 +965,11 @@ const findOption=(family,slug)=>state.library?.families?.[family]?.options.find(
         if (replacedDuringSave) { session.pendingSave = null; persistTeamSession(); return; }
         if (result.httpStatus === 409 || result.error === "conflict") {
           ui.cloudConflict = { revision: result.revision, savedAt: result.savedAt };
+          // A plain save reopens the choice (state 5); a replace keeps the choice made and asks about the newer save.
+          if (!replacing) Object.assign(ui, { keptChanges: false, cardDismissed: false });
           session.pendingSave = null;
           persistTeamSession();
-          actionNotice("Someone saved a newer shared version. Your browser draft is safe. Download a backup, then load the latest shared design.");
+          actionNotice(replacing ? REPLACE_CONFLICT_NOTICE : SAVE_CONFLICT_NOTICE);
           updateCloudChrome();
           return;
         }
@@ -961,7 +984,7 @@ const findOption=(family,slug)=>state.library?.families?.[family]?.options.find(
       session.pendingSave = null;
       ui.cloudConflict = null;
       ui.convertedUnsaved = false;
-      Object.assign(ui, { saveFailed: false, aheadSaving: false, savedSnapshot: savedDesign });
+      Object.assign(ui, { saveFailed: false, aheadSaving: false, keptChanges: false, savedSnapshot: savedDesign });
       // A save is an acknowledged state even for a session this page never opened (a local test lesson switch).
       if (ui.openFor !== session) Object.assign(ui, { openPhase: "ready", openFor: session, openedKey: requestKey, cardDismissed: true });
       if (replacedDuringSave) {
@@ -2127,7 +2150,6 @@ async function init(){
  document.addEventListener('keydown',event=>{if(event.key==='Escape'&&!event.isComposing&&!event.defaultPrevented&&ui.moreOptions&&byId('workspace').dataset.editor==='true'&&!document.querySelector('dialog[open]')){event.preventDefault();closeOptions();}});
  reviewTools=createReviewTools({catalog,options:design=>renderOptions(design),context:()=>({design:state.design,alternatives:state.alternatives,kind:state.previewView,editable:isLeadSession()}),change:(label,action)=>{if(!isLeadSession())return;recordChange(label,clone(state.design));action(state);ui.meaningfulDesign=true;saveDraft();render(false);}});
  byId('btnDownloadBackup').onclick=saveTeamFile;byId('btnOpenBackup').onclick=()=>byId('teamFileInput').click();byId('teamFileInput').onchange=async e=>{await openTeamFile(e.target.files?.[0]);e.target.value='';};
- byId('btnLoadLatest').onclick=()=>fetchSharedDesign({replace:true});byId('btnKeepLocal').onclick=()=>fileNotice('Browser draft kept. Download a backup before loading the latest shared version.');
  byId('btnHistory').onclick=loadHistory;byId('btnCheckStatus').onclick=()=>{const pending=pendingSubmission();if(pending?.stage==='receipt')pollSubmission(pending);else if(pending?.stage==='request')cloudSend();};
  byId('btnUndo').onclick=()=>undoChange();byId('btnRedo').onclick=()=>undoChange(true);
  document.addEventListener('keydown',event=>{
