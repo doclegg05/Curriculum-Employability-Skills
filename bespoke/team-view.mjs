@@ -2,6 +2,12 @@
 // view code typed into the Open dialog. It never reads or writes the browser draft:
 // the only thing it stores is the link, in this tab's session storage, so a reload
 // stays in the view.
+import { savedStatus } from './saved-status.mjs';
+import { cardHighlights } from './choices-summary.mjs';
+import { renderSavedCard, renderBadge } from './saved-card.mjs';
+import { validTime } from './saved-session.mjs';
+import { convertToStandard } from './standard-conversion.mjs';
+
 export const VIEW_SESSION_KEY = 'bespoke-view-session';
 // v, s and c carry a snapshot design; e is a retired edit link that opens read-only.
 const SNAPSHOT_KINDS = ['v', 's', 'c', 'e'];
@@ -43,12 +49,26 @@ export function viewBannerText({ lesson, savedAt, builder, opened }) {
   return `${head} · Saved ${saved} · Built by ${builder}`;
 }
 
+// True when the page shows the stored design with updates: a v1 save, or a v2 save that conversion changes.
+export function viewConverted(catalog, stored) {
+  if (!stored) return false;
+  if (stored.schema === 'bespoke-selection/v1') return true;
+  return Boolean(stored.design) && convertToStandard(catalog, stored.design).changes.length > 0;
+}
+
 /**
  * host: { request(action, fields), apply(selection), parseLink(value), generation(),
- *   lessonTitle(id), builder(), enter(lessonId), land(), note(text), render(), storage }
+ *   lessonTitle(id), builder(), enter(lessonId), land(), note(text), render(), storage,
+ *   catalog(), design(), choices() }
  */
 export function createTeamView(host) {
-  let session = null, label = null, button = null;
+  let session = null, label = null, button = null, dismissed = false;
+  // Read at click time: renderSavedCard keeps the first draw's handlers.
+  const cardHandlers = {
+    retry: () => refresh(),
+    choices: () => host.choices?.(),
+    ok: () => { dismissed = true; host.render(); }
+  };
 
   function stored() {
     try { return host.storage.getItem(VIEW_SESSION_KEY) || ''; }
@@ -67,6 +87,7 @@ export function createTeamView(host) {
     // A later open, a builder link or a snapshot replaced what this answer was for.
     if (session !== current || host.generation() !== generation) return false;
     if (!result.ok) {
+      if (!current.opened) session = { ...current, phase: 'failed' };
       host.note(result.error === 'code' && result.message ? result.message : NOTES.retry);
       return false;
     }
@@ -74,11 +95,15 @@ export function createTeamView(host) {
       try { host.apply(result.selection); }
       catch (error) {
         console.warn('Team view could not be opened', error);
+        if (!current.opened) session = { ...current, phase: 'failed' };
         host.note(NOTES.unreadable);
         return false;
       }
     }
-    session = { ...current, savedAt: result.selection ? result.savedAt || null : null, opened: true };
+    let converted = false;
+    try { converted = viewConverted(host.catalog?.(), result.selection); }
+    catch (error) { console.warn('Team view could not check for updates', error); }
+    session = { ...current, savedAt: result.selection ? result.savedAt || null : null, opened: true, phase: 'ready', hasSave: Boolean(result.selection), converted };
     host.note(result.selection ? '' : NOTES.nothingSaved);
     if (firstOpen && result.selection) host.land();
     return true;
@@ -86,9 +111,11 @@ export function createTeamView(host) {
 
   async function open(value, answer) {
     const link = host.parseLink(value);
-    session = { lessonId: link?.lessonId || String(value).split('.')[0], code: link?.editCode || '', savedAt: null, opened: false };
+    session = { lessonId: link?.lessonId || String(value).split('.')[0], code: link?.editCode || '', savedAt: null, opened: false, phase: 'checking', hasSave: false, converted: false };
+    dismissed = false;
     host.enter(link?.lessonId || '');
     if (!link) {
+      session = { ...session, phase: 'none' };
       host.note(NOTES.incomplete);
       return false;
     }
@@ -99,7 +126,7 @@ export function createTeamView(host) {
 
   async function refresh() {
     if (!session?.code) return;
-    await load(false);
+    await load(!session.opened);
     host.render();
   }
 
@@ -125,5 +152,23 @@ export function createTeamView(host) {
     banner.hidden = false;
   }
 
-  return { active: () => Boolean(session), stored, end, open, refresh, draw };
+  // The saved-design card for a view: the same card as the edit page, with no badge and nothing that saves.
+  // A malformed save time is left off the card rather than allowed to break the page.
+  function status() {
+    if (!session || session.phase === 'none') return { card: null, badge: null };
+    return savedStatus({
+      access: 'view', phase: session.phase, hasSave: session.hasSave, savedAt: validTime(session.savedAt), matchesSave: true,
+      saving: false, saveFailed: false, conflict: null, keptChanges: false, converted: session.converted,
+      untouchedPresets: true, aheadSaving: false, priorWork: false, dismissed, draftChangedAt: null
+    });
+  }
+
+  function drawCard({ section, badgeButton }) {
+    const { card } = status();
+    const highlights = card && session.hasSave ? cardHighlights(host.catalog(), host.design()) : null;
+    if (section) renderSavedCard(section, card, highlights, cardHandlers);
+    if (badgeButton) renderBadge(badgeButton, null, null);
+  }
+
+  return { status, drawCard, converted: () => Boolean(session?.converted), active: () => Boolean(session), stored, end, open, refresh, draw };
 }

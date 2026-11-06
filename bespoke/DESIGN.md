@@ -314,6 +314,12 @@ The slide stays the largest element on screen, with the "Your slides" thumbnail 
 
 Readability notes shrink to one line under the slide ("1 readability note") that opens to the full advisory text. The similarity comparison is a single line on Send, not on this stage.
 
+### Saved-design card and status badge
+
+A card spans the page under the top bar, above the workspace, so it shows on every stage (Lesson & team, Pick a look, Make it yours and Send) and on view links. Those stages and the phone Design view hide the slide preview, so the card does not sit inside it. When the card opens or closes on Make it yours, the slide refits to the room left below it. It says which design the team is looking at: the team's saved design, the starting presets when nothing is saved yet, a design opened with updates, a check in progress, a check that failed, or two competing versions. In the competing-versions state the card offers **Use the team's saved design** and **Keep these changes**. Keeping the changes never replaces the save by itself. Saving then asks "This will replace the design saved <day> at <time>. Replace it?" in a dialog where Cancel has focus. The card has an OK button that dismisses it and a **See all choices** button that opens a dialog listing the saved choices and the edited ones. The first edit closes the card for that opening. The competing-versions card is the exception and stays until the team picks one of its two buttons. On a team view link the card is read-only, and its buttons depend on its state. A saved design, or one shown with updates, has **See all choices** and OK. A view with nothing saved has OK only. A failed check has **Try again**. A view card never offers **Use the team's saved design** or **Keep these changes**.
+
+The top bar holds one status badge, a button that opens the same choices dialog. It reads Checking…, Saved, Saving…, Changes not saved, Save failed or Couldn't check. It is hidden on view links and while only the untouched presets are on screen. The copy lives in `bespoke/saved-status.mjs` and `bespoke/replace-confirm.mjs`; the drawing lives in `bespoke/saved-card.mjs`.
+
 ### Messages
 
 Success messages, such as an applied look or a finished save, appear as a toast near the top of the window. The toast is one `#toast` live region that stays rendered, shows for four seconds, fades in and out over 180ms and ignores the pointer. Warnings, conflicts, pending sends and errors stay in the notice strip, and a stage change does not clear them.
