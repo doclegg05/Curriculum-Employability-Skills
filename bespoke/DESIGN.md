@@ -314,6 +314,12 @@ The slide stays the largest element on screen, with the "Your slides" thumbnail 
 
 Readability notes shrink to one line under the slide ("1 readability note") that opens to the full advisory text. The similarity comparison is a single line on Send, not on this stage.
 
+### Saved-design card and status badge
+
+A card sits above the slides on Make it yours and the other build stages. It says which design the team is looking at: the team's saved design, the starting presets when nothing is saved yet, a design opened with updates, a check in progress, a check that failed, or two competing versions. In the competing-versions state the card offers **Use the team's saved design** and **Keep these changes**. Keeping the changes never replaces the save by itself. Saving then asks "This will replace the design saved <day> at <time>. Replace it?" in a dialog where Cancel has focus. The card has an OK button that dismisses it and a **See all choices** button that opens a dialog listing the saved choices and the edited ones. On a team view link the card is read-only and shows only those two buttons.
+
+The top bar holds one status badge, a button that opens the same choices dialog. It reads Checking…, Saved, Saving…, Changes not saved, Save failed or Couldn't check. It is hidden on view links and while only the untouched presets are on screen. The copy lives in `bespoke/saved-status.mjs` and `bespoke/replace-confirm.mjs`; the drawing lives in `bespoke/saved-card.mjs`.
+
 ### Messages
 
 Success messages, such as an applied look or a finished save, appear as a toast near the top of the window. The toast is one `#toast` live region that stays rendered, shows for four seconds, fades in and out over 180ms and ignores the pointer. Warnings, conflicts, pending sends and errors stay in the notice strip, and a stage change does not clear them.
