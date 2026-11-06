@@ -7,13 +7,14 @@
 - **Repo**: origin = doclegg05/Curriculum-Employability-Skills (dev); publisher = SPOKES-Skills/Employability-Skills-Curriculum (public Pages); t9 = /Volumes/T9 backup mirror
 
 ## Current Status
-(as of 2026-11-04, `origin/main` = `1f691c9`)
+(as of 2026-11-06, `origin/main` = `66c7657`)
 - **BeSpoke is live and ready for hosted checks.** Pages serves `main`; the Netlify service is deploy `6ae4a32718993eaabe906eaf` from `fdf6fe4` (2026-10-30, [[bespoke-netlify-deploy]] in auto-memory). No service file changed since: PRs #68 (team code first, Send pop-up) and #69 (session switching, C1/C2) are page-only.
   - Team codes: all six open with edit access; a fake code and another lesson's code get 403 (2026-10-30).
   - View links: `BESPOKE_VIEW_KEYS` is set and live. On 2026-11-04 all six view codes opened with `access: view`; history and status with a view code got 403 `view`. Files in `~/BeSpoke-private/codes-2026-10-14/` (`view-links.html` to pin).
   - Hosted Save, Open and Send passed 2026-10-30 (first v2 design through the hosted path; test PRs #66 and #67 closed, not merged).
   - Saved designs: only `goal-setting` and `money-management` on `bespoke-drafts`, all Britt's tests. Plan: after Britt's hosted checks, delete the `bespoke-drafts` branch; the service recreates it from `main` on the next save, as before 2026-10-30.
-- **PR #70 open** (`fix/bespoke-sidebar-text`, `bb03e75`): review finding P56-1, the Shared theme sidebar text color survives a per-slide sidebar edit. Changes `bespoke/builder-model.mjs`, so Britt deploys the service before merging. Staged at `/tmp/claude-501/bespoke-stages/2026-11-04-sidebar-text-bb03e75` (wiped on reboot; restage with `node scripts/bespoke-stage-service.mjs` from a clean export).
+- **PRs #70 and #71 merged 2026-11-05.** The #70 service deploy (`6aecad45`) kept the same function digest because the server bundle only uses `validateDesign`; the fix is page-only.
+- **PR #72 open** (`feat/bespoke-saved-design-card`): a saved-design card and status badge so teams can tell what is saved (Britt, 2026-11-06, after her hosted check left her guessing). Page-only, no service deploy. `quality` green on `c4b2c8a`; 22 saved-card browser scenarios. Design `docs/superpowers/specs/2026-11-06-bespoke-saved-design-card-design.md`. Must merge before the teacher email and the pilot.
 - **Rate limit unproven.** The service config sets Netlify's per-address limit (120 a minute). On 2026-11-04, 135 wrong-code POSTs sent one at a time all got 403 and none got 429; they may have spread past one minute. A parallel burst was blocked by the auto-mode classifier.
 - **Merged since October 22:** open design standard (#61), BeSpoke open standard Part 1 (#56, #60; #59 closed, its work landed through #60), 8-character codes and `--reissue` (#51), print slides (#50), offline lessons package (#52), Coordinator note (#64, #65), Money Management lesson structure (#63).
 - **Six existing lessons: OUT OF QA, READY FOR TEACHING** (Britt, 2026-09-23).
@@ -21,14 +22,15 @@
 - **Money Management intro animation narrated** (PR #46, 2026-10-09). Rebuild steps: `lesson-Money-Management/intro-narration/script.md`.
 
 ## Last Session
-- **Date**: 2026-11-04
-- **What we worked on**: PR #69 merged; Britt closed test PR #67. Confirmed view links are live (all six view codes, service checked without printing codes). Fixed P56-1 test-first (PR #70, red `actual: 'light', expected: 'gold'`, then 17 of 17 model checks and 215 of 215 unit tests). Docs PR: "Team Leader" becomes "spokesperson" everywhere (the page's own label), the conversion notice points at Download backup instead of the old Review stage, the slide rail shows "Your slides" in Make it yours, and this file was trimmed. Updated the teacher announcement email.
-- **What we decided**: no "require approval" rule on `main`, because GitHub will not let Britt approve PRs opened under her own account; turn auto-merge off instead. The classifier blocked Claude's settings change, so Britt switches it off in GitHub settings.
-- **Where we left off**: Britt runs three hosted checks on the live page (save on Mac, open on phone; view link; Leave session), deploys the PR #70 service and merges #70, merges the docs PR, turns off auto-merge. Then Claude deletes `bespoke-drafts` and the Money Management pilot starts.
+- **Date**: 2026-11-06
+- **What we worked on**: Britt's hosted save check reached the store but left her unable to tell what was saved. Brainstormed, wrote and twice reviewed a design (Sol review folded in), planned eight tasks, built them subagent-driven with per-task reviews and a final branch review (PR #72). CI found three real problems: the test copied a `[REDACTED]` display placeholder as its storage key (hung CI for hours; see auto-memory `redacted-placeholder-copied-into-code`), the card sat in the preview pane that is hidden on Lesson & team and Review (moved to page level), and the badge was under 44px.
+- **What we decided**: option A card, shown on every open; compact badge always visible; two competing versions need Keep these changes then Replace it, naming one revision; "Saved" only for an acknowledged, matching save; one editor per team (spokesperson), everyone else on the view link. Rulings R1 to R15 are in the PR's development log (session ledger) and summarized in chat.
+- **Where we left off**: PR #72 green, waiting for Britt to merge. Then the hosted checks (save on Mac, open on phone with the card; view link; Leave session), clear `bespoke-drafts`, send the teacher email, start the pilot. Another Claude session (branch `t3/fix-quality-gate-ci-hang`) also pushed to PR #72 on 2026-11-06; Britt was asked to stop it.
 
 ## Open Items
 - [ ] **Hosted checks** (Britt, Mac and phone): save on one device and open on the other; the view link shows View only and changes nothing; Leave session forgets the code. Record results in a dated verification note.
-- [ ] **PR #70**: Britt deploys the staged service, Claude checks the deploy (function digest changed, OPTIONS 204, bogus code 403), Britt merges.
+- [ ] **PR #72**: Britt merges; then the hosted checks below include the new card.
+- [ ] `scripts/test-bespoke-send-wait.mjs` flakes in CI setup (ECONNRESET, goto and session-revision timeouts; four times by 2026-11-06). Five other browser tests keep an unguarded `route.fetch` catch-all. Harden them.
 - [ ] **Clear test saves** after the hosted checks: delete branch `bespoke-drafts` (head `b8e29b5` on 2026-11-04).
 - [ ] **Auto-merge off** (Britt, GitHub repo Settings > General > Pull Requests > untick Allow auto-merge).
 - [ ] **Rate limit**: run a burst of about 130 wrong-code POSTs inside one minute from Britt's Terminal and confirm a 429.
