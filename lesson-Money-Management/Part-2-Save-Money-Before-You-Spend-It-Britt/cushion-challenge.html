@@ -225,6 +225,123 @@ button:focus-visible, input:focus-visible, label:focus-within { outline: 3px sol
 <script>
 (function () {
   "use strict";
+  /* cushion-model:start */
+  /* All money and navigation state. Pure: every function returns a new state.
+     scripts/check-cushion-math.mjs runs this block on its own, so it must not touch the page. */
+  var CushionModel = (function () {
+    var GOAL = 250, PAY = 400, WEEKS = 4, TIRE = 120, FEE = 12, JAR = 40, PICS = 30, DEFAULT_SPLIT = 25, REFUND_TOTAL = 1200;
+    var LAST = 9;
+    var QUESTION_SCREEN = { save1: 1, acct: 2, auto: 3, pics: 4, snap: 6, refund: 7 };
+    var OPTIONS = { save1: [10, 25, 50, 0], acct: ["jar", "fee", "bankon"], auto: ["yes", "no"],
+                    pics: ["emergency", "planned"], snap: ["stop", "hide", "ask"], refund: [0, 100, 300, 600] };
+
+    function fresh() { return { v: 2, screen: 0, furthest: 0, answers: {}, revealed: {} }; }
+    function copy(s) {
+      return { v: 2, screen: s.screen, furthest: s.furthest, answers: Object.assign({}, s.answers), revealed: Object.assign({}, s.revealed) };
+    }
+    function answered(s, name) { return Object.prototype.hasOwnProperty.call(s.answers, name); }
+
+    function choose(s, name, value, classMode) {
+      if (s.revealed[name] || OPTIONS[name].indexOf(value) < 0) return s;
+      var t = copy(s);
+      t.answers[name] = value;
+      if (!classMode) t.revealed[name] = true;
+      return t;
+    }
+    function reveal(s, name) {
+      if (!answered(s, name) || s.revealed[name]) return s;
+      var t = copy(s);
+      t.revealed[name] = true;
+      return t;
+    }
+    function next(s) {
+      var t = copy(s);
+      t.screen = Math.min(LAST, s.screen + 1);
+      t.furthest = Math.max(s.furthest, t.screen);
+      return t;
+    }
+    function back(s) { var t = copy(s); t.screen = Math.max(0, s.screen - 1); return t; }
+    function changeAnswer(s, name) {
+      var from = QUESTION_SCREEN[name], t = copy(s);
+      Object.keys(QUESTION_SCREEN).forEach(function (q) {
+        if (QUESTION_SCREEN[q] >= from) { delete t.answers[q]; delete t.revealed[q]; }
+      });
+      t.furthest = s.screen;
+      return t;
+    }
+    function isCounted(s, name) { return answered(s, name) && !!s.revealed[name] && QUESTION_SCREEN[name] <= s.screen; }
+
+    /* Walks the months in order and applies only revealed answers up to the screen being viewed. */
+    function summary(s) {
+      var rows = [], cushion = 0, shortfall = 0, tireHit = false, refund = 0, habit;
+      function add(kind, label, amt, month) {
+        var before = cushion;
+        cushion = Math.max(0, cushion + amt);
+        rows.push({ kind: kind, label: label, amt: cushion - before, month: month });
+      }
+      function get(name) { return isCounted(s, name) ? s.answers[name] : null; }
+      var save1 = get("save1"), acct = get("acct"), auto = get("auto");
+      var split = save1 > 0 ? save1 : DEFAULT_SPLIT;
+      function monthSaving(month, busy) {
+        if (auto === "yes") add("split", "Split deposit, " + WEEKS + " paydays", split * WEEKS, month);
+        else if (auto === "no" && save1 > 0 && !busy) add("hand", "Moved to savings by hand", save1 * WEEKS, month);
+        else if (auto === "no") add("none", busy ? "Busy month, money never moved" : "Nothing moved to savings", 0, month);
+      }
+      function monthFee(month) { if (acct === "fee") add("fee", "Monthly account fee", -FEE, month); }
+
+      if (save1 > 0) add("save", "Saved first, " + WEEKS + " paydays", save1 * WEEKS, 1);
+      monthFee(2);
+      monthSaving(2, false);
+      if (get("pics") === "emergency") add("pics", "School pictures from cushion", -PICS, 2);
+      if (s.screen >= 5) {
+        tireHit = true;
+        monthFee(3);
+        monthSaving(3, true);
+        if (acct === "jar") add("jar", "Dipped into the jar", -JAR, 3);
+        var paid = Math.min(cushion, TIRE);
+        shortfall = TIRE - paid;
+        add("tire", "Flat tire repair", -paid, 3);
+      }
+      if (get("refund") !== null) {
+        monthFee(4);
+        monthSaving(4, false);
+        habit = cushion;
+        refund = s.answers.refund;
+        if (refund > 0) add("refund", "Refund to savings", refund, 4);
+      } else habit = cushion;
+      return { rows: rows, cushion: cushion, habit: habit, refund: refund, shortfall: shortfall, tireHit: tireHit };
+    }
+
+    function headline(m) {
+      if (m.habit >= GOAL) return "habit";
+      if (m.tireHit && m.shortfall === 0) return m.cushion >= GOAL ? "covered-refund" : "covered-short";
+      return m.cushion >= GOAL ? "refund" : "short";
+    }
+
+    /* Saved progress crosses a boundary (localStorage), so keep only known shapes and values. */
+    function load(raw) {
+      var ok = raw && typeof raw === "object" && raw.v === 2 && typeof raw.screen === "number" &&
+        raw.screen % 1 === 0 && raw.screen >= 0 && raw.screen <= LAST &&
+        raw.answers && typeof raw.answers === "object" && raw.revealed && typeof raw.revealed === "object";
+      if (!ok) return fresh();
+      var t = fresh();
+      t.screen = raw.screen;
+      t.furthest = typeof raw.furthest === "number" && raw.furthest % 1 === 0 && raw.furthest <= LAST ? Math.max(raw.furthest, raw.screen) : raw.screen;
+      Object.keys(OPTIONS).forEach(function (q) {
+        if (Object.prototype.hasOwnProperty.call(raw.answers, q) && OPTIONS[q].indexOf(raw.answers[q]) >= 0) {
+          t.answers[q] = raw.answers[q];
+          if (raw.revealed[q] === true) t.revealed[q] = true;
+        }
+      });
+      return t;
+    }
+
+    return { GOAL: GOAL, PAY: PAY, WEEKS: WEEKS, TIRE: TIRE, FEE: FEE, JAR: JAR, PICS: PICS, DEFAULT_SPLIT: DEFAULT_SPLIT,
+             REFUND_TOTAL: REFUND_TOTAL, QUESTION_SCREEN: QUESTION_SCREEN, fresh: fresh, choose: choose, reveal: reveal,
+             next: next, back: back, changeAnswer: changeAnswer, isCounted: isCounted, summary: summary,
+             headline: headline, load: load };
+  })();
+  /* cushion-model:end */
   var GOAL = 250, PAY = 400, TIRE = 60, PICS = 30, FEE = 12, JAR = 15;
   var SRC = {
     urban: "https://www.urban.org/research/publication/thriving-residents-thriving-cities-family-financial-security-matters-cities",
