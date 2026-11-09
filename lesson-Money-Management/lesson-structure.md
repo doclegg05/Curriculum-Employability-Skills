@@ -58,6 +58,8 @@ Eight segments at about 12 minutes each plus about 25 minutes of shared stages i
 
   The rubric's student expectations are the seven draft objectives. Rows 2 and 3 describe activities that Parts 3 & 5 and 8 have not built yet, so revise those rows when the teams deliver.
 
+- **Lesson plan.** The draft for team review is `Handouts/Money_Management_Lesson_Plan.docx` (November 9, 2026). It uses the WV Adult Basic Education template from the Part 2 plan and covers the seven objectives, the 13-row activity plan (about 121 minutes), assessment, materials, extensions and draft status. `Handouts/build_money_management_lesson_plan.py` builds it with the Python standard library: change the content in the script and rebuild, not the Word file. Parts 3 & 5, 8 and 9, the knowledge checks and the exit ticket are marked TEAM TO BUILD or TO WRITE.
+
 ## Draft objectives
 
 Britt chose this draft on October 27, 2026. It matches Phase 1:
@@ -144,5 +146,5 @@ Git tracks only Part 2. Git ignores the other part folders until licenses and dr
 ## Known stale items
 
 - The Part 2 Teacher's Guide PDF and lesson plan still list the Cushion Challenge at `lesson-Money-Management/cushion-challenge.html`.
-- The guide's source script is fixed. Since November 9, 2026 it also matches the rebalanced Cushion Challenge: Month labels, the $120 tire, the habit and refund split, and Back. The PDF still shows the old game until it is rebuilt with `reportlab`, which this Mac does not have.
+- The guide's source script is fixed. Since November 9, 2026 it also matches the rebalanced Cushion Challenge: Month labels, the $120 tire, the habit and refund split, and Back. The script uses `fpdf2`, `fonttools` and `brotli`, not `reportlab`. Britt rebuilt the PDF on November 9, 2026; two later text fixes (the tire note for an empty cushion and the checklist path) need one more rebuild.
 - The Part 2 lesson plan still uses Payday labels. The game now says Month 1 to Month 4.
