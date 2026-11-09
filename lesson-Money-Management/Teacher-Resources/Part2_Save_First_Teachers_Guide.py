@@ -114,8 +114,8 @@ def build_guide():
     pdf.toc([
         ("W", "Chapter 1: Warm-Up -- Meet Jess", "Screen 1"),
         ("I", "Chapter 2: Introduction -- The Idea", "Screen 1"),
-        ("P", "Chapter 3: Presentation -- Paydays 1 and 2", "Screens 2-5"),
-        ("P", "Chapter 4: Practice -- Paydays 3 and 4", "Screens 6-8"),
+        ("P", "Chapter 3: Presentation -- Months 1 and 2", "Screens 2-5"),
+        ("P", "Chapter 4: Practice -- Months 3 and 4", "Screens 6-8"),
         ("E", "Chapter 5: Evaluation -- How It Went", "Screen 9"),
         ("A", "Chapter 6: Application -- Your Turn", "Screen 10"),
     ])
@@ -153,40 +153,46 @@ def build_guide():
 
     pdf.slide_entry(1, "State the Goal", "Instructor Talk")
     pdf.speaking_notes(
-        "Give the one idea of Part 2 in a sentence before Payday 1:\n"
+        "Give the one idea of Part 2 in a sentence before Month 1:\n"
         "'Save a little first, automatically, somewhere safe, so a small cushion protects your family. "
         "You can do it while on benefits.'\n\n"
         "Point to the cushion meter and its gold goal line at $250. Tell the class they will make "
-        "Jess's choices for four paydays and watch what each choice does."
+        "Jess's choices for four months of paydays and watch what each choice does. Each screen is one month, so a weekly amount counts four times."
     )
     pdf.tip(
         "How each vote works: read the question, and the class calls out or holds up a letter (A, B, C or D). "
-        "Click the winning choice, or press that letter on the keyboard. The meter does not move yet. "
+        "Click the winning choice, or press that letter on the keyboard. The meter does not move yet, and the class can still change its pick until you reveal it. "
         "Ask one or two learners why they picked it, then click Reveal what happens. "
         "Keep each vote to about 30 seconds to stay inside 10 minutes."
     )
 
-    # ══════════════════════════════════════════════════════════════════
-    # CHAPTER 3: PRESENTATION -- PAYDAYS 1 AND 2
-    # ══════════════════════════════════════════════════════════════════
-    pdf.chapter_head("P", "CHAPTER 3: PAYDAYS 1 AND 2", "PRESENTATION")
+    pdf.tip(
+        "Going back: every screen after Meet Jess has a Back button. On a screen the class already answered, "
+        "Change this answer clears that answer and every answer after it, and the meter goes back to where it "
+        "stood. Use it when the class wants to see what a different choice would have done."
+    )
 
-    pdf.slide_entry(2, "Payday 1: When Does Jess Save?", "Class Vote")
+    # ══════════════════════════════════════════════════════════════════
+    # CHAPTER 3: PRESENTATION -- MONTHS 1 AND 2
+    # ══════════════════════════════════════════════════════════════════
+    pdf.chapter_head("P", "CHAPTER 3: MONTHS 1 AND 2", "PRESENTATION")
+
+    pdf.slide_entry(2, "Month 1: How Much Does Jess Save First?", "Class Vote")
     pdf.speaking_notes(
-        "Choices: save $10, $25, or $50 first, or save what's left at the end of the week.\n\n"
-        "If the class picks 'save what's left,' let it play out: by Friday nothing is left. "
+        "Choices: save $10, $25, or $50 first each payday ($40, $100, or $200 a month), or save what's left at the end of each week.\n\n"
+        "If the class picks 'save what's left,' let it play out: by the end of each week nothing is left. "
         "That is the lesson, so no correction is needed.\n\n"
         "Pop-up line to say: 'Pay yourself first. Treat savings like a bill you pay the day money arrives. "
         "The habit matters more than the amount.'"
     )
     pdf.discussion("Ask: 'Why does saving at the end of the week usually mean saving nothing?'")
 
-    pdf.slide_entry(3, "Payday 2: Where Should Jess Keep Her Savings?", "Class Vote")
+    pdf.slide_entry(3, "Month 2: Where Should Jess Keep Her Savings?", "Class Vote")
     pdf.speaking_notes(
         "Choices: a jar at home, an account with a $12 monthly fee and overdraft charges, "
         "or a Bank On-style account.\n\n"
-        "Expected answer: the Bank On-style account. The fee account loses $12 right away. "
-        "The jar looks fine now, but Jess dips into it on Payday 3.\n\n"
+        "Expected answer: the Bank On-style account. The fee account loses $12 every month. "
+        "The jar looks fine now, but Jess dips $40 out of it in Month 3.\n\n"
         "Pop-up line to say: 'Keep savings somewhere safe. Bank On certified accounts have no overdraft "
         "fees, need $25 or less to open, and are federally insured.'"
     )
@@ -195,15 +201,15 @@ def build_guide():
         "The team is checking which nearby banks or credit unions offer one."
     )
 
-    pdf.slide_entry(4, "Payday 2: Make Saving Automatic?", "Class Vote")
+    pdf.slide_entry(4, "Month 2: Make Saving Automatic?", "Class Vote")
     pdf.speaking_notes(
         "Jess's employer can split her direct deposit so the same amount goes to savings every payday.\n\n"
-        "Expected answer: yes. If the class says no, Jess skips saving during a busy week on Payday 3 -- "
+        "Expected answer: yes. If the class says no, Jess skips saving during a busy Month 3 -- "
         "the class will see the difference on the meter.\n\n"
         "Pop-up line to say: 'Set it once. Automatic saving does not depend on remembering or willpower.'"
     )
 
-    pdf.slide_entry(5, "Payday 2: Emergency or Planned?", "Class Vote")
+    pdf.slide_entry(5, "Month 2: Emergency or Planned?", "Class Vote")
     pdf.speaking_notes(
         "School picture day costs $30, and the form came home two weeks ago.\n\n"
         "Expected answer: planned cost. An emergency is something you did not see coming. "
@@ -213,20 +219,20 @@ def build_guide():
     pdf.discussion("Ask: 'What other costs come every year that we could plan for?'")
 
     # ══════════════════════════════════════════════════════════════════
-    # CHAPTER 4: PRACTICE -- PAYDAYS 3 AND 4
+    # CHAPTER 4: PRACTICE -- MONTHS 3 AND 4
     # ══════════════════════════════════════════════════════════════════
-    pdf.chapter_head("P", "CHAPTER 4: PAYDAYS 3 AND 4", "PRACTICE")
+    pdf.chapter_head("P", "CHAPTER 4: MONTHS 3 AND 4", "PRACTICE")
 
-    pdf.slide_entry(6, "Payday 3: Flat Tire", "Story Event")
+    pdf.slide_entry(6, "Month 3: Flat Tire", "Story Event")
     pdf.speaking_notes(
-        "No vote here. The screen applies this week's saving, then a $60 flat tire hits.\n\n"
+        "No vote here. The screen applies this month's saving, then a $120 flat tire hits.\n\n"
         "If the cushion covered it, point out what that prevented: no late rent, no borrowing, no missed shift. "
         "If Jess came up short, note that a slightly bigger cushion would have covered it.\n\n"
         "Pop-up line to say: 'Families with $250 to $749 saved were less likely to be evicted or miss a "
         "housing or utility payment after a money shock.' (Urban Institute, April 2016)"
     )
 
-    pdf.slide_entry(7, "Payday 3: The SNAP Question", "Class Vote")
+    pdf.slide_entry(7, "Month 3: The SNAP Question", "Class Vote")
     pdf.speaking_notes(
         "A friend tells Jess that saving will cost her SNAP. Choices: stop saving, keep it quiet, "
         "or ask her caseworker how savings affects her benefits.\n\n"
@@ -240,7 +246,7 @@ def build_guide():
         "verified the current figure."
     )
 
-    pdf.slide_entry(8, "Payday 4: Tax Refund", "Class Vote")
+    pdf.slide_entry(8, "Month 4: Tax Refund", "Class Vote")
     pdf.speaking_notes(
         "Jess's $1,200 refund arrives. Choices: $0, $100, $300, or $600 to savings first.\n\n"
         "Any amount above $0 is a good answer. The point is deciding before the money is spent.\n\n"
@@ -255,7 +261,10 @@ def build_guide():
 
     pdf.slide_entry(9, "How It Went", "Results")
     pdf.speaking_notes(
-        "The screen shows Jess's final cushion, what helped, and what held her back. "
+        "The screen shows Jess's final cushion in two parts: what came from her saving habit and what came "
+        "from her tax refund. It says whether her savings covered the flat tire, then lists what helped and "
+        "what held her back. If the refund did most of the work, point that out: a flat tire does not wait "
+        "for refund season. "
         "Read the one-sentence idea at the bottom aloud.\n\n"
         "Use the class's votes during the game as evidence of understanding. Learners who chose save-first, "
         "a safe account, automation, and asking a caseworker have met the objective."

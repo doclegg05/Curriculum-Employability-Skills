@@ -103,7 +103,7 @@
 - Modify: `GUIDE` lines 114-262, `lesson-Money-Management/lesson-structure.md` Known stale items.
 
 - [ ] **Step 1:** In `GUIDE`, change Payday labels to Month labels, the $60 tire to $120, the fee note to "$12 every month", the jar dip to $40 in Month 3, "four paydays" to "four months of paydays", the Results note to describe the habit and refund split, and add a tip on Back and Change this answer.
-- [ ] **Step 2:** `python3 -c "import ast,sys; ast.parse(open(sys.argv[1]).read())" GUIDE` exits 0, and `grep -nE '\$60|\$15|Payday [0-9]|right away' GUIDE` prints nothing.
+- [ ] **Step 2:** `python3 -c "import ast,sys; ast.parse(open(sys.argv[1]).read())" GUIDE` exits 0, and `grep -nE '\$60\b|\$15\b|Payday [0-9]|loses \$12 right away' GUIDE` prints nothing.
 - [ ] **Step 3:** Add to Known stale items: the guide PDF lags its updated source until rebuilt with `reportlab`; the lesson plan still uses Payday labels.
 
 ### Task 5: Verify and commit

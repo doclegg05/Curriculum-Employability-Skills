@@ -167,7 +167,7 @@ After the teacher taps a choice or presses A to D, the other choices stay active
   - Check: `CHECK` (or a browser test) answers through Month 4, goes Back to Month 1 and Next to Month 4 twice, reloads on Month 2 while viewing it through Back, and switches class and solo mode with a pick unrevealed.
     Expected: the cushion and ledger after each step match the pure function's result for the same answers; the unrevealed pick adds nothing.
 - The guide matches the game.
-  - Check: `grep -nE '\$60|\$15|Payday [0-9]|right away' GUIDE`
+  - Check: `grep -nE '\$60\b|\$15\b|Payday [0-9]|loses \$12 right away' GUIDE`
     Expected: no output.
 - The check reads the game's real code.
   - Check: break one constant in `GAME` (for example the tire cost), then run `node CHECK`.

@@ -144,4 +144,5 @@ Git tracks only Part 2. Git ignores the other part folders until licenses and dr
 ## Known stale items
 
 - The Part 2 Teacher's Guide PDF and lesson plan still list the Cushion Challenge at `lesson-Money-Management/cushion-challenge.html`.
-- The guide's source script is fixed. The PDF needs a rebuild with `reportlab`, which this Mac does not have.
+- The guide's source script is fixed. Since November 9, 2026 it also matches the rebalanced Cushion Challenge: Month labels, the $120 tire, the habit and refund split, and Back. The PDF still shows the old game until it is rebuilt with `reportlab`, which this Mac does not have.
+- The Part 2 lesson plan still uses Payday labels. The game now says Month 1 to Month 4.
