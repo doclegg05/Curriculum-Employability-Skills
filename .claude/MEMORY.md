@@ -22,12 +22,14 @@
 - **Money Management intro animation narrated** (PR #46, 2026-10-09). Rebuild steps: `lesson-Money-Management/intro-narration/script.md`.
 
 ## Last Session
-- **Date**: 2026-11-06
-- **What we worked on**: Britt's hosted save check reached the store but left her unable to tell what was saved. Brainstormed, wrote and twice reviewed a design (Sol review folded in), planned eight tasks, built them subagent-driven with per-task reviews and a final branch review (PR #72). CI found three real problems: the test copied a `[REDACTED]` display placeholder as its storage key (hung CI for hours; see auto-memory `redacted-placeholder-copied-into-code`), the card sat in the preview pane that is hidden on Lesson & team and Review (moved to page level), and the badge was under 44px.
-- **What we decided**: option A card, shown on every open; compact badge always visible; two competing versions need Keep these changes then Replace it, naming one revision; "Saved" only for an acknowledged, matching save; one editor per team (spokesperson), everyone else on the view link. Rulings R1 to R15 are in the PR's development log (session ledger) and summarized in chat.
-- **Where we left off**: PR #72 green, waiting for Britt to merge. Then the hosted checks (save on Mac, open on phone with the card; view link; Leave session), clear `bespoke-drafts`, send the teacher email, start the pilot. Another Claude session (branch `t3/fix-quality-gate-ci-hang`) also pushed to PR #72 on 2026-11-06; Britt was asked to stop it.
+- **Date**: 2026-11-09
+- **What we worked on**: Money Management Part 2, the Cushion Challenge game. A path simulation showed only the tax refund decided whether Jess reached $250. Brainstormed and wrote a design (Sol review folded in), planned five tasks, built them inline on branch `t3/continue-money-management-lesson` (commits `aac8554`..`8da0497`), then an opus whole-branch review and one fix pass.
+- **What we decided**: each payday stage is a month (weekly save counts 4 times), $120 tire, $12 fee every month, $40 jar dip, refund choices unchanged; How It Went splits habit and refund and says first when savings covered the tire; class picks change until Reveal; Back on every screen with Change this answer (redo clears later answers); only `#announce` (polite) speaks. Money lives in a pure model block checked by `scripts/check-cushion-math.mjs` (now in `quality.sh`). Design `docs/superpowers/specs/2026-11-09-cushion-challenge-rebalance-design.md`.
+- **Where we left off**: branch committed, not pushed (sandbox blocks push and Chromium). Britt runs `scripts/test-cushion-browser.mjs` and a VoiceOver pass, then pushes and opens the PR.
 
 ## Open Items
+- [ ] **Cushion Challenge branch** (`t3/continue-money-management-lesson`): Britt runs `npm install && npx playwright install chromium && node scripts/test-cushion-browser.mjs` in Terminal, does a VoiceOver pass, pushes, opens the PR.
+- [ ] Cushion Challenge follow-ups: rebuild the Part 2 guide PDF (`reportlab`); lesson plan Payday to Month labels; jar plus split deposit; short segment version; deferred minors in the branch ledger (Back arrow read aloud, pick change not announced, stale CSS comments).
 - [ ] **Hosted checks** (Britt, Mac and phone): save on one device and open on the other; the view link shows View only and changes nothing; Leave session forgets the code. Record results in a dated verification note.
 - [ ] **PR #72**: Britt merges; then the hosted checks below include the new card.
 - [ ] `scripts/test-bespoke-send-wait.mjs` flakes in CI setup (ECONNRESET, goto and session-revision timeouts; four times by 2026-11-06). Five other browser tests keep an unguarded `route.fetch` catch-all. Harden them.
