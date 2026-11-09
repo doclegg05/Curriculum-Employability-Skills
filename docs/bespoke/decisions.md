@@ -224,3 +224,10 @@ shared revisions open unchanged with new readability warnings where necessary. T
 3:1 headings and 4.5:1 supporting text remain guidance on both title and divider
 surfaces, including gradients and patterns. Writes and artifacts preserve the team
 leader’s choice. Defaults/presets meet the guidance.
+
+## Saved-design card: November 6, 2026
+
+| Date | Decision |
+|---|---|
+| 2026-11-06 | Two versions never merge or replace without a click. Replace it applies only to the version it names. |
+| 2026-11-06 | Saved means the service acknowledged it and the screen matches. |

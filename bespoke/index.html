@@ -24,6 +24,7 @@ FINISH: unreviewed and undocumented is unfinished; this build ends with the fini
  <div class="bar-end" id="barEnd">
   <div class="undo-actions"><button class="btn btn-ghost" id="btnUndo" aria-keyshortcuts="Control+Z Meta+Z" type="button">Undo</button><button class="btn btn-ghost" id="btnRedo" aria-keyshortcuts="Control+Shift+Z Meta+Shift+Z Control+Y" type="button">Redo</button></div>
   <p id="saveStatus" class="save-chip"></p>
+  <button type="button" class="save-badge" id="saveBadge" aria-live="polite" hidden></button>
   <button class="btn btn-primary" id="btnSave" type="button">Save for the team</button>
   <details class="more-menu" id="filesRecovery"><summary class="btn btn-ghost" aria-label="More actions" title="More actions"><span aria-hidden="true">⋯</span></summary><div class="more-menu-list">
    <p id="teamSessionStatus" class="menu-status"></p>
@@ -43,7 +44,8 @@ FINISH: unreviewed and undocumented is unfinished; this build ends with the fini
 <section id="builderHelp" class="builder-help" aria-labelledby="builderHelpTitle" hidden><div><h2 id="builderHelpTitle" tabindex="-1">How BeSpoke works</h2><button id="btnCloseHelp" type="button" class="btn btn-secondary">Back to my design</button></div><div id="builderHelpContent"></div></section>
 <section aria-label="Design status"><p id="fileStatus" class="notice" role="status" hidden></p><p id="restoreNotice" class="notice" role="status" hidden></p><p id="accessBanner" class="notice" role="status" hidden></p>
 </section>
-<section id="teamSessionBar" class="team-session" aria-label="Design session" hidden><div class="session-actions"><button class="text-link" id="btnLoadLatest" hidden>Load latest shared design</button><button class="text-link" id="btnKeepLocal" hidden>Keep this browser draft</button><button class="text-link" id="btnCheckStatus" hidden>Check review status</button></div><div id="historyPanel" class="history-panel" hidden></div></section>
+<section id="teamSessionBar" class="team-session" aria-label="Design session" hidden><div class="session-actions"><button class="text-link" id="btnCheckStatus" hidden>Check review status</button></div><div id="historyPanel" class="history-panel" hidden></div></section>
+<section id="savedCard" class="saved-card" role="region" aria-label="Saved design" aria-live="polite" hidden></section>
 <nav aria-label="Workspace views" class="surface-navigation"><div class="surface-switcher" role="tablist" aria-label="Workspace surface" id="surfaceSwitcher"><button type="button" role="tab" id="surface-design" data-surface="design" aria-selected="true" aria-controls="chromeRail">Design</button><button type="button" role="tab" id="surface-preview" data-surface="preview" aria-selected="false" aria-controls="previewPane">Preview</button></div></nav>
 <main class="workspace" id="workspace" data-active-surface="design" aria-label="Design and preview workspace" tabindex="0">
  <aside class="slide-rail" id="slideRail" aria-label="Reusable slide designs"><h2>Your slides</h2><p>Five reusable designs</p></aside>
@@ -67,6 +69,7 @@ FINISH: unreviewed and undocumented is unfinished; this build ends with the fini
  <section id="showcase" class="showcase" aria-label="Pick a look" hidden></section>
 </main>
 <dialog id="openDialog" aria-labelledby="openDialogTitle"><form id="openForm"><h2 id="openDialogTitle">Open your team design</h2><p>Type the 8-character team code from your team's OneDrive folder. Lost it? Ask Britt for a new code.</p><label class="field">Lesson<select id="openLesson" required></select></label><label class="field">Team code<input id="openEditCode" type="password" autocomplete="off" minlength="8" maxlength="128" required></label><p id="openError" role="status"></p><div class="dialog-actions"><button type="submit" class="btn btn-primary" id="openConfirm">Open</button><button type="button" class="btn btn-secondary" id="openCancel">Cancel</button></div></form></dialog>
+<dialog id="choicesDialog" aria-labelledby="choicesTitle"><h2 id="choicesTitle">All choices</h2><div id="choicesLists"></div><form method="dialog" class="dialog-actions"><button class="btn btn-secondary" id="choicesClose">Close</button></form></dialog>
 <p id="toast" class="toast" role="status" aria-live="polite"></p>
 <script type="module" src="./builder-app.mjs"></script>
 </body></html>

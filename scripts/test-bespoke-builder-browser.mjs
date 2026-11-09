@@ -614,7 +614,7 @@ try {
     assert.deepEqual((await openService(server)).selection.design, newest);
     const backup = await download(second);
     assert.deepEqual(backup.payload.design, staleLocal);
-    await second.locator('#btnLoadLatest').click();
+    await second.locator('#savedUseSaved').click();
     await second.locator('#toast').filter({ hasText: 'Opened the latest shared design.' }).waitFor();
     assert.deepEqual(await design(second), newest);
     const recovery = await second.evaluate(() => JSON.parse(localStorage.getItem('bespoke-previous-draft-v2')));

@@ -1,6 +1,9 @@
 import assert from 'node:assert/strict';
 import test from 'node:test';
-import { createTeamView, isShareHash, isSnapshotHash, viewBannerText, viewLinkToOpen } from '../bespoke/team-view.mjs';
+import { createTeamView, isShareHash, isSnapshotHash, viewBannerText, viewConverted, viewLinkToOpen } from '../bespoke/team-view.mjs';
+import catalog from '../bespoke/builder-catalog.json' with { type: 'json' };
+import { defaultDesign } from '../bespoke/builder-model.mjs';
+import { EDIT_LINE } from '../bespoke/saved-status.mjs';
 
 const SAVED_AT = '2026-10-02T13:55:00.000Z';
 const savedText = 'Saved ' + new Date(SAVED_AT).toLocaleString([], { dateStyle: 'medium', timeStyle: 'short' });
@@ -149,4 +152,81 @@ test('an answer the Open dialog already has is used without a second request', a
   assert.equal(await view.open(LINK, { ok: true, savedAt: SAVED_AT, selection: { lesson: { id: 'money-management' } }, access: 'view' }), true);
   assert.equal(requests, 0);
   assert.equal(host.applied.length, 1);
+});
+
+const SELECTION = { schema: 'bespoke-selection/v2', lesson: { id: 'money-management' }, design: defaultDesign(catalog) };
+const viewHost = (overrides = {}) => fakeHost({ catalog: () => catalog, design: () => SELECTION.design, request: async () => ({ ok: true, savedAt: SAVED_AT, selection: SELECTION }), ...overrides });
+
+test('a view open shows the saved card with no badge and no edit line', async () => {
+  const view = createTeamView(viewHost());
+  await view.open(LINK);
+  const { card, badge } = view.status();
+  assert.equal(badge, null);
+  assert.equal(card.kind, 'saved');
+  assert.equal(card.heading, "You're looking at this team's saved design");
+  assert.deepEqual(card.actions, ['choices', 'ok']);
+  assert.equal(card.lines.some(line => line.includes(EDIT_LINE)), false);
+  assert.equal(card.lines.some(line => line.startsWith('Saved ')), true);
+});
+
+test('a converted view says shown with updates', async () => {
+  const v1 = { ...SELECTION, schema: 'bespoke-selection/v1' };
+  const view = createTeamView(viewHost({ request: async () => ({ ok: true, savedAt: SAVED_AT, selection: v1 }) }));
+  await view.open(LINK);
+  assert.match(view.status().card.heading, /shown with updates to the current design standard/);
+  assert.equal(view.status().badge, null);
+});
+
+test('viewConverted is false for a v2 design conversion leaves alone', () => {
+  assert.equal(viewConverted(catalog, SELECTION), false);
+  assert.equal(viewConverted(catalog, null), false);
+  assert.equal(viewConverted(catalog, { schema: 'bespoke-selection/v1' }), true);
+});
+
+test('a failed view open says we could not check this team\'s design, and Try again re-runs the open', async () => {
+  let answers = [{ ok: false, error: 'network' }, { ok: true, savedAt: SAVED_AT, selection: SELECTION }];
+  const host = viewHost({ request: async () => answers.shift() });
+  const view = createTeamView(host);
+  await view.open(LINK);
+  const { card, badge } = view.status();
+  assert.equal(card.heading, "We couldn't check this team's saved design.");
+  assert.deepEqual(card.actions, ['retry']);
+  assert.equal(badge, null);
+  await view.refresh();
+  assert.equal(view.status().card.kind, 'saved');
+});
+
+test('Try again after a failed first open lands on Review like a first open', async () => {
+  const answers = [{ ok: false, error: 'network' }];
+  const host = viewHost({ request: async () => answers.shift() ?? { ok: true, savedAt: SAVED_AT, selection: SELECTION } });
+  const view = createTeamView(host);
+  await view.open(LINK);
+  assert.equal(host.landed, 0);
+  await view.refresh();
+  assert.equal(host.landed, 1);
+  await view.refresh();
+  assert.equal(host.landed, 1, 'a later refresh keeps the viewer where they are');
+});
+
+test('an incomplete link and an ended session show no card', async () => {
+  const view = createTeamView(viewHost());
+  assert.deepEqual(view.status(), { card: null, badge: null });
+  await view.open('not-a-lesson.' + 'x'.repeat(24));
+  assert.equal(view.status().card, null);
+});
+
+test('a view with nothing saved says so without the edit line', async () => {
+  const view = createTeamView(viewHost({ request: async () => ({ ok: true, revision: null, savedAt: null, selection: null }) }));
+  await view.open(LINK);
+  const { card } = view.status();
+  assert.equal(card.kind, 'empty');
+  assert.equal(card.lines.includes(EDIT_LINE), false);
+});
+
+test('a view with an unreadable save time shows the saved card without a time instead of breaking', async () => {
+  const view = createTeamView(viewHost({ request: async () => ({ ok: true, savedAt: 'not a time', selection: SELECTION }) }));
+  await view.open(LINK);
+  const { card } = view.status();
+  assert.equal(card.kind, 'saved');
+  assert.equal(card.lines.some(line => line.startsWith('Saved ')), false);
 });
