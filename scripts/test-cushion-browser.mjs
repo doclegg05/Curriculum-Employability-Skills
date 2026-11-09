@@ -13,7 +13,10 @@ const url = "file://" + GAME + "?mode=class";
   const page = await browser.newPage({ viewport: { width: 1280, height: 900 } });
   const errors = [];
   page.on("pageerror", (e) => errors.push(e.message));
-  page.on("console", (m) => { if (m.type() === "error") errors.push(m.text()); });
+  // Chrome blocks caption files on file:// pages; the hosted site loads them and the offline
+  // package embeds them (decision 2026-10-15 in .claude/MEMORY.md). Ignore only that message.
+  const FILE_VTT_BLOCKED = /^Unsafe attempt to load URL file:\S+\.vtt from frame with URL file:/;
+  page.on("console", (m) => { if (m.type() === "error" && !FILE_VTT_BLOCKED.test(m.text())) errors.push(m.text()); });
   await page.goto(url);
   await page.evaluate(() => localStorage.clear());
   await page.goto(url);
