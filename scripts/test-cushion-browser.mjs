@@ -1,6 +1,6 @@
 #!/usr/bin/env node
 // Browser test for the Cushion Challenge: class mode, change pick, Back, Change this answer, reload, mode switch.
-// Run outside the agent sandbox: npm install && node scripts/test-cushion-browser.mjs
+// Run outside the agent sandbox: npm install && npx playwright install chromium && node scripts/test-cushion-browser.mjs
 // CHROME=/path/to/chrome overrides the Playwright browser.
 import { chromium } from "playwright";
 import { fileURLToPath } from "node:url";

@@ -318,6 +318,31 @@ button:focus-visible, input:focus-visible, label:focus-within { outline: 3px sol
       return m.cushion >= GOAL ? "refund" : "short";
     }
 
+    function tireOutcome(m) {
+      if (!m.tireHit) return null;
+      if (m.shortfall === 0) return "covered";
+      return m.shortfall === TIRE ? "empty" : "partial";
+    }
+
+    /* Ledger lines for one month. A charge the cushion could not pay is left out, and the
+       part of the tire she could not cover gets its own line, so nothing reads "+$0". */
+    var CHARGES = { fee: true, pics: true, jar: true };
+    function fmt(n) { return "$" + Math.round(Math.abs(n)).toLocaleString("en-US"); }
+    function ledgerLines(m, month) {
+      var out = [];
+      m.rows.forEach(function (r) {
+        if (r.month !== month || (CHARGES[r.kind] && r.amt === 0)) return;
+        if (r.kind === "none") { out.push({ label: r.label, text: "$0", neg: false }); return; }
+        if (r.kind === "tire" && m.shortfall > 0) {
+          if (r.amt !== 0) out.push({ label: "Flat tire repair from the cushion", text: "−" + fmt(r.amt), neg: true });
+          out.push({ label: "Tire cost she couldn't cover", text: fmt(m.shortfall), neg: true });
+          return;
+        }
+        out.push({ label: r.label, text: (r.amt < 0 ? "−" : "+") + fmt(r.amt), neg: r.amt < 0 });
+      });
+      return out;
+    }
+
     /* Saved progress crosses a boundary (localStorage), so keep only known shapes and values. */
     function load(raw) {
       var ok = raw && typeof raw === "object" && raw.v === 2 && typeof raw.screen === "number" &&
@@ -339,7 +364,7 @@ button:focus-visible, input:focus-visible, label:focus-within { outline: 3px sol
     return { GOAL: GOAL, PAY: PAY, WEEKS: WEEKS, TIRE: TIRE, FEE: FEE, JAR: JAR, PICS: PICS, DEFAULT_SPLIT: DEFAULT_SPLIT,
              REFUND_TOTAL: REFUND_TOTAL, QUESTION_SCREEN: QUESTION_SCREEN, fresh: fresh, choose: choose, reveal: reveal,
              next: next, back: back, changeAnswer: changeAnswer, isCounted: isCounted, summary: summary,
-             headline: headline, load: load };
+             headline: headline, tireOutcome: tireOutcome, ledgerLines: ledgerLines, load: load };
   })();
   /* cushion-model:end */
   var M = CushionModel;
@@ -414,11 +439,10 @@ button:focus-visible, input:focus-visible, label:focus-within { outline: 3px sol
     return '<div class="feedback' + (warn ? ' warn' : '') + '" tabindex="-1"><h3><span class="ico" aria-hidden="true">' + (warn ? '!' : '✓') + '</span>' + title + '</h3><p>' + body + '</p></div>';
   }
   function monthLedger(month) {
-    var rows = M.summary(s).rows.filter(function (r) { return r.month === month; });
-    if (!rows.length) return "";
-    return '<ul class="ledger" aria-label="This month">' + rows.map(function (r) {
-      var cls = r.amt < 0 ? "amt neg" : "amt";
-      return '<li><span>' + esc(r.label) + '</span><span class="' + cls + '">' + (r.amt < 0 ? "−" : "+") + money(Math.abs(r.amt)) + '</span></li>';
+    var lines = M.ledgerLines(M.summary(s), month);
+    if (!lines.length) return "";
+    return '<ul class="ledger" aria-label="This month">' + lines.map(function (l) {
+      return '<li><span>' + esc(l.label) + '</span><span class="' + (l.neg ? "amt neg" : "amt") + '">' + l.text + '</span></li>';
     }).join("") + '</ul>';
   }
 
@@ -513,9 +537,10 @@ button:focus-visible, input:focus-visible, label:focus-within { outline: 3px sol
     function month3() {
       var m = M.summary(s);
       var h = '<span class="kicker">Month 3</span><h2 tabindex="-1">Flat Tire on the Way to Work: ' + money(TIRE) + '</h2>' + monthLedger(3);
-      h += m.shortfall === 0
-        ? fb("The Cushion Covered It", "No late rent, no borrowing, no missed shift. This is what the cushion is for.")
-        : fb("Jess Was " + money(m.shortfall) + " Short", "She had to borrow the rest and pay a bill late. A slightly bigger cushion would have covered it.", true);
+      var tire = M.tireOutcome(m);
+      if (tire === "covered") h += fb("The Cushion Covered It", "No late rent, no borrowing, no missed shift. This is what the cushion is for.");
+      if (tire === "partial") h += fb("Jess Was " + money(m.shortfall) + " Short", "She had to borrow the rest and pay a bill late. A slightly bigger cushion would have covered it.", true);
+      if (tire === "empty") h += fb("Jess Was " + money(m.shortfall) + " Short", "She had nothing saved, so she borrowed the whole repair and paid a bill late. Even a small cushion would have helped.", true);
       h += why("Small cushions matter", "Families with $250 to $749 saved were less likely to be evicted or miss a housing or utility payment after a money shock.", "urban", "Urban Institute, April 2016");
       return h + next();
     },

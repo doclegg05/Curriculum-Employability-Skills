@@ -157,7 +157,7 @@ def build_guide():
         "'Save a little first, automatically, somewhere safe, so a small cushion protects your family. "
         "You can do it while on benefits.'\n\n"
         "Point to the cushion meter and its gold goal line at $250. Tell the class they will make "
-        "Jess's choices for four months of paydays and watch what each choice does. Each screen is one month, so a weekly amount counts four times."
+        "Jess's choices for four months of paydays and watch what each choice does. Each month stands for four weekly paydays, so a weekly amount counts four times."
     )
     pdf.tip(
         "How each vote works: read the question, and the class calls out or holds up a letter (A, B, C or D). "

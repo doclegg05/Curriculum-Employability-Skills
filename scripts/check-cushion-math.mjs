@@ -154,6 +154,29 @@ check("modeSwitchNoMoney", () => {
   assert.equal(M.summary(M.reveal(s, "pics")).cushion, pending - 30);
 });
 
+function eachPath(fn) {
+  for (const save1 of [10, 25, 50, 0]) for (const acct of ["jar", "fee", "bankon"])
+    for (const auto of ["yes", "no"]) for (const pics of ["emergency", "planned"])
+      for (const refund of [0, 100, 300, 600]) fn({ save1, acct, auto, pics, snap: "ask", refund });
+}
+check("ledgerLinesNoZeroCharges", () => {
+  eachPath((a) => {
+    for (const month of [1, 2, 3, 4]) for (const line of M.ledgerLines(sumOf(a), month)) {
+      assert.notEqual(line.text, "+$0", `+$0 in month ${month} ${JSON.stringify(a)}`);
+      assert.notEqual(line.text, "−$0", `−$0 in month ${month} ${JSON.stringify(a)}`);
+    }
+  });
+  const left = M.ledgerLines(sumOf({ ...GOOD, save1: 0, auto: "no", refund: 0 }), 3);
+  assert.ok(left.some((l) => /couldn't cover/.test(l.label) && l.text === "$120" && l.neg), JSON.stringify(left));
+  const good = M.ledgerLines(sumOf({ ...GOOD, save1: 25, refund: 0 }), 3);
+  assert.ok(good.some((l) => l.label === "Flat tire repair" && l.text === "−$120"), JSON.stringify(good));
+});
+check("tireOutcome", () => {
+  assert.equal(M.tireOutcome(sumOf({ ...GOOD, save1: 10, refund: 0 })), "covered");
+  assert.equal(M.tireOutcome(sumOf({ ...GOOD, acct: "jar", save1: 10, refund: 0 })), "partial");
+  assert.equal(M.tireOutcome(sumOf({ ...GOOD, save1: 0, auto: "no", refund: 0 })), "empty");
+});
+
 let failed = 0;
 for (const [name, fn] of checks) {
   try { fn(); console.log(`ok ${name}`); }
