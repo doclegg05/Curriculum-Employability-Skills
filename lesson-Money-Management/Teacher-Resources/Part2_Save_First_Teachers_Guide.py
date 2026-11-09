@@ -227,7 +227,9 @@ def build_guide():
     pdf.speaking_notes(
         "No vote here. The screen applies this month's saving, then a $120 flat tire hits.\n\n"
         "If the cushion covered it, point out what that prevented: no late rent, no borrowing, no missed shift. "
-        "If Jess came up short, note that a slightly bigger cushion would have covered it.\n\n"
+        "If Jess came up a little short, note that a slightly bigger cushion would have covered it. "
+        "If she had nothing saved, the screen says she borrowed the whole repair: point out that even "
+        "a small cushion would have helped.\n\n"
         "Pop-up line to say: 'Families with $250 to $749 saved were less likely to be evicted or miss a "
         "housing or utility payment after a money shock.' (Urban Institute, April 2016)"
     )
@@ -302,7 +304,7 @@ def build_guide():
     )
 
     pdf.checklist([
-        ("The Cushion Challenge (HTML)", "lesson-Money-Management/Part-2-Save-Money-Before-You-Spend-It-Britt/cushion-challenge.html"),
+        ("The Cushion Challenge (HTML)", "cushion-challenge.html in the Part 2 folder"),
         ("Projector, smart board, or shared screen", "Open the game, press Start over, check Class mode is On"),
         ("Speakers for the Meet Jess video", "Video and captions play inside the game"),
         ("My First Step cards", "Part2_My_First_Step_Cards.pdf, 4 per page, cut apart"),
