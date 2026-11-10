@@ -2,7 +2,7 @@
 window.SPOKES_PRINT_MANIFEST = {
   "version": 1,
   "lessonTitle": "Controlling Anger",
-  "sourceHash": "e38f2c85b47cd40c637db1958a9ed2694e4dfc4c5d06c4677e6e4fde5856fbc4",
+  "sourceHash": "f01f339fd040dac540c901aaab249659926ad7e635016eec38c0cf878e70de57",
   "pictures": [
     {
       "slide": 1,
@@ -214,11 +214,38 @@ window.SPOKES_PRINT_MANIFEST = {
     {
       "slide": 24,
       "title": "12 Ways to Manage Anger",
-      "label": "",
+      "label": "section 1 of 4",
       "student": "print/s24.jpg",
       "teacher": "print/s24.jpg",
       "width": 2400,
-      "height": 1604
+      "height": 1352
+    },
+    {
+      "slide": 24,
+      "title": "12 Ways to Manage Anger",
+      "label": "section 2 of 4",
+      "student": "print/s24-v2.jpg",
+      "teacher": "print/s24-v2.jpg",
+      "width": 2400,
+      "height": 1352
+    },
+    {
+      "slide": 24,
+      "title": "12 Ways to Manage Anger",
+      "label": "section 3 of 4",
+      "student": "print/s24-v3.jpg",
+      "teacher": "print/s24-v3.jpg",
+      "width": 2400,
+      "height": 1352
+    },
+    {
+      "slide": 24,
+      "title": "12 Ways to Manage Anger",
+      "label": "section 4 of 4",
+      "student": "print/s24-v4.jpg",
+      "teacher": "print/s24-v4.jpg",
+      "width": 2400,
+      "height": 1352
     },
     {
       "slide": 26,

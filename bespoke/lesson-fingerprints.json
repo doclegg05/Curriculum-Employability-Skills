@@ -14,7 +14,7 @@
       "title": "Communicating with the Public",
       "source": {
         "path": "lesson-communicating-with-the-public/index.html",
-        "sha256": "30c08506821ad28a46c82d85b6da4bf130dd757af9d673e6e6d7ebfda13e19c8",
+        "sha256": "8948d7e26153431c90633d283fc2abd4ddc7b418a4131fb2a8232dd72143b3a2",
         "status": "ready"
       },
       "roles": {
@@ -177,27 +177,27 @@
         "slides.divider.layout": {
           "selector": ".slide-section (every chapter)",
           "observed": [
-            "linear-gradient(110deg, rgba(55, 181, 80, 0.96) 0%, rgba(0, 123, 175, 0.94) 45%, rgba(0, 64, 113, 0.96) 100%), url(\"lesson-communicating-with-the-public/images/ppt-inspiration/image24.png\"); rgba(0, 0, 0, 0); text-align:center; custom-side-panel:true; watermark:false; frame:1000x720"
+            "linear-gradient(110deg, rgba(55, 181, 80, 0.96) 0%, rgba(0, 123, 175, 0.94) 45%, rgba(0, 64, 113, 0.96) 100%), url(\"lesson-communicating-with-the-public/images/ppt-inspiration/image24.png\"); rgba(0, 0, 0, 0); text-align:center; custom-side-panel:true; watermark:false; frame:1015x720"
           ],
           "reason": "The reference uses mixed or unsupported values for this characteristic."
         },
         "slides.divider.watermark": {
           "selector": ".slide-section (every chapter)",
           "observed": [
-            "linear-gradient(110deg, rgba(55, 181, 80, 0.96) 0%, rgba(0, 123, 175, 0.94) 45%, rgba(0, 64, 113, 0.96) 100%), url(\"lesson-communicating-with-the-public/images/ppt-inspiration/image24.png\"); rgba(0, 0, 0, 0); text-align:center; custom-side-panel:true; watermark:false; frame:1000x720"
+            "linear-gradient(110deg, rgba(55, 181, 80, 0.96) 0%, rgba(0, 123, 175, 0.94) 45%, rgba(0, 64, 113, 0.96) 100%), url(\"lesson-communicating-with-the-public/images/ppt-inspiration/image24.png\"); rgba(0, 0, 0, 0); text-align:center; custom-side-panel:true; watermark:false; frame:1015x720"
           ]
         },
         "slides.divider.colors": {
           "selector": ".slide-section (every chapter)",
           "observed": [
-            "linear-gradient(110deg, rgba(55, 181, 80, 0.96) 0%, rgba(0, 123, 175, 0.94) 45%, rgba(0, 64, 113, 0.96) 100%), url(\"lesson-communicating-with-the-public/images/ppt-inspiration/image24.png\"); rgba(0, 0, 0, 0); text-align:center; custom-side-panel:true; watermark:false; frame:1000x720"
+            "linear-gradient(110deg, rgba(55, 181, 80, 0.96) 0%, rgba(0, 123, 175, 0.94) 45%, rgba(0, 64, 113, 0.96) 100%), url(\"lesson-communicating-with-the-public/images/ppt-inspiration/image24.png\"); rgba(0, 0, 0, 0); text-align:center; custom-side-panel:true; watermark:false; frame:1015x720"
           ],
           "reason": "The reference uses mixed or unsupported values for this characteristic."
         },
         "roles.dividerBackground": {
           "selector": ".slide-section background (every chapter)",
           "observed": [
-            "linear-gradient(110deg, rgba(55, 181, 80, 0.96) 0%, rgba(0, 123, 175, 0.94) 45%, rgba(0, 64, 113, 0.96) 100%), url(\"lesson-communicating-with-the-public/images/ppt-inspiration/image24.png\"); rgba(0, 0, 0, 0); text-align:center; custom-side-panel:true; watermark:false; frame:1000x720"
+            "linear-gradient(110deg, rgba(55, 181, 80, 0.96) 0%, rgba(0, 123, 175, 0.94) 45%, rgba(0, 64, 113, 0.96) 100%), url(\"lesson-communicating-with-the-public/images/ppt-inspiration/image24.png\"); rgba(0, 0, 0, 0); text-align:center; custom-side-panel:true; watermark:false; frame:1015x720"
           ],
           "reason": "Chapter backgrounds vary or are gradients, photos, overlays or off-palette colors."
         },
@@ -288,7 +288,7 @@
       "title": "Controlling Anger",
       "source": {
         "path": "lesson-controlling-anger/index.html",
-        "sha256": "15bf1ef93b4af6f5d2994b7cb6b8f325887b0bb62d3ee05e12620e21dc3b5254",
+        "sha256": "ce25788b05912e32f4713148a688c6c58b8b738d77a63e83f420836072a2c0e4",
         "status": "ready"
       },
       "roles": {
@@ -453,25 +453,25 @@
         "slides.divider.layout": {
           "selector": ".slide-section (every chapter)",
           "observed": [
-            "none; rgb(0, 19, 63); text-align:center; custom-side-panel:false; watermark:false; frame:1000x720"
+            "none; rgb(0, 19, 63); text-align:center; custom-side-panel:false; watermark:false; frame:1015x720"
           ]
         },
         "slides.divider.watermark": {
           "selector": ".slide-section (every chapter)",
           "observed": [
-            "none; rgb(0, 19, 63); text-align:center; custom-side-panel:false; watermark:false; frame:1000x720"
+            "none; rgb(0, 19, 63); text-align:center; custom-side-panel:false; watermark:false; frame:1015x720"
           ]
         },
         "slides.divider.colors": {
           "selector": ".slide-section (every chapter)",
           "observed": [
-            "none; rgb(0, 19, 63); text-align:center; custom-side-panel:false; watermark:false; frame:1000x720"
+            "none; rgb(0, 19, 63); text-align:center; custom-side-panel:false; watermark:false; frame:1015x720"
           ]
         },
         "roles.dividerBackground": {
           "selector": ".slide-section background (every chapter)",
           "observed": [
-            "none; rgb(0, 19, 63); text-align:center; custom-side-panel:false; watermark:false; frame:1000x720"
+            "none; rgb(0, 19, 63); text-align:center; custom-side-panel:false; watermark:false; frame:1015x720"
           ]
         },
         "slides.cards.count": {
@@ -548,7 +548,7 @@
       "title": "Employee Accountability",
       "source": {
         "path": "lesson-employee-accountability/index.html",
-        "sha256": "71497a082f4535ad5944c7ca5579bbe7c28a2ab05fdf38a1ebe2ba7500176822",
+        "sha256": "e37a1e58ad064829602cd11e05e0bb8511b7ae05cbb3d5a716dae4aa4a01b823",
         "status": "ready"
       },
       "roles": {
@@ -709,25 +709,25 @@
         "slides.divider.layout": {
           "selector": ".slide-section (every chapter)",
           "observed": [
-            "linear-gradient(135deg, rgb(0, 123, 175) 0%, rgb(0, 64, 113) 100%); rgba(0, 0, 0, 0); text-align:center; custom-side-panel:false; watermark:false; frame:1000x720"
+            "linear-gradient(135deg, rgb(0, 123, 175) 0%, rgb(0, 64, 113) 100%); rgba(0, 0, 0, 0); text-align:center; custom-side-panel:false; watermark:false; frame:1015x720"
           ]
         },
         "slides.divider.watermark": {
           "selector": ".slide-section (every chapter)",
           "observed": [
-            "linear-gradient(135deg, rgb(0, 123, 175) 0%, rgb(0, 64, 113) 100%); rgba(0, 0, 0, 0); text-align:center; custom-side-panel:false; watermark:false; frame:1000x720"
+            "linear-gradient(135deg, rgb(0, 123, 175) 0%, rgb(0, 64, 113) 100%); rgba(0, 0, 0, 0); text-align:center; custom-side-panel:false; watermark:false; frame:1015x720"
           ]
         },
         "slides.divider.colors": {
           "selector": ".slide-section (every chapter)",
           "observed": [
-            "linear-gradient(135deg, rgb(0, 123, 175) 0%, rgb(0, 64, 113) 100%); rgba(0, 0, 0, 0); text-align:center; custom-side-panel:false; watermark:false; frame:1000x720"
+            "linear-gradient(135deg, rgb(0, 123, 175) 0%, rgb(0, 64, 113) 100%); rgba(0, 0, 0, 0); text-align:center; custom-side-panel:false; watermark:false; frame:1015x720"
           ]
         },
         "roles.dividerBackground": {
           "selector": ".slide-section background (every chapter)",
           "observed": [
-            "linear-gradient(135deg, rgb(0, 123, 175) 0%, rgb(0, 64, 113) 100%); rgba(0, 0, 0, 0); text-align:center; custom-side-panel:false; watermark:false; frame:1000x720"
+            "linear-gradient(135deg, rgb(0, 123, 175) 0%, rgb(0, 64, 113) 100%); rgba(0, 0, 0, 0); text-align:center; custom-side-panel:false; watermark:false; frame:1015x720"
           ],
           "reason": "Chapter backgrounds vary or are gradients, photos, overlays or off-palette colors."
         },
@@ -810,7 +810,7 @@
       "title": "Interview Skills",
       "source": {
         "path": "lesson-interview-skills/index.html",
-        "sha256": "00767d44a53b46b3d69e12ce3a3c6535f1579c6eb68bcc02d5cbe66be651692b",
+        "sha256": "8dec504d841afc3123b85b47587fcd1d1e770662b46aba7307077ae463d7902f",
         "status": "ready"
       },
       "roles": {
@@ -975,25 +975,25 @@
         "slides.divider.layout": {
           "selector": ".slide-section (every chapter)",
           "observed": [
-            "none; rgb(0, 19, 63); text-align:center; custom-side-panel:false; watermark:false; frame:1000x720"
+            "none; rgb(0, 19, 63); text-align:center; custom-side-panel:false; watermark:false; frame:1015x720"
           ]
         },
         "slides.divider.watermark": {
           "selector": ".slide-section (every chapter)",
           "observed": [
-            "none; rgb(0, 19, 63); text-align:center; custom-side-panel:false; watermark:false; frame:1000x720"
+            "none; rgb(0, 19, 63); text-align:center; custom-side-panel:false; watermark:false; frame:1015x720"
           ]
         },
         "slides.divider.colors": {
           "selector": ".slide-section (every chapter)",
           "observed": [
-            "none; rgb(0, 19, 63); text-align:center; custom-side-panel:false; watermark:false; frame:1000x720"
+            "none; rgb(0, 19, 63); text-align:center; custom-side-panel:false; watermark:false; frame:1015x720"
           ]
         },
         "roles.dividerBackground": {
           "selector": ".slide-section background (every chapter)",
           "observed": [
-            "none; rgb(0, 19, 63); text-align:center; custom-side-panel:false; watermark:false; frame:1000x720"
+            "none; rgb(0, 19, 63); text-align:center; custom-side-panel:false; watermark:false; frame:1015x720"
           ]
         },
         "slides.cards.count": {
@@ -1062,7 +1062,7 @@
       "title": "Problem Solving & Decision Making",
       "source": {
         "path": "lesson-problem-solving-and-decision-making/index.html",
-        "sha256": "036f3a782eb9544aa34a884ddd0552703ce3509eb1953d9792705da930628a31",
+        "sha256": "168b76fe4102288eea7c14dddfb0964259c78ed7bf3169119b6ae053f1b107ad",
         "status": "ready"
       },
       "roles": {
@@ -1159,7 +1159,7 @@
         "roles.sidebar": {
           "selector": ".sidebar",
           "observed": [
-            "rgb(6, 23, 53); linear-gradient(rgba(15, 155, 154, 0.14), rgba(0, 0, 0, 0) 288px), none"
+            "rgb(6, 23, 53); linear-gradient(rgba(15, 155, 154, 0.14), rgba(0, 0, 0, 0) 272.102px), none"
           ],
           "reason": "A gradient, photo, overlay, transparent surface, off-palette color, or mixed surfaces has no single exact swatch."
         },
@@ -1231,30 +1231,30 @@
         "slides.divider.layout": {
           "selector": ".slide-section (every chapter)",
           "observed": [
-            "linear-gradient(115deg, rgba(6, 23, 53, 0.98) 0%, rgba(6, 23, 53, 0.96) 39%, rgba(247, 251, 251, 0.94) 39.2%, rgba(255, 250, 240, 0.98) 100%), radial-gradient(circle at 18% 50%, rgba(232, 180, 63, 0.28), rgba(0, 0, 0, 0) 288px); rgba(0, 0, 0, 0); text-align:center; custom-side-panel:true; watermark:false; frame:1000x720",
-            "linear-gradient(115deg, rgba(8, 49, 87, 0.98) 0%, rgba(8, 49, 87, 0.96) 39%, rgba(255, 250, 240, 0.98) 39.2%, rgba(234, 244, 242, 0.98) 100%); rgba(0, 0, 0, 0); text-align:center; custom-side-panel:true; watermark:false; frame:1000x720"
+            "linear-gradient(115deg, rgba(6, 23, 53, 0.98) 0%, rgba(6, 23, 53, 0.96) 39%, rgba(247, 251, 251, 0.94) 39.2%, rgba(255, 250, 240, 0.98) 100%), radial-gradient(circle at 18% 50%, rgba(232, 180, 63, 0.28), rgba(0, 0, 0, 0) 272.102px); rgba(0, 0, 0, 0); text-align:center; custom-side-panel:true; watermark:false; frame:1015x720",
+            "linear-gradient(115deg, rgba(8, 49, 87, 0.98) 0%, rgba(8, 49, 87, 0.96) 39%, rgba(255, 250, 240, 0.98) 39.2%, rgba(234, 244, 242, 0.98) 100%); rgba(0, 0, 0, 0); text-align:center; custom-side-panel:true; watermark:false; frame:1015x720"
           ],
           "reason": "The reference uses mixed or unsupported values for this characteristic."
         },
         "slides.divider.watermark": {
           "selector": ".slide-section (every chapter)",
           "observed": [
-            "linear-gradient(115deg, rgba(6, 23, 53, 0.98) 0%, rgba(6, 23, 53, 0.96) 39%, rgba(247, 251, 251, 0.94) 39.2%, rgba(255, 250, 240, 0.98) 100%), radial-gradient(circle at 18% 50%, rgba(232, 180, 63, 0.28), rgba(0, 0, 0, 0) 288px); rgba(0, 0, 0, 0); text-align:center; custom-side-panel:true; watermark:false; frame:1000x720",
-            "linear-gradient(115deg, rgba(8, 49, 87, 0.98) 0%, rgba(8, 49, 87, 0.96) 39%, rgba(255, 250, 240, 0.98) 39.2%, rgba(234, 244, 242, 0.98) 100%); rgba(0, 0, 0, 0); text-align:center; custom-side-panel:true; watermark:false; frame:1000x720"
+            "linear-gradient(115deg, rgba(6, 23, 53, 0.98) 0%, rgba(6, 23, 53, 0.96) 39%, rgba(247, 251, 251, 0.94) 39.2%, rgba(255, 250, 240, 0.98) 100%), radial-gradient(circle at 18% 50%, rgba(232, 180, 63, 0.28), rgba(0, 0, 0, 0) 272.102px); rgba(0, 0, 0, 0); text-align:center; custom-side-panel:true; watermark:false; frame:1015x720",
+            "linear-gradient(115deg, rgba(8, 49, 87, 0.98) 0%, rgba(8, 49, 87, 0.96) 39%, rgba(255, 250, 240, 0.98) 39.2%, rgba(234, 244, 242, 0.98) 100%); rgba(0, 0, 0, 0); text-align:center; custom-side-panel:true; watermark:false; frame:1015x720"
           ]
         },
         "slides.divider.colors": {
           "selector": ".slide-section (every chapter)",
           "observed": [
-            "linear-gradient(115deg, rgba(6, 23, 53, 0.98) 0%, rgba(6, 23, 53, 0.96) 39%, rgba(247, 251, 251, 0.94) 39.2%, rgba(255, 250, 240, 0.98) 100%), radial-gradient(circle at 18% 50%, rgba(232, 180, 63, 0.28), rgba(0, 0, 0, 0) 288px); rgba(0, 0, 0, 0); text-align:center; custom-side-panel:true; watermark:false; frame:1000x720",
-            "linear-gradient(115deg, rgba(8, 49, 87, 0.98) 0%, rgba(8, 49, 87, 0.96) 39%, rgba(255, 250, 240, 0.98) 39.2%, rgba(234, 244, 242, 0.98) 100%); rgba(0, 0, 0, 0); text-align:center; custom-side-panel:true; watermark:false; frame:1000x720"
+            "linear-gradient(115deg, rgba(6, 23, 53, 0.98) 0%, rgba(6, 23, 53, 0.96) 39%, rgba(247, 251, 251, 0.94) 39.2%, rgba(255, 250, 240, 0.98) 100%), radial-gradient(circle at 18% 50%, rgba(232, 180, 63, 0.28), rgba(0, 0, 0, 0) 272.102px); rgba(0, 0, 0, 0); text-align:center; custom-side-panel:true; watermark:false; frame:1015x720",
+            "linear-gradient(115deg, rgba(8, 49, 87, 0.98) 0%, rgba(8, 49, 87, 0.96) 39%, rgba(255, 250, 240, 0.98) 39.2%, rgba(234, 244, 242, 0.98) 100%); rgba(0, 0, 0, 0); text-align:center; custom-side-panel:true; watermark:false; frame:1015x720"
           ]
         },
         "roles.dividerBackground": {
           "selector": ".slide-section background (every chapter)",
           "observed": [
-            "linear-gradient(115deg, rgba(6, 23, 53, 0.98) 0%, rgba(6, 23, 53, 0.96) 39%, rgba(247, 251, 251, 0.94) 39.2%, rgba(255, 250, 240, 0.98) 100%), radial-gradient(circle at 18% 50%, rgba(232, 180, 63, 0.28), rgba(0, 0, 0, 0) 288px); rgba(0, 0, 0, 0); text-align:center; custom-side-panel:true; watermark:false; frame:1000x720",
-            "linear-gradient(115deg, rgba(8, 49, 87, 0.98) 0%, rgba(8, 49, 87, 0.96) 39%, rgba(255, 250, 240, 0.98) 39.2%, rgba(234, 244, 242, 0.98) 100%); rgba(0, 0, 0, 0); text-align:center; custom-side-panel:true; watermark:false; frame:1000x720"
+            "linear-gradient(115deg, rgba(6, 23, 53, 0.98) 0%, rgba(6, 23, 53, 0.96) 39%, rgba(247, 251, 251, 0.94) 39.2%, rgba(255, 250, 240, 0.98) 100%), radial-gradient(circle at 18% 50%, rgba(232, 180, 63, 0.28), rgba(0, 0, 0, 0) 272.102px); rgba(0, 0, 0, 0); text-align:center; custom-side-panel:true; watermark:false; frame:1015x720",
+            "linear-gradient(115deg, rgba(8, 49, 87, 0.98) 0%, rgba(8, 49, 87, 0.96) 39%, rgba(255, 250, 240, 0.98) 39.2%, rgba(234, 244, 242, 0.98) 100%); rgba(0, 0, 0, 0); text-align:center; custom-side-panel:true; watermark:false; frame:1015x720"
           ],
           "reason": "Chapter backgrounds vary or are gradients, photos, overlays or off-palette colors."
         },
@@ -1324,7 +1324,7 @@
       "title": "Time Management",
       "source": {
         "path": "lesson-time-management/index.html",
-        "sha256": "27b15669f05bf3663417baca3e6ed5f2a27dc688604bb8b5b046793acb8f7a38",
+        "sha256": "ef8b661b9c38f31524fa39bac64ee7e467529c0df8f175bbc7644fa69a8dbec8",
         "status": "ready"
       },
       "roles": {
@@ -1423,7 +1423,7 @@
         "roles.sidebar": {
           "selector": ".sidebar",
           "observed": [
-            "rgb(16, 32, 51); linear-gradient(rgba(0, 167, 157, 0.18), rgba(0, 0, 0, 0) 288px), none"
+            "rgb(16, 32, 51); linear-gradient(rgba(0, 167, 157, 0.18), rgba(0, 0, 0, 0) 272.102px), none"
           ],
           "reason": "A gradient, photo, overlay, transparent surface, off-palette color, or mixed surfaces has no single exact swatch."
         },
@@ -1498,26 +1498,26 @@
         "slides.divider.layout": {
           "selector": ".slide-section (every chapter)",
           "observed": [
-            "linear-gradient(115deg, rgba(16, 32, 51, 0.98) 0%, rgba(16, 32, 51, 0.96) 38%, rgba(255, 248, 234, 0.96) 38.2%, rgba(251, 253, 254, 0.98) 100%); rgba(0, 0, 0, 0); text-align:left; custom-side-panel:true; watermark:false; frame:1000x720"
+            "linear-gradient(115deg, rgba(16, 32, 51, 0.98) 0%, rgba(16, 32, 51, 0.96) 38%, rgba(255, 248, 234, 0.96) 38.2%, rgba(251, 253, 254, 0.98) 100%); rgba(0, 0, 0, 0); text-align:left; custom-side-panel:true; watermark:false; frame:1015x720"
           ],
           "reason": "The reference uses mixed or unsupported values for this characteristic."
         },
         "slides.divider.watermark": {
           "selector": ".slide-section (every chapter)",
           "observed": [
-            "linear-gradient(115deg, rgba(16, 32, 51, 0.98) 0%, rgba(16, 32, 51, 0.96) 38%, rgba(255, 248, 234, 0.96) 38.2%, rgba(251, 253, 254, 0.98) 100%); rgba(0, 0, 0, 0); text-align:left; custom-side-panel:true; watermark:false; frame:1000x720"
+            "linear-gradient(115deg, rgba(16, 32, 51, 0.98) 0%, rgba(16, 32, 51, 0.96) 38%, rgba(255, 248, 234, 0.96) 38.2%, rgba(251, 253, 254, 0.98) 100%); rgba(0, 0, 0, 0); text-align:left; custom-side-panel:true; watermark:false; frame:1015x720"
           ]
         },
         "slides.divider.colors": {
           "selector": ".slide-section (every chapter)",
           "observed": [
-            "linear-gradient(115deg, rgba(16, 32, 51, 0.98) 0%, rgba(16, 32, 51, 0.96) 38%, rgba(255, 248, 234, 0.96) 38.2%, rgba(251, 253, 254, 0.98) 100%); rgba(0, 0, 0, 0); text-align:left; custom-side-panel:true; watermark:false; frame:1000x720"
+            "linear-gradient(115deg, rgba(16, 32, 51, 0.98) 0%, rgba(16, 32, 51, 0.96) 38%, rgba(255, 248, 234, 0.96) 38.2%, rgba(251, 253, 254, 0.98) 100%); rgba(0, 0, 0, 0); text-align:left; custom-side-panel:true; watermark:false; frame:1015x720"
           ]
         },
         "roles.dividerBackground": {
           "selector": ".slide-section background (every chapter)",
           "observed": [
-            "linear-gradient(115deg, rgba(16, 32, 51, 0.98) 0%, rgba(16, 32, 51, 0.96) 38%, rgba(255, 248, 234, 0.96) 38.2%, rgba(251, 253, 254, 0.98) 100%); rgba(0, 0, 0, 0); text-align:left; custom-side-panel:true; watermark:false; frame:1000x720"
+            "linear-gradient(115deg, rgba(16, 32, 51, 0.98) 0%, rgba(16, 32, 51, 0.96) 38%, rgba(255, 248, 234, 0.96) 38.2%, rgba(251, 253, 254, 0.98) 100%); rgba(0, 0, 0, 0); text-align:left; custom-side-panel:true; watermark:false; frame:1015x720"
           ],
           "reason": "Chapter backgrounds vary or are gradients, photos, overlays or off-palette colors."
         },

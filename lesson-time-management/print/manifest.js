@@ -2,7 +2,7 @@
 window.SPOKES_PRINT_MANIFEST = {
   "version": 1,
   "lessonTitle": "Time Management",
-  "sourceHash": "c5bb286120f1c0b7614a7c65e70f6f5161f9604d275364231217362cc8b7c51f",
+  "sourceHash": "d736a8fd614bf415b49f84e0fee9687e3fc3930ce62b70275fcacae335f937ae",
   "pictures": [
     {
       "slide": 1,
@@ -236,7 +236,7 @@ window.SPOKES_PRINT_MANIFEST = {
       "student": "print/s30.jpg",
       "teacher": "print/s30.jpg",
       "width": 2400,
-      "height": 1352
+      "height": 1560
     },
     {
       "slide": 31,

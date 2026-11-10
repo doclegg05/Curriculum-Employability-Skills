@@ -72,6 +72,10 @@ try {
       const title = document.querySelector('.slide-title');
       const contentSelector = '.slide:not(.slide-title):not(.slide-section):not(.slide-closing):not(.slide-video):not(.big-statement)';
       const slides = selectors('.slide');
+      // A dense slide is drawn smaller as a whole (its style sets --fit, which
+      // the lesson reads as a zoom). That is a fit, not the design: under it a
+      // card's borders measure smaller. Measure every slide at full size.
+      for (const s of slides) s.style.removeProperty('--fit');
       const show = (slide) => { for (const s of slides) s.classList.toggle('active', s === slide); };
       color('roles.titleText', '.slide-title h1');
       color('roles.subtitle', '.slide-title .subtitle');
