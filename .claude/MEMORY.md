@@ -7,7 +7,8 @@
 - **Repo**: origin = doclegg05/Curriculum-Employability-Skills (dev); publisher = SPOKES-Skills/Employability-Skills-Curriculum (public Pages); t9 = /Volumes/T9 backup mirror
 
 ## Current Status
-(as of 2026-11-06, `origin/main` = `66c7657`)
+(as of 2026-11-10; BeSpoke lines as of 2026-11-06)
+- **Lesson showcase pass under way** (Britt, 2026-11-09): Level 1 repairs to the six released lessons are committed on worktree branch `t3/review-lessons-presentation-polish`, not pushed. Level 2 (room-size text) is next. Detail in Last Session.
 - **BeSpoke is live and ready for hosted checks.** Pages serves `main`; the Netlify service is deploy `6ae4a32718993eaabe906eaf` from `fdf6fe4` (2026-10-30, [[bespoke-netlify-deploy]] in auto-memory). No service file changed since: PRs #68 (team code first, Send pop-up) and #69 (session switching, C1/C2) are page-only.
   - Team codes: all six open with edit access; a fake code and another lesson's code get 403 (2026-10-30).
   - View links: `BESPOKE_VIEW_KEYS` is set and live. On 2026-11-04 all six view codes opened with `access: view`; history and status with a view code got 403 `view`. Files in `~/BeSpoke-private/codes-2026-10-14/` (`view-links.html` to pin).
@@ -22,17 +23,19 @@
 - **Money Management intro animation narrated** (PR #46, 2026-10-09). Rebuild steps: `lesson-Money-Management/intro-narration/script.md`.
 
 ## Last Session
-- **Date**: 2026-11-09
-- **What we worked on**: Money Management Part 2, the Cushion Challenge game. A path simulation showed only the tax refund decided whether Jess reached $250. Brainstormed and wrote a design (Sol review folded in), planned five tasks, built them inline on branch `t3/continue-money-management-lesson` (commits `aac8554`..`8da0497`), then an opus whole-branch review and one fix pass.
-- **What we decided**: each payday stage is a month (weekly save counts 4 times), $120 tire, $12 fee every month, $40 jar dip, refund choices unchanged; How It Went splits habit and refund and says first when savings covered the tire; class picks change until Reveal; Back on every screen with Change this answer (redo clears later answers); only `#announce` (polite) speaks. Money lives in a pure model block checked by `scripts/check-cushion-math.mjs` (now in `quality.sh`). Design `docs/superpowers/specs/2026-11-09-cushion-challenge-rebalance-design.md`.
-- **Where we left off**: `main` is at `6d57ab8` on GitHub (game, guide PDF rebuilt with the last two fixes, whole-lesson plan draft, lesson map). Browser test and `quality` green on `main`; Pages deployed. Left: VoiceOver pass.
+- **Date**: 2026-11-10 (began 2026-11-09; worktree branch `t3/review-lessons-presentation-polish`, called `t3/987d1938` when the session started)
+- **What we worked on**: Britt asked for a review of the six released lessons before showing them to many instructors and students. Design critique 26/40, technical audit 12/20, no blockers; report with line numbers in `.impeccable/critique/2026-11-10T00-30-25Z__lesson-index-html.md`. Then Level 1 of the showcase pass (repair): clicker keys (NAV-14), about 40 defect repairs in a `Showcase repair 2026-11` block at the end of each lesson's theme-override, seven AV1 videos re-saved as H.264, a 199 KB title JPEG for Communicating with the Public, each lesson down to its two registered typefaces, and a larger Jeopardy board on Controlling Anger slide 28 at Britt's request.
+- **What we decided**: see the 2026-11-09 and 2026-11-10 rows in the decision log.
+- **Where we left off**: Level 1 is committed on the worktree branch as `4b7bd85` (videos), `c22ef24` (template and NAV-14), `f2d1acb` (lessons, pictures, fingerprints) and `8d4232e` (browser test helper), not pushed. `scripts/quality.sh` passed in full in Britt's Terminal on 2026-11-09 before the commits; the only later changes were a lowered accessibility baseline and these notes. Next: design Level 2 with Britt's two choices (text scales with the screen; the sidebar keeps opening by default), then Level 3.
 
 ## Open Items
+- [ ] **Lesson showcase pass, Level 1**: committed, not pushed (hashes in Last Session). Push and the pull request go through Britt's Terminal. Britt's calls still open: the Problem Solving closing slide lost its photo; Communicating with the Public labels changed from a handwriting font to Work Sans; the NAV-14 heading uses a colon, unlike the other 87.
+- [ ] **Showcase Level 2 (room-size text) and Level 3 (covers, closings, one owned visual per lesson)**: not started. Level 2 inputs measured 2026-11-09: at 1280x720 slides already run past the screen in every lesson (3 to 11 with the sidebar open, 1 to 5 closed); Time Management statement slides 5 and 11 overflow at every size; Controlling Anger slide 29 is still 96px over at 1280x720 with the sidebar open; Interview Skills slide 31 overflows at 1280x720 with a panel open. Britt's call: Time Management and Problem Solving redefine five of the 11 colors in their own style block (the validator does not catch it). Not reviewed at all: Dashboard visuals, Round 2 draft decks, Money Management Part 2. The comparison checker is in the session scratchpad (`site/scan.html`); rebuild it under `scripts/` if Level 2 goes ahead.
 - [ ] **Cushion Challenge on `main`** (pushed 2026-11-09 as `f76bf5e`, bypassing the required `quality` check). Browser test passed in Britt's Terminal 2026-11-09 (Chrome blocks .vtt on file://; the test ignores only that). `quality` green on `80fc9bc` and `6d57ab8`; Pages deployed (one transient Pages failure on `80fc9bc`, gone on the next run). Left: a VoiceOver pass in Safari.
 - [ ] Cushion Challenge follow-ups: lesson plan Payday to Month labels; jar plus split deposit; short segment version; deferred minors in the branch ledger (Back arrow read aloud, pick change not announced, stale CSS comments).
 - [ ] **Hosted checks** (Britt, Mac and phone): save on one device and open on the other; the view link shows View only and changes nothing; Leave session forgets the code. Record results in a dated verification note.
 - [ ] **PR #72**: Britt merges; then the hosted checks below include the new card.
-- [ ] `scripts/test-bespoke-send-wait.mjs` flakes in CI setup (ECONNRESET, goto and session-revision timeouts; four times by 2026-11-06). Five other browser tests keep an unguarded `route.fetch` catch-all. Harden them.
+- [ ] BeSpoke browser tests, teardown race: on 2026-11-09 `test-bespoke-code-first.mjs` crashed `quality.sh` with "route.fulfill: Fetch response has been disposed" (a context closing under a proxied request). All seven catch-all proxies now go through `scripts/bespoke-test-proxy.mjs` (unit test `test-bespoke-test-proxy.mjs`, in `quality.sh`). The seven edited tests have not run in a browser since the change: confirm on Britt's next `quality.sh`. `test-bespoke-send-wait.mjs` also flaked in CI setup with goto and session-revision timeouts (four times by 2026-11-06); those are untouched.
 - [ ] **Clear test saves** after the hosted checks: delete branch `bespoke-drafts` (head `b8e29b5` on 2026-11-04).
 - [ ] **Auto-merge off** (Britt, GitHub repo Settings > General > Pull Requests > untick Allow auto-merge).
 - [ ] **Rate limit**: run a burst of about 130 wrong-code POSTs inside one minute from Britt's Terminal and confirm a 429.
@@ -67,6 +70,12 @@
 ## Key Decisions Log
 | Date | Decision | Rationale |
 |------|----------|-----------|
+| 2026-11-10 | Level 2 text scales with the screen | Britt's pick: a slide should look the same on any projector; about 19% larger than today at 1920x1080 |
+| 2026-11-10 | Lessons keep opening with the sidebar showing | Britt's pick over starting closed on small screens; Level 2 fits slides around the open sidebar, which means smaller text on small screens |
+| 2026-11-09 | Lesson showcase pass runs in three levels (repair, room-size text, showpiece), with a stop for Britt's review after each | Britt's pick; the lessons are released, so each level gets looked at before the next |
+| 2026-11-09 | Page Down, Page Up, Home and End added to the lessons' key handler and the builder template (NAV-14) | Britt approved; presenter remotes send Page Down and the handler took arrows and Space only |
+| 2026-11-09 | Seven AV1 lesson videos re-saved as H.264 under the same file names | Old Edge and Safari may not play AV1; 56 MB of growth accepted |
+| 2026-11-09 | Controlling Anger slide 28 shows a drawn game board, not the Jeopardy thumbnail | The thumbnail carried a redrawn SPOKES mark (LOGO-01); the PNG stays in the folder, unreferenced |
 | 2026-11-04 | Turn off auto-merge rather than require PR approval on `main` | Britt is the only reviewer and PRs open under her account, which GitHub will not let her approve; auto-merge is what lets a PR land without her |
 | 2026-11-04 | The person on the Lesson & team form is the "spokesperson" in every page, guide and doc | The form label says Spokesperson; "Team Leader" in other copy named the same person differently |
 | 2026-11-03 | One pending Send per browser stays | Teams are remote and never share a browser (`bespoke-teams-never-share-browsers` in auto-memory) |
@@ -81,61 +90,8 @@
 | 2026-10-22 | LOGO-01 and LOGO-02 are CRITICAL validator rules: the logo may be resized, never recolored, cropped, stretched or swapped | The logo is the one brand mark that must stay exact |
 | 2026-10-22 | Old design rules kept at tag `archive/design-rules-v1` | Britt asked for a rollback point before the change |
 | 2026-10-22 | Remerge the PR 56/59 stack with current main first, then fix the CI failures, before the review findings | Britt |
-| 2026-10-21 | Make it yours draws the slide on the fixed 960 canvas and scales it; it grows past 960 on wide windows and uses the column width when 960 would be below 45% | Britt: the slide wins over the toolbar (R21, R26); legibility floor (R23, R31) |
-| 2026-10-21 | Escape closes the open Slide options drawer first; with it closed, Escape selects the slide background | Britt (R27) |
-| 2026-10-21 | Sent to Britt view takes a follow-up note that saves and resends | Britt (R28); works with the deployed service, no function change |
-| 2026-10-21 | Fix the critique's P1s on the branch before the PR; P2s become follow-ups | Britt (R21); score 28/40 against a 30 target |
-| 2026-10-19 | BeSpoke "bolder showcase": stage names Lesson & team, Pick a look, Make it yours, Send; stage + filmstrip layout (mockup option A); moods Calm, Bold, Bright, Classic | Britt picked from the mockups; spec approved the same day |
-| 2026-10-19 | Similarity meter becomes one line on Send, replacing the 2026-09-24 "prominent" placement | Britt's pick |
-| 2026-10-19 | Unmerged GitHub branches are kept as `archive/<branch>` tags, not branches | Britt: 45 open branches cut to main plus PR #56 |
-| 2026-10-15 | PR #56 remerge: main's twelve layout presets win; the PR's six new presets are not shipped | Britt's pick. Matches 3e7778e and main's one-layout-per-preset picker |
-| 2026-10-15 | Fix PR #56 with one commit on top of the branch instead of rewriting its merges | No force-push on a shared branch; same pattern as 3e7778e |
-| 2026-10-15 | Offline package embeds captions in its copy of each lesson; the released lessons keep their .vtt links | Chrome and Edge block caption files on file:// pages; the hosted site loads them, and the released lessons stay untouched |
-| 2026-10-13 | Team codes become 8 characters (`K7QX-M3PD`), case, spaces and dash ignored | Britt: 32 characters is extreme; teams must be able to read and type a code. About 39.6 bits is enough for online guessing behind the per-address limit, and the code guards a design suggestion |
-| 2026-10-13 | Recovery is admin-only: Britt resends the link or reissues the code (`--reissue`) | Britt's pick over email self-service, which needed an email provider, a new secret and stored contact emails |
-| 2026-10-13 | Build access-code work on `main`, not the view-link branch | Britt's pick; lands on its own; the view-link branch's rotate mode gets folded in later |
-| 2026-10-13 | `BESPOKE_TEAM_KEYS` and `team-env.json` are secrets | An 8-character code falls to its unsalted SHA-256 in minutes on one GPU (security review) |
-| 2026-10-09 | Print slides prints saved slide pictures, not the live slides | Live slides size from the screen with vw/vh and clamp(); pictures match the screen in every browser |
-| 2026-10-09 | Print capture runs at 1600x901 | 900 trips the lessons' max-height: 900px short-screen layout, which clips card text |
-| 2026-10-09 | Print dialog always opens on the Student workbook | A remembered Teacher choice could send answers to a class set |
-| 2026-10-09 | Lesson & team becomes its own first stage (four stages) | Britt chose it over a top-bar chip or a highlighted card so teams see it and identify themselves first; supersedes the 2026-09-24 decision that Start combines it with the starting looks. Nothing blocks navigation or Save; Send still needs the spokesperson |
-| 2026-10-09 | Customize goes slide-first with a slim top bar, docked toolbar and Slide options drawer, built as a skin over the existing engine | Britt asked for a minimalist, Claude Design-like UI; keeping every element ID and the model, schema and service unchanged avoided a redeploy and kept 20+ browser suites meaningful |
-| 2026-10-09 | The toolbar docks above the slide instead of following the selected element | An anchored toolbar covered the elements the next click needed |
-| 2026-10-09 | Apply the Apple HIG pages to the toolbar as a skill test, but keep the project's 44px targets over the HIG's 28pt macOS default | Britt's test of the skill; the project rule is stricter. Only guidance checked against the pages was applied |
-| 2026-10-09 | Intro narration says no percentages, names no income source, frames wants as "extras that make life better" | Topic map: dignity first, cite-or-abstain, no surplus budgets; the 50/30/20 bar stays visual only |
-| 2026-10-09 | Narrate the exported MP4 directly instead of rebuilding the animation in HyperFrames | Britt's team owns the animation in Claude Design; audio on the MP4 keeps the picture bit-identical |
-| 2026-10-09 | Level each ElevenLabs take before mixing; keep a gentle voice limiter rather than chase -13.7 LUFS | Takes came back up to 13 dB apart; harder limiting bought <1 dB of gate margin at audible cost |
-| 2026-10-09 | Commit both MP4s (12.6 MB source, 14 MB narrated) to the branch | Britt's call; repo already carries lesson videos |
-| 2026-10-09 | Turn on the repo's "Allow auto-merge" and arm it on PR #46 | Britt asked to merge #46 when CI passes; the setting was off. It stays on for future PRs |
-| 2026-10-07 | Quick pick and BeSpoke teams only suggest a design; no readability or accessibility gates on their picks | Britt: the final design comes from her, the administrator and Claude Design. Detail in auto-memory `bespoke-is-advisory-not-final.md` |
-| 2026-10-07 | Keep the nine October 2 presets and add three by hand instead of redesigning all twelve | Subtract before add; variety checks (own heading font, pairwise 7 of 13, sidebar cap 3) still pass. Britt can ask for a fuller redo after seeing all twelve |
-| 2026-10-01 | Merge the Codex v2 builder (with Guide me) to `main`, replacing the wizard | Britt's call after the status review; quality gate green on the exact commit |
-| 2026-10-01 | Keep the contextual preview editor (PR #42), not the direct editor with per-box styling | Same idea with no saved-design format change, so no service redeploy; per-box styling can come later if teams ask |
-| 2026-10-01 | Preview edits only on the Slide designs stage; Guide me owns the preview while it runs | A click on the preview ended the guide or pulled the spokesperson off Review |
-| 2026-10-01 | Redeploy the Netlify service from the PR head before merging | The service bundles the v2 schema and model; the new service still accepts v1, so the old wizard kept working in between |
-| 2026-09-30 | Extend the Codex builder with an optional Guide me walk-through; do not build our own 8-step wizard, role model or palette | The Codex builder already had roles, history and a 3-stage flow chosen by a 2026-09-24 review; a parallel model would collide on file names and data shape |
-| 2026-09-30 | Contrast stays advisory (no switched-off options); the guide shows a plain warning with the ratio | Matches the existing docs, schema and "no disabled swatches" decision; needs no schema or service change |
-| 2026-09-30 | The guide's readability notes come from the model's own advisory, not a separate calculation | A separate calculation disagreed with the preview on textures and band dividers |
-| 2026-09-30 | Text boxes ask the number of boxes before layout; video gets no body-text color question | Balanced grid looks like Across at the default count; video body text is hidden by default |
-| 2026-09-23 | Slide builder replaces the wizard: per-role colors (mockup first), title positions, 4 slide types (chapter divider, video, bullet list, activity), accurate similarity meter | Britt: small decisions, each visible in the preview, tracked and persistent |
-| 2026-09-23 | Preview must mirror the template (real markup, scaled library units) and every option must visibly change it | Britt's repeated "preview doesn't change" reports; guarded by a browser sweep |
-| 2026-09-23 | BeSpoke adds a design brief step; its answers drive a starting design capped at 3–5 of 7 choices shared with any existing lesson | Presets were the six existing lessons' looks, so the default path copied a lesson |
-| 2026-09-23 | Brief answers travel in an optional `brief` payload object; `variant` is a digit string | Answers must survive shared Save/Open; canonical JSON between Python and JS assumes no numeric fields |
-| 2026-09-23 | For schema changes, redeploy the Netlify service before merging the wizard | The service bundles the schema and rejects unknown fields; the new service accepts old and new payloads |
-| 2026-09-23 | Six Phase 1 lessons declared out of QA and ready for teaching; project moves to Phase 2 (next six lessons) | Britt's call |
-| 2026-09-22 | Supervised BeSpoke pilot approved; no blanket teaching release for the 6 existing lessons | Validators pass but content/assessment findings remain; automated pass ≠ instructional approval |
-| 2026-09-22 | BeSpoke teacher workflow is visual design only; Word lesson-content form removed | Britt clarified scope; content writing stays a separate process |
-| 2026-09-22 | Shared Save/Open via Netlify function + encrypted drafts; OneDrive is optional backup only | File-based OneDrive handoff was too easy to mistake for durable shared work (review F1) |
-| 2026-09-18 | BeSpoke prototype greenlit; locks D6–D12 in `docs/bespoke/decisions.md` | Britt greenlight after 09-17 conference briefs |
-| 2026-08-05 | Dashboard keeps the card grid (canon), judged at two craft bars instead of a new visual world | Britt declined four rolled directions in a row; the form was never the problem, the execution was |
-| 2026-08-05 | Card art is generated from the registry, not sourced as images | `icon`, `colorLead` and `texture` already exist per lesson; drawing from them fixes the six-unrelated-styles problem with product truth and revives the dead ICON_MAP the 22/40 critique flagged |
-| 2026-08-05 | Per-lesson text colour is chosen by verified contrast, not by taste | White clears AA on blue/royal/mauve, royal ink on green/gold; this is the root fix for the critique's P1 CTA-contrast failure |
-| 2026-08-03 | Registry statuses: 3 lessons "ready", 3 stay "qa" | Notes said release-approved but status stuck at qa; dashboard showed "0 Ready" |
-| 2026-08-03 | Hook lives in .claude/settings.json (shared), not settings.local.json | Local file is per-machine; hook is team infrastructure |
-| 2026-08-03 | Validator WARNs surface real divergences instead of auto-passing | Perfect 68/0/0 scores were partly hardcoded; honesty over optics |
-| 2026-08-03 | big-rocks.vtt gets music-descriptor cues, not speech captions | Video verified music-only with on-screen text (whiteboard animation) |
-| 2026-08-03 | Classroom type scale: 19px root font at ≥1600×920, per deck | Britt found content too small at 1920×1080; decks are rem-based so one lever scales all; scoped to avoid the ≤900px fit-guard |
-| 2026-08-03 | Scale/override blocks go at the END of theme-override | Media queries don't add specificity; later same-specificity rules silently win — bit us twice (CWP icons, PSDM closing h2) |
+
+Rows before 2026-10-22 are in `.claude/MEMORY-archive.md`.
 
 ## Architecture Notes
 - TWO GitHub repos, one history: publisher (`SPOKES-Skills/Employability-Skills-Curriculum`) is the public home + Pages site; origin (`doclegg05/...`) is the dev repo and the one that moves. Publisher carries no unique commits — catching up is `git push publisher main:main`. Both public; dev repo ALSO serves Pages.
@@ -153,6 +109,8 @@
 - Six-way nav-engine drift exists: only reference signature switchTab(btn,panelId) has zero live call sites; three lessons use switchTab(event,tabId); consolidation is a future upgrade.
 - Dashboard.html fetches lesson-registry.json with a hardcoded FALLBACK_LESSONS array for file:// use — keep both in sync when editing the registry.
 - **Logo rules** (2026-10-22): `scripts/validate-lesson.py` imports `scripts/css_select.py` to match CSS rules against parsed elements and their ancestors (classes added by `classList` count as present). Filters and blend modes are also checked on the logo's ancestors. Logo tests live in `scripts/test_validator_logo.py`; `quality.sh` runs `test_validator*.py`.
+
+- **Lesson edits reach BeSpoke.** `bespoke/lesson-fingerprints.json` records each released lesson's checksum and measured design (title layout, colors, fonts, cards), and `scripts/test-bespoke-similarity.mjs` pins some of those values. Any lesson edit needs the fingerprints regenerated, and a design-level edit can change what BeSpoke compares teams against. A title counts as split only while both panels are 25 to 75% wide (`scripts/generate-lesson-fingerprints.mjs:107`).
 
 ## Known Issues
 - `bespoke/builder-app.mjs` is about 1,900 lines, over the 800-line guide. Existing before the canvas shell; not split.
