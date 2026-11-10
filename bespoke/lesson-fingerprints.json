@@ -288,7 +288,7 @@
       "title": "Controlling Anger",
       "source": {
         "path": "lesson-controlling-anger/index.html",
-        "sha256": "56f6fe9edbcf8579f64a9e82351ff3e5813ca7b83814beb9af21adda2f5c918b",
+        "sha256": "290b07c0c581569429c44fba8a1917e594af18d72ab5a8f231d5c6e4fa0d23cf",
         "status": "ready"
       },
       "roles": {
@@ -311,8 +311,8 @@
       "background": "diagonal",
       "slides": {
         "title": {
-          "layout": "center",
-          "logo": "above",
+          "layout": "left",
+          "logo": "corner",
           "colors": "solid"
         },
         "divider": {
@@ -390,7 +390,7 @@
         "roles.button": {
           "selector": ".slide .download-btn",
           "observed": [
-            "rgb(211, 178, 87); none",
+            "rgba(0, 0, 0, 0); none",
             "rgb(167, 37, 63); none"
           ],
           "reason": "A gradient, photo, overlay, transparent surface, off-palette color, or mixed surfaces has no single exact swatch."
@@ -422,13 +422,13 @@
         "slides.title.layout": {
           "selector": ".slide-title h1 and ::before/::after geometry",
           "observed": [
-            "text-align:center; split-panels:false; title-in-lower-half:false"
+            "text-align:left; split-panels:false; title-in-lower-half:false"
           ]
         },
         "slides.title.logo": {
           "selector": ".slide-title .logo geometry relative to h1",
           "observed": [
-            "position:static; above-title:true"
+            "position:absolute; above-title:true"
           ]
         },
         "slides.title.colors": {
@@ -1062,7 +1062,7 @@
       "title": "Problem Solving & Decision Making",
       "source": {
         "path": "lesson-problem-solving-and-decision-making/index.html",
-        "sha256": "062db761eefea6a0ca187b9857fab06e0e8f86c8cbcef14a9e0fbe655edaa484",
+        "sha256": "77915b0a6cc7c1cf24e9d87e5848054abcd3d846db6b26c6f790bea02deed2cf",
         "status": "ready"
       },
       "roles": {

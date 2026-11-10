@@ -2969,15 +2969,6 @@
       .slide-video h2 { margin-bottom: 1rem; }
       .slide-video .video-wrapper { max-width: min(73.125rem, calc((100vh - 14.75rem) * 16 / 9)); }
 
-      /* Slide 1 (title): the cover logo is 14.5rem wide, the size it
-         had on a 1920x1080 screen before this change; the heading's own
-         padding is 1.25rem; and the gaps under the subtitle and the two
-         buttons are tighter. */
-      .slide-title .logo { max-width: 14.5rem; margin-bottom: 1.25rem; }
-      .slide-title h1 { padding-top: 1.25rem; padding-bottom: 1.25rem; }
-      .slide-title .subtitle { margin-bottom: 1rem; }
-      .slide-title .title-resource-links { margin-bottom: 1.25rem; }
-
       /* Slide 26 (statement): the discussion box sits 1.25rem under the
          line above it with 1rem of its own padding. Its margin is set
          inline, so that needs !important. */
@@ -3117,6 +3108,218 @@
     /* Sidebar "P" badges: white on the --accent green was 2.66:1 at 0.6rem.
        Royal is 6.77:1 (navy --dark would reach only 4.00:1). */
     .wippea-badge.p { color: var(--royal); }
+
+    /* Showcase Level 3 2026-11: the Anger Iceberg, this lesson's one picture.
+       It is drawn in the page from palette colors, so it is sharp on any
+       screen and needs no image file. It appears three times: on the cover,
+       on slide 9 where the idea is taught, and on the closing. Sizes inside
+       the drawing are attributes in the drawing's own units, not CSS px, so
+       the px-to-rem converter leaves them alone. */
+    .iceberg { display: block; overflow: visible; }
+    .iceberg .ib-water { stroke: var(--gold); stroke-width: 3; }
+    .iceberg .ib-below { fill: rgba(255, 255, 255, 0.14); stroke: rgba(255, 255, 255, 0.5); stroke-width: 2; }
+    .iceberg .ib-tip { fill: var(--light); }
+    .iceberg .ib-tip-shade { fill: var(--offwhite); }
+    .iceberg .ib-lead { stroke: var(--gold); stroke-width: 2; }
+    .iceberg .ib-anger { font-family: var(--font-heading); font-weight: 600; fill: var(--gold); }
+    .iceberg .ib-feelings { font-family: var(--font-body); fill: var(--light); }
+
+    /* Motion: the picture builds in the order the lesson teaches it. The tip
+       and its name are there first, then what is hidden surfaces: the mass
+       below the water, then each feeling in turn. It plays once when the
+       slide opens, on the cover and on slide 9 (slower there, for talking
+       over). The closing is still; the confetti plays there. With animation
+       off (reduced motion, print) the finished picture shows. */
+    @keyframes ibFade { from { opacity: 0; } to { opacity: 1; } }
+    @keyframes ibSurface { from { opacity: 0; transform: translateY(18px); } to { opacity: 1; transform: none; } }
+    .slide-title.active .ib-anger, .slide-title.active .ib-lead,
+    .iceberg-slide.active .ib-anger, .iceberg-slide.active .ib-lead { animation: ibFade 0.6s ease-out 0.5s both; }
+    .slide-title.active .ib-below,
+    .iceberg-slide.active .ib-below { animation: ibSurface 1.1s cubic-bezier(0.16, 1, 0.3, 1) 0.9s both; }
+    .slide-title.active .ib-feelings text,
+    .iceberg-slide.active .ib-feelings text { animation: ibSurface 0.7s cubic-bezier(0.16, 1, 0.3, 1) both; }
+    .slide-title.active .ib-feelings text:nth-child(1) { animation-delay: 1.6s; }
+    .slide-title.active .ib-feelings text:nth-child(2) { animation-delay: 1.82s; }
+    .slide-title.active .ib-feelings text:nth-child(3) { animation-delay: 2.04s; }
+    .slide-title.active .ib-feelings text:nth-child(4) { animation-delay: 2.26s; }
+    .slide-title.active .ib-feelings text:nth-child(5) { animation-delay: 2.48s; }
+    .iceberg-slide.active .ib-feelings text:nth-child(1) { animation-delay: 1.8s; }
+    .iceberg-slide.active .ib-feelings text:nth-child(2) { animation-delay: 2.3s; }
+    .iceberg-slide.active .ib-feelings text:nth-child(3) { animation-delay: 2.8s; }
+    .iceberg-slide.active .ib-feelings text:nth-child(4) { animation-delay: 3.3s; }
+    .iceberg-slide.active .ib-feelings text:nth-child(5) { animation-delay: 3.8s; }
+
+    /* Slide 9: the iceberg stands where a small round picture was, in its own
+       panel with the sea drawn in. */
+    .split-visual .iceberg {
+      width: min(100%, 16rem);
+      height: auto;
+      border-radius: 1rem;
+      background: linear-gradient(to bottom, rgba(255, 255, 255, 0.06) 0 50%, rgba(0, 123, 175, 0.32) 50% 100%);
+    }
+    @media (min-width: 901px) {
+      .iceberg-slide .split-layout { gap: 3rem; }
+      .iceberg-slide .split-visual { flex: 0 0 24rem; }
+      .split-visual .iceberg { width: 100%; }
+    }
+
+    /* Phones keep the cover and the closing they have; the picture is on
+       slide 9 there. */
+    .slide-title .iceberg, .slide-closing .iceberg { display: none; }
+
+    @media (min-width: 769px) {
+      /* Cover and closing share one scene: a gold waterline across the whole
+         slide at mid-height, with the sea below it. Each picture is centered
+         on that line, so its own waterline (hidden here) lies along it. A
+         picture is at most 33.75rem wide: any larger and its lower edge
+         would reach the navigation hint. */
+      /* Two classes, so the plain royal ground out-ranks the theme's
+         `.theme-dark .slide-closing` mauve gradient. */
+      .slide.slide-title, .slide.slide-closing {
+        padding: 0;
+        text-align: left;
+        background: var(--royal);
+      }
+      /* The sea is a picture layer over the plain royal slide, like the
+         iceberg itself. (Painted on the slide's own background it read to
+         BeSpoke as a gradient title, too close to two of its starting
+         looks; Britt, 2026-11-10.) The layer takes over the slide's spacer
+         pseudo-element, which these two slides do not use past phones. */
+      .slide-title.active::before, .slide-closing.active::before {
+        content: "";
+        position: absolute;
+        inset: 0;
+        flex: none;
+        min-height: 0;
+        pointer-events: none;
+        background:
+          linear-gradient(var(--gold), var(--gold)) 0 50% / 100% 3px no-repeat,
+          linear-gradient(to bottom, var(--dark), var(--royal)) 0 100% / 100% 50% no-repeat;
+      }
+      .slide-title .iceberg, .slide-closing .iceberg {
+        display: block;
+        position: absolute;
+        top: 50%;
+        height: auto;
+        aspect-ratio: 580 / 640;
+        transform: translateY(-50%);
+        pointer-events: none; /* its empty corners must not cover a button */
+      }
+      .slide-title .ib-water, .slide-closing .ib-water { display: none; }
+
+      /* Cover: the title stands above the waterline and the subtitle below
+         it. The PDF buttons and the copyright line sit at the bottom left,
+         smaller than before. The framed title and the short rule under it
+         are gone; the waterline does that work. */
+      .slide-title .iceberg { right: 2.5rem; width: min(33.75rem, calc(100% - 31rem)); }
+      .slide-title .logo {
+        position: absolute;
+        left: 5rem;
+        top: 2.25rem;
+        max-width: 12.5rem;
+        padding: 0.6rem 0.85rem;
+        margin: 0;
+      }
+      .slide-title h1 {
+        position: absolute;
+        left: 5rem;
+        bottom: calc(50% + 1.75rem);
+        width: min(34rem, 42%);
+        margin: 0;
+        padding: 0;
+        border: 0;
+        border-radius: 0;
+        display: block;
+        font-size: 4.6rem;
+        line-height: 1.02;
+        text-align: left;
+      }
+      .slide-title .divider { display: none; }
+      .slide-title .subtitle {
+        position: absolute;
+        left: 5rem;
+        top: calc(50% + 1.75rem);
+        width: min(34rem, 42%);
+        margin: 0;
+        font-size: 1.7rem;
+        line-height: 1.35;
+        color: var(--light);
+        text-align: left;
+      }
+      .slide-title .title-resource-links {
+        position: absolute;
+        left: 5rem;
+        bottom: 5.5rem;
+        margin: 0;
+        padding: 0;
+        gap: 0.6rem;
+        background: none;
+        border: 0;
+      }
+      .slide-title .title-resource-links .download-btn,
+      .slide-title .title-resource-links .download-btn:first-of-type {
+        font-size: 0.9rem;
+        padding: 0.5rem 0.85rem;
+        background: none;
+        border: 1.5px solid var(--gold);
+        color: var(--gold);
+      }
+      .slide-title .copyright { left: 5rem; color: rgba(255, 255, 255, 0.7); }
+
+      /* Closing: the take-home line is the largest text, above the
+         waterline; the quote and the congratulations line follow below it.
+         The order on screen is set here; the markup keeps its order. Two of
+         the sizes are set inline on the headings, so they need !important. */
+      .slide-closing .iceberg { left: 2.5rem; width: min(33.75rem, calc(100% - 36.5rem)); }
+      .slide-closing .closing-box {
+        position: absolute;
+        top: 0;
+        bottom: 0;
+        right: 5rem;
+        width: min(32rem, 44%);
+        max-width: none;
+        padding: 0;
+        border-radius: 0;
+        background: none;
+        display: grid;
+        grid-template-rows: 50% auto auto;
+        align-content: start;
+        text-align: left;
+      }
+      .slide-closing .closing-box h3 {
+        grid-row: 1;
+        align-self: end;
+        margin: 0 0 1.75rem;
+        font-size: 3.8rem !important;
+        line-height: 1.04;
+        text-wrap: balance;
+        color: var(--gold);
+      }
+      .slide-closing .closing-box p {
+        grid-row: 2;
+        margin: 1.75rem 0 0;
+        font-size: 1.5rem;
+        line-height: 1.5;
+      }
+      .slide-closing .closing-box h2 {
+        grid-row: 3;
+        margin: 1.5rem 0 0 !important;
+        font-family: var(--font-body);
+        font-size: 1.25rem !important;
+        font-weight: 600;
+        color: var(--light) !important;
+      }
+      .slide-closing .closing-box .divider { display: none; }
+      /* The rubric button marks when the rubric is handed out (Britt). */
+      .slide-closing .closing-box .download-resource {
+        grid-row: 4;
+        margin-top: 1.25rem;
+        padding: 0;
+        background: none;
+        border: 0;
+      }
+      .slide-closing .closing-box .download-prompt { color: rgba(255, 255, 255, 0.75); }
+    }
   </style>
   </head>
 <body>
@@ -3168,6 +3371,21 @@
           <a href="Teacher-Resources/Controlling_Anger_Teachers_Guide.pdf" target="_blank" rel="noopener noreferrer" class="download-btn">Teacher's Guide PDF</a>
         </div>
         <p class="copyright">Copyright &copy; 2026 WV Adult Basic Education</p>
+        <svg class="iceberg" viewBox="0 0 580 640" role="img" aria-label="An iceberg. Above the water: anger. Hidden below the water: fear, hurt, frustration, shame and grief.">
+          <line class="ib-water" x1="0" y1="320" x2="580" y2="320"/>
+          <polygon class="ib-below" points="196,320 380,320 452,372 512,452 498,548 420,612 300,632 170,606 92,520 84,420 130,360"/>
+          <polygon class="ib-tip" points="290,96 334,160 358,226 384,320 192,320 210,236 246,170"/>
+          <polygon class="ib-tip-shade" points="290,96 246,170 210,236 192,320 270,320 262,220"/>
+          <line class="ib-lead" x1="384" y1="186" x2="404" y2="186"/>
+          <text class="ib-anger" x="414" y="200" font-size="46">Anger</text>
+          <g class="ib-feelings" font-size="27" text-anchor="middle">
+            <text x="300" y="404">Fear</text>
+            <text x="300" y="448">Hurt</text>
+            <text x="300" y="492">Frustration</text>
+            <text x="300" y="536">Shame</text>
+            <text x="300" y="580">Grief</text>
+          </g>
+        </svg>
       </section>
 
       <!-- Slide 2: Hook Video -->
@@ -3291,7 +3509,7 @@
       </section>
 
       <!-- Slide 9: Anger Iceberg Concept -->
-      <section class="slide" data-chapter="3" style="--fit: 0.98">
+      <section class="slide iceberg-slide" data-chapter="3" style="--fit: 0.94;">
         <h2>Below the Surface of Anger</h2>
         <p class="slide-lede">What you see on the surface is only part of the story</p>
         <div class="split-layout">
@@ -3306,9 +3524,21 @@
             </ul>
           </div>
           <div class="split-visual">
-            <div class="visual-circle">
-              <img src="images/generated-context/beneath-surface.png" alt="" aria-hidden="true" />
-            </div>
+            <svg class="iceberg" viewBox="0 0 580 640" aria-hidden="true">
+              <line class="ib-water" x1="0" y1="320" x2="580" y2="320"/>
+              <polygon class="ib-below" points="196,320 380,320 452,372 512,452 498,548 420,612 300,632 170,606 92,520 84,420 130,360"/>
+              <polygon class="ib-tip" points="290,96 334,160 358,226 384,320 192,320 210,236 246,170"/>
+              <polygon class="ib-tip-shade" points="290,96 246,170 210,236 192,320 270,320 262,220"/>
+              <line class="ib-lead" x1="384" y1="186" x2="404" y2="186"/>
+              <text class="ib-anger" x="414" y="200" font-size="46">Anger</text>
+              <g class="ib-feelings" font-size="27" text-anchor="middle">
+                <text x="300" y="404">Fear</text>
+                <text x="300" y="448">Hurt</text>
+                <text x="300" y="492">Frustration</text>
+                <text x="300" y="536">Shame</text>
+                <text x="300" y="580">Grief</text>
+              </g>
+            </svg>
           </div>
         </div>
         <div class="download-resource">
@@ -3967,6 +4197,21 @@
       <!-- Slide 30: Closing -->
       <section class="slide slide-closing" data-chapter="7" id="closingSlide">
         <div class="confetti-container" id="confettiContainer"></div>
+        <svg class="iceberg" viewBox="0 0 580 640" role="img" aria-label="An iceberg. Above the water: anger. Hidden below the water: fear, hurt, frustration, shame and grief.">
+          <line class="ib-water" x1="0" y1="320" x2="580" y2="320"/>
+          <polygon class="ib-below" points="196,320 380,320 452,372 512,452 498,548 420,612 300,632 170,606 92,520 84,420 130,360"/>
+          <polygon class="ib-tip" points="290,96 334,160 358,226 384,320 192,320 210,236 246,170"/>
+          <polygon class="ib-tip-shade" points="290,96 246,170 210,236 192,320 270,320 262,220"/>
+          <line class="ib-lead" x1="384" y1="186" x2="404" y2="186"/>
+          <text class="ib-anger" x="414" y="200" font-size="46">Anger</text>
+          <g class="ib-feelings" font-size="27" text-anchor="middle">
+            <text x="300" y="404">Fear</text>
+            <text x="300" y="448">Hurt</text>
+            <text x="300" y="492">Frustration</text>
+            <text x="300" y="536">Shame</text>
+            <text x="300" y="580">Grief</text>
+          </g>
+        </svg>
         <div class="closing-box">
           <h2 style="color: var(--gold); font-size: 2.75rem; margin-bottom: 1.5rem;">
             Congratulations, you have completed this lesson!
@@ -3974,6 +4219,10 @@
           <p>&ldquo;For every minute you remain angry, you give up sixty seconds of peace of mind.&rdquo; &mdash; Ralph Waldo Emerson</p>
           <div class="divider"></div>
           <h3 style="font-size: 1.9rem;">Choose Peace. Choose Growth.</h3>
+          <div class="download-resource">
+            <span class="download-prompt">Instructor Resource Available</span>
+            <a href="Handouts/Controlling Anger Rubric.pdf" target="_blank" rel="noopener noreferrer" class="download-btn">Course Rubric</a>
+          </div>
         </div>
       </section>
 
