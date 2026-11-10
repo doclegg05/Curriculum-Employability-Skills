@@ -390,6 +390,12 @@ Generation D merges the best features from three incompatible navigation engine 
 - **Rule:** Sidebar chapter-header activation toggles list expansion only and maintains `aria-expanded`; navigation occurs via the slide items inside the expanded list.
 - **Rationale:** Header-click navigation moved the projected deck whenever an instructor peeked at a chapter mid-lecture, and screen-reader users received an unannounced context change from a control with no disclosure state. Expand-only headers with `aria-expanded` make the sidebar a safe wayfinding surface. Approved 2026-08-04 (docs/proposal-chapter-header-navigation.md) and applied to all six lessons the same day.
 
+### NAV-14: Presenter Remote Keys
+- **Severity:** INFO
+- **Validation:** guideline
+- **Rule:** The keyboard handler also accepts `PageDown` (next slide), `PageUp` (previous slide), `Home` (first slide) and `End` (last slide). The NAV-09 guards apply to them. They are also ignored while Ctrl, Alt or Meta is held, and while focus is in a video or editable text.
+- **Rationale:** Most presenter remotes send Page Down and Page Up, not the arrow keys, so a lesson that listens only for arrows does not advance from a clicker. Approved 2026-11-09 (Britt) and applied to all six lessons and the builder template the same day.
+
 ---
 
 ## Section 6: Theme System

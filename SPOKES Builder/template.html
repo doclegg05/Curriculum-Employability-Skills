@@ -2673,6 +2673,19 @@
           target instanceof HTMLSelectElement ||
           target?.closest('[role="tablist"]')
         ) return;
+        // Presenter remotes (NAV-14): PageDown/PageUp step one slide, Home/End
+        // jump to the first/last. Left to the browser when a modifier is held,
+        // or when focus is in a video or editable text.
+        if (e.key === "PageDown" || e.key === "PageUp" || e.key === "Home" || e.key === "End") {
+          if (e.ctrlKey || e.altKey || e.metaKey) return;
+          if (target?.isContentEditable || target?.closest?.("video")) return;
+          e.preventDefault();
+          if (e.key === "PageDown") nextSlide();
+          else if (e.key === "PageUp") prevSlide();
+          else if (e.key === "Home") showSlide(0);
+          else showSlide(slides.length - 1);
+          return;
+        }
         if (e.key === "ArrowRight" || e.key === " ") {
           e.preventDefault();
           nextSlide();

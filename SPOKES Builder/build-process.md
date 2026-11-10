@@ -256,7 +256,7 @@ Run through this checklist before delivering:
 - [ ] **All download buttons** link to correct PDFs
 - [ ] **Resources sidebar** links work
 - [ ] **Print slides** button prints both versions in all three layouts, and `node scripts/capture-print-slides.mjs --check` passes
-- [ ] **Keyboard navigation** works (ArrowRight, ArrowLeft, Space)
+- [ ] **Keyboard navigation** works (ArrowRight, ArrowLeft, Space, and the presenter remote keys PageDown, PageUp, Home, End)
 - [ ] **Closing slide** triggers confetti and success sound
 - [ ] **No console errors** in browser dev tools
 - [ ] **Brand colors only** — no reds, oranges, maroons, or off-palette colors
