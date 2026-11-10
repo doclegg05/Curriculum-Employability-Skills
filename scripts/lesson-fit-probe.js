@@ -11,7 +11,8 @@
   const slides = () => [...document.querySelectorAll('.slide')];
   const current = () => slides().findIndex((s) => s.classList.contains('active'));
   const key = (k) => document.body.dispatchEvent(new KeyboardEvent('keydown', { key: k, bubbles: true, cancelable: true }));
-  const name = (el) => String(el.className).split(' ')[0] || el.tagName.toLowerCase();
+  // getAttribute, not className: on an SVG element className is an object.
+  const name = (el) => (el.getAttribute('class') || '').split(' ')[0] || el.tagName.toLowerCase();
 
   // Hidden slides never fetch their lazy images, and an image with no size yet
   // measures as zero tall, so everything is loaded before anything is measured.
