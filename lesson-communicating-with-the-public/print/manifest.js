@@ -2,7 +2,7 @@
 window.SPOKES_PRINT_MANIFEST = {
   "version": 1,
   "lessonTitle": "Communicating with the Public",
-  "sourceHash": "d8b4b903a27499ab574d302ca71942b9638b5a6fa4c51bbf6cd3ff02ea594832",
+  "sourceHash": "1604316ccb7dcde02f5c3f970a0245b7b2ffbce5dcebceb46338066782d17dba",
   "pictures": [
     {
       "slide": 1,
@@ -164,7 +164,7 @@ window.SPOKES_PRINT_MANIFEST = {
       "student": "print/s19.jpg",
       "teacher": "print/s19.jpg",
       "width": 2400,
-      "height": 1468
+      "height": 1352
     },
     {
       "slide": 20,
@@ -218,7 +218,7 @@ window.SPOKES_PRINT_MANIFEST = {
       "student": "print/s25.jpg",
       "teacher": "print/s25.jpg",
       "width": 2400,
-      "height": 1639
+      "height": 1599
     },
     {
       "slide": 26,

@@ -2,7 +2,7 @@
 window.SPOKES_PRINT_MANIFEST = {
   "version": 1,
   "lessonTitle": "Controlling Anger",
-  "sourceHash": "e5388eebf874e856bf591a6bc05058e758e55277fbc8eb1a45de9f306913534f",
+  "sourceHash": "e38f2c85b47cd40c637db1958a9ed2694e4dfc4c5d06c4677e6e4fde5856fbc4",
   "pictures": [
     {
       "slide": 1,
@@ -245,7 +245,7 @@ window.SPOKES_PRINT_MANIFEST = {
       "student": "print/s28.jpg",
       "teacher": "print/s28.jpg",
       "width": 2400,
-      "height": 1436
+      "height": 1352
     },
     {
       "slide": 29,
@@ -254,7 +254,7 @@ window.SPOKES_PRINT_MANIFEST = {
       "student": "print/s29.jpg",
       "teacher": "print/s29-t.jpg",
       "width": 2400,
-      "height": 1513
+      "height": 1352
     },
     {
       "slide": 30,

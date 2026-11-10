@@ -8,7 +8,7 @@
   ],
   "decks": {
     "lesson-communicating-with-the-public": {
-      "color-contrast": 2,
+      "color-contrast": 1,
       "list": 7
     },
     "lesson-controlling-anger": {
@@ -18,7 +18,6 @@
       "list": 7
     },
     "lesson-interview-skills": {
-      "aria-progressbar-name": 1,
       "list": 7
     },
     "lesson-problem-solving-and-decision-making": {

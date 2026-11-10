@@ -51,7 +51,9 @@ test('actual remixes are not replaced by stale preset or nearest-color aliases',
   const find = (id) => fingerprints.lessons.find((l) => l.id === id);
   assert.equal(find('time-management').roles.sidebar, null, 'off-palette composite sidebar must be unknown');
   assert.equal(find('time-management').slides.divider.layout, null, 'custom split composition must not count as ordinary left alignment');
-  assert.equal(find('communicating-with-the-public').fonts.heading, null, 'Bookman declaration must not be mislabeled Crimson Pro');
+  // Until 2026-11-09 this lesson named Bookman Old Style, a system font, first, so its
+  // heading font was recorded as unknown. It now names only the self-hosted Crimson Pro.
+  assert.equal(find('communicating-with-the-public').fonts.heading, 'crimson-pro', 'the first declared heading family is the self-hosted Crimson Pro');
   assert.equal(find('communicating-with-the-public').roles.titleBackground, null, 'photo overlay must not be a guessed swatch');
   assert.equal(find('communicating-with-the-public').slides.cards.count, null, 'mixed 2/4-box slides must not get a single count');
   assert.equal(find('interview-skills').slides.title.layout, 'split');

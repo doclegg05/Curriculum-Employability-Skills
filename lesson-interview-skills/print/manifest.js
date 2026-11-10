@@ -2,7 +2,7 @@
 window.SPOKES_PRINT_MANIFEST = {
   "version": 1,
   "lessonTitle": "Interview Skills for Employment Success",
-  "sourceHash": "756782389dd7b7aaec940713bfb0ae127bf23a087f84c2463eee54677d177e5b",
+  "sourceHash": "7329b910ed380e21c30821f1ec0c2cad6efd961c851c268a5bf83de44946c76e",
   "pictures": [
     {
       "slide": 1,

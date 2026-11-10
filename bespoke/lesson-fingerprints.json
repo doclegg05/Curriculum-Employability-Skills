@@ -14,7 +14,7 @@
       "title": "Communicating with the Public",
       "source": {
         "path": "lesson-communicating-with-the-public/index.html",
-        "sha256": "de444474246cd5781f0303bdf86542fe5719630a9af156e6cae036571303784a",
+        "sha256": "30c08506821ad28a46c82d85b6da4bf130dd757af9d673e6e6d7ebfda13e19c8",
         "status": "ready"
       },
       "roles": {
@@ -31,7 +31,7 @@
         "accent": null
       },
       "fonts": {
-        "heading": null,
+        "heading": "crimson-pro",
         "body": "work-sans"
       },
       "background": "crosshatch",
@@ -120,9 +120,8 @@
         "fonts.heading": {
           "selector": ".slide-title h1",
           "observed": [
-            "\"Bookman Old Style\", \"Crimson Pro\", serif"
-          ],
-          "reason": "Font declarations differ or begin with a family outside the catalog. Platform fallback is not treated as a known catalog font."
+            "\"Crimson Pro\", serif"
+          ]
         },
         "fonts.body": {
           "selector": ".slide:not(.slide-title):not(.slide-section):not(.slide-closing):not(.slide-video):not(.big-statement) p, .slide:not(.slide-title):not(.slide-section):not(.slide-closing):not(.slide-video):not(.big-statement) li",
@@ -157,21 +156,21 @@
         "slides.title.colors": {
           "selector": ".slide-title background and split panels",
           "observed": [
-            "linear-gradient(90deg, rgba(255, 255, 255, 0.96) 0%, rgba(255, 255, 255, 0.82) 42%, rgba(255, 255, 255, 0.22) 100%), url(\"lesson-communicating-with-the-public/images/ppt-inspiration/image1.png\")"
+            "linear-gradient(90deg, rgba(255, 255, 255, 0.96) 0%, rgba(255, 255, 255, 0.82) 42%, rgba(255, 255, 255, 0.22) 100%), url(\"lesson-communicating-with-the-public/images/ppt-inspiration/image1.jpg\")"
           ],
           "reason": "Photo/composite title has no equivalent one-color or two-color finish."
         },
         "roles.titleBackground": {
           "selector": ".slide-title background / first gradient stop / left split panel",
           "observed": [
-            "linear-gradient(90deg, rgba(255, 255, 255, 0.96) 0%, rgba(255, 255, 255, 0.82) 42%, rgba(255, 255, 255, 0.22) 100%), url(\"lesson-communicating-with-the-public/images/ppt-inspiration/image1.png\")"
+            "linear-gradient(90deg, rgba(255, 255, 255, 0.96) 0%, rgba(255, 255, 255, 0.82) 42%, rgba(255, 255, 255, 0.22) 100%), url(\"lesson-communicating-with-the-public/images/ppt-inspiration/image1.jpg\")"
           ],
           "reason": "No single exact first color when null (photo, transparency or more than two stops)."
         },
         "roles.titleBackgroundEnd": {
           "selector": ".slide-title last gradient stop",
           "observed": [
-            "linear-gradient(90deg, rgba(255, 255, 255, 0.96) 0%, rgba(255, 255, 255, 0.82) 42%, rgba(255, 255, 255, 0.22) 100%), url(\"lesson-communicating-with-the-public/images/ppt-inspiration/image1.png\")"
+            "linear-gradient(90deg, rgba(255, 255, 255, 0.96) 0%, rgba(255, 255, 255, 0.82) 42%, rgba(255, 255, 255, 0.22) 100%), url(\"lesson-communicating-with-the-public/images/ppt-inspiration/image1.jpg\")"
           ],
           "reason": "No comparable second color: solid, photo, multi-color split panel, or unsupported gradient."
         },
@@ -289,7 +288,7 @@
       "title": "Controlling Anger",
       "source": {
         "path": "lesson-controlling-anger/index.html",
-        "sha256": "1d22e9c1601e46b74257eb53d6119cca3e8e1e441bf2fee89a7dd453da7932e5",
+        "sha256": "15bf1ef93b4af6f5d2994b7cb6b8f325887b0bb62d3ee05e12620e21dc3b5254",
         "status": "ready"
       },
       "roles": {
@@ -549,7 +548,7 @@
       "title": "Employee Accountability",
       "source": {
         "path": "lesson-employee-accountability/index.html",
-        "sha256": "6a0cb8091098a60418abf6cb17669d70126befc1ac62f336285568a29f8b41ce",
+        "sha256": "71497a082f4535ad5944c7ca5579bbe7c28a2ab05fdf38a1ebe2ba7500176822",
         "status": "ready"
       },
       "roles": {
@@ -811,7 +810,7 @@
       "title": "Interview Skills",
       "source": {
         "path": "lesson-interview-skills/index.html",
-        "sha256": "69410ecb850b1919e3aedc0dc113e8d8efb82679a9c02f1010df95ec28ad21fd",
+        "sha256": "00767d44a53b46b3d69e12ce3a3c6535f1579c6eb68bcc02d5cbe66be651692b",
         "status": "ready"
       },
       "roles": {
@@ -1063,7 +1062,7 @@
       "title": "Problem Solving & Decision Making",
       "source": {
         "path": "lesson-problem-solving-and-decision-making/index.html",
-        "sha256": "afe42b77f06d964e0f6107bbe484f1508310af87dc31dfd38a9641d23fc54b16",
+        "sha256": "036f3a782eb9544aa34a884ddd0552703ce3509eb1953d9792705da930628a31",
         "status": "ready"
       },
       "roles": {
@@ -1325,7 +1324,7 @@
       "title": "Time Management",
       "source": {
         "path": "lesson-time-management/index.html",
-        "sha256": "17f56cae6e1785b602a32fa214a6d3233d4d8f173534a3ab79a37bf39ace773f",
+        "sha256": "27b15669f05bf3663417baca3e6ed5f2a27dc688604bb8b5b046793acb8f7a38",
         "status": "ready"
       },
       "roles": {
@@ -1416,6 +1415,7 @@
             "rgb(96, 99, 107)",
             "rgb(18, 63, 92)",
             "rgba(255, 255, 255, 0.85)",
+            "rgb(0, 19, 63)",
             "rgb(16, 32, 51)"
           ],
           "reason": "The colors vary, use transparency, or are outside the eleven exact brand swatches."

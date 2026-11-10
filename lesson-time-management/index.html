@@ -2136,17 +2136,19 @@
       border-radius: 0 26px 0 26px !important;
     }
 
+    /* Showcase repair 2026-11: the darkening gradient that sat over each
+       photo is gone. It existed for the centred title, which now sits on a
+       solid band (see the repair block at the end of this style block). */
     .danger-card-front {
       background:
-        linear-gradient(180deg, rgba(16,32,51,0.08), rgba(16,32,51,0.76)),
         url("images/Challenges People Face while saying No.webp") center / cover no-repeat;
     }
 
-    .danger-card:nth-child(1) .danger-card-front { background-image: linear-gradient(180deg, rgba(16,32,51,0.08), rgba(16,32,51,0.76)), url("videos/smartphones-focus.jpg"); }
-    .danger-card:nth-child(2) .danger-card-front { background-image: linear-gradient(180deg, rgba(16,32,51,0.08), rgba(16,32,51,0.76)), url("images/procrastination-cycle.webp"); }
-    .danger-card:nth-child(3) .danger-card-front { background-image: linear-gradient(180deg, rgba(16,32,51,0.08), rgba(16,32,51,0.76)), url("videos/multitasking.jpg"); }
-    .danger-card:nth-child(4) .danger-card-front { background-image: linear-gradient(180deg, rgba(16,32,51,0.08), rgba(16,32,51,0.76)), url("images/seven-ways-say-no.webp"); }
-    .danger-card:nth-child(5) .danger-card-front { background-image: linear-gradient(180deg, rgba(16,32,51,0.08), rgba(16,32,51,0.76)), url("videos/10-habits.jpg"); }
+    .danger-card:nth-child(1) .danger-card-front { background-image: url("videos/smartphones-focus.jpg"); }
+    .danger-card:nth-child(2) .danger-card-front { background-image: url("images/procrastination-cycle.webp"); }
+    .danger-card:nth-child(3) .danger-card-front { background-image: url("videos/multitasking.jpg"); }
+    .danger-card:nth-child(4) .danger-card-front { background-image: url("images/seven-ways-say-no.webp"); }
+    .danger-card:nth-child(5) .danger-card-front { background-image: url("videos/10-habits.jpg"); }
 
     .danger-icon {
       display: none;
@@ -2522,6 +2524,81 @@
       [data-chapter="5"] .danger-card-back h3 { font-size: 1.6rem; }
       [data-chapter="5"] .danger-card-back p { font-size: 1.32rem; }
     }
+
+    /* Showcase repair 2026-11 */
+    /* Defect fixes only: no wording and no text sizes change here. Colors
+       are palette variables. Each rule names the slide it repairs. */
+
+    /* Slide 14: the flowchart had a width cap and no height cap, so it ran
+       689px tall and pushed the slide past the frame. Everything else on the
+       slide takes 17.23rem (4rem + 4rem padding, 2rem of flex spacers, a
+       7.23rem heading block), so the image may use the viewport height less
+       19rem; the spare 1.77rem keeps it clear of the corner logo. Auto
+       width and height hold the picture's 588:723 shape, and object-fit
+       guards that shape if a browser sizes the box differently. Phones keep
+       their scrolling layout. */
+    @media (min-width: 769px) {
+      .flex-visual .slide-img[src$="flowchart.webp"] {
+        width: auto;
+        height: auto;
+        max-height: calc(100vh - 19rem);
+        object-fit: contain;
+      }
+    }
+    /* Short screens: the fit guard trims the padding and heading, so the
+       rest of the slide takes at most 15.5rem. */
+    @media (min-width: 769px) and (max-height: 900px) {
+      .flex-visual .slide-img[src$="flowchart.webp"] {
+        max-height: calc(100vh - 16rem);
+      }
+    }
+
+    /* Slide 16: .scenario-match sets its own display, which beats the
+       browser's rule for the hidden attribute, so each empty chip showed as
+       a dark dash. A filled chip has no hidden attribute and is untouched. */
+    .scenario-match[hidden] { display: none; }
+
+    /* Slide 18: card headings took navy (--dark) on the blue cards, 2.20:1.
+       White on the blue card is 5.04:1. The gold card keeps navy, 6.15:1. */
+    .slide-chores .info-card.primary h3 { color: var(--light); }
+    /* Slide 18: the gold card's body text was gray, 3.33:1. --royal on the
+       gold card is 9.99:1. */
+    .slide-chores .info-card.gold-card p { color: var(--royal); }
+
+    /* Slide 18: the heading is centred here, so centre its accent rule. */
+    .slide.slide-chores h2::after { margin-left: auto; margin-right: auto; }
+
+    /* Slide 20 (DSN-10): each front title sits on a solid band along the
+       bottom edge instead of floating over the photo. White on --royal is
+       18.03:1. The band takes the card's own bottom-left corner radius. */
+    [data-chapter="5"] .danger-card-front h3 {
+      position: absolute;
+      left: 0;
+      right: 0;
+      bottom: 0;
+      margin: 0;
+      padding: 0.65rem 1rem;
+      background: var(--royal);
+      color: var(--light);
+      text-shadow: none;
+      border-radius: 0;
+      border-bottom-left-radius: inherit;
+    }
+
+    /* Slide 20: five cards in three columns left a hole in the second row.
+       Six half-width tracks keep every card the same width and centre the
+       last two. Wider than phones only, so the one- and two-column phone
+       layouts in the base styles still apply. */
+    @media (min-width: 769px) {
+      [data-chapter="5"] .dangers-grid { grid-template-columns: repeat(6, minmax(0, 1fr)); }
+      [data-chapter="5"] .danger-card { grid-column: span 2; }
+      [data-chapter="5"] .danger-card:nth-child(4) { grid-column: 2 / span 2; }
+    }
+
+    /* Slide 37: at 0.82 alpha the lettering in the background art read
+       through the quote box. Solid --royal hides it. On it the quote is
+       14.62:1 and the heading 17.05:1. */
+    .slide-closing .closing-box { background: var(--royal); }
   </style>
     <style id="fit-to-slide-guard">
       @media (min-width: 769px) and (max-height: 900px) {
@@ -2863,7 +2940,7 @@
     <!-- Slide 13: SMART Goals -->
     <section class="slide slide-image-centered" data-chapter="4">
       <h2>Set SMART Goals</h2>
-      <img src="images/smarter-goals.webp" alt="SMARTER Goal Setting reference table showing criteria for Specific, Measurable, Achievable, Relevant, Time-bound, Evaluate, and Readjust goals" loading="lazy">
+      <img src="images/smarter-goals.webp" alt="SMARTER Goal Setting reference table showing criteria for Specific, Measurable, Achievable, Relevant, Time-bound, Evaluated, and Reviewed goals" loading="lazy">
     </section>
 
     <!-- Slide 14: Flow Chart -->
@@ -3698,6 +3775,19 @@
     const isFormField = target && target.closest('input, textarea, select, [contenteditable="true"]');
     if (isFormField) return;
     if (e.defaultPrevented) return;
+    // Presenter remotes: PageDown/PageUp step one slide, Home/End jump to the
+    // first/last. Left to the browser when a modifier is held, or when focus
+    // is in a video, a tablist or editable text (form fields returned above).
+    if (e.key === 'PageDown' || e.key === 'PageUp' || e.key === 'Home' || e.key === 'End') {
+      if (e.ctrlKey || e.altKey || e.metaKey) return;
+      if (target && (target.isContentEditable || target.closest('video, [role="tab"], [role="tablist"]'))) return;
+      e.preventDefault();
+      if (e.key === 'PageDown') nextSlide();
+      else if (e.key === 'PageUp') prevSlide();
+      else if (e.key === 'Home') showSlide(0);
+      else showSlide(slides.length - 1);
+      return;
+    }
     // Only suppress arrow keys for elements that use them internally (tabs)
     const usesArrowKeys = target && target.closest('[role="tab"]');
     if (usesArrowKeys && (e.key === 'ArrowRight' || e.key === 'ArrowLeft')) return;

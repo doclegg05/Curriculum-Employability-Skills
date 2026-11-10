@@ -1717,6 +1717,9 @@
     /* ================================================================
        FONT PAIRING: bitter-raleway
        ================================================================ */
+    /* Showcase repair 2026-11: reassign the two variables here (TYP-02) so every
+       var(--font-heading) / var(--font-body) rule resolves to the registered pair. */
+    :root { --font-heading: "Bitter", serif; --font-body: "Raleway", sans-serif; }
     body { font-family: 'Raleway', sans-serif; }
     .slide-title h1, .slide h2, .slide h3, .card h3, .card h4,
     .smart-content h3, .smart-content h4, .matrix-action, .slide-section h2,
@@ -2351,9 +2354,11 @@
       max-width: 720px;
     }
 
-    .title-kicker,
-    .lab-kicker,
-    .process-kicker {
+    /* Showcase repair 2026-11: the kickers are <p> elements, so .slide p (0,1,1)
+       out-ranked a single class and they rendered at 2rem in gray. */
+    .slide p.title-kicker,
+    .slide p.lab-kicker,
+    .slide p.process-kicker {
       color: var(--ps-amber);
       font-size: 0.78rem;
       font-weight: 900;
@@ -3019,6 +3024,137 @@
     @media (min-width: 1600px) and (min-height: 920px) {
       html { font-size: 19px; }
     }
+
+    /* Showcase repair 2026-11 */
+    /* Defect repairs only. Two rules are edited in place above: the font
+       variables at the top of this block and the kicker selector. Contrast
+       figures use this lesson's own values for --primary, --accent, --dark,
+       --gold and --muted-gold, which the :root rule above reassigns. */
+
+    /* Slide 1: the title breaks only between words. Each line is its own
+       no-wrap unit, and the copy column may not be narrower than the longer
+       line, so the picture column gives up width instead (floor 200px). From
+       1280px wide only: below that there is no room beside the picture. */
+    @media (min-width: 1280px) {
+      .slide-title .title-line { white-space: nowrap; }
+      .slide-title h1,
+      .title-copy { max-width: none; }
+      .title-lab { grid-template-columns: minmax(min-content, 1fr) minmax(200px, 0.68fr); }
+    }
+
+    /* Kickers on light grounds (slides 7, 11, 19): the designed amber is
+       1.9:1 there. --dark is 10.98:1 or better on every one of them. The
+       title kicker stays amber on the dark title ground, 7.12:1 to 8.04:1. */
+    .slide p.lab-kicker,
+    .slide p.process-kicker {
+      color: var(--dark);
+    }
+    /* The designed 0.78rem is 12.5px on a classroom screen, and the slide 11
+       kicker carries the four steps of the process, so the kickers take
+       1.15rem. Tighter letter spacing keeps the longest one on one line. */
+    .slide p.title-kicker,
+    .slide p.lab-kicker,
+    .slide p.process-kicker {
+      font-size: 1.15rem;
+      letter-spacing: 0.16em;
+    }
+    /* Slide 11's kicker is the process itself, so it stays larger. */
+    .slide p.process-kicker { font-size: 1.5rem; }
+
+    /* Slide 3 (quiz): fits with one answer open. Spacing only, plus a smaller
+       thumbnail; no text size changes. Heights with one answer open:
+       883 of 1080 (1920x1080), 789 of 901 (1600x901), 667 of 720 (1280x720).
+       The second block out-ranks the fit guard below on purpose. */
+    @media (min-width: 901px) {
+      .quiz-lab {
+        gap: 0.6rem;
+        padding-top: 3rem;
+      }
+      .quiz-lab.active::before,
+      .quiz-lab.active::after { min-height: 0; }
+      .slide.quiz-lab h2 { margin-bottom: 0.5rem; }
+      .quiz-lab .slide-intro {
+        margin-top: 0;
+        margin-bottom: 0.25rem;
+      }
+      .quiz-lab .quiz-question {
+        grid-template-columns: 104px 1fr auto;
+        row-gap: 0.5rem;
+        padding: 0.7rem 1.5rem;
+        margin-bottom: 0;
+      }
+      .quiz-lab .quiz-art {
+        width: 90px;
+        height: 70px;
+      }
+      .quiz-lab .quiz-answer {
+        margin-top: 0;
+        padding: 0.5rem 1rem;
+      }
+    }
+    @media (min-width: 901px) and (max-height: 900px) {
+      .quiz-lab { gap: 0.45rem; }
+      .quiz-lab .quiz-question {
+        grid-template-columns: 78px 1fr auto;
+        padding: 0.55rem 0.85rem;
+      }
+      .quiz-lab .quiz-art {
+        width: 70px;
+        height: 52px;
+      }
+      .quiz-lab .quiz-answer { grid-column: 1 / -1; }
+    }
+
+    /* Slide 11: step numbers in the four circles. Each sits on its circle
+       (.matrix-cell::before) by sharing its top and size; both are centered by
+       the cell's align-items. White on the ink disc: 17.77:1. */
+    .matrix-cell .matrix-num {
+      position: absolute;
+      top: 1rem;
+      width: 4.25rem;
+      height: 4.25rem;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-family: var(--font-heading);
+      font-size: 1.6rem;
+      font-weight: 700;
+      line-height: 1;
+      color: var(--light);
+    }
+
+    /* Slide 22: the photo carries the words "CRITICAL THINKING: FOSBURY FLOP".
+       A plain overlay cannot hide them and keep the picture (they are still
+       1.03:1 at 0.98), so the photo is enlarged and pinned right: only its
+       right 40% shows, which is the jumper and no lettering. At the lightest
+       point of the ground white is 13.68:1 and the highlight 7.18:1; at the
+       darkest, 18.09:1 and 9.50:1. Narrow or upright screens, where the
+       enlarged photo would not reach top to bottom, get the plain ground. */
+    .big-statement {
+      background: linear-gradient(120deg, var(--royal), var(--dark));
+    }
+    @media (min-width: 1024px) and (min-aspect-ratio: 5/4) {
+      .big-statement {
+        background:
+          linear-gradient(120deg, rgba(0, 19, 63, 0.96), rgba(0, 19, 63, 0.88)),
+          url("images/ppt-inspired/fosbury.jpeg") right center / 250% auto no-repeat,
+          var(--royal);
+      }
+    }
+    .big-statement .highlight { color: var(--gold); }
+
+    /* Slide 28: the photo's "YOU DECIDE" lettering showed around and through
+       the closing box. Its letters and its figure fade at the same rate under
+       any overlay, so the photo comes off this slide: a palette ground and an
+       opaque box. White on --royal 18.03:1, on --dark 13.20:1. */
+    .slide-closing {
+      background: linear-gradient(135deg, var(--royal), var(--dark));
+    }
+    .closing-box { background: var(--royal); }
+
+    /* Sidebar: the "P" badge was white on --accent, 3.40:1 with this lesson's
+       teal (2.66:1 on the standard green). --royal is 5.30:1 and 6.77:1. */
+    .wippea-badge.p { color: var(--royal); }
   </style>
     <style id="fit-to-slide-guard">
       @media (min-width: 769px) and (max-height: 900px) {
@@ -3147,7 +3283,7 @@
         <div class="title-lab">
           <div class="title-copy">
             <p class="title-kicker">Decision Lab</p>
-            <h1>Problem-Solving &amp; Decision-Making</h1>
+            <h1><span class="title-line">Problem-Solving &amp;</span> <span class="title-line">Decision-Making</span></h1>
             <div class="divider"></div>
             <p class="subtitle">Investigate the problem. Weigh the options. Move with confidence.</p>
             <div class="title-actions" aria-label="Lesson focus areas">
@@ -3184,43 +3320,43 @@
         <p class="slide-intro">This short quiz was developed to test critical thinking skills. Try to answer each question before revealing the answer!</p>
 
         <div class="quiz-question">
-          <img class="quiz-art" src="images/ppt-inspired/giraffe.jpg" alt="" />
+          <img class="quiz-art" src="images/ppt-inspired/giraffe.jpg" alt="" loading="lazy" decoding="async" />
           <h3>Q1: How do you put a giraffe into a refrigerator?</h3>
           <div class="quiz-answer" id="q1a">
             <p>Open the refrigerator, put in the giraffe, and close the door.</p>
             <p class="quiz-why">This tests whether you tend to do simple things in an overly complicated way.</p>
           </div>
-          <button class="quiz-reveal-btn" onclick="revealAnswer('q1a', this)">Reveal Answer</button>
+          <button class="quiz-reveal-btn" aria-expanded="false" aria-controls="q1a" onclick="revealAnswer('q1a', this, event)">Reveal Answer</button>
         </div>
 
         <div class="quiz-question">
-          <img class="quiz-art" src="images/ppt-inspired/elephant.jpg" alt="" />
+          <img class="quiz-art" src="images/ppt-inspired/elephant.jpg" alt="" loading="lazy" decoding="async" />
           <h3>Q2: How do you put an elephant into a refrigerator?</h3>
           <div class="quiz-answer" id="q2a">
             <p>Open the refrigerator, take out the giraffe, put in the elephant, and close the door.</p>
             <p class="quiz-why">This tests your ability to think through the repercussions of your previous actions.</p>
           </div>
-          <button class="quiz-reveal-btn" onclick="revealAnswer('q2a', this)">Reveal Answer</button>
+          <button class="quiz-reveal-btn" aria-expanded="false" aria-controls="q2a" onclick="revealAnswer('q2a', this, event)">Reveal Answer</button>
         </div>
 
         <div class="quiz-question">
-          <img class="quiz-art" src="images/ppt-inspired/lion.jpeg" alt="" />
+          <img class="quiz-art" src="images/ppt-inspired/lion.jpeg" alt="" loading="lazy" decoding="async" />
           <h3>Q3: The Lion King is hosting an animal conference. All animals attend except one &mdash; which one?</h3>
           <div class="quiz-answer" id="q3a">
             <p>The elephant &mdash; it&rsquo;s still in the refrigerator!</p>
             <p class="quiz-why">This tests your memory.</p>
           </div>
-          <button class="quiz-reveal-btn" onclick="revealAnswer('q3a', this)">Reveal Answer</button>
+          <button class="quiz-reveal-btn" aria-expanded="false" aria-controls="q3a" onclick="revealAnswer('q3a', this, event)">Reveal Answer</button>
         </div>
 
         <div class="quiz-question">
-          <img class="quiz-art" src="images/ppt-inspired/crocodiles.JPG" alt="" />
+          <img class="quiz-art" src="images/ppt-inspired/crocodiles.JPG" alt="" loading="lazy" decoding="async" />
           <h3>Q4: You must cross a river used by crocodiles, and you don&rsquo;t have a boat. How do you do it?</h3>
           <div class="quiz-answer" id="q4a">
             <p>Jump in and swim across &mdash; all the crocodiles are at the animal conference!</p>
             <p class="quiz-why">This tests whether you learn quickly from your mistakes.</p>
           </div>
-          <button class="quiz-reveal-btn" onclick="revealAnswer('q4a', this)">Reveal Answer</button>
+          <button class="quiz-reveal-btn" aria-expanded="false" aria-controls="q4a" onclick="revealAnswer('q4a', this, event)">Reveal Answer</button>
         </div>
       </section>
 
@@ -3258,7 +3394,7 @@
       <!-- Slide 5: Section Divider -->
       <section class="slide slide-section" data-chapter="2" data-chapter-num="I">
         <div class="section-circle">
-          <img src="images/generated/chapter-critical-thinking.png" alt="" aria-hidden="true" />
+          <img src="images/generated/chapter-critical-thinking.png" alt="" aria-hidden="true" loading="lazy" decoding="async" />
         </div>
         <p class="chapter-label">Introduction</p>
         <h2>Critical Thinking in Action</h2>
@@ -3312,7 +3448,7 @@
           <div class="danger-card" tabindex="0" role="button" aria-expanded="false">
             <div class="danger-card-inner">
               <div class="danger-card-front">
-                <div class="danger-icon"><img src="images/generated-context/professor-style.png" alt="" aria-hidden="true" loading="lazy" /></div>
+                <div class="danger-icon"><img src="images/generated-context/professor-style.png" alt="" aria-hidden="true" loading="lazy" decoding="async" /></div>
                 <h3>Professor</h3>
               </div>
               <div class="danger-card-back">
@@ -3324,7 +3460,7 @@
           <div class="danger-card" tabindex="0" role="button" aria-expanded="false">
             <div class="danger-card-inner">
               <div class="danger-card-front">
-                <div class="danger-icon"><img src="images/generated-context/diplomat-style.png" alt="" aria-hidden="true" loading="lazy" /></div>
+                <div class="danger-icon"><img src="images/generated-context/diplomat-style.png" alt="" aria-hidden="true" loading="lazy" decoding="async" /></div>
                 <h3>Diplomat</h3>
               </div>
               <div class="danger-card-back">
@@ -3336,7 +3472,7 @@
           <div class="danger-card" tabindex="0" role="button" aria-expanded="false">
             <div class="danger-card-inner">
               <div class="danger-card-front">
-                <div class="danger-icon"><img src="images/generated-context/detective-style.png" alt="" aria-hidden="true" loading="lazy" /></div>
+                <div class="danger-icon"><img src="images/generated-context/detective-style.png" alt="" aria-hidden="true" loading="lazy" decoding="async" /></div>
                 <h3>Detective</h3>
               </div>
               <div class="danger-card-back">
@@ -3348,7 +3484,7 @@
           <div class="danger-card" tabindex="0" role="button" aria-expanded="false">
             <div class="danger-card-inner">
               <div class="danger-card-front">
-                <div class="danger-icon"><img src="images/generated-context/champion-style.png" alt="" aria-hidden="true" loading="lazy" /></div>
+                <div class="danger-icon"><img src="images/generated-context/champion-style.png" alt="" aria-hidden="true" loading="lazy" decoding="async" /></div>
                 <h3>Champion</h3>
               </div>
               <div class="danger-card-back">
@@ -3367,7 +3503,7 @@
       <!-- Slide 9: Section Divider -->
       <section class="slide slide-section" data-chapter="3" data-chapter-num="P1">
         <div class="section-circle">
-          <img src="images/generated/chapter-four-step-process.png" alt="" aria-hidden="true" />
+          <img src="images/generated/chapter-four-step-process.png" alt="" aria-hidden="true" loading="lazy" decoding="async" />
         </div>
         <p class="chapter-label">Presentation</p>
         <h2>The Four-Step Process</h2>
@@ -3398,21 +3534,25 @@
         <p style="font-size:1.2rem; color:var(--gray); margin-top:-0.5rem; margin-bottom:1.5rem;">A logical method for solving problems and making decisions (Christenson et al., 2008)</p>
         <div class="matrix-grid">
           <div class="matrix-cell do-first">
+            <span class="matrix-num" aria-hidden="true">1</span>
             <span class="matrix-label">Step 1</span>
             <span class="matrix-action">Stop!</span>
             <span class="matrix-desc">Think about the problem</span>
           </div>
           <div class="matrix-cell schedule">
+            <span class="matrix-num" aria-hidden="true">2</span>
             <span class="matrix-label">Step 2</span>
             <span class="matrix-action">Options</span>
             <span class="matrix-desc">What are some choices?</span>
           </div>
           <div class="matrix-cell delegate">
+            <span class="matrix-num" aria-hidden="true">3</span>
             <span class="matrix-label">Step 3</span>
             <span class="matrix-action">Choose</span>
             <span class="matrix-desc">Pick the best one</span>
           </div>
           <div class="matrix-cell eliminate">
+            <span class="matrix-num" aria-hidden="true">4</span>
             <span class="matrix-label">Step 4</span>
             <span class="matrix-action">Do It!</span>
             <span class="matrix-desc">Apply your decision</span>
@@ -3487,7 +3627,7 @@
           </div>
           <div class="split-visual">
             <div class="visual-circle">
-              <img src="images/generated/side-store-price-mismatch.png" alt="" aria-hidden="true" />
+              <img src="images/generated/side-store-price-mismatch.png" alt="" aria-hidden="true" loading="lazy" decoding="async" />
             </div>
           </div>
         </div>
@@ -3504,7 +3644,7 @@
       <!-- Slide 14: Section Divider -->
       <section class="slide slide-section" data-chapter="4" data-chapter-num="P2">
         <div class="section-circle">
-          <img src="images/generated/chapter-group-scenarios.png" alt="" aria-hidden="true" />
+          <img src="images/generated/chapter-group-scenarios.png" alt="" aria-hidden="true" loading="lazy" decoding="async" />
         </div>
         <p class="chapter-label">Presentation</p>
         <h2>Group Scenarios</h2>
@@ -3558,7 +3698,7 @@
           </div>
           <div class="split-visual">
             <div class="visual-circle">
-              <img src="images/generated/side-group-scenario-activity.png" alt="" aria-hidden="true" />
+              <img src="images/generated/side-group-scenario-activity.png" alt="" aria-hidden="true" loading="lazy" decoding="async" />
             </div>
           </div>
         </div>
@@ -3592,7 +3732,7 @@
       <!-- Slide 18: Section Divider -->
       <section class="slide slide-section" data-chapter="5" data-chapter-num="P3">
         <div class="section-circle">
-          <img src="images/generated/chapter-survival-challenge.png" alt="" aria-hidden="true" />
+          <img src="images/generated/chapter-survival-challenge.png" alt="" aria-hidden="true" loading="lazy" decoding="async" />
         </div>
         <p class="chapter-label">Presentation</p>
         <h2>Survival Challenge</h2>
@@ -3750,7 +3890,7 @@
       <!-- Slide 23: Section Divider -->
       <section class="slide slide-section" data-chapter="6" data-chapter-num="E">
         <div class="section-circle">
-          <img src="images/generated/chapter-reflection.png" alt="" aria-hidden="true" />
+          <img src="images/generated/chapter-reflection.png" alt="" aria-hidden="true" loading="lazy" decoding="async" />
         </div>
         <p class="chapter-label">Evaluation</p>
         <h2>3&ndash;2&ndash;1 Reflection</h2>
@@ -3764,17 +3904,17 @@
           <div class="checkpoint">
             <div class="checkpoint-label">3 &mdash; Things You Learned</div>
             <p style="font-size:1.1rem; color:var(--gray);">Name three things you learned today about problem-solving and decision-making.</p>
-            <textarea placeholder="1. &#10;2. &#10;3. "></textarea>
+            <textarea aria-label="Name three things you learned today about problem-solving and decision-making." placeholder="1. &#10;2. &#10;3. "></textarea>
           </div>
           <div class="checkpoint">
             <div class="checkpoint-label">2 &mdash; Barriers to Improve</div>
             <p style="font-size:1.1rem; color:var(--gray);">What are two barriers to effective decision-making you want to work on?</p>
-            <textarea placeholder="1. &#10;2. "></textarea>
+            <textarea aria-label="What are two barriers to effective decision-making you want to work on?" placeholder="1. &#10;2. "></textarea>
           </div>
           <div class="checkpoint">
             <div class="checkpoint-label">1 &mdash; Strategy to Implement</div>
             <p style="font-size:1.1rem; color:var(--gray);">What is one strategy you can implement today?</p>
-            <textarea placeholder="I will..."></textarea>
+            <textarea aria-label="What is one strategy you can implement today?" placeholder="I will..."></textarea>
           </div>
         </div>
       </section>
@@ -3786,7 +3926,7 @@
       <!-- Slide 25: Section Divider -->
       <section class="slide slide-section" data-chapter="7" data-chapter-num="A">
         <div class="section-circle">
-          <img src="images/generated/chapter-share-apply.png" alt="" aria-hidden="true" />
+          <img src="images/generated/chapter-share-apply.png" alt="" aria-hidden="true" loading="lazy" decoding="async" />
         </div>
         <p class="chapter-label">Application</p>
         <h2>Share &amp; Apply</h2>
@@ -3839,7 +3979,7 @@
           </div>
           <div class="split-visual">
             <div class="visual-circle">
-              <img src="images/generated/side-share-reflections.png" alt="" aria-hidden="true" />
+              <img src="images/generated/side-share-reflections.png" alt="" aria-hidden="true" loading="lazy" decoding="async" />
             </div>
           </div>
         </div>
@@ -3870,7 +4010,7 @@
       </div>
 
       <!-- Branding Logo -->
-      <img src="SPOKES-Logo.png" alt="SPOKES" class="branding-logo" />
+      <img src="SPOKES-Logo.png" alt="SPOKES" class="branding-logo" loading="lazy" decoding="async" />
 
       <!-- Progress Bar -->
       <div class="progress-bar" id="progressBar" role="progressbar" aria-valuenow="0" aria-valuemin="0" aria-valuemax="100" aria-label="Lesson progress"></div>
@@ -4220,6 +4360,20 @@
       // Suppress space only on focusable interactive elements (buttons, links, etc.)
       const isInteractive = target && target.closest('button, a, [role="button"], [role="tab"]');
       if (isInteractive && e.key === ' ') return;
+      // Presenter keys, NAV-14 (clickers send PageDown/PageUp): same form-field and
+      // defaultPrevented guards as the arrows above, plus video, tablist,
+      // contenteditable and modifier-key guards so native shortcuts keep working.
+      const isPresenterKey = e.key === 'PageDown' || e.key === 'PageUp' || e.key === 'Home' || e.key === 'End';
+      if (isPresenterKey) {
+        if (e.ctrlKey || e.altKey || e.metaKey) return;
+        if (target && (target.isContentEditable || target.closest('video, [role="tablist"]'))) return;
+        e.preventDefault();
+        if (e.key === 'PageDown') nextSlide();
+        else if (e.key === 'PageUp') prevSlide();
+        else if (e.key === 'Home') showSlide(0);
+        else showSlide(slides.length - 1);
+        return;
+      }
       if (e.key === 'ArrowRight') { e.preventDefault(); nextSlide(); }
       else if (e.key === 'ArrowLeft') { e.preventDefault(); prevSlide(); }
       else if (e.key === ' ') { e.preventDefault(); nextSlide(); }
@@ -4261,16 +4415,17 @@
       event.target.classList.add('active');
       event.target.setAttribute('aria-selected', 'true');
       document.getElementById(tabId).classList.add('active');
+      // A pointer click leaves focus on the tab, where the deck's key handler
+      // ignores the arrows and Space, so the presenter could not advance. A click
+      // made with a mouse, pen or finger reports event.detail >= 1 (its click
+      // count); Enter or Space on a focused tab, and a scripted .click(), report 0.
+      // Blur only for the pointer, so a keyboard user keeps their place.
+      if (event.detail > 0) event.target.blur();
     }
 
     function setFlipCard(card, isFlipped) {
       card.classList.toggle('flipped', isFlipped);
       card.setAttribute('aria-expanded', String(isFlipped));
-    }
-
-    function revealFlipCard(card) {
-      if (card.dataset.manualToggle === 'true') return;
-      setFlipCard(card, true);
     }
 
     function toggleFlipCard(card) {
@@ -4286,10 +4441,9 @@
     }
 
     // === Flip Card Click/Keyboard Handlers (ACC-03) ===
+    // Cards turn on click, Enter or Space only. They used to turn on mouseenter
+    // too, so a pointer crossing the slide flipped every card it passed over.
     document.querySelectorAll('.danger-card').forEach(function(card) {
-      card.addEventListener('mouseenter', function() {
-        revealFlipCard(card);
-      });
       card.addEventListener('click', function() {
         toggleFlipCard(card);
       });
@@ -4310,15 +4464,28 @@
     }
 
     // === Quiz Reveal ===
-    function revealAnswer(id, btn) {
+    function setQuizAnswer(answer, btn, isOpen) {
+      answer.style.display = isOpen ? 'block' : 'none';
+      if (!btn) return;
+      btn.textContent = isOpen ? 'Hide Answer' : 'Reveal Answer';
+      btn.setAttribute('aria-expanded', String(isOpen));
+    }
+
+    // When a person opens an answer, the answer that was open closes, so the
+    // slide never grows past the screen. event.isTrusted is true for a real
+    // click, tap or key press. A scripted .click() reports false and only adds:
+    // scripts/capture-print-slides.mjs clicks all four buttons that way for the
+    // teacher printout, which must show every answer.
+    function revealAnswer(id, btn, event) {
       var answer = document.getElementById(id);
-      if (answer.style.display === 'block') {
-        answer.style.display = 'none';
-        btn.textContent = 'Reveal Answer';
-      } else {
-        answer.style.display = 'block';
-        btn.textContent = 'Hide Answer';
+      var willOpen = answer.style.display !== 'block';
+      if (willOpen && event && event.isTrusted) {
+        answer.closest('.slide').querySelectorAll('.quiz-answer').forEach(function(other) {
+          if (other === answer || other.style.display !== 'block') return;
+          setQuizAnswer(other, other.parentElement.querySelector('.quiz-reveal-btn'), false);
+        });
       }
+      setQuizAnswer(answer, btn, willOpen);
     }
 
     // === CC Toggle ===

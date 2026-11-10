@@ -1413,20 +1413,25 @@
          LAYER 1 — LESSON IDENTITY
          ================================================================= */
 
-      /* Font pairing: crimson-pro-work-sans */
+      /* Font pairing: crimson-pro-work-sans.
+         Showcase repair 2026-11: the two variables are reassigned here (TYP-02)
+         so every var(--font-heading) / var(--font-body) rule resolves to the
+         registered self-hosted pair, and the system font names are gone. */
+      :root { --font-heading: "Crimson Pro", serif; --font-body: "Work Sans", sans-serif; }
       body { font-family: 'Work Sans', sans-serif; }
       .slide-title h1, .slide h2, .slide h3, .card h3,
       .smart-content h3, .matrix-action, .slide-section h2,
       .area-card h3, .closing-box h2 {
-        font-family: 'Bookman Old Style', 'Crimson Pro', serif;
+        font-family: var(--font-heading);
       }
       .chapter-label,
       .activity-label,
       .download-prompt,
       .checkpoint-label {
-        font-family: 'Ink Free', 'Comic Sans MS', cursive;
+        font-family: var(--font-body);
+        font-weight: 600;
         text-transform: none;
-        letter-spacing: 0;
+        letter-spacing: 0.02em;
       }
 
       /* Missing text highlight classes + contrast fix */
@@ -1459,7 +1464,7 @@
       .slide-title {
         background:
           linear-gradient(90deg, rgba(255,255,255,0.96) 0%, rgba(255,255,255,0.82) 42%, rgba(255,255,255,0.22) 100%),
-          url("images/ppt-inspiration/image1.png") center / cover no-repeat;
+          url("images/ppt-inspiration/image1.jpg") center / cover no-repeat;
         flex-direction: column;
         justify-content: center;
         align-items: flex-start;
@@ -1484,9 +1489,14 @@
       }
       .slide-title .subtitle {
         color: var(--primary);
-        font-family: 'Ink Free', 'Comic Sans MS', cursive;
+        font-family: var(--font-body);
         font-size: clamp(1.7rem, 2.8vw, 2.8rem);
-        font-weight: 700;
+        font-weight: 600;
+        /* Work Sans runs wider than the handwriting face it replaces: the slight
+           tightening keeps the line whole at 1920x1080 with the sidebar open,
+           and balance evens the two lines wherever it still has to wrap. */
+        letter-spacing: -0.025em;
+        text-wrap: balance;
         text-shadow: none;
         margin-top: 0.7rem;
       }
@@ -2048,6 +2058,9 @@
         padding: 1rem 1.5rem;
         background: var(--muted);
         cursor: pointer;
+        /* Showcase repair 2026-11: the header is a <button>, so inherit the page
+           font first; the designed family, size and weight below still apply. */
+        font: inherit;
         font-family: var(--font-heading);
         font-size: 1.35rem;
         color: var(--dark);
@@ -2369,6 +2382,78 @@
       /* px-sized icon chips don't scale with the root font — grow them here */
       .ppt-card-icon { width: 76px; height: 76px; }
       .smart-letter { width: 64px; height: 64px; }
+    }
+
+    /* Showcase repair 2026-11 */
+    /* Defect repairs only. The font repair is edited in place at the top of
+       this block, and the accordion header's font reset sits in its own rule. */
+
+    /* Slide 25: each accordion header is a <button>. Fill the row, drop the
+       browser's default border and centered text. The ring is drawn inside the
+       header because .accordion-item clips with overflow: hidden. Ring contrast:
+       --dark on --muted 9.52:1 (closed), --light on --primary 4.72:1 (open). */
+    .accordion-header {
+      width: 100%;
+      border: 0;
+      text-align: left;
+    }
+    .accordion-header:focus-visible {
+      outline: 3px solid var(--dark);
+      outline-offset: -5px;
+    }
+    .accordion-item.open .accordion-header:focus-visible {
+      outline-color: var(--light);
+    }
+
+    /* Slide 24: the fourth cell gets a real fill so it reads as a peer of the
+       other three. White on --dark: 10.65:1 (label at 0.8 opacity 7.39:1,
+       description at 0.9 opacity 8.93:1). Scoped to this slide. */
+    .advocacy-matrix-slide .matrix-cell.eliminate {
+      background: var(--dark);
+      color: var(--light);
+      border-color: var(--dark);
+    }
+    /* Slide 24: the green cell's text was --dark at 4.00:1, lower still on
+       the 0.9-opacity description. --royal on --accent is 6.77:1. */
+    .advocacy-matrix-slide .matrix-cell.schedule { color: var(--royal); }
+    /* The small labels and descriptions were faded to 0.8 and 0.9 opacity,
+       which took the blue cell to 3.59:1 and the gold cell to 3.85:1. At
+       full strength every line on the slide is 4.72:1 or better. */
+    .advocacy-matrix-slide .matrix-cell .matrix-label,
+    .advocacy-matrix-slide .matrix-cell .matrix-desc { opacity: 1; }
+
+    /* Slides 5, 9 and 12: the tape strip sits 10px above the card's padding
+       edge, so overflow: hidden cut it. Nothing in a card needs the clip (the
+       icons are in flow and the background image is clipped by the border
+       radius), so the card stops clipping. min-width/min-height: 0 keep the
+       grid sizing exactly as it was under overflow: hidden. */
+    .card {
+      overflow: visible;
+      min-width: 0;
+      min-height: 0;
+    }
+
+    /* Slide 19: taller-screen partner of the 26vh cap in the fit guard below.
+       Everything in the stack except the two video rows is fixed in rem or px
+       (slide padding 11rem, spacers 2rem, heading 6.4rem, intro line 1.4rem,
+       row gap 1.5rem, two captions 3.2rem, about 2rem spare = 27.5rem, plus two
+       56px caption toolbars), so the cap is what is left of the screen, halved.
+       The grid narrows with it so each video stays 16:9 with no side bars. */
+    @media (min-width: 769px) and (min-height: 901px) {
+      .video-grid {
+        max-width: min(1000px, calc((100vh - 27.5rem - 112px) * 16 / 9 + 1.5rem));
+      }
+      .video-grid-item video {
+        max-height: calc((100vh - 27.5rem - 112px) / 2);
+        object-fit: contain;
+      }
+    }
+
+    /* Sidebar: slide names and the slide counter were white at 0.5 on --dark,
+       3.85:1. White at 0.65 is 5.43:1 and stays quieter than chapter names. */
+    .slide-item,
+    .slide-counter {
+      color: rgba(255, 255, 255, 0.65);
     }
     </style>
     <style id="fit-to-slide-guard">
@@ -3047,7 +3132,7 @@
         </section>
 
         <!-- Slide 24: Why Self-Advocacy Matters -->
-        <section class="slide" data-chapter="5">
+        <section class="slide advocacy-matrix-slide" data-chapter="5">
           <h2>Why Self-Advocacy Matters</h2>
           <div class="matrix-grid">
             <div class="matrix-cell do-first">
@@ -3647,6 +3732,20 @@
         // Suppress space only on focusable interactive elements (buttons, links, etc.)
         var isInteractive = target && target.closest('button, a, [role="button"], [role="tab"]');
         if (isInteractive && e.key === ' ') return;
+        // Presenter keys, NAV-14 (clickers send PageDown/PageUp): same form-field and
+        // defaultPrevented guards as the arrows above, plus video, tablist,
+        // contenteditable and modifier-key guards so native shortcuts keep working.
+        var isPresenterKey = e.key === 'PageDown' || e.key === 'PageUp' || e.key === 'Home' || e.key === 'End';
+        if (isPresenterKey) {
+          if (e.ctrlKey || e.altKey || e.metaKey) return;
+          if (target && (target.isContentEditable || target.closest('video, [role="tablist"]'))) return;
+          e.preventDefault();
+          if (e.key === 'PageDown') nextSlide();
+          else if (e.key === 'PageUp') prevSlide();
+          else if (e.key === 'Home') showSlide(0);
+          else showSlide(slides.length - 1);
+          return;
+        }
         if (e.key === 'ArrowRight') { e.preventDefault(); nextSlide(); }
         else if (e.key === 'ArrowLeft') { e.preventDefault(); prevSlide(); }
         else if (e.key === ' ') { e.preventDefault(); nextSlide(); }

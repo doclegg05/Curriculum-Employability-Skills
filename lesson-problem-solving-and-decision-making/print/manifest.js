@@ -2,7 +2,7 @@
 window.SPOKES_PRINT_MANIFEST = {
   "version": 1,
   "lessonTitle": "Problem-Solving & Decision-Making",
-  "sourceHash": "01d787b68602696999269952c93d301fe1a68ec3e2ded87c7104fe108ee142a7",
+  "sourceHash": "ba1d5d5a7e720e6cf882f0068ea146a0a41a8535da5bf179c4cf76d8c07bf624",
   "pictures": [
     {
       "slide": 1,
@@ -20,7 +20,7 @@ window.SPOKES_PRINT_MANIFEST = {
       "student": "print/s03.jpg",
       "teacher": "print/s03-t.jpg",
       "width": 2400,
-      "height": 2125
+      "height": 1555
     },
     {
       "slide": 4,
