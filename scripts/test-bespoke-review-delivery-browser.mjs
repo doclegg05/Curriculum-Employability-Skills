@@ -13,6 +13,7 @@ import catalog from '../bespoke/builder-catalog.json' with {type:'json'};
 import {defaultDesign,applyPreset,setFeatureStyle} from '../bespoke/builder-model.mjs';
 import {submissionId} from '../netlify/functions/bespoke-handoff.mjs';
 import {designKey} from '../bespoke/showcase-model.mjs';
+import {proxyPageFile} from './bespoke-test-proxy.mjs';
 const selection={schema:'bespoke-selection/v2',date:'2026-10-07',lesson:{id:'money-management',title:'Money Management'},team:{name:'Synthetic team',spokesperson:{name:'Synthetic reviewer',email:'synthetic@example.org'}},design:(base=>setFeatureStyle(catalog,{...base,fonts:{...base.fonts,body:'bitter'}},'sidebar','font','body'))(defaultDesign(catalog)),alternatives:{active:'B',otherDesign:applyPreset(catalog,'modern')}};
 const server=await createDevServer({port:0}),browser=await browserType.launch({headless:true});
 const context=await browser.newContext(),errors=[],receipt=submissionId(selection),url='https://github.com/doclegg05/Curriculum-Employability-Skills/pull/123',artifactUrl='https://github.com/doclegg05/Curriculum-Employability-Skills/blob/'+('a'.repeat(40))+'/docs/phase-2/submissions/money-management/'+receipt+'/review.html';
@@ -38,7 +39,7 @@ try{
    else throw new Error('Unexpected synthetic action: '+body.action);
    return route.fulfill({json:{ok:true,...result}});
   }
-  return route.fulfill({response:await route.fetch({url:server.baseUrl+u.pathname+u.search,headers:{...route.request().headers(),origin:server.baseUrl}})});
+  return proxyPageFile(route,server);
  });
  const page=await context.newPage();page.on('console',m=>{if(m.type()==='error')console.error(m.text());});page.on('requestfailed',r=>console.error(r.url(),r.failure()));page.on('pageerror',e=>errors.push(e.message));page.setDefaultTimeout(10000);await page.goto('https://bespoke.test/bespoke/');await page.waitForFunction(()=>JSON.parse(localStorage.getItem('bespoke-draft-v2')||'null')?.alternatives?.active==='B').catch(async e=>{console.error(await page.locator('body').innerText(),errors);throw e;});
  // The team ticks the coordinator note on Send before any send can start.

@@ -9,6 +9,7 @@ import { submissionId } from '../netlify/functions/bespoke-handoff.mjs';
 import { defaultDesign, roleStyleDefaults } from '../bespoke/builder-model.mjs';
 import { CONVERTED_STATUS } from '../bespoke/converted-open.mjs';
 import catalog from '../bespoke/builder-catalog.json' with { type: 'json' };
+import {proxyPageFile} from './bespoke-test-proxy.mjs';
 
 const LESSON = { id: 'money-management', title: 'Money Management' };
 const base = defaultDesign(catalog);
@@ -51,7 +52,7 @@ try {
       if (body.action === 'status') return route.fulfill({ json: { ok: true, status: 'processing', submissionId: submissionId(shared.selection), runId: 12, url, artifactUrl, revision: 'a'.repeat(40) } });
       throw new Error('Unexpected synthetic action: ' + body.action);
     }
-    return route.fulfill({ response: await route.fetch({ url: server.baseUrl + u.pathname + u.search, headers: { ...route.request().headers(), origin: server.baseUrl } }) });
+    return proxyPageFile(route, server);
   });
   const page = await context.newPage();
   page.setDefaultTimeout(10000);

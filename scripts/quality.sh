@@ -36,6 +36,7 @@ node scripts/test-bespoke-role-contracts.mjs
 node scripts/test-bespoke-similarity.mjs
 node scripts/test-bespoke-showcase-model.mjs
 node scripts/test-bespoke-make-it-yours.mjs
+node scripts/test-bespoke-test-proxy.mjs
 python3 -m unittest discover -s scripts -p 'test_bespoke*.py' -v
 echo "==> cushion challenge money model"
 node scripts/check-cushion-math.mjs

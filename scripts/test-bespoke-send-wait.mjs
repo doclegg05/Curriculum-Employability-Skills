@@ -7,6 +7,7 @@ import {browserType} from './bespoke-test-browser.mjs';
 import catalog from '../bespoke/builder-catalog.json' with {type: 'json'};
 import {defaultDesign} from '../bespoke/builder-model.mjs';
 import {submissionId} from '../netlify/functions/bespoke-handoff.mjs';
+import {proxyPageFile} from './bespoke-test-proxy.mjs';
 
 const selection = {
   schema: 'bespoke-selection/v2',
@@ -46,11 +47,8 @@ async function scenario(name, replies, run) {
         const reply = await storeReply(route.request().postDataJSON(), replies);
         return route.fulfill(reply);
       }
-      let response;
-      try { response = await route.fetch({url: server.baseUrl + u.pathname + u.search, headers: {...route.request().headers(), origin: server.baseUrl}}); }
-      // At teardown the static server can reset the connection: fail that one request instead of crashing Node.
-      catch { return route.abort().catch(() => { /* The page or context is already closed. */ }); }
-      return route.fulfill({response});
+      // At teardown the context can close under a request: the helper fails that one request instead of crashing Node.
+      return proxyPageFile(route, server);
     });
     const page = await context.newPage();
     page.on('pageerror', error => errors.push(error.message));
