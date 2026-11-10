@@ -2440,6 +2440,14 @@
       /* Closing slide: the box's own padding is 2.75rem, so the box fits
          and stops above the navigation hint. */
       .closing-box { padding-top: 2.75rem; padding-bottom: 2.75rem; }
+
+      /* Text floors (Level 2, 2026-11-10). The smallest text on a slide is
+         lifted: labels and the captions button to 0.9rem, and reading text
+         that was under 0.9rem to about 1rem. On a 1920x1080 screen that is
+         20px and 23px. */
+      .slide .activity-label, .slide .checkpoint-label, .slide .matrix-label, .slide .cc-toggle { font-size: 0.9rem; }
+      /* Slide 20: the five role-play cards. */
+      .slide .roleplay-card p { font-size: 1rem; }
     }
 
     /* Showcase repair 2026-11 */

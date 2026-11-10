@@ -14,7 +14,7 @@
       "title": "Communicating with the Public",
       "source": {
         "path": "lesson-communicating-with-the-public/index.html",
-        "sha256": "8948d7e26153431c90633d283fc2abd4ddc7b418a4131fb2a8232dd72143b3a2",
+        "sha256": "b20260eb7ef85bdf29fee3233849638a3b5783c1881d13bcf2c95bc47f03abfd",
         "status": "ready"
       },
       "roles": {
@@ -288,7 +288,7 @@
       "title": "Controlling Anger",
       "source": {
         "path": "lesson-controlling-anger/index.html",
-        "sha256": "ce25788b05912e32f4713148a688c6c58b8b738d77a63e83f420836072a2c0e4",
+        "sha256": "56f6fe9edbcf8579f64a9e82351ff3e5813ca7b83814beb9af21adda2f5c918b",
         "status": "ready"
       },
       "roles": {
@@ -548,7 +548,7 @@
       "title": "Employee Accountability",
       "source": {
         "path": "lesson-employee-accountability/index.html",
-        "sha256": "e37a1e58ad064829602cd11e05e0bb8511b7ae05cbb3d5a716dae4aa4a01b823",
+        "sha256": "7c06432bd6c9730009cc2089ad0eb15542d1423f343f43fdfb8350d21c92353a",
         "status": "ready"
       },
       "roles": {
@@ -810,7 +810,7 @@
       "title": "Interview Skills",
       "source": {
         "path": "lesson-interview-skills/index.html",
-        "sha256": "8dec504d841afc3123b85b47587fcd1d1e770662b46aba7307077ae463d7902f",
+        "sha256": "d227192e17aedc10736d6c2565024b672fd40aabc3ca54c2956907793d41bb9d",
         "status": "ready"
       },
       "roles": {
@@ -1062,7 +1062,7 @@
       "title": "Problem Solving & Decision Making",
       "source": {
         "path": "lesson-problem-solving-and-decision-making/index.html",
-        "sha256": "168b76fe4102288eea7c14dddfb0964259c78ed7bf3169119b6ae053f1b107ad",
+        "sha256": "062db761eefea6a0ca187b9857fab06e0e8f86c8cbcef14a9e0fbe655edaa484",
         "status": "ready"
       },
       "roles": {
@@ -1324,7 +1324,7 @@
       "title": "Time Management",
       "source": {
         "path": "lesson-time-management/index.html",
-        "sha256": "ef8b661b9c38f31524fa39bac64ee7e467529c0df8f175bbc7644fa69a8dbec8",
+        "sha256": "104bad9335ec659c1edee6b4ab280df89d40b7971ddacf9176aaf55d5c3a2d15",
         "status": "ready"
       },
       "roles": {

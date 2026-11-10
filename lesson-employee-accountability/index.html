@@ -2114,7 +2114,13 @@
       .tab-panel { padding: 1.25rem; }
     }
 
-    @media (min-width: 769px) and (max-width: 1400px) {
+    /* The compact layout of the accountability map (slide 4) and the
+       carousel (slide 33). It was written for screens up to 1400px wide.
+       With room-scale sizing every 16:9 screen is 84.7rem wide, the width
+       this layout was drawn for, so it applies at every width past phones.
+       Left capped, a 1920px screen got the roomier layout and the carousel
+       lost the bottom of each card. */
+    @media (min-width: 769px) {
       .accountability-map-slide {
         padding-left: 3rem;
         padding-right: 3rem;
@@ -3077,6 +3083,20 @@
       .slide-title .subtitle { margin-bottom: 1.25rem; }
       .slide-title > div[style] { margin-top: 1rem !important; margin-bottom: 0.5rem !important; }
       .slide-title .download-btn { margin-top: 0.5rem; }
+
+      /* Text floors (Level 2, 2026-11-10). The smallest text on a slide is
+         lifted: labels to 0.9rem, and reading text
+         that was under 0.9rem to about 1rem. On a 1920x1080 screen that is
+         20px and 23px. */
+      .slide .activity-label { font-size: 0.9rem; }
+      .slide .scenario-label, .slide .hub-kicker { font-size: 0.9rem; }
+      /* Slide 17: the flip cards are 0.5rem taller, so the last line on a
+         card's back keeps its room when type sets a little wider. */
+      .slide .danger-card { height: 16.75rem; }
+      /* Slide 33: in the compact carousel the heading and the list keep the
+         size they had on a 1920x1080 screen (57px and 26px). */
+      .slide .carousel-card h3 { font-size: 2.55rem; }
+      .slide .carousel-card li { font-size: 1.13rem; }
     }
 
     /* Showcase repair 2026-11 */
@@ -3100,9 +3120,10 @@
     .team-strength-slide .danger-card-back p { color: var(--dark); }
 
     /* Slide 33: .slide p (2rem, line-height 1.6) outranked .carousel-status.
-       Two classes restore the designed size at both widths. */
+       Two classes restore the designed size: 0.95rem on phones, 0.88rem
+       in the compact layout past them. */
     .slide .carousel-status { font-size: 0.95rem; line-height: 1.35; }
-    @media (min-width: 769px) and (max-width: 1400px) {
+    @media (min-width: 769px) {
       .slide .carousel-status { font-size: 0.88rem; }
     }
 
@@ -3747,7 +3768,7 @@
       </section>
 
       <!-- Checkpoint scenario: keep interactive element fully intact -->
-      <section class="slide" data-chapter="5" style="--fit: 0.93;">
+      <section class="slide" data-chapter="5" style="--fit: 0.92;">
         <h2>Workplace Scenario: Checkpoint</h2>
         <p style="font-size: 1.1rem; color: var(--gray); margin-top: -1.5rem; margin-bottom: 1.5rem;">Read the scenario, then choose the most accountable response:</p>
         <div class="checkpoint-box">

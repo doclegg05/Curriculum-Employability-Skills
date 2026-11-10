@@ -2,7 +2,7 @@
 window.SPOKES_PRINT_MANIFEST = {
   "version": 1,
   "lessonTitle": "Problem-Solving & Decision-Making",
-  "sourceHash": "53f2e9ee6d2fb04dd67d00e086c337e0b595bedc7c62cf6b60930ca4ff622555",
+  "sourceHash": "d6b282da210cf0fd5689668cbfbdde5f6dc5714635c73dda6799a6aa93792d1d",
   "pictures": [
     {
       "slide": 1,

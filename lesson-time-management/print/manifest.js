@@ -2,7 +2,7 @@
 window.SPOKES_PRINT_MANIFEST = {
   "version": 1,
   "lessonTitle": "Time Management",
-  "sourceHash": "d736a8fd614bf415b49f84e0fee9687e3fc3930ce62b70275fcacae335f937ae",
+  "sourceHash": "0d5bbb95a11f408cac9eb2ae06dd7eb17ea0650a1ed60bfc36a26dc72339046d",
   "pictures": [
     {
       "slide": 1,

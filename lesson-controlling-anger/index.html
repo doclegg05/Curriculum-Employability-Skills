@@ -2768,29 +2768,11 @@
       }
     }
 
-    @media (min-width: 1401px) and (max-width: 1700px) {
-      .slide-section .section-circle {
-        width: clamp(7.875rem, 8.2vw, 9.375rem);
-        height: clamp(7.875rem, 8.2vw, 9.375rem);
-        left: auto;
-      }
-      .slide-section h2 {
-        font-size: 3.45rem;
-        padding: 1.3rem 2rem;
-      }
-    }
-
-    @media (min-width: 1280px) and (max-width: 1400px) {
-      .slide-section .section-circle {
-        width: 6.5rem;
-        height: 6.5rem;
-        left: auto;
-      }
-      .slide-section h2 {
-        font-size: 3.05rem;
-        padding: 1.1rem 1.65rem;
-      }
-    }
+    /* Two more blocks stood here, for screens 1280 to 1400px and 1401 to
+       1700px wide, each with its own circle and heading size. On a 16:9
+       screen 9vw is always 7.62rem, so the block above already gives every
+       screen the same section slide; the two variants made a 1600px screen
+       differ from a 1280px or a 1920px one. */
 
     @media (max-width: 1279px) {
       .slide-section {
@@ -3011,6 +2993,16 @@
       .danger-card-back p { font-size: 0.95rem; line-height: 1.45; }
       .spin-result { font-size: 1.35rem; }
       .wheel-pointer { border-left-width: 0.875rem; border-right-width: 0.875rem; border-top-width: 1.5rem; }
+
+      /* Text floors (Level 2, 2026-11-10). The smallest text on a slide is
+         lifted: labels and the captions button to 0.9rem, and reading text
+         that was under 0.9rem to about 1rem. On a 1920x1080 screen that is
+         20px and 23px. */
+      .slide .activity-label, .slide .checkpoint-label, .slide .matrix-label, .slide .cc-toggle { font-size: 0.9rem; }
+      /* Slide 13: the "Tap or click to reveal" hint, and cards 1rem taller.
+         At 12.5rem two card backs lost the bottom 5px of their text. */
+      .slide .flip-hint { font-size: 0.9rem; }
+      .danger-card { height: 13.5rem; }
     }
 
     /* Showcase repair 2026-11 */

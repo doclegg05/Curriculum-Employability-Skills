@@ -2,7 +2,7 @@
 window.SPOKES_PRINT_MANIFEST = {
   "version": 1,
   "lessonTitle": "Interview Skills for Employment Success",
-  "sourceHash": "f66b02bf78c95beb6aec8082d7aa929b5581ee1958e93dd42d47692ca330d894",
+  "sourceHash": "01c8b29c196fa5460f07c8d02126a3aa56f63254def1b416f25f10273af0bf93",
   "pictures": [
     {
       "slide": 1,
@@ -281,7 +281,7 @@ window.SPOKES_PRINT_MANIFEST = {
       "student": "print/s31.jpg",
       "teacher": "print/s31.jpg",
       "width": 2400,
-      "height": 1524
+      "height": 1530
     },
     {
       "slide": 32,

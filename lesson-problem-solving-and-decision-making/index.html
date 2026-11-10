@@ -3058,6 +3058,18 @@
       }
       .slide-video h2 { margin-bottom: 1rem; }
       .slide-video .video-wrapper { max-width: min(73.125rem, calc((100vh - 14.75rem) * 16 / 9)); }
+
+      /* Text floors (Level 2, 2026-11-10). The smallest text on a slide is
+         lifted: labels and the captions button to 0.9rem, and reading text
+         that was under 0.9rem to about 1rem. On a 1920x1080 screen that is
+         20px and 23px. */
+      .slide .activity-label, .slide .checkpoint-label, .slide .matrix-label, .slide .cc-toggle { font-size: 0.9rem; }
+      /* Slide 17: the ten scenario cards and their "Scenario 1" labels. */
+      .slide .scenario-card { font-size: 1rem; }
+      .slide .scenario-card strong { font-size: 0.9rem; }
+      /* Slide 8: the backs of the flip cards. Slide 1: the three action words. */
+      .slide .danger-card-back p { font-size: 0.95rem; }
+      .slide .title-action { font-size: 0.9rem; }
     }
 
     /* Showcase repair 2026-11 */

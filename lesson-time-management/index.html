@@ -2569,6 +2569,14 @@
          text room to fit. The size is set inline on the image, so this needs
          !important; phones keep the inline size. */
       .flex-visual .slide-img[src$="seven-ways-say-no.webp"] { max-width: 20rem !important; }
+
+      /* Text floors (Level 2, 2026-11-10). The smallest text on a slide is
+         lifted: labels and the captions button to 0.9rem, and reading text
+         that was under 0.9rem to about 1rem. On a 1920x1080 screen that is
+         20px and 23px. */
+      .slide .activity-label, .slide .matrix-label, .slide .cc-toggle { font-size: 0.9rem; }
+      /* Slide 16: what each of the four choices means. */
+      .slide .match-choice span { font-size: 1rem; }
     }
 
     /* Showcase repair 2026-11 */
