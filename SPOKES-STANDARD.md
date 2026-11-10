@@ -129,6 +129,12 @@ There are no predefined theme packages. Each lesson's design is made for that le
 - **Rule:** All fonts must be self-hosted from the repo `fonts/` directory via `@font-face` rules with `font-display: swap`. External font CDN links (`fonts.googleapis.com` / `fonts.gstatic.com`) are prohibited.
 - **Rationale:** Self-hosted fonts render identically offline, over `file://`, and behind school content filters — CDN links fail silently in all three cases, degrading each lesson's registered typography to fallback stacks. `font-display: swap` still applies so text is never invisible while local files load. (Updated 2026-08-17; previously this rule required Google Fonts links to carry `display=swap`.)
 
+### TYP-06: Room-Scale Sizing
+- **Severity:** INFO
+- **Validation:** guideline, checked in a browser by `scripts/check-lesson-fit.mjs`
+- **Rule:** Past 768px wide, a lesson's root font size follows the screen: `clamp(13px, min(2.1vh, 1.181vw), 48px)`, set in a `Room-scale sizing` block in `theme-override`. Every layout size is in rem (run `scripts/lesson-px-to-rem.py`). No rule past 768px wide depends on the screen's height or on a pixel width above 1100. Content slides stop 5.25rem above the bottom, clear of the corner logo and the navigation hint. A slide that holds more than fits is drawn smaller as a whole with `style="--fit: 0.9"` on the slide, never under 0.84 and never on a slide sized from `vh`. Every slide passes `node scripts/check-lesson-fit.mjs`.
+- **Rationale:** A lesson is projected in rooms of many sizes. With the root following the screen, every 16:9 screen is 47.6rem tall, so a slide that fits one fits them all, and text is about 19% larger at 1920x1080 than under the old fixed step. Approved 2026-11-10 (Britt) and applied to the six released lessons.
+
 ---
 
 ## Section 3: Accessibility
