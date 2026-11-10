@@ -51,7 +51,11 @@
       if (cs.overflowX !== 'visible') { left = Math.max(left, q.left); right = Math.min(right, q.right); }
       if (cs.overflowY !== 'visible') { top = Math.max(top, q.top); bottom = Math.min(bottom, q.bottom); }
     }
-    return right - left < 1 || bottom - top < 1 ? null : { left, top, right, bottom };
+    if (right - left < 1 || bottom - top < 1) return null;
+    // How much of the element an ancestor hides. Wholly hidden is by design
+    // (returned as null above); partly hidden is text cut off in its box.
+    const cut = Math.max(box.bottom - bottom, top - box.top, box.right - right, left - box.left);
+    return { left, top, right, bottom, cut };
   }
 
   // Elements that carry something a person reads or uses.
@@ -66,7 +70,7 @@
       if (cs.visibility === 'hidden' || cs.opacity === '0') continue;
       if (el.closest('.sr-only,.skip-link,[aria-hidden="true"]') && !el.matches('img,video,canvas')) continue;
       const rect = visibleRect(el, slide);
-      if (rect) out.push({ el, rect });
+      if (rect) out.push({ el, rect, ownText });
     }
     return out;
   }
@@ -74,7 +78,8 @@
   // What is wrong with one slide as it stands, as a short phrase, or ''.
   // A slide that scrolls is over when it has something to scroll. A slide that
   // clips is over when content is cut by its edge (a clipped decorative layer
-  // does not count).
+  // does not count). Text partly hidden by a box inside the slide, such as a
+  // card too short for its words, is reported too.
   function problem(slide) {
     const cs = getComputedStyle(slide);
     const frame = slide.getBoundingClientRect();
@@ -90,7 +95,12 @@
       down = Math.max(down, slide.scrollHeight - slide.clientHeight);
       across = Math.max(across, slide.scrollWidth - slide.clientWidth);
     }
+    let cut = 0, cutIn = '';
+    for (const { el, rect, ownText } of rects) {
+      if (ownText && rect.cut > cut) { cut = rect.cut; cutIn = name(el); }
+    }
     const parts = [];
+    if (cut > 3) parts.push(`${Math.round(cut)}px of text cut off inside its box (${cutIn})`);
     if (down > 2) parts.push(`${Math.round(down)}px past the bottom (${worst || 'content'})`);
     if (across > 2) parts.push(`${Math.round(across)}px past the side`);
     for (const [selector, label] of [['.branding-logo', 'corner logo'], ['.nav-hint', 'navigation hint']]) {
