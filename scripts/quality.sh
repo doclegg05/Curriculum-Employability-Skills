@@ -99,6 +99,8 @@ if [ -d node_modules/playwright ] && [ -d node_modules/axe-core ]; then
   node scripts/test-bespoke-showcase-fit.mjs
   node scripts/test-bespoke-showcase-messages.mjs
   node scripts/generate-lesson-fingerprints.mjs --check
+  echo "==> lesson slides fit the screen (room-scale lessons)"
+  node scripts/check-lesson-fit.mjs
   echo "==> offline lessons package opens from file://"
   offline_out="$(mktemp -d)"
   python3 scripts/build-offline-package.py --no-zip --out "$offline_out"
