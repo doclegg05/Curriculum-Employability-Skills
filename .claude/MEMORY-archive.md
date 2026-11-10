@@ -2,9 +2,20 @@
 
 Older rows moved out of `.claude/MEMORY.md` to keep it under its size cap.
 
-## Key Decisions Log (before 2026-10-22)
+## Key Decisions Log (2026-10-23 and earlier)
 | Date | Decision | Rationale |
 |------|----------|-----------|
+| 2026-10-23 | LOGO-02 fails a filter or blend mode on any element around the logo, except a filter made only of `drop-shadow()` | A wrapper filter is the easiest way to whiten the logo for a dark slide; a drop-shadow adds a shadow without recoloring it |
+| 2026-10-23 | A logo image with `alt=""` counts as the logo, not stand-in art | An empty alt marks it decorative, as Employee Accountability already does |
+| 2026-10-23 | CRD-02 allows cards that lift on hover (with `:active`), background textures including dot-grid, grain, gradient-fill cards and a soft radial glow; frosted glass and emoji stay banned | Britt's calls on the Claude Design export review; the template gets its hover lift and statement glow back |
+| 2026-10-23 | The template's warning-sign list marker becomes a mauve arrow | Britt: no emoji |
+| 2026-10-23 | The logo may be any size, from a corner mark to a large title-slide logo; the text-only SPOKES wordmark may stand in where the image cannot load | Britt's calls (F35, F36) |
+| 2026-10-23 | Design system work splits into PR 2 (import and fix) and PR 3 (BeSpoke textures), after PR 1 | Each lands on its own; PR 1 changes the rules the other two follow |
+| 2026-10-23 | `components.md` deletes the glass card and animated gradient divider sections instead of marking them | No released lesson or the template uses them; CRD-02 bans both; the archive tag keeps the old text |
+| 2026-10-22 | Open design standard: only the 11 colors, the SPOKES logo and readability are fixed; no theme packages; no color or font sign-off for builder-made designs | Britt wants variety between lessons; BeSpoke designs still need Britt's approval |
+| 2026-10-22 | LOGO-01 and LOGO-02 are CRITICAL validator rules: the logo may be resized, never recolored, cropped, stretched or swapped | The logo is the one brand mark that must stay exact |
+| 2026-10-22 | Old design rules kept at tag `archive/design-rules-v1` | Britt asked for a rollback point before the change |
+| 2026-10-22 | Remerge the PR 56/59 stack with current main first, then fix the CI failures, before the review findings | Britt |
 | 2026-10-21 | Make it yours draws the slide on the fixed 960 canvas and scales it; it grows past 960 on wide windows and uses the column width when 960 would be below 45% | Britt: the slide wins over the toolbar (R21, R26); legibility floor (R23, R31) |
 | 2026-10-21 | Escape closes the open Slide options drawer first; with it closed, Escape selects the slide background | Britt (R27) |
 | 2026-10-21 | Sent to Britt view takes a follow-up note that saves and resends | Britt (R28); works with the deployed service, no function change |
