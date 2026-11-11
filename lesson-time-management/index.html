@@ -50,7 +50,7 @@
 
     /* Sidebar */
     .sidebar {
-      width: 280px;
+      width: 17.5rem;
       background: var(--dark);
       padding: 2rem 1.5rem;
       display: flex;
@@ -59,7 +59,7 @@
       transition: margin-left 0.3s ease, opacity 0.3s ease;
       flex-shrink: 0;
     }
-    .sidebar.collapsed { margin-left: -280px; }
+    .sidebar.collapsed { margin-left: -17.5rem; }
 
     .sidebar-toggle {
       position: absolute;
@@ -133,7 +133,7 @@
       transition: max-height 0.3s ease;
       padding-left: 1rem;
     }
-    .chapter-item.expanded .slide-list { max-height: 600px; }
+    .chapter-item.expanded .slide-list { max-height: 37.5rem; }
 
     .slide-item {
       padding: 0.5rem 1rem;
@@ -220,7 +220,7 @@
       display: flex; align-items: center; gap: 1rem;
       margin-top: 2rem; padding: 1rem 1.5rem;
       background: rgba(0,123,175,0.06);
-      border-radius: 12px;
+      border-radius: 0.75rem;
       border: 1px solid rgba(0,123,175,0.1);
       align-self: flex-start; flex-wrap: wrap;
     }
@@ -255,7 +255,7 @@
     /* Branding Logo */
     .branding-logo {
       position: absolute; bottom: 1.5rem; right: 1.5rem;
-      max-width: 80px; height: auto; opacity: 1;
+      max-width: 5rem; height: auto; opacity: 1;
       z-index: 100; padding: 0.5rem;
       border-radius: 6px; background: var(--light);
     }
@@ -374,12 +374,12 @@
     }
     .slide-title .subtitle { font-size: 2rem; color: var(--gold); margin-bottom: 3rem; }
     .slide-title .divider {
-      width: 120px; height: 5px;
+      width: 7.5rem; height: 5px;
       background: var(--gold); margin-bottom: 2rem;
       transform-origin: center center;
     }
     .slide-title .logo {
-      max-width: 280px; height: auto; margin-bottom: 2rem;
+      max-width: 17.5rem; height: auto; margin-bottom: 2rem;
       background: var(--light); padding: 1rem; border-radius: 8px;
     }
     .slide-title .copyright { font-size: 0.85rem; color: rgba(255,255,255,0.5); margin-top: 1rem; }
@@ -409,7 +409,7 @@
     }
     .card {
       background: var(--muted); padding: 2rem 2.5rem;
-      border-radius: 12px; border-left: 6px solid var(--accent);
+      border-radius: 0.75rem; border-left: 6px solid var(--accent);
       display: flex; flex-direction: column; justify-content: center;
     }
     .card.gold-border { border-left-color: var(--gold); }
@@ -427,7 +427,7 @@
     }
     .takeaway-item { display: flex; align-items: center; gap: 1rem; }
     .takeaway-num {
-      width: 40px; height: 40px;
+      width: 2.5rem; height: 2.5rem;
       background: var(--primary); border-radius: 50%;
       display: flex; align-items: center; justify-content: center;
       font-size: 1.25rem; font-weight: 700; color: var(--light);
@@ -451,7 +451,7 @@
     }
     .smart-row { display: flex; gap: 0.75rem; align-items: center; }
     .smart-letter {
-      width: 44px; height: 44px;
+      width: 2.75rem; height: 2.75rem;
       background: var(--primary); border-radius: 8px;
       display: flex; align-items: center; justify-content: center;
       font-size: 1.5rem; font-weight: 700; color: var(--light); flex-shrink: 0;
@@ -474,7 +474,7 @@
       gap: 1.5rem; flex: 1;
     }
     .matrix-cell {
-      padding: 1.5rem; border-radius: 16px; text-align: center;
+      padding: 1.5rem; border-radius: 1rem; text-align: center;
       display: flex; flex-direction: column;
       align-items: center; justify-content: center; gap: 0.5rem;
     }
@@ -501,14 +501,14 @@
     .matching-game {
       flex: 0 0 auto;
       display: grid;
-      grid-template-columns: minmax(0, 1.12fr) minmax(280px, 0.78fr);
+      grid-template-columns: minmax(0, 1.12fr) minmax(17.5rem, 0.78fr);
       gap: 1rem;
       width: 100%;
     }
     .match-panel {
       background: rgba(255,255,255,0.72);
       border: 2px solid var(--offwhite);
-      border-radius: 16px;
+      border-radius: 1rem;
       padding: 1rem;
       display: flex;
       flex-direction: column;
@@ -538,7 +538,7 @@
     .scenario-card,
     .match-choice {
       border: 2px solid var(--offwhite);
-      border-radius: 12px;
+      border-radius: 0.75rem;
       background: var(--light);
       color: var(--dark);
       cursor: pointer;
@@ -548,11 +548,11 @@
     }
     .scenario-card {
       display: grid;
-      grid-template-columns: 44px minmax(0, 1fr);
+      grid-template-columns: 2.75rem minmax(0, 1fr);
       gap: 0.75rem;
       align-items: start;
       padding: 0.75rem;
-      min-height: 88px;
+      min-height: 5.5rem;
     }
     .scenario-card:hover,
     .match-choice:hover {
@@ -575,8 +575,8 @@
       background: rgba(167,37,63,0.08);
     }
     .scenario-number {
-      width: 44px;
-      height: 44px;
+      width: 2.75rem;
+      height: 2.75rem;
       border-radius: 10px;
       display: inline-flex;
       align-items: center;
@@ -608,7 +608,7 @@
     }
     .match-choice {
       padding: 0.68rem 0.72rem;
-      min-height: 92px;
+      min-height: 5.75rem;
       display: flex;
       flex-direction: column;
       justify-content: center;
@@ -645,7 +645,7 @@
       font-family: var(--font-body);
       font-weight: 700;
       padding: 0.62rem 0.9rem;
-      min-height: 44px;
+      min-height: 2.75rem;
       transition: background 0.2s ease, transform 0.2s ease;
     }
     .match-control-btn:hover {
@@ -665,7 +665,7 @@
       font-size: 1rem;
       line-height: 1.35;
       padding: 0.62rem 0.75rem;
-      min-height: 50px;
+      min-height: 3.125rem;
     }
     .match-feedback.correct {
       border-color: var(--accent);
@@ -684,7 +684,7 @@
     }
     .danger-card {
       perspective: 1000px;
-      cursor: pointer; min-height: 180px;
+      cursor: pointer; min-height: 11.25rem;
     }
     .danger-card-inner {
       position: relative; width: 100%; height: 100%;
@@ -693,7 +693,7 @@
     .danger-card.flipped .danger-card-inner { transform: rotateY(180deg); }
     .danger-card-front, .danger-card-back {
       position: absolute; width: 100%; height: 100%;
-      backface-visibility: hidden; border-radius: 16px;
+      backface-visibility: hidden; border-radius: 1rem;
       padding: 1.5rem; text-align: center;
       display: flex; flex-direction: column;
       align-items: center; justify-content: center; overflow: hidden;
@@ -709,12 +709,12 @@
     .areas-grid { display: flex; gap: 2rem; flex: 1; }
     .area-card {
       flex: 1; background: var(--primary);
-      border-radius: 16px; padding: 2rem; color: var(--light);
+      border-radius: 1rem; padding: 2rem; color: var(--light);
     }
     .area-card.gold-card { background: var(--gold); color: var(--dark); }
     .area-header { text-align: center; margin-bottom: 1.5rem; }
     .area-icon {
-      width: 60px; height: 60px;
+      width: 3.75rem; height: 3.75rem;
       background: var(--accent); border-radius: 50%;
       display: flex; align-items: center; justify-content: center;
       font-size: 1.75rem; font-weight: 700; margin: 0 auto 1rem;
@@ -742,9 +742,9 @@
     .big-statement h2 {
       font-family: var(--font-heading);
       font-size: 4.5rem; font-weight: 400;
-      line-height: 1.3; max-width: 1200px;
+      line-height: 1.3; max-width: 75rem;
     }
-    .big-statement p { max-width: 700px; }
+    .big-statement p { max-width: 43.75rem; }
 
     /* Video Slides */
     .slide-video {
@@ -763,7 +763,7 @@
     .activity-box {
       background: rgba(211,178,87,0.1);
       border: 2px solid var(--gold);
-      border-radius: 12px; padding: 1.5rem 2rem;
+      border-radius: 0.75rem; padding: 1.5rem 2rem;
       margin-top: 2rem; align-self: stretch;
     }
     .activity-label {
@@ -778,11 +778,11 @@
     .split-layout { display: flex; gap: 4rem; flex: 1; align-items: center; }
     .split-text { flex: 1; }
     .split-visual {
-      flex: 0 0 300px; display: flex;
+      flex: 0 0 18.75rem; display: flex;
       align-items: center; justify-content: center;
     }
     .visual-circle {
-      width: 250px; height: 250px; border-radius: 50%;
+      width: 15.625rem; height: 15.625rem; border-radius: 50%;
       background: linear-gradient(135deg, var(--primary), var(--dark));
       display: flex; align-items: center; justify-content: center;
       color: var(--light); font-size: 5rem;
@@ -824,7 +824,7 @@
       display: flex; gap: 2rem; align-items: center;
       flex-wrap: wrap; flex: 1;
     }
-    .flex-text { flex: 1; min-width: 260px; }
+    .flex-text { flex: 1; min-width: 16.25rem; }
     .flex-visual {
       flex: 0 0 auto; display: flex;
       align-items: center; justify-content: center;
@@ -832,7 +832,7 @@
 
     /* Slide images with consistent rounding and shadow */
     .slide-img {
-      width: 100%; border-radius: 12px;
+      width: 100%; border-radius: 0.75rem;
       box-shadow: 0 4px 20px rgba(0,0,0,0.12);
     }
 
@@ -858,9 +858,9 @@
     /* Video wrapper with toolbar */
     .video-wrapper {
       width: 100%;
-      max-width: 1170px;
+      max-width: 73.125rem;
       margin: 0 auto;
-      border-radius: 12px;
+      border-radius: 0.75rem;
       box-shadow: 0 8px 30px rgba(0, 0, 0, 0.15);
       overflow: hidden;
     }
@@ -876,7 +876,7 @@
       align-items: center;
       background: var(--royal);
       border-radius: 0;
-      padding: 6px 12px;
+      padding: 6px 0.75rem;
     }
 
     .cc-toggle {
@@ -884,15 +884,15 @@
       color: rgba(255, 255, 255, 0.7);
       border: 1.5px solid rgba(255, 255, 255, 0.4);
       border-radius: 4px;
-      padding: 6px 12px;
+      padding: 6px 0.75rem;
       font-family: var(--font-body);
       font-size: 0.75rem;
       font-weight: 700;
       letter-spacing: 1px;
       cursor: pointer;
       transition: all 0.2s ease;
-      min-width: 44px;
-      min-height: 44px;
+      min-width: 2.75rem;
+      min-height: 2.75rem;
       display: flex;
       align-items: center;
       justify-content: center;
@@ -917,7 +917,7 @@
 
     /* Info card row — used on Family Chores slide */
     .info-card {
-      border-radius: 12px; padding: 1.25rem 1.5rem;
+      border-radius: 0.75rem; padding: 1.25rem 1.5rem;
       display: flex; align-items: center; gap: 1.25rem;
     }
     .info-card.primary { background: var(--primary); color: var(--light); }
@@ -947,7 +947,7 @@
     .slide-image-centered img {
       max-height: calc(100vh - 10rem); max-width: 100%;
       width: auto; object-fit: contain;
-      border-radius: 12px; box-shadow: 0 4px 20px rgba(0,0,0,0.12);
+      border-radius: 0.75rem; box-shadow: 0 4px 20px rgba(0,0,0,0.12);
     }
 
     /* Family chores slide */
@@ -971,7 +971,7 @@
     }
     .chores-layout {
       display: grid;
-      grid-template-columns: minmax(300px, 0.42fr) minmax(0, 0.58fr);
+      grid-template-columns: minmax(18.75rem, 0.42fr) minmax(0, 0.58fr);
       gap: 1.1rem;
       flex: 1;
       align-items: stretch;
@@ -984,8 +984,8 @@
       min-height: 0;
     }
     .chores-image-col img {
-      max-height: min(68vh, 690px); max-width: 100%;
-      object-fit: contain; border-radius: 12px;
+      max-height: min(68vh, 43.125rem); max-width: 100%;
+      object-fit: contain; border-radius: 0.75rem;
       box-shadow: 0 4px 20px rgba(0,0,0,0.12);
     }
     .chores-cards-col {
@@ -996,7 +996,7 @@
     .slide-chores .info-card {
       flex: 1 1 0;
       display: grid;
-      grid-template-columns: minmax(120px, 32%) minmax(0, 1fr);
+      grid-template-columns: minmax(7.5rem, 32%) minmax(0, 1fr);
       align-items: center;
       gap: 1rem;
       min-height: 0;
@@ -1006,8 +1006,8 @@
     .slide-chores .info-card-icon {
       width: 100%;
       height: 100%;
-      min-height: 112px;
-      max-height: 185px;
+      min-height: 7rem;
+      max-height: 11.5625rem;
       overflow: hidden;
       border-radius: 10px;
     }
@@ -1069,7 +1069,7 @@
       font-weight: 400; position: relative; z-index: 2;
     }
     .slide-section .divider {
-      width: 100px; height: 5px;
+      width: 6.25rem; height: 5px;
       background: var(--gold); margin-top: 2rem;
       position: relative; z-index: 2;
       transform-origin: center center;
@@ -1115,7 +1115,7 @@
 
     .closing-box {
       background: rgba(255,255,255,0.1); padding: 4rem 5rem;
-      border-radius: 20px; max-width: 800px;
+      border-radius: 1.25rem; max-width: 50rem;
       position: relative; z-index: 10;
     }
     .closing-box p {
@@ -1123,7 +1123,7 @@
       line-height: 1.6; font-style: italic; margin-bottom: 2rem;
     }
     .closing-box .divider {
-      width: 80px; height: 4px;
+      width: 5rem; height: 4px;
       background: var(--gold); margin: 0 auto 2rem;
     }
     .closing-box h2 {
@@ -1216,13 +1216,13 @@
       max-height: 0; overflow: hidden; transition: max-height 0.35s ease;
       background: var(--light);
     }
-    .accordion-body.open { max-height: 800px; }
+    .accordion-body.open { max-height: 50rem; }
     .accordion-body-inner { padding: 1.25rem 1.5rem; }
     .accordion-body p { font-size: 1.2rem; color: var(--gray); line-height: 1.6; }
 
     /* Checkpoint */
     .checkpoint-box {
-      background: var(--muted); border-radius: 16px;
+      background: var(--muted); border-radius: 1rem;
       padding: 2.5rem 3rem; flex: 1;
       border: 2px solid var(--offwhite);
     }
@@ -1282,7 +1282,7 @@
       gap: 1.5rem; flex: 1;
     }
     .debrief-card {
-      background: var(--muted); border-radius: 12px;
+      background: var(--muted); border-radius: 0.75rem;
       padding: 1.5rem 2rem;
       border-left: 5px solid var(--primary);
       position: relative; overflow: hidden; z-index: 1;
@@ -1322,26 +1322,26 @@
 
     /* Responsive */
     @media (max-width: 768px) {
-      .sidebar { margin-left: -280px; }
+      .sidebar { margin-left: -17.5rem; }
       .slide { padding: 2rem 1.5rem; }
       .slide h1 { font-size: 2.5rem; }
       .slide h2 { font-size: 1.8rem; }
       .cards-grid { grid-template-columns: 1fr; gap: 1rem; }
       .matrix-grid { grid-template-columns: 1fr; gap: 1rem; }
       .dangers-grid { grid-template-columns: repeat(2, 1fr); gap: 1rem; }
-      .danger-card { min-height: 150px; }
+      .danger-card { min-height: 9.375rem; }
       .matching-game { grid-template-columns: 1fr; }
       .classification-stack { grid-template-columns: 1fr; }
       .match-choice { min-height: auto; }
       .scenario-card { min-height: auto; }
       .split-layout { flex-direction: column; gap: 1.5rem; }
       .split-visual { flex: 0 0 auto; }
-      .visual-circle { width: 150px; height: 150px; font-size: 3rem; }
-      .slide-section .section-circle { width: 180px; height: 180px; left: 5%; }
+      .visual-circle { width: 9.375rem; height: 9.375rem; font-size: 3rem; }
+      .slide-section .section-circle { width: 11.25rem; height: 11.25rem; left: 5%; }
       .areas-grid { flex-direction: column; }
-      .branding-logo { max-width: 50px; bottom: 0.75rem; right: 0.75rem; }
+      .branding-logo { max-width: 3.125rem; bottom: 0.75rem; right: 0.75rem; }
       .slide-title h1 { font-size: 3rem; }
-      .logo { max-width: 150px; }
+      .logo { max-width: 9.375rem; }
       .checkpoint-options { grid-template-columns: 1fr; }
       .debrief-grid { grid-template-columns: 1fr; }
       .tabs-nav { flex-wrap: wrap; }
@@ -1352,13 +1352,13 @@
       .slide h2 { font-size: 1.4rem; }
       .slide-title h1 { font-size: 2.2rem; }
       .dangers-grid { grid-template-columns: 1fr; }
-      .danger-card { min-height: 140px; }
+      .danger-card { min-height: 8.75rem; }
       .match-panel { padding: 0.75rem; }
-      .scenario-card { grid-template-columns: 38px minmax(0, 1fr); }
-      .scenario-number { width: 38px; height: 38px; }
+      .scenario-card { grid-template-columns: 2.375rem minmax(0, 1fr); }
+      .scenario-number { width: 2.375rem; height: 2.375rem; }
       .big-statement h2 { font-size: 2rem; }
-      .slide-section .section-circle { width: 120px; height: 120px; left: 50%; transform: translate(-50%, -50%); opacity: 0.15; }
-      .branding-logo { max-width: 40px; bottom: 0.5rem; right: 0.5rem; }
+      .slide-section .section-circle { width: 7.5rem; height: 7.5rem; left: 50%; transform: translate(-50%, -50%); opacity: 0.15; }
+      .branding-logo { max-width: 2.5rem; bottom: 0.5rem; right: 0.5rem; }
     }
 
     /* Focus-visible styles for keyboard accessibility */
@@ -1462,12 +1462,12 @@
     [data-chapter="2"] .danger-card-back,
     [data-chapter="5"] .danger-card-front,
     [data-chapter="5"] .danger-card-back {
-      border-radius: 12px;
+      border-radius: 0.75rem;
       box-shadow: 0 4px 15px rgba(0,0,0,0.1);
     }
     [data-chapter="2"] .area-card,
     [data-chapter="5"] .area-card {
-      border-radius: 12px;
+      border-radius: 0.75rem;
       box-shadow: 0 4px 15px rgba(0,0,0,0.08);
     }
     [data-chapter="2"] .activity-box,
@@ -1487,7 +1487,7 @@
       background: var(--light);
       border: 1px solid var(--offwhite);
       border-left: 1px solid var(--offwhite);
-      border-radius: 24px;
+      border-radius: 1.5rem;
       padding: 1.25rem 1.5rem;
     }
     [data-chapter="4"] .card.gold-border,
@@ -1508,30 +1508,30 @@
     }
     [data-chapter="4"] .smart-content,
     [data-chapter="7"] .smart-content {
-      border-radius: 16px;
+      border-radius: 1rem;
       border: 1px solid var(--offwhite);
     }
     [data-chapter="4"] .matrix-cell,
     [data-chapter="7"] .matrix-cell {
-      border-radius: 16px;
+      border-radius: 1rem;
     }
     [data-chapter="4"] .danger-card-front,
     [data-chapter="4"] .danger-card-back,
     [data-chapter="7"] .danger-card-front,
     [data-chapter="7"] .danger-card-back {
-      border-radius: 20px;
+      border-radius: 1.25rem;
     }
     [data-chapter="4"] .area-card,
     [data-chapter="7"] .area-card {
-      border-radius: 20px;
+      border-radius: 1.25rem;
     }
     [data-chapter="4"] .activity-box,
     [data-chapter="7"] .activity-box {
-      border-radius: 16px;
+      border-radius: 1rem;
     }
     [data-chapter="4"] .download-btn,
     [data-chapter="7"] .download-btn {
-      border-radius: 20px;
+      border-radius: 1.25rem;
     }
 
     /* Chapters 1, 3, 6: left-border (default — no overrides needed) */
@@ -1622,7 +1622,7 @@
 
     /* Section dividers — chapter image circle */
     .slide-section .section-circle {
-      width: 280px; height: 280px;
+      width: 17.5rem; height: 17.5rem;
       border-radius: 50%;
       border: 3px solid rgba(211,178,87,0.25);
       position: absolute;
@@ -1695,10 +1695,10 @@
 
     /* Skip navigation link */
     .skip-link {
-      position: absolute; top: -40px; left: 0;
+      position: absolute; top: -2.5rem; left: 0;
       background: var(--dark); color: var(--light);
-      padding: 8px 16px; z-index: 10000;
-      font-size: 14px; transition: top 0.2s;
+      padding: 8px 1rem; z-index: 10000;
+      font-size: 0.875rem; transition: top 0.2s;
       text-decoration: none;
     }
     .skip-link:focus { top: 0; }
@@ -1799,11 +1799,11 @@
 
     .tm-title-lab {
       display: grid;
-      grid-template-columns: minmax(0, 1fr) minmax(280px, 0.62fr);
+      grid-template-columns: minmax(0, 1fr) minmax(17.5rem, 0.62fr);
       align-items: stretch;
       gap: 2.6rem;
       width: 100%;
-      max-width: 1360px;
+      max-width: 85rem;
       margin: 0 auto;
       flex: 1;
       position: relative;
@@ -1825,7 +1825,7 @@
       color: var(--tm-paper);
       font-size: clamp(4rem, 7vw, 6.8rem);
       line-height: 0.9;
-      max-width: 760px;
+      max-width: 47.5rem;
       text-align: left;
       margin-bottom: 0.85rem;
       text-shadow: 0 18px 40px rgba(0,0,0,0.38);
@@ -1841,7 +1841,7 @@
     .slide-title .subtitle {
       color: rgba(255,248,234,0.92);
       font-size: clamp(1.3rem, 2.2vw, 1.9rem);
-      max-width: 620px;
+      max-width: 38.75rem;
       line-height: 1.32;
       margin-bottom: 1.2rem;
     }
@@ -1867,8 +1867,8 @@
     }
 
     .tm-title-visual {
-      min-height: 320px;
-      border-radius: 40px 0 40px 0;
+      min-height: 20rem;
+      border-radius: 2.5rem 0 2.5rem 0;
       background:
         linear-gradient(180deg, rgba(16,32,51,0.04), rgba(16,32,51,0.68)),
         url("images/toolbox.webp") center / cover no-repeat;
@@ -1894,7 +1894,7 @@
       position: absolute;
       right: 1.5rem;
       bottom: 1.25rem;
-      width: 76px;
+      width: 4.75rem;
       max-width: none;
       margin: 0;
       padding: 0.5rem;
@@ -1932,7 +1932,7 @@
       left: 8rem;
       width: 15rem;
       height: 15rem;
-      border-radius: 28px;
+      border-radius: 1.75rem;
       border: 0;
       box-shadow: 18px 18px 0 rgba(0,167,157,0.46);
       transform: translateY(-50%) rotate(-5deg);
@@ -1951,7 +1951,7 @@
       z-index: 2;
       color: var(--tm-ink);
       font-size: clamp(4.2rem, 6vw, 6.8rem);
-      max-width: 760px;
+      max-width: 47.5rem;
     }
 
     .slide-section .divider {
@@ -1974,7 +1974,7 @@
     }
 
     .takeaway-item {
-      border-radius: 0 22px 22px 22px;
+      border-radius: 0 1.375rem 1.375rem 1.375rem;
       border-left: 8px solid var(--tm-teal);
     }
 
@@ -1983,7 +1983,7 @@
     }
 
     .card {
-      border-radius: 24px 24px 0 24px !important;
+      border-radius: 1.5rem 1.5rem 0 1.5rem !important;
       border-top: 6px solid var(--tm-teal) !important;
     }
 
@@ -1996,13 +1996,13 @@
       align-items: stretch;
       background: rgba(16,32,51,0.06);
       padding: 1rem;
-      border-radius: 28px;
+      border-radius: 1.75rem;
       border: 1px solid var(--tm-line);
     }
 
     .matrix-cell {
       border: 0 !important;
-      border-radius: 24px 24px 0 24px !important;
+      border-radius: 1.5rem 1.5rem 0 1.5rem !important;
       box-shadow: 0 12px 26px rgba(16,32,51,0.12);
     }
 
@@ -2070,7 +2070,7 @@
     .big-statement[data-sidebar-title="Optimize Your Time"] h2 {
       position: relative;
       z-index: 1;
-      max-width: 1050px;
+      max-width: 65.625rem;
       padding: 2rem 2.5rem;
       border: 1px solid rgba(255,248,234,0.18);
       background: rgba(16,32,51,0.42);
@@ -2133,20 +2133,22 @@
 
     .danger-card-front,
     .danger-card-back {
-      border-radius: 0 26px 0 26px !important;
+      border-radius: 0 1.625rem 0 1.625rem !important;
     }
 
+    /* Showcase repair 2026-11: the darkening gradient that sat over each
+       photo is gone. It existed for the centred title, which now sits on a
+       solid band (see the repair block at the end of this style block). */
     .danger-card-front {
       background:
-        linear-gradient(180deg, rgba(16,32,51,0.08), rgba(16,32,51,0.76)),
         url("images/Challenges People Face while saying No.webp") center / cover no-repeat;
     }
 
-    .danger-card:nth-child(1) .danger-card-front { background-image: linear-gradient(180deg, rgba(16,32,51,0.08), rgba(16,32,51,0.76)), url("videos/smartphones-focus.jpg"); }
-    .danger-card:nth-child(2) .danger-card-front { background-image: linear-gradient(180deg, rgba(16,32,51,0.08), rgba(16,32,51,0.76)), url("images/procrastination-cycle.webp"); }
-    .danger-card:nth-child(3) .danger-card-front { background-image: linear-gradient(180deg, rgba(16,32,51,0.08), rgba(16,32,51,0.76)), url("videos/multitasking.jpg"); }
-    .danger-card:nth-child(4) .danger-card-front { background-image: linear-gradient(180deg, rgba(16,32,51,0.08), rgba(16,32,51,0.76)), url("images/seven-ways-say-no.webp"); }
-    .danger-card:nth-child(5) .danger-card-front { background-image: linear-gradient(180deg, rgba(16,32,51,0.08), rgba(16,32,51,0.76)), url("videos/10-habits.jpg"); }
+    .danger-card:nth-child(1) .danger-card-front { background-image: url("videos/smartphones-focus.jpg"); }
+    .danger-card:nth-child(2) .danger-card-front { background-image: url("images/procrastination-cycle.webp"); }
+    .danger-card:nth-child(3) .danger-card-front { background-image: url("videos/multitasking.jpg"); }
+    .danger-card:nth-child(4) .danger-card-front { background-image: url("images/seven-ways-say-no.webp"); }
+    .danger-card:nth-child(5) .danger-card-front { background-image: url("videos/10-habits.jpg"); }
 
     .danger-icon {
       display: none;
@@ -2164,7 +2166,7 @@
     }
 
     [data-chapter="5"] .danger-card {
-      min-height: 220px;
+      min-height: 13.75rem;
     }
 
     [data-chapter="5"] .danger-card-front {
@@ -2208,7 +2210,7 @@
 
     .day-map-layout {
       display: grid;
-      grid-template-columns: minmax(300px, 0.72fr) minmax(0, 1fr);
+      grid-template-columns: minmax(18.75rem, 0.72fr) minmax(0, 1fr);
       gap: 2.4rem;
       align-items: center;
       width: 100%;
@@ -2294,15 +2296,15 @@
 
     .focus-cost-layout {
       display: grid;
-      grid-template-columns: minmax(310px, 0.74fr) minmax(0, 1fr);
+      grid-template-columns: minmax(19.375rem, 0.74fr) minmax(0, 1fr);
       gap: 2.4rem;
       align-items: stretch;
       width: 100%;
     }
 
     .focus-visual-panel {
-      min-height: 470px;
-      border-radius: 36px 0 36px 0;
+      min-height: 29.375rem;
+      border-radius: 2.25rem 0 2.25rem 0;
       background:
         linear-gradient(180deg, rgba(16,32,51,0.08), rgba(16,32,51,0.78)),
         url("videos/multitasking.jpg") center / cover no-repeat;
@@ -2350,7 +2352,7 @@
       color: var(--tm-paper);
       font-weight: 900;
       letter-spacing: 0.14em;
-      border-radius: 18px 18px 0 18px;
+      border-radius: 1.125rem 1.125rem 0 1.125rem;
     }
 
     .focus-cost-item:nth-child(2) { --mark-color: var(--tm-amber); }
@@ -2396,10 +2398,10 @@
       z-index: 1;
       background: rgba(255,248,234,0.93);
       border: 1px solid var(--tm-line);
-      border-radius: 26px 26px 0 26px;
+      border-radius: 1.625rem 1.625rem 0 1.625rem;
       box-shadow: 0 16px 34px rgba(16,32,51,0.09);
       padding: 1.35rem 1.2rem 1.2rem;
-      min-height: 270px;
+      min-height: 16.875rem;
       display: flex;
       flex-direction: column;
       gap: 1rem;
@@ -2442,11 +2444,11 @@
         grid-template-columns: 1fr;
       }
       .day-clock {
-        max-width: 320px;
+        max-width: 20rem;
         justify-self: center;
       }
       .focus-visual-panel {
-        min-height: 240px;
+        min-height: 15rem;
       }
       .debrief-path {
         grid-template-columns: 1fr;
@@ -2463,7 +2465,7 @@
     }
 
     .closing-box {
-      border-radius: 0 42px 0 42px;
+      border-radius: 0 2.625rem 0 2.625rem;
       background: rgba(16,32,51,0.82);
       border: 1px solid rgba(255,248,234,0.26);
       box-shadow: 0 30px 70px rgba(0,0,0,0.38);
@@ -2507,116 +2509,261 @@
         font-size: clamp(3rem, 14vw, 4.5rem);
       }
     }
-    /* Classroom-scale typography: nearly all sizing is rem-based, so scaling
-       the root font grows content proportionally on large presentation
-       displays. Scoped above the fit-to-slide-guard's 900px height regime so
-       the two never fight. */
-    @media (min-width: 1600px) and (min-height: 920px) {
-      html { font-size: 19px; }
-      /* px-sized components don't scale with the root font — grow them here */
-      .visual-circle { width: 340px; height: 340px; }
-      .split-visual { flex-basis: 380px; }
-      .takeaway-num { width: 52px; height: 52px; }
-      .takeaways { gap: 1.3rem; }
-      .takeaway-item { padding: 0.85rem 1.3rem; }
-      [data-chapter="5"] .danger-card-back h3 { font-size: 1.6rem; }
-      [data-chapter="5"] .danger-card-back p { font-size: 1.32rem; }
+    /* Room-scale sizing (showcase Level 2, 2026-11-10). Every size in this
+       lesson is in rem (scripts/lesson-px-to-rem.py converted the px ones),
+       so the root size sets how large a whole slide is, sidebar included.
+       The root follows the screen: 2.1% of its height, held to 1.181% of its
+       width so a screen narrower than 16:9 never gets more text per line. On
+       any 16:9 screen the slide area beside the open sidebar is 67rem wide
+       and 47.6rem tall, so a slide that fits one screen fits them all. This
+       replaces the 16px and 19px steps and the short-screen rule block.
+       Phones keep the browser's default root size and are unchanged. */
+    @media (min-width: 769px) {
+      html { font-size: clamp(13px, min(2.1vh, 1.181vw), 48px); }
+
+      /* Fit. The slide area is 47.6rem tall on any 16:9 screen. Content
+         slides start 1.75rem from the top and stop 4.25rem from the bottom.
+         With the 1rem the centering always leaves, that keeps everything
+         5.25rem clear of the bottom, above the corner logo and the
+         navigation hint. Headings sit 1.5rem above what follows.
+
+         A slide that still holds more than fits is drawn smaller as a whole:
+         its style attribute sets --fit (0.9 draws it at 90%). Text and spacing
+         shrink together, so the slide keeps its proportions, and no --fit is
+         under 0.84, the point where text would be smaller on a 1920x1080
+         screen than it was before this change. The bottom padding grows as
+         --fit shrinks so the 5.25rem stays clear. */
+      .slide:not(.slide-title):not(.slide-section):not(.slide-closing):not(.big-statement):not(.slide-image-centered) {
+        zoom: var(--fit, 1);
+        padding-top: 1.75rem;
+        padding-bottom: calc(5.25rem / var(--fit, 1) - 1rem);
+      }
+      .slide h2 { margin-bottom: 1.5rem; }
+
+      /* Video slides: the player took the slide's full width and its height
+         followed, so with the sidebar closed it ran off the bottom, and with
+         it open the captions button sat under the corner logo. The player's
+         width is now also held to what the height leaves: the screen less
+         the heading, the toolbar and the padding (14.75rem). */
+      .slide.slide-video:not(.slide-title):not(.slide-section):not(.slide-closing):not(.big-statement):not(.slide-image-centered) {
+        padding-top: 1rem;
+      }
+      .slide-video h2 { margin-bottom: 1rem; }
+      .slide-video .video-wrapper { max-width: min(73.125rem, calc((100vh - 14.75rem) * 16 / 9)); }
+
+      /* Slide 11: the toolbox picture reached under the navigation hint. The
+         size is set inline on the image, so this needs !important. */
+      .big-statement .slide-img[src$="toolbox.webp"] { max-width: 15rem !important; }
+      /* Slide 13: the table image left the heading no room and reached
+         under the navigation hint. */
+      .slide-image-centered { padding-bottom: 4.25rem; }
+      .slide-image-centered img { max-height: calc(100vh - 14.5rem); }
+      /* Slide 16: the two game buttons had no text size of their own, so
+         they stayed at the browser's 13px on every screen. They now grow
+         with the screen: 13px at 1280x720 as before, 20px at 1920x1080. */
+      .match-control-btn { font-size: 0.96rem; }
+      /* Slide 20: five cards in two rows. */
+      [data-chapter="5"] .dangers-grid { gap: 0.8rem; }
+      /* Slide 27: the infographic took 32.5rem of the row and left the text
+         a 22.7rem column, 45.8rem tall. At 20rem wide the picture gives the
+         text room to fit. The size is set inline on the image, so this needs
+         !important; phones keep the inline size. */
+      .flex-visual .slide-img[src$="seven-ways-say-no.webp"] { max-width: 20rem !important; }
+
+      /* Text floors (Level 2, 2026-11-10). The smallest text on a slide is
+         lifted: labels and the captions button to 0.9rem, and reading text
+         that was under 0.9rem to about 1rem. On a 1920x1080 screen that is
+         20px and 23px. */
+      .slide .activity-label, .slide .matrix-label, .slide .cc-toggle { font-size: 0.9rem; }
+      /* Slide 16: what each of the four choices means. */
+      .slide .match-choice span { font-size: 1rem; }
+    }
+
+    /* Showcase repair 2026-11 */
+    /* Defect fixes only: no wording and no text sizes change here. Colors
+       are palette variables. Each rule names the slide it repairs. */
+
+    /* Slide 14: the flowchart had a width cap and no height cap, so it ran
+       689px tall and pushed the slide past the frame. Everything else on the
+       slide takes 17.23rem (4rem + 4rem padding, 2rem of flex spacers, a
+       7.23rem heading block), so the image may use the viewport height less
+       19rem; the spare 1.77rem keeps it clear of the corner logo. Auto
+       width and height hold the picture's 588:723 shape, and object-fit
+       guards that shape if a browser sizes the box differently. Phones keep
+       their scrolling layout. */
+    @media (min-width: 769px) {
+      .flex-visual .slide-img[src$="flowchart.webp"] {
+        width: auto;
+        height: auto;
+        max-height: calc(100vh - 19rem);
+        object-fit: contain;
+      }
+    }
+    /* Slide 16: .scenario-match sets its own display, which beats the
+       browser's rule for the hidden attribute, so each empty chip showed as
+       a dark dash. A filled chip has no hidden attribute and is untouched. */
+    .scenario-match[hidden] { display: none; }
+
+    /* Slide 18: card headings took navy (--dark) on the blue cards, 2.20:1.
+       White on the blue card is 5.04:1. The gold card keeps navy, 6.15:1. */
+    .slide-chores .info-card.primary h3 { color: var(--light); }
+    /* Slide 18: the gold card's body text was gray, 3.33:1. --royal on the
+       gold card is 9.99:1. */
+    .slide-chores .info-card.gold-card p { color: var(--royal); }
+
+    /* Slide 18: the heading is centred here, so centre its accent rule. */
+    .slide.slide-chores h2::after { margin-left: auto; margin-right: auto; }
+
+    /* Slide 20 (DSN-10): each front title sits on a solid band along the
+       bottom edge instead of floating over the photo. White on --royal is
+       18.03:1. The band takes the card's own bottom-left corner radius. */
+    [data-chapter="5"] .danger-card-front h3 {
+      position: absolute;
+      left: 0;
+      right: 0;
+      bottom: 0;
+      margin: 0;
+      padding: 0.65rem 1rem;
+      background: var(--royal);
+      color: var(--light);
+      text-shadow: none;
+      border-radius: 0;
+      border-bottom-left-radius: inherit;
+    }
+
+    /* Slide 20: five cards in three columns left a hole in the second row.
+       Six half-width tracks keep every card the same width and centre the
+       last two. Wider than phones only, so the one- and two-column phone
+       layouts in the base styles still apply. */
+    @media (min-width: 769px) {
+      [data-chapter="5"] .dangers-grid { grid-template-columns: repeat(6, minmax(0, 1fr)); }
+      [data-chapter="5"] .danger-card { grid-column: span 2; }
+      [data-chapter="5"] .danger-card:nth-child(4) { grid-column: 2 / span 2; }
+    }
+
+    /* Slide 37: at 0.82 alpha the lettering in the background art read
+       through the quote box. Solid --royal hides it. On it the quote is
+       14.62:1 and the heading 17.05:1. */
+    .slide-closing .closing-box { background: var(--royal); }
+    /* Showcase Level 3 2026-11: the Big Rocks jar, this lesson's one
+       picture. Drawn in the page from palette colors, on the cover in
+       place of the toolbox picture, on slide 10 where the idea is taught,
+       and on the closing. Sizes inside the drawing are attributes in its
+       own units, not CSS px. */
+    .jar { display: block; overflow: visible; }
+    .jar .jar-glass { fill: rgba(255, 255, 255, 0.06); stroke: rgba(255, 255, 255, 0.7); stroke-width: 3; }
+    .jar .jar-shine { stroke: rgba(255, 255, 255, 0.25); stroke-width: 6; stroke-linecap: round; }
+    .jar .jar-lid { fill: var(--gold); }
+    .jar .jar-stone-a { fill: var(--offwhite); }
+    .jar .jar-stone-b { fill: var(--muted); }
+    .jar .jar-stone-c { fill: var(--light); }
+    .jar .jar-pebbles { fill: var(--gray); }
+    .jar .jar-grain { fill: var(--gold); }
+    .jar .jar-grain-dark { fill: var(--muted-gold); }
+    .jar .jar-sand-wash { fill: rgba(211, 178, 87, 0.22); }
+    .jar .jar-labels { font-family: var(--font-body); fill: var(--muted); }
+    .jar .jar-labels line { stroke: rgba(255, 255, 255, 0.7); stroke-width: 1.5; }
+    .jar .jar-label-head { font-family: var(--font-heading); fill: var(--light); }
+
+    /* Motion: the big rocks drop in first, the pebbles settle, then the
+       sand fills the space around them, as the lesson tells it. Once, when
+       the slide opens, on the cover and on slide 10. The closing is still.
+       With animation off (reduced motion, print) the full jar shows. */
+    @keyframes jarDrop { from { opacity: 0; transform: translateY(-220px); } 60% { opacity: 1; } to { opacity: 1; transform: none; } }
+    @keyframes jarFill { from { opacity: 0; transform: scaleY(0); } to { opacity: 1; transform: none; } }
+    @keyframes jarFade { from { opacity: 0; } to { opacity: 1; } }
+    .slide-title.active .jar-rock, .jar-slide.active .jar-rock { animation: jarDrop 0.75s cubic-bezier(0.34, 1.3, 0.64, 1) both; }
+    .slide-title.active .jar-rock-1, .jar-slide.active .jar-rock-1 { animation-delay: 0.4s; }
+    .slide-title.active .jar-rock-2, .jar-slide.active .jar-rock-2 { animation-delay: 0.6s; }
+    .slide-title.active .jar-rock-3, .jar-slide.active .jar-rock-3 { animation-delay: 0.85s; }
+    .slide-title.active .jar-rock-4, .jar-slide.active .jar-rock-4 { animation-delay: 1.05s; }
+    .slide-title.active .jar-rock-5, .jar-slide.active .jar-rock-5 { animation-delay: 1.3s; }
+    .slide-title.active .jar-pebbles, .jar-slide.active .jar-pebbles { animation: jarFade 0.4s ease-out 1.75s both; }
+    .slide-title.active .jar-sand, .jar-slide.active .jar-sand {
+      transform-box: fill-box;
+      transform-origin: 50% 100%;
+      animation: jarFill 0.8s cubic-bezier(0.16, 1, 0.3, 1) 2s both;
+    }
+    .slide-title.active .jar-labels, .jar-slide.active .jar-labels { animation: jarFade 0.6s ease-out 2.5s both; }
+
+    /* Slide 10: the jar stands where the jar picture was, on a dark panel
+       so its glass and rocks read on the light slide. */
+    .jar-panel {
+      width: 24rem; /* a set width: the drawing has no size of its own */
+      max-width: 100%;
+      padding: 1.25rem;
+      border-radius: 1rem;
+      background: linear-gradient(160deg, var(--dark), var(--royal));
+    }
+    .jar-panel .jar { width: 100%; height: auto; aspect-ratio: 600 / 570; }
+
+    /* Phones keep the closing they have. */
+    .slide-closing .jar { display: none; }
+
+    @media (min-width: 769px) {
+      /* Cover: the jar in the right-hand column, a little wider than the
+         toolbox picture had, with the PLAN THE DAY tag kept at its foot.
+         The title is sized to share the slide with it. */
+      .tm-title-lab { grid-template-columns: minmax(0, 1fr) minmax(0, 1.05fr); }
+      .slide-title h1 { font-size: 4.9rem; }
+      .tm-kicker { margin-bottom: 1.1rem; }
+      .slide.slide-title .tm-title-visual {
+        background: none;
+        border: 0;
+        border-radius: 0;
+        box-shadow: none;
+        overflow: visible;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+      }
+      .tm-title-visual .jar { width: 100%; height: auto; max-height: 100%; aspect-ratio: 600 / 570; }
+      .tm-title-visual::before { z-index: 1; }
+
+      /* Closing: the cover's ground without the faded toolbox, the jar on
+         the left, and the words on the right with the take-home line
+         largest. The order on screen is set here; the markup keeps its
+         order. The rubric button stays: it marks when the rubric is handed
+         out (Britt). Three classes out-rank the older closing rules. */
+      .slide.slide-closing {
+        background: linear-gradient(120deg, var(--royal) 0%, var(--dark) 55%, var(--primary) 100%);
+      }
+      .slide-closing .jar {
+        display: block;
+        position: absolute;
+        left: 2.5rem;
+        top: 50%;
+        width: min(31rem, calc(100% - 41rem));
+        height: auto;
+        aspect-ratio: 600 / 570;
+        transform: translateY(-50%);
+        pointer-events: none;
+      }
+      .slide.slide-closing .closing-box {
+        position: absolute;
+        top: 0;
+        bottom: 0;
+        right: 5rem;
+        width: 32rem;
+        max-width: none;
+        padding: 0;
+        border: 0;
+        border-radius: 0;
+        box-shadow: none;
+        background: none;
+        display: flex;
+        flex-direction: column;
+        justify-content: center;
+        align-items: flex-start;
+        text-align: left;
+      }
+      .slide-closing .closing-box h2 { order: 1; margin: 0; font-size: 4.6rem; line-height: 1.02; }
+      .slide-closing .closing-box .divider { order: 2; margin: 1.5rem 0; }
+      .slide-closing .closing-box p { order: 3; margin: 0; font-size: 1.5rem; line-height: 1.5; }
+      .slide-closing .closing-box h3 { order: 4; margin: 1.75rem 0 0 !important; font-size: 1.2rem !important; }
+      .slide-closing .closing-box .download-btn { order: 5; margin-top: 1.25rem !important; }
     }
   </style>
-    <style id="fit-to-slide-guard">
-      @media (min-width: 769px) and (max-height: 900px) {
-        .slide { overflow: hidden; }
-        .slide:not(.slide-title):not(.slide-section):not(.slide-closing):not(.big-statement) {
-          padding-top: clamp(1rem, 2vh, 2rem);
-          padding-bottom: 5.25rem;
-        }
-        .slide h2 {
-          font-size: clamp(2.2rem, 4.2vw, 3.5rem);
-          margin-bottom: clamp(0.75rem, 1.5vh, 1.5rem);
-        }
-        .slide-video {
-          padding-top: 1rem;
-          padding-bottom: 4.75rem;
-        }
-        .slide-video h2 {
-          font-size: clamp(1.4rem, 2vw, 2rem);
-          margin-bottom: 0.75rem;
-        }
-        .video-container,
-        .video-wrapper {
-          max-height: 62vh;
-        }
-        .video-wrapper video,
-        .local-video {
-          max-height: 58vh;
-          object-fit: contain;
-        }
-        .cards-grid,
-        .takeaways,
-        .smart-stack,
-        .matrix-grid,
-        .areas-grid,
-        .dangers-grid {
-          min-height: 0;
-        }
-        .card {
-          padding-top: clamp(1rem, 2vh, 1.6rem);
-          padding-bottom: clamp(1rem, 2vh, 1.6rem);
-        }
-        .card p,
-        .takeaway-item p,
-        .content-list li {
-          font-size: clamp(1rem, 1.6vw, 1.35rem);
-          line-height: 1.35;
-        }
-        .activity-box,
-        .download-resource {
-          margin-top: clamp(0.75rem, 1.8vh, 1.5rem);
-        }
-        .day-map-layout {
-          gap: 1.25rem;
-        }
-        .day-clock {
-          max-width: 340px;
-          justify-self: center;
-        }
-        .day-clock strong {
-          font-size: clamp(4rem, 8vw, 6rem);
-        }
-        .big-statement {
-          padding-top: 2.5rem;
-          padding-bottom: 5.25rem;
-        }
-        .big-statement h2 {
-          font-size: clamp(2.2rem, 4.5vw, 4.1rem);
-          line-height: 1.1;
-        }
-        .big-statement[data-sidebar-title="Optimize Your Time"] h2 {
-          max-width: 980px;
-          padding: 1.15rem 1.6rem;
-        }
-        .big-statement p.mt-15 {
-          margin-top: 0.75rem !important;
-          font-size: 1.2rem !important;
-        }
-        .big-statement .slide-img {
-          max-height: 24vh;
-          margin-top: 0.75rem !important;
-          object-fit: contain;
-        }
-        .slide-image-centered img {
-          max-height: 56vh;
-          width: auto;
-          object-fit: contain;
-        }
-        .dangers-grid {
-          gap: 0.8rem;
-        }
-        .danger-card {
-          min-height: 160px;
-        }
-      }
-    </style>
   </head>
 <body>
 <a href="#main-content" class="skip-link">Skip to main content</a>
@@ -2669,7 +2816,37 @@
             <a href="Handouts/SPOKES_Time_Management_Pre_and_Post_Test.pdf" target="_blank" rel="noopener noreferrer" class="download-btn tm-title-secondary-action">Pre/Post Test</a>
           </div>
         </div>
-        <div class="tm-title-visual" aria-hidden="true"></div>
+        <div class="tm-title-visual">
+          <svg class="jar" viewBox="0 70 600 570" preserveAspectRatio="xMidYMid meet" role="img" aria-label="A glass jar. The big rocks, your most important priorities, go in first; the sand, small low-priority tasks, fills in around them.">
+            <defs>
+              <pattern id="sand-cover" width="9" height="9" patternUnits="userSpaceOnUse"><circle class="jar-grain" cx="2" cy="2" r="1.3"/><circle class="jar-grain-dark" cx="6.5" cy="6" r="1"/></pattern>
+              <clipPath id="inside-cover"><path d="M150,170 Q150,140 176,132 L404,132 Q430,140 430,170 L430,560 Q430,610 380,610 L200,610 Q150,610 150,560 Z"/></clipPath>
+            </defs>
+            <g transform="translate(-100,0)">
+              <g clip-path="url(#inside-cover)">
+                <g class="jar-sand"><rect x="140" y="470" width="300" height="150" fill="url(#sand-cover)"/>
+                  <path class="jar-sand-wash" d="M150,470 Q220,452 290,470 T430,466 L430,620 L150,620 Z"/></g>
+                <path class="jar-rock jar-rock-1 jar-stone-a" d="M160,610 C150,540 190,500 238,506 C282,512 294,560 286,610 Z"/>
+                <path class="jar-rock jar-rock-2 jar-stone-b" d="M276,610 C272,548 306,512 352,514 C402,516 432,560 424,610 Z"/>
+                <path class="jar-rock jar-rock-3 jar-stone-b" d="M186,500 C176,440 214,398 262,404 C306,410 318,452 304,500 C280,520 214,520 186,500 Z"/>
+                <path class="jar-rock jar-rock-4 jar-stone-a" d="M300,498 C292,444 326,408 372,414 C414,420 428,462 414,500 C390,516 326,516 300,498 Z"/>
+                <path class="jar-rock jar-rock-5 jar-stone-c" d="M232,404 C226,352 258,320 298,326 C336,332 348,368 336,404 C312,420 256,420 232,404 Z"/>
+                <g class="jar-pebbles"><circle cx="176" cy="456" r="11"/><circle cx="420" cy="440" r="9"/><circle cx="350" cy="350" r="10"/><circle cx="208" cy="372" r="8"/><circle cx="270" cy="584" r="9"/></g>
+              </g>
+              <path class="jar-glass" d="M150,170 Q150,140 176,132 L404,132 Q430,140 430,170 L430,560 Q430,610 380,610 L200,610 Q150,610 150,560 Z"/>
+              <path class="jar-shine" d="M170,152 L170,560"/>
+              <rect class="jar-lid" x="166" y="92" width="248" height="42" rx="8"/>
+            </g>
+            <g class="jar-labels">
+              <line x1="240" y1="366" x2="372" y2="300"/>
+              <text class="jar-label-head" x="380" y="290" font-size="34">Big rocks</text>
+              <text x="380" y="322" font-size="24">your most</text><text x="380" y="350" font-size="24">important</text><text x="380" y="378" font-size="24">priorities, first</text>
+              <line x1="330" y1="566" x2="372" y2="566"/>
+              <text class="jar-label-head" x="380" y="560" font-size="34">Sand</text>
+              <text x="380" y="592" font-size="24">small, low-</text><text x="380" y="620" font-size="24">priority tasks</text>
+            </g>
+          </svg>
+        </div>
       </div>
       <p class="copyright">Copyright &copy; 2026 WV Adult Basic Education</p>
     </section>
@@ -2794,7 +2971,7 @@
     <section class="slide" data-chapter="3">
       <h2>What Are Priorities?</h2>
       <div class="flex-row">
-        <div class="flex-text" style="min-width:280px;">
+        <div class="flex-text" style="min-width:17.5rem;">
           <p class="body-lg mb-15"><span class="highlight">Priorities</span> are things that are more important than others and need to be dealt with first — the ranking of something's importance.</p>
           <p class="body-lg">Priorities establish the <span class="accent">sequence</span> in which things should be done.</p>
           <div class="activity-box mt-15">
@@ -2803,7 +2980,7 @@
           </div>
         </div>
         <div class="flex-visual">
-          <img src="images/priorities-clipboard.webp" alt="Clipboard with the word Priorities written on it, representing the act of listing and ranking important tasks" loading="lazy" class="slide-img" style="max-width:430px;">
+          <img src="images/priorities-clipboard.webp" alt="Clipboard with the word Priorities written on it, representing the act of listing and ranking important tasks" loading="lazy" class="slide-img" style="max-width:26.875rem;">
         </div>
       </div>
     </section>
@@ -2824,11 +3001,41 @@
     </section>
 
     <!-- Slide 10: Big Rocks Content + Worksheet -->
-    <section class="slide" data-chapter="3">
+    <section class="slide jar-slide" data-chapter="3" style="--fit: 0.99">
       <h2>The Big Rocks of Time</h2>
       <div class="flex-row">
         <div class="flex-visual">
-          <img src="images/big-rocks.webp" alt="Diagram showing a jar filled first with big rocks, then pebbles, then sand — illustrating the priority metaphor" loading="lazy" class="slide-img" style="max-width:440px;">
+          <div class="jar-panel">
+            <svg class="jar" viewBox="0 70 600 570" preserveAspectRatio="xMidYMid meet" role="img" aria-label="Diagram showing a jar filled first with big rocks, then pebbles, then sand, illustrating the priority metaphor">
+              <defs>
+                <pattern id="sand-lesson" width="9" height="9" patternUnits="userSpaceOnUse"><circle class="jar-grain" cx="2" cy="2" r="1.3"/><circle class="jar-grain-dark" cx="6.5" cy="6" r="1"/></pattern>
+                <clipPath id="inside-lesson"><path d="M150,170 Q150,140 176,132 L404,132 Q430,140 430,170 L430,560 Q430,610 380,610 L200,610 Q150,610 150,560 Z"/></clipPath>
+              </defs>
+              <g transform="translate(-100,0)">
+                <g clip-path="url(#inside-lesson)">
+                  <g class="jar-sand"><rect x="140" y="470" width="300" height="150" fill="url(#sand-lesson)"/>
+                    <path class="jar-sand-wash" d="M150,470 Q220,452 290,470 T430,466 L430,620 L150,620 Z"/></g>
+                  <path class="jar-rock jar-rock-1 jar-stone-a" d="M160,610 C150,540 190,500 238,506 C282,512 294,560 286,610 Z"/>
+                  <path class="jar-rock jar-rock-2 jar-stone-b" d="M276,610 C272,548 306,512 352,514 C402,516 432,560 424,610 Z"/>
+                  <path class="jar-rock jar-rock-3 jar-stone-b" d="M186,500 C176,440 214,398 262,404 C306,410 318,452 304,500 C280,520 214,520 186,500 Z"/>
+                  <path class="jar-rock jar-rock-4 jar-stone-a" d="M300,498 C292,444 326,408 372,414 C414,420 428,462 414,500 C390,516 326,516 300,498 Z"/>
+                  <path class="jar-rock jar-rock-5 jar-stone-c" d="M232,404 C226,352 258,320 298,326 C336,332 348,368 336,404 C312,420 256,420 232,404 Z"/>
+                  <g class="jar-pebbles"><circle cx="176" cy="456" r="11"/><circle cx="420" cy="440" r="9"/><circle cx="350" cy="350" r="10"/><circle cx="208" cy="372" r="8"/><circle cx="270" cy="584" r="9"/></g>
+                </g>
+                <path class="jar-glass" d="M150,170 Q150,140 176,132 L404,132 Q430,140 430,170 L430,560 Q430,610 380,610 L200,610 Q150,610 150,560 Z"/>
+                <path class="jar-shine" d="M170,152 L170,560"/>
+                <rect class="jar-lid" x="166" y="92" width="248" height="42" rx="8"/>
+              </g>
+              <g class="jar-labels">
+                <line x1="240" y1="366" x2="372" y2="300"/>
+                <text class="jar-label-head" x="380" y="290" font-size="34">Big rocks</text>
+                <text x="380" y="322" font-size="24">your most</text><text x="380" y="350" font-size="24">important</text><text x="380" y="378" font-size="24">priorities, first</text>
+                <line x1="330" y1="566" x2="372" y2="566"/>
+                <text class="jar-label-head" x="380" y="560" font-size="34">Sand</text>
+                <text x="380" y="592" font-size="24">small, low-</text><text x="380" y="620" font-size="24">priority tasks</text>
+              </g>
+            </svg>
+          </div>
         </div>
         <div class="flex-text">
           <p class="body-md mb-1">If you fill your jar with <strong>sand</strong> first, there's no room for the big rocks. The sand represents small, low-priority tasks.</p>
@@ -2845,7 +3052,7 @@
     <section class="slide big-statement" data-chapter="3">
       <h2>You've identified your priorities...<br><span class="accent">Now what?</span></h2>
       <p style="font-size:1.5rem;color:var(--gray);" class="mt-15">Now you need a <span class="gold-emphasis">system</span> to dedicate time to each one. Never fear — we've got the tools!</p>
-      <img src="images/toolbox.webp" alt="Time Management Tool Box illustration showing a toolbox packed with time management resources and strategies" loading="lazy" class="slide-img mt-15" style="max-width:320px;">
+      <img src="images/toolbox.webp" alt="Time Management Tool Box illustration showing a toolbox packed with time management resources and strategies" loading="lazy" class="slide-img mt-15" style="max-width:20rem;">
     </section>
 
     <!-- ======================== -->
@@ -2863,7 +3070,7 @@
     <!-- Slide 13: SMART Goals -->
     <section class="slide slide-image-centered" data-chapter="4">
       <h2>Set SMART Goals</h2>
-      <img src="images/smarter-goals.webp" alt="SMARTER Goal Setting reference table showing criteria for Specific, Measurable, Achievable, Relevant, Time-bound, Evaluate, and Readjust goals" loading="lazy">
+      <img src="images/smarter-goals.webp" alt="SMARTER Goal Setting reference table showing criteria for Specific, Measurable, Achievable, Relevant, Time-bound, Evaluated, and Reviewed goals" loading="lazy">
     </section>
 
     <!-- Slide 14: Flow Chart -->
@@ -2879,7 +3086,7 @@
           </div>
         </div>
         <div class="flex-visual">
-          <img src="images/flowchart.webp" alt="SPOKES-branded priority flowchart showing a decision-tree process for determining which tasks to tackle first each day" loading="lazy" class="slide-img" style="max-width:560px;">
+          <img src="images/flowchart.webp" alt="SPOKES-branded priority flowchart showing a decision-tree process for determining which tasks to tackle first each day" loading="lazy" class="slide-img" style="max-width:35rem;">
         </div>
       </div>
     </section>
@@ -2913,7 +3120,7 @@
     </section>
 
     <!-- Slide 16: QA INTERACTIVE — Matching Game: Task Classification -->
-    <section class="slide slide-matching-game" data-chapter="4">
+    <section class="slide slide-matching-game" data-chapter="4" style="--fit: 0.92;">
       <h2>Match the Task to the Action</h2>
       <p class="slide-subtext">Read a scenario, choose its Eisenhower action, then defend the match as a class.</p>
       <div class="matching-game" data-matching-game>
@@ -3048,7 +3255,7 @@
     </section>
 
     <!-- Slide 20: Dangers Overview -->
-    <section class="slide" data-chapter="5">
+    <section class="slide" data-chapter="5" style="--fit: 0.99">
       <h2>Time Management Dangers</h2>
       <p class="slide-subtext" style="margin-bottom:0.75rem;">Despite our best efforts, these challenges sabotage our time. Select each card to reveal the tip.</p>
       <div class="dangers-grid">
@@ -3154,7 +3361,7 @@
       <h2>Procrastination</h2>
       <div class="flex-row">
         <div class="flex-visual">
-          <img src="images/procrastination-cycle.webp" alt="Procrastination Cycle diagram showing the loop of procrastinating, making excuses, feeling guilty, panicking, and repeating" loading="lazy" class="slide-img" style="max-width:430px;">
+          <img src="images/procrastination-cycle.webp" alt="Procrastination Cycle diagram showing the loop of procrastinating, making excuses, feeling guilty, panicking, and repeating" loading="lazy" class="slide-img" style="max-width:26.875rem;">
         </div>
         <div class="flex-text">
           <p class="body-lg mb-1"><span class="highlight">Procrastination</span> is the act of putting off something until a later time.</p>
@@ -3245,7 +3452,7 @@
           </div>
         </div>
         <div class="flex-visual" style="flex-direction:column;gap:0.5rem;">
-          <img src="images/seven-ways-say-no.webp" alt="7 Ways to Say No infographic listing polite and effective phrases for declining requests without guilt" loading="lazy" class="slide-img" style="max-width:520px;">
+          <img src="images/seven-ways-say-no.webp" alt="7 Ways to Say No infographic listing polite and effective phrases for declining requests without guilt" loading="lazy" class="slide-img" style="max-width:32.5rem;">
         </div>
       </div>
     </section>
@@ -3338,7 +3545,7 @@
     </section>
 
     <!-- Slide 32: QA INTERACTIVE — Checkpoint -->
-    <section class="slide" data-chapter="6">
+    <section class="slide" data-chapter="6" style="--fit: 0.91;">
       <h2>Quick Check</h2>
       <p class="slide-subtext">Select the best answer, then discuss as a class</p>
       <div class="checkpoint-box">
@@ -3357,7 +3564,7 @@
     </section>
 
     <!-- Slide 33: Self-Assessment Debrief -->
-    <section class="slide" data-chapter="6">
+    <section class="slide" data-chapter="6" style="--fit: 0.98">
       <h2>Assessment Debrief</h2>
       <p class="slide-subtext">After completing the paper self-assessment — let's discuss what you found</p>
       <div class="debrief-path">
@@ -3451,6 +3658,35 @@
     <!-- Slide 37: Closing -->
     <section class="slide slide-closing" data-chapter="7" id="closingSlide">
       <div class="confetti-container" id="confettiContainer"></div>
+      <svg class="jar" viewBox="0 70 600 570" preserveAspectRatio="xMidYMid meet" role="img" aria-label="A glass jar. The big rocks, your most important priorities, go in first; the sand, small low-priority tasks, fills in around them.">
+        <defs>
+          <pattern id="sand-closing" width="9" height="9" patternUnits="userSpaceOnUse"><circle class="jar-grain" cx="2" cy="2" r="1.3"/><circle class="jar-grain-dark" cx="6.5" cy="6" r="1"/></pattern>
+          <clipPath id="inside-closing"><path d="M150,170 Q150,140 176,132 L404,132 Q430,140 430,170 L430,560 Q430,610 380,610 L200,610 Q150,610 150,560 Z"/></clipPath>
+        </defs>
+        <g transform="translate(-100,0)">
+          <g clip-path="url(#inside-closing)">
+            <g class="jar-sand"><rect x="140" y="470" width="300" height="150" fill="url(#sand-closing)"/>
+              <path class="jar-sand-wash" d="M150,470 Q220,452 290,470 T430,466 L430,620 L150,620 Z"/></g>
+            <path class="jar-rock jar-rock-1 jar-stone-a" d="M160,610 C150,540 190,500 238,506 C282,512 294,560 286,610 Z"/>
+            <path class="jar-rock jar-rock-2 jar-stone-b" d="M276,610 C272,548 306,512 352,514 C402,516 432,560 424,610 Z"/>
+            <path class="jar-rock jar-rock-3 jar-stone-b" d="M186,500 C176,440 214,398 262,404 C306,410 318,452 304,500 C280,520 214,520 186,500 Z"/>
+            <path class="jar-rock jar-rock-4 jar-stone-a" d="M300,498 C292,444 326,408 372,414 C414,420 428,462 414,500 C390,516 326,516 300,498 Z"/>
+            <path class="jar-rock jar-rock-5 jar-stone-c" d="M232,404 C226,352 258,320 298,326 C336,332 348,368 336,404 C312,420 256,420 232,404 Z"/>
+            <g class="jar-pebbles"><circle cx="176" cy="456" r="11"/><circle cx="420" cy="440" r="9"/><circle cx="350" cy="350" r="10"/><circle cx="208" cy="372" r="8"/><circle cx="270" cy="584" r="9"/></g>
+          </g>
+          <path class="jar-glass" d="M150,170 Q150,140 176,132 L404,132 Q430,140 430,170 L430,560 Q430,610 380,610 L200,610 Q150,610 150,560 Z"/>
+          <path class="jar-shine" d="M170,152 L170,560"/>
+          <rect class="jar-lid" x="166" y="92" width="248" height="42" rx="8"/>
+        </g>
+        <g class="jar-labels">
+          <line x1="240" y1="366" x2="372" y2="300"/>
+          <text class="jar-label-head" x="380" y="290" font-size="34">Big rocks</text>
+          <text x="380" y="322" font-size="24">your most</text><text x="380" y="350" font-size="24">important</text><text x="380" y="378" font-size="24">priorities, first</text>
+          <line x1="330" y1="566" x2="372" y2="566"/>
+          <text class="jar-label-head" x="380" y="560" font-size="34">Sand</text>
+          <text x="380" y="592" font-size="24">small, low-</text><text x="380" y="620" font-size="24">priority tasks</text>
+        </g>
+      </svg>
       <div class="closing-box">
         <h3 style="color: var(--light); font-size: 1.5rem; margin-bottom: 1.5rem;">Congratulations, you have completed this lesson!</h3>
         <p>"This is the beginning of a new day. You have been given this day to use as you will. What you do today is important because you are exchanging a day of your life for it."</p>
@@ -3698,6 +3934,19 @@
     const isFormField = target && target.closest('input, textarea, select, [contenteditable="true"]');
     if (isFormField) return;
     if (e.defaultPrevented) return;
+    // Presenter remotes: PageDown/PageUp step one slide, Home/End jump to the
+    // first/last. Left to the browser when a modifier is held, or when focus
+    // is in a video, a tablist or editable text (form fields returned above).
+    if (e.key === 'PageDown' || e.key === 'PageUp' || e.key === 'Home' || e.key === 'End') {
+      if (e.ctrlKey || e.altKey || e.metaKey) return;
+      if (target && (target.isContentEditable || target.closest('video, [role="tab"], [role="tablist"]'))) return;
+      e.preventDefault();
+      if (e.key === 'PageDown') nextSlide();
+      else if (e.key === 'PageUp') prevSlide();
+      else if (e.key === 'Home') showSlide(0);
+      else showSlide(slides.length - 1);
+      return;
+    }
     // Only suppress arrow keys for elements that use them internally (tabs)
     const usesArrowKeys = target && target.closest('[role="tab"]');
     if (usesArrowKeys && (e.key === 'ArrowRight' || e.key === 'ArrowLeft')) return;

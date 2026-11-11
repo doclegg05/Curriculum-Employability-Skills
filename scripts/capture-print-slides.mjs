@@ -13,8 +13,9 @@ import {
 } from "./print-slides-lib.mjs";
 
 const root = path.resolve(path.dirname(fileURLToPath(import.meta.url)), "..");
-// One pixel taller than the lessons' short-screen layout, @media (max-height: 900px),
-// which squeezes cards until their text is clipped. 901 keeps the 16:9 proportions.
+// 1600 by 901 was chosen to sit one pixel above the lessons' old short-screen
+// layout. That layout is gone (a room-scale lesson is laid out alike on every
+// 16:9 screen); the size stays so the pictures keep their dimensions.
 const VIEWPORT = Object.freeze({ width: 1600, height: 901 });
 const DEVICE_SCALE = 1.5;
 const JPEG_QUALITY = 82;

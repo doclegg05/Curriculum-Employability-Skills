@@ -9,6 +9,7 @@ import {COORDINATOR_NOTE, COORDINATOR_AGREE} from '../bespoke/coordinator-note.m
 import {browserType} from './bespoke-test-browser.mjs';
 import {clickMenuItem} from './bespoke-test-navigation.mjs';
 import {chromeControls, chromeFontSizes, recordMotion, motionSeen, motionTour} from './bespoke-test-chrome.mjs';
+import {proxyPageFile} from './bespoke-test-proxy.mjs';
 
 const server = await createDevServer({port: 0});
 const browser = await browserType.launch({headless: true});
@@ -78,7 +79,7 @@ const openHosted = async (width, height, save = () => ({status: 409, json: {ok: 
       throw new Error('Unexpected synthetic action: ' + body.action);
     }
     const {origin, referer, ...headers} = route.request().headers();
-    await route.fulfill({response: await route.fetch({url: server.baseUrl + url.pathname + url.search, headers})});
+    await proxyPageFile(route, server, {headers});
   });
   const page = await context.newPage();
   page.on('pageerror', e => errors.push(e.message));
@@ -188,10 +189,9 @@ try {
     // A host that is not localhost renders the shared-save wording; the local preview renders "Save test design".
     const context = await browser.newContext({viewport: {width: 1440, height: 900}, reducedMotion: 'reduce'});
     await context.route('http://bespoke.example.test/**', async route => {
-      const url = new URL(route.request().url());
       // The dev server only answers its own origin, so forward the request without the browser's Origin.
       const {origin, referer, ...headers} = route.request().headers();
-      await route.fulfill({response: await route.fetch({url: server.baseUrl + url.pathname + url.search, headers})});
+      await proxyPageFile(route, server, {headers});
     });
     // A hosted page stays on Lesson & team until it has a team code, so this page already has one.
     await context.addInitScript(() => {

@@ -1,0 +1,108 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<title>Get Your Priorities Straight for the Day: SPOKES Time Management</title>
+<style>
+  @font-face { font-family: "DM Serif Display"; src: url("../../fonts/dm-serif-display-latin.woff2") format("woff2"); font-display: block; }
+  @font-face { font-family: "Outfit"; src: url("../../fonts/outfit-latin.woff2") format("woff2"); font-weight: 100 900; font-display: block; }
+  :root { --font-heading: "DM Serif Display", serif; --font-body: "Outfit", sans-serif; }
+</style>
+<link rel="stylesheet" href="../spokes-handout.css">
+<style>
+  /* Get Your Priorities Straight for the Day. Same four boxes, wording and
+     reading order as the flow chart it replaces: across the top, down the
+     right, back along the bottom. Each box has a palette color on its top
+     edge and a light tint; the arrows carry the order. */
+  .handout-head h1 { font-size: 26pt; }
+  .flow {
+    flex: 1;
+    margin-top: 0.3in;
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    grid-template-rows: 1fr 1fr;
+    gap: 0.32in;
+    position: relative;
+  }
+  .box {
+    border: 1pt solid var(--line);
+    border-top: 6pt solid var(--c);
+    border-radius: 6pt;
+    background: var(--tint);
+    padding: 0.16in 0.2in;
+    display: flex;
+    flex-direction: column;
+    position: relative;
+  }
+  .box .step {
+    position: absolute;
+    top: 0.12in;
+    right: 0.14in;
+    width: 0.32in;
+    height: 0.32in;
+    border-radius: 50%;
+    background: var(--c);
+    color: var(--light);
+    display: grid;
+    place-items: center;
+    font-weight: 700;
+    font-size: 12pt;
+  }
+  .box h2 { margin: 0 0.45in 0.06in 0; font-size: 12pt; letter-spacing: 0; text-transform: none; color: var(--dark); line-height: 1.25; }
+  .box p { margin: 0; color: var(--gray); font-size: 10pt; }
+  .have { --c: var(--mauve); --tint: rgba(167, 37, 63, 0.05); }
+  .like { --c: var(--gold); --tint: rgba(211, 178, 87, 0.09); }
+  .later { --c: var(--accent); --tint: rgba(55, 181, 80, 0.07); }
+  .leftover { --c: var(--primary); --tint: rgba(0, 123, 175, 0.06); }
+  .like .step { color: var(--royal); }
+  .later .step { color: var(--royal); }
+  /* Arrows between the boxes, in the reading order. */
+  .arrow { position: absolute; width: 0.42in; height: 0.42in; fill: var(--dark); }
+  .arrow-right { left: calc(50% - 0.21in); top: calc(25% - 0.21in); }
+  .arrow-down { left: calc(75% - 0.21in); top: calc(50% - 0.21in); }
+  .arrow-left { left: calc(50% - 0.21in); top: calc(75% - 0.21in); }
+</style>
+</head>
+<body>
+<main class="handout">
+  <section class="sheet">
+    <header class="handout-head">
+      <img class="logo" src="../../SPOKES-Logo.png" alt="SPOKES, Skills for Life">
+      <h1>Get Your Priorities Straight for the Day!</h1>
+    </header>
+
+    <div class="flow">
+      <section class="box have">
+        <span class="step">1</span>
+        <h2>What do I HAVE to get done today?</h2>
+        <p>(This could include going to work, so you don&rsquo;t lose your job, taking the kids to school, going to a doctor&rsquo;s appointment, etc.)</p>
+      </section>
+      <section class="box like">
+        <span class="step">2</span>
+        <h2>What would I LIKE to get done today?</h2>
+        <p>(This could include laundry, exercise, making your family&rsquo;s favorite meal.)</p>
+      </section>
+      <section class="box leftover">
+        <span class="step">4</span>
+        <h2>If I have time leftover, what could I spend that time doing?</h2>
+        <p>(This could include self-care, relaxation, reading a book, watching TV, or even going to bed early.)</p>
+      </section>
+      <section class="box later">
+        <span class="step">3</span>
+        <h2>What could I do today that would make my week flow smoother or save me time later?</h2>
+        <p>(This could include a quick evening tidying of the house, packing lunches for tomorrow, setting the coffee maker up for the morning.)</p>
+      </section>
+      <svg class="arrow arrow-right" viewBox="0 0 24 24" aria-hidden="true"><path d="M3,9 h11 v-5 l8,8 l-8,8 v-5 h-11 z"/></svg>
+      <svg class="arrow arrow-down" viewBox="0 0 24 24" aria-hidden="true"><path d="M9,3 v11 h-5 l8,8 l8,-8 h-5 v-11 z"/></svg>
+      <svg class="arrow arrow-left" viewBox="0 0 24 24" aria-hidden="true"><path d="M21,9 h-11 v-5 l-8,8 l8,8 v-5 h11 z"/></svg>
+    </div>
+
+    <footer class="handout-foot" style="margin-top: 0.3in">
+      <span><strong>SPOKES</strong> Time Management &middot; Priorities Flow Chart</span>
+      <span>Copyright &copy; 2026 WV Adult Basic Education</span>
+    </footer>
+  </section>
+</main>
+<script src="../lines.js"></script>
+</body>
+</html>

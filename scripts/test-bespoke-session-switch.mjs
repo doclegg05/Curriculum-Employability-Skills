@@ -7,6 +7,7 @@ import {createDevServer} from './bespoke-dev-server.mjs';
 import {browserType} from './bespoke-test-browser.mjs';
 import catalog from '../bespoke/builder-catalog.json' with {type: 'json'};
 import {defaultDesign} from '../bespoke/builder-model.mjs';
+import {proxyPageFile} from './bespoke-test-proxy.mjs';
 
 const EDIT = 'K7QX-M3PD', VIEW = 'V3WQ-8RTN', OTHER = 'R4TW-9HNC';
 const SESSION_KEY = 'bespoke-team-session-v2';
@@ -48,7 +49,7 @@ async function scenario(name, seed, run) {
         if (body.action === 'status') return route.fulfill({json: {ok: true, status: 'processing', runId: null}});
         throw new Error('Unexpected synthetic action: ' + body.action);
       }
-      return route.fulfill({response: await route.fetch({url: server.baseUrl + u.pathname + u.search, headers: {...route.request().headers(), origin: server.baseUrl}})});
+      return proxyPageFile(route, server);
     });
     await run(context, calls, async (hash = '') => {
       const page = await context.newPage();

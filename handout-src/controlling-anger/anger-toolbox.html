@@ -1,0 +1,234 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<title>Anger Management Toolbox: SPOKES Controlling Anger</title>
+<style>
+  @font-face { font-family: "Vollkorn"; src: url("../../fonts/vollkorn-latin.woff2") format("woff2"); font-weight: 400 700; font-display: block; }
+  @font-face { font-family: "Fira Sans"; src: url("../../fonts/fira-sans-400-latin.woff2") format("woff2"); font-weight: 400; font-display: block; }
+  @font-face { font-family: "Fira Sans"; src: url("../../fonts/fira-sans-500-latin.woff2") format("woff2"); font-weight: 500; font-display: block; }
+  @font-face { font-family: "Fira Sans"; src: url("../../fonts/fira-sans-600-latin.woff2") format("woff2"); font-weight: 600 700; font-display: block; }
+  :root { --font-heading: "Vollkorn", serif; --font-body: "Fira Sans", sans-serif; }
+</style>
+<link rel="stylesheet" href="../spokes-handout.css">
+<style>
+  /* Anger Management Toolbox. Myths, timeout plan, self-talk and the
+     thermometer worksheet are SPOKES wording approved by Britt 2026-11-10;
+     the fair-fighting rules, 12 techniques and thermometer stages are the
+     lesson slides' own wording. */
+  .handout-head h1 { font-weight: 700; font-size: 26pt; }
+  .sheet > .body { gap: 0.2in; }
+  .body p { margin: 0; }
+  .page-title { margin: 0; font-weight: 700; font-size: 20pt; }
+  .page-title + p { color: var(--gray); font-style: italic; margin-top: -0.12in; }
+
+  .myths { display: grid; gap: 0.16in; }
+  .myth { display: grid; grid-template-columns: 2.35in 1fr; border: 1pt solid var(--line); border-radius: 6pt; overflow: hidden; }
+  .myth > div { padding: 0.12in 0.16in; }
+  .myth .m { background: #f8eef0; }
+  .myth .t { background: #eef7f0; }
+  .myth .tag { display: block; font-size: 8.5pt; font-weight: 700; letter-spacing: 0.14em; text-transform: uppercase; margin-bottom: 0.04in; }
+  .myth .m .tag { color: var(--mauve); }
+  .myth .t .tag { color: #1f7a33; }
+  .myth .m p { font-family: var(--font-heading); font-weight: 700; font-size: 12.5pt; color: var(--dark); line-height: 1.3; }
+  .myth .t p { line-height: 1.45; }
+
+  .rules { list-style: none; margin: 0; padding: 0; display: grid; grid-template-columns: 1fr 1fr; gap: 0.34in 0.3in; font-size: 12pt; line-height: 1.45; }
+  .rules li { display: grid; grid-template-columns: 0.42in 1fr; column-gap: 0.1in; align-items: start; }
+  .rules .num { width: 0.44in; height: 0.44in; border-radius: 50%; background: var(--dark); color: var(--light); display: grid; place-items: center; font-family: var(--font-heading); font-weight: 700; font-size: 13pt; }
+  .rules b { display: block; color: var(--dark); font-family: var(--font-heading); font-size: 14pt; margin-bottom: 0.02in; }
+  .rules li { grid-template-columns: 0.5in 1fr; }
+  .timeout { --panel-edge: var(--accent); line-height: 1.5; font-size: 12pt; }
+  .timeout h2 { margin-bottom: 0.06in; }
+
+  .ways { display: grid; grid-template-columns: 1fr 1fr; gap: 0.22in; font-size: 12pt; }
+  .way { border-top: 4pt solid var(--edge); background: var(--muted); border-radius: 0 0 6pt 6pt; padding: 0.16in 0.2in; }
+  .way h3 { margin: 0 0 0.1in; font-weight: 700; font-size: 15pt; }
+  .way ul { margin: 0; padding-left: 0.16in; display: grid; gap: 0.12in; line-height: 1.45; }
+  .way li::marker { color: var(--edge); }
+  .way li b { color: var(--dark); }
+  .self-talk { --panel-edge: var(--gold); }
+  .self-talk ul { list-style: none; margin: 0; padding: 0; display: grid; grid-template-columns: 1fr 1fr; gap: 0.08in 0.2in; }
+  .self-talk li { font-family: var(--font-heading); font-size: 15pt; color: var(--dark); }
+
+  .thermo { display: grid; grid-template-columns: 1.15in 1fr; gap: 0.2in; }
+  .thermo svg { width: 1.15in; height: 6in; display: block; }
+  .zones { display: grid; grid-template-rows: repeat(3, 1fr); gap: 0.12in; }
+  .zone { border-left: 5pt solid var(--edge); background: var(--tint); border-radius: 0 6pt 6pt 0; padding: 0.08in 0.16in; display: grid; gap: 0.03in; align-content: start; }
+  .zone h3 { margin: 0; font-weight: 700; font-size: 14pt; }
+  .zone .eg { color: var(--gray); font-style: italic; font-size: 10pt; }
+  .zone .field .label { font-weight: 600; color: var(--dark); }
+  .plan { display: grid; grid-template-columns: 1fr 1fr; gap: 0.1in 0.3in; }
+</style>
+</head>
+<body>
+<main class="handout">
+  <!-- Page 1: myths -->
+  <section class="sheet">
+    <header class="handout-head">
+      <img class="logo" src="../../SPOKES-Logo.png" alt="SPOKES, Skills for Life">
+      <h1>Anger Management Toolbox</h1>
+    </header>
+    <div class="body">
+      <h2 class="page-title">Five Myths About Anger</h2>
+      <div class="myths">
+        <div class="myth"><div class="m"><span class="tag">Myth</span><p>Hitting a pillow or punching bag gets the anger out.</p></div><div class="t"><span class="tag">Truth</span><p>It feels good for a moment, but it trains your brain to link anger with hitting. Calming your body works better.</p></div></div>
+        <div class="myth"><div class="m"><span class="tag">Myth</span><p>If I don't tell people off, they'll walk all over me.</p></div><div class="t"><span class="tag">Truth</span><p>You can stand up for yourself calmly. Calm and clear comes across as strong.</p></div></div>
+        <div class="myth"><div class="m"><span class="tag">Myth</span><p>Holding back what I think in the moment is dishonest.</p></div><div class="t"><span class="tag">Truth</span><p>Anger clouds judgment, so words said in anger often aim to hurt, not to explain. Waiting until you're calm lets you say what you actually mean.</p></div></div>
+        <div class="myth"><div class="m"><span class="tag">Myth</span><p>Anger is a bad emotion.</p></div><div class="t"><span class="tag">Truth</span><p>Anger is a normal feeling. It can warn you that something is wrong and give you energy to fix it. What you do with it is what matters.</p></div></div>
+        <div class="myth"><div class="m"><span class="tag">Myth</span><p>I can't control my anger.</p></div><div class="t"><span class="tag">Truth</span><p>Anger builds in stages, and you can step in at each one. Like any skill, it gets easier with practice.</p></div></div>
+      </div>
+    </div>
+    <footer class="handout-foot">
+      <span><strong>SPOKES</strong> Controlling Anger &middot; Anger Management Toolbox</span>
+      <span>Copyright &copy; 2026 WV Adult Basic Education</span>
+    </footer>
+  </section>
+
+  <!-- Page 2: fair fighting and the timeout plan -->
+  <section class="sheet">
+    <div class="body" style="margin-top: 0">
+      <h2 class="page-title">10 Rules for Fair Fighting</h2>
+      <p>The goal is resolution, not victory.</p>
+      <ol class="rules">
+        <li><span class="num">1</span><p><b>No name-calling.</b>Attack the problem, not the person.</p></li>
+        <li><span class="num">6</span><p><b>Use &ldquo;I&rdquo; statements.</b>&ldquo;I feel...&rdquo; instead of &ldquo;You always...&rdquo;</p></li>
+        <li><span class="num">2</span><p><b>No bringing up the past.</b>Stay focused on the current issue.</p></li>
+        <li><span class="num">7</span><p><b>No threats or ultimatums.</b>Seek resolution, not surrender.</p></li>
+        <li><span class="num">3</span><p><b>No yelling or intimidation.</b>Keep your voice calm and level.</p></li>
+        <li><span class="num">8</span><p><b>Be willing to compromise.</b>Winning is less important than resolving.</p></li>
+        <li><span class="num">4</span><p><b>Take turns speaking.</b>Listen as much as you talk.</p></li>
+        <li><span class="num">9</span><p><b>Acknowledge feelings.</b>Validate the other person&rsquo;s emotions.</p></li>
+        <li><span class="num">5</span><p><b>Take a timeout if needed.</b>Walk away, cool down, come back.</p></li>
+        <li><span class="num">10</span><p><b>End with a plan.</b>Agree on next steps before parting.</p></li>
+      </ol>
+      <section class="panel timeout">
+        <h2>Making a timeout plan</h2>
+        <p>Agree on a signal that means "timeout." Agree on how long: long enough to calm down, usually 20 minutes to an hour. Do something calming, not something that adds fuel. Come back and finish the conversation.</p>
+      </section>
+    </div>
+    <footer class="handout-foot">
+      <span><strong>SPOKES</strong> Controlling Anger &middot; Anger Management Toolbox</span>
+      <span>Copyright &copy; 2026 WV Adult Basic Education</span>
+    </footer>
+  </section>
+
+  <!-- Page 3: calm-down tools -->
+  <section class="sheet">
+    <div class="body" style="margin-top: 0">
+      <h2 class="page-title">Calm-Down Tools</h2>
+      <div class="ways">
+        <section class="way" style="--edge: var(--primary)">
+          <h3>Physical Techniques</h3>
+          <ul>
+            <li><b>Deep breathing:</b> Inhale for 4 counts, hold 4, exhale 8. Repeat until calm.</li>
+            <li><b>Progressive muscle relaxation:</b> Tense and release each muscle group, head to toe.</li>
+            <li><b>Physical exercise:</b> Walk, run, or stretch to burn off adrenaline and cortisol.</li>
+          </ul>
+        </section>
+        <section class="way" style="--edge: var(--accent)">
+          <h3>Mental Techniques</h3>
+          <ul>
+            <li><b>Cognitive reframing:</b> Challenge angry thoughts. Is there another explanation?</li>
+            <li><b>Counting to ten:</b> Simple but effective &mdash; gives your rational brain time to catch up.</li>
+            <li><b>Visualization:</b> Picture a calm place or a positive outcome to the situation.</li>
+          </ul>
+        </section>
+        <section class="way" style="--edge: var(--muted-gold)">
+          <h3>Social Techniques</h3>
+          <ul>
+            <li><b>Talk it out:</b> Share your feelings with a trusted friend, family member, or counselor.</li>
+            <li><b>Use humor:</b> Lighten the mood (without sarcasm) to defuse tension.</li>
+            <li><b>Set boundaries:</b> Remove yourself from toxic situations or relationships when needed.</li>
+          </ul>
+        </section>
+        <section class="way" style="--edge: var(--mauve)">
+          <h3>Mindfulness Techniques</h3>
+          <ul>
+            <li><b>Grounding (5-4-3-2-1):</b> Name 5 things you see, 4 you touch, 3 you hear, 2 you smell, 1 you taste.</li>
+            <li><b>Journaling:</b> Write down your feelings to process and release them.</li>
+            <li><b>Meditation:</b> Even 5 minutes of focused breathing can reset your emotional state.</li>
+          </ul>
+        </section>
+      </div>
+      <section class="panel self-talk">
+        <h2>Things to say to yourself</h2>
+        <ul>
+          <li>&ldquo;This will pass.&rdquo;</li>
+          <li>&ldquo;I can handle this.&rdquo;</li>
+          <li>&ldquo;I don&rsquo;t have to answer right now.&rdquo;</li>
+          <li>&ldquo;I&rsquo;ll come back to this when I&rsquo;m calm.&rdquo;</li>
+        </ul>
+      </section>
+    </div>
+    <footer class="handout-foot">
+      <span><strong>SPOKES</strong> Controlling Anger &middot; Anger Management Toolbox</span>
+      <span>Copyright &copy; 2026 WV Adult Basic Education</span>
+    </footer>
+  </section>
+
+  <!-- Page 4: thermometer worksheet and timeout plan -->
+  <section class="sheet">
+    <div class="body" style="margin-top: 0">
+      <h2 class="page-title">My Anger Thermometer</h2>
+      <div class="name-row">
+        <div class="field"><span class="label">Name:</span><span class="rule"></span></div>
+        <div class="field"><span class="label">Date:</span><span class="rule"></span></div>
+      </div>
+      <div class="thermo">
+        <svg viewBox="0 0 110 580" role="img" aria-label="A thermometer, cool at the bottom and boiling at the top.">
+          <defs>
+            <linearGradient id="heat" x1="0" y1="1" x2="0" y2="0">
+              <stop offset="0" stop-color="#37b550"/>
+              <stop offset="0.5" stop-color="#d3b257"/>
+              <stop offset="1" stop-color="#a7253f"/>
+            </linearGradient>
+          </defs>
+          <rect x="34" y="8" width="42" height="500" rx="21" fill="#ffffff" stroke="#004071" stroke-width="4"/>
+          <rect x="45" y="22" width="20" height="490" rx="10" fill="url(#heat)"/>
+          <circle cx="55" cy="530" r="40" fill="#37b550" stroke="#004071" stroke-width="4"/>
+          <g stroke="#004071" stroke-width="3">
+            <line x1="76" y1="180" x2="96" y2="180"/>
+            <line x1="76" y1="346" x2="96" y2="346"/>
+          </g>
+        </svg>
+        <div class="zones">
+          <section class="zone" style="--edge: var(--mauve); --tint: #f8eef0">
+            <h3>Boiling</h3>
+            <p class="eg">clenched fists, can&rsquo;t hear the other person</p>
+            <div class="field"><span class="label">My warning signs:</span><span class="rule"></span></div><div class="lines" style="--n: 1; margin-top: 0"></div>
+            <div class="field"><span class="label">What I will do:</span><span class="rule"></span></div><div class="lines" style="--n: 1; margin-top: 0"></div>
+          </section>
+          <section class="zone" style="--edge: var(--gold); --tint: #faf4e3">
+            <h3>Rising</h3>
+            <p class="eg">louder voice, racing heart, pacing</p>
+            <div class="field"><span class="label">My warning signs:</span><span class="rule"></span></div><div class="lines" style="--n: 1; margin-top: 0"></div>
+            <div class="field"><span class="label">What I will do:</span><span class="rule"></span></div><div class="lines" style="--n: 1; margin-top: 0"></div>
+          </section>
+          <section class="zone" style="--edge: var(--accent); --tint: #eef7f0">
+            <h3>Early</h3>
+            <p class="eg">tight jaw, warm face, shorter answers</p>
+            <div class="field"><span class="label">My warning signs:</span><span class="rule"></span></div><div class="lines" style="--n: 1; margin-top: 0"></div>
+            <div class="field"><span class="label">What I will do:</span><span class="rule"></span></div><div class="lines" style="--n: 1; margin-top: 0"></div>
+          </section>
+        </div>
+      </div>
+      <section class="panel timeout">
+        <h2>My timeout plan</h2>
+        <div class="plan">
+          <div class="field"><span class="label">My signal:</span><span class="rule"></span></div>
+          <div class="field"><span class="label">How long:</span><span class="rule"></span></div>
+          <div class="field"><span class="label">What I'll do to calm down:</span><span class="rule"></span></div>
+          <div class="field"><span class="label">Who I can talk to:</span><span class="rule"></span></div>
+        </div>
+      </section>
+    </div>
+    <footer class="handout-foot">
+      <span><strong>SPOKES</strong> Controlling Anger &middot; Anger Management Toolbox</span>
+      <span>Copyright &copy; 2026 WV Adult Basic Education</span>
+    </footer>
+  </section>
+</main>
+<script src="../lines.js"></script>
+</body>
+</html>

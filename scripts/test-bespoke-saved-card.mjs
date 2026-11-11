@@ -12,6 +12,7 @@ import {applyPreset, defaultDesign, roleStyleDefaults} from '../bespoke/builder-
 import {EDIT_LINE} from '../bespoke/saved-status.mjs';
 // hold(): `arrived` settles when the request reaches the fake service (or times out), `release()` lets it answer.
 import {hold, releaseHeld, within} from './bespoke-test-waits.mjs';
+import {proxyPageFile} from './bespoke-test-proxy.mjs';
 
 const CODE = 'K7QX-M3PD';
 // The storage keys come from the page itself. Typed here they were once replaced by a redaction
@@ -80,14 +81,8 @@ async function scenario(name, {seed = {}, local = false, autosave = {enabled: fa
       if (u.pathname === '/api/bespoke') return answer(route, route.request().postDataJSON());
       if (local) return u.origin === server.baseUrl ? route.continue() : route.abort();
       if (u.pathname === '/bespoke/handoff-config.json') return route.fulfill({json: {apiBase: 'https://bespoke.test/api/bespoke'}});
-      let response;
-      try { response = await route.fetch({url: server.baseUrl + u.pathname + u.search, headers: {...route.request().headers(), origin: server.baseUrl}}); }
-      catch (error) {
-        // A failed page file during the scenario fails the test; at teardown the static server can reset the connection.
-        if (!finished) failedFetches.push(`${u.pathname}: ${error.message.split('\n')[0]}`);
-        return route.abort().catch(() => { /* The page or context is already closed. */ });
-      }
-      return route.fulfill({response});
+      // A failed page file during the scenario fails the test; at teardown the context can close under a request.
+      return proxyPageFile(route, server, {finished: () => finished, onFailure: message => failedFetches.push(message)});
     });
     const page = await context.newPage();
     page.on('pageerror', error => errors.push(error.message));

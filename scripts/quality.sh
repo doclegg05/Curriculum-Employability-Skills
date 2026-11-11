@@ -16,6 +16,7 @@ python3 scripts/validate-lesson.py "SPOKES Builder/template.html"
 
 echo "==> validator test suite"
 python3 -m unittest discover -s scripts -p 'test_validator*.py' -v
+python3 -m unittest discover -s scripts -p 'test_lesson_px_to_rem.py' -v
 
 echo "==> offline lessons package builder"
 python3 -m unittest discover -s scripts -p 'test_offline_package.py' -v
@@ -36,6 +37,7 @@ node scripts/test-bespoke-role-contracts.mjs
 node scripts/test-bespoke-similarity.mjs
 node scripts/test-bespoke-showcase-model.mjs
 node scripts/test-bespoke-make-it-yours.mjs
+node scripts/test-bespoke-test-proxy.mjs
 python3 -m unittest discover -s scripts -p 'test_bespoke*.py' -v
 echo "==> cushion challenge money model"
 node scripts/check-cushion-math.mjs
@@ -97,6 +99,8 @@ if [ -d node_modules/playwright ] && [ -d node_modules/axe-core ]; then
   node scripts/test-bespoke-showcase-fit.mjs
   node scripts/test-bespoke-showcase-messages.mjs
   node scripts/generate-lesson-fingerprints.mjs --check
+  echo "==> lesson slides fit the screen (room-scale lessons)"
+  node scripts/check-lesson-fit.mjs
   echo "==> offline lessons package opens from file://"
   offline_out="$(mktemp -d)"
   python3 scripts/build-offline-package.py --no-zip --out "$offline_out"

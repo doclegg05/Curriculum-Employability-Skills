@@ -2,7 +2,7 @@
 window.SPOKES_PRINT_MANIFEST = {
   "version": 1,
   "lessonTitle": "Employee Accountability",
-  "sourceHash": "dcd3baf1b33ccd625515ad59e2a62595f3572c9892119d3047a9ba1906cb989d",
+  "sourceHash": "75830b969144c4792d0efd14c9a25375c28fe09b7b8651728c2ccf89d016d878",
   "pictures": [
     {
       "slide": 1,

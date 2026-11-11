@@ -1,0 +1,207 @@
+/* SPOKES handout design: the shared look for every student handout.
+   Each handout page sets its lesson's two typefaces as --font-heading and
+   --font-body (the same pair as its lesson deck) and is printed to a US
+   Letter PDF by scripts/build-handouts.mjs. Colors are the 11 SPOKES
+   palette colors only. Built to print well in black and white: lines and
+   labels carry the structure, fills are light. */
+
+:root {
+  --primary: #007baf;
+  --dark: #004071;
+  --royal: #00133f;
+  --accent: #37b550;
+  --gold: #d3b257;
+  --muted-gold: #ad8806;
+  --mauve: #a7253f;
+  --gray: #60636b;
+  --offwhite: #d1d3d4;
+  --muted: #edf3f7;
+  --light: #ffffff;
+  --line: #d1d3d4;
+}
+
+@page { size: letter; margin: 0; }
+
+* { box-sizing: border-box; }
+
+html, body {
+  margin: 0;
+  background: var(--light);
+  color: var(--royal);
+  font-family: var(--font-body);
+  font-size: 11pt;
+  line-height: 1.35;
+  -webkit-print-color-adjust: exact;
+  print-color-adjust: exact;
+}
+
+/* One sheet of US Letter. */
+.sheet {
+  width: 8.5in;
+  height: 11in;
+  padding: 0.5in 0.6in 0.45in;
+  display: flex;
+  flex-direction: column;
+  page-break-after: always;
+  break-after: page;
+  overflow: hidden;
+  position: relative;
+}
+.sheet:last-child { page-break-after: auto; break-after: auto; }
+
+/* Header: the official logo, the handout title, a gold rule. */
+.handout-head {
+  display: flex;
+  align-items: center;
+  gap: 0.3in;
+  padding-bottom: 0.14in;
+  border-bottom: 3pt solid var(--gold);
+}
+.handout-head .logo { height: 0.62in; width: auto; display: block; }
+.handout-head h1 {
+  margin: 0;
+  font-family: var(--font-heading);
+  font-weight: 400;
+  font-size: 30pt;
+  line-height: 1.05;
+  color: var(--dark);
+  text-wrap: balance; /* a two-line title splits evenly, never one word alone */
+}
+
+/* Section headings inside a handout. */
+.handout h2 {
+  margin: 0 0 0.08in;
+  font-family: var(--font-body);
+  font-size: 10pt;
+  font-weight: 700;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  color: var(--primary);
+}
+
+/* A write-on line with a label in front of it. */
+.field { display: flex; align-items: flex-end; gap: 0.12in; }
+.field .label { font-weight: 600; color: var(--dark); white-space: nowrap; }
+.field .rule { flex: 1; border-bottom: 1pt solid var(--gray); height: 0.26in; }
+
+/* Ruled rows with a checkbox, for lists people tick off. */
+.check-rows { list-style: none; margin: 0; padding: 0; }
+.check-rows li {
+  display: flex;
+  align-items: center;
+  gap: 0.12in;
+  height: 0.36in;
+  border-bottom: 1pt solid var(--line);
+}
+.check-rows li::before {
+  content: "";
+  width: 0.15in;
+  height: 0.15in;
+  border: 1.2pt solid var(--dark);
+  border-radius: 2pt;
+  flex: none;
+}
+
+/* An open box to write in. */
+.write-box { border: 1pt solid var(--line); border-radius: 6pt; background: var(--light); }
+
+/* Footer: the program and the copyright on every page. */
+.handout-foot {
+  margin-top: auto;
+  padding-top: 0.1in;
+  border-top: 1pt solid var(--line);
+  display: flex;
+  justify-content: space-between;
+  font-size: 8pt;
+  color: var(--gray);
+}
+.handout-foot strong { color: var(--dark); font-weight: 600; }
+
+/* ---- Parts most worksheets share ---- */
+
+/* The body area between the header and the footer. */
+.sheet > .body { margin-top: 0.24in; display: flex; flex-direction: column; gap: 0.22in; }
+
+/* Instructions to the student. */
+.directions { margin: 0; color: var(--royal); }
+.directions b, .directions strong { color: var(--dark); }
+
+/* A section heading set larger than the small labels. */
+.handout h3 {
+  margin: 0 0 0.06in;
+  font-family: var(--font-heading);
+  font-weight: 400;
+  font-size: 16pt;
+  line-height: 1.15;
+  color: var(--dark);
+}
+.handout .hint { color: var(--gray); font-size: 10pt; }
+
+/* Blank lines to write on: <div class="lines" style="--n: 3"></div>.
+   lines.js fills it with one row per line; each row's rule is a border. */
+.lines {
+  margin-top: 0.08in; /* the first line sits clear of the question above it */
+  height: calc(var(--n, 3) * 0.34in);
+  display: grid;
+  grid-template-rows: repeat(var(--n, 3), 0.34in);
+}
+.lines > i { border-bottom: 1pt solid var(--gray); }
+
+/* Evenly ruled rows inside a box: <div class="write-box ruled" style="--n: 5">. */
+.ruled { display: grid; grid-template-rows: repeat(var(--n, 5), 1fr); }
+.ruled > i:not(:last-child) { border-bottom: 1pt solid var(--line); }
+
+/* A table with a shaded header row and room to write. */
+.grid-table { width: 100%; border-collapse: collapse; table-layout: fixed; }
+.grid-table th, .grid-table td { border: 1pt solid var(--line); padding: 0.05in 0.1in; vertical-align: middle; text-align: left; }
+.grid-table thead th { background: var(--muted); color: var(--dark); font-weight: 600; font-size: 10pt; }
+.grid-table tbody td { height: 0.34in; }
+.grid-table tbody th { font-weight: 600; color: var(--dark); background: var(--light); }
+
+/* A list of options to tick, each with its own box. */
+.tick-list { list-style: none; margin: 0; padding: 0; display: grid; gap: 0.1in; }
+.tick-list li { display: flex; align-items: baseline; gap: 0.12in; }
+.tick-list li::before {
+  content: "";
+  width: 0.14in;
+  height: 0.14in;
+  border: 1.2pt solid var(--dark);
+  border-radius: 2pt;
+  flex: none;
+  transform: translateY(0.02in);
+}
+.tick-list .fill { flex: 1; border-bottom: 1pt solid var(--gray); min-width: 2in; height: 0.2in; }
+
+/* Numbered questions. */
+/* Each question's content sits in one wrapper element. A list that goes on
+   from an earlier page sets its own start: style="counter-reset: q 8". */
+.questions { margin: 0; padding: 0; list-style: none; counter-reset: q; display: grid; gap: 0.16in; }
+.questions > li { counter-increment: q; display: grid; grid-template-columns: 0.32in 1fr; column-gap: 0.06in; break-inside: avoid; }
+.questions > li::before { content: counter(q) "."; font-weight: 700; color: var(--primary); }
+.questions .q { margin: 0; font-weight: 600; color: var(--royal); }
+.questions .options { list-style: none; margin: 0.05in 0 0; padding: 0; display: grid; grid-template-columns: 1fr 1fr; gap: 0.04in 0.25in; }
+.questions .options li { color: var(--royal); }
+.questions .options b { color: var(--primary); margin-right: 0.06in; }
+
+/* Name and date, side by side. */
+.name-row { display: grid; grid-template-columns: 1fr 2.2in; gap: 0.35in; }
+
+/* Directions set apart in gray italic. */
+.directions.aside { font-style: italic; color: var(--gray); }
+
+/* A highlighted block: a worked example, a commitment, a key idea. */
+.panel {
+  border-left: 4pt solid var(--panel-edge, var(--gold));
+  background: var(--muted);
+  border-radius: 0 6pt 6pt 0;
+  padding: 0.12in 0.18in;
+}
+.panel > :first-child { margin-top: 0; }
+.panel > :last-child { margin-bottom: 0; }
+
+/* A label with a write-on line after it, inline: <span class="blank">Name</span> */
+.blank-row { display: flex; gap: 0.3in; align-items: flex-end; }
+.blank-row .field { flex: 1; }
+
+/* A question in bold above its writing lines. */
+.prompt { margin: 0; font-weight: 600; color: var(--dark); }
