@@ -2415,16 +2415,6 @@
       .slide-video h2 { margin-bottom: 1rem; }
       .slide-video .video-wrapper { max-width: min(73.125rem, calc((100vh - 14.75rem) * 16 / 9)); }
 
-      /* Slide 1 (title): the cover logo is 14.5rem wide, the size it
-         had on a 1920x1080 screen before this change; the gaps under
-         it, under the subtitle and above the buttons are tighter; and the
-         slide stops 3rem from the bottom so the buttons clear the navigation
-         hint. */
-      .slide-title { padding-top: 1.5rem; padding-bottom: 3rem; }
-      .slide-title .logo { max-width: 14.5rem; margin-bottom: 1rem; }
-      .slide-title .subtitle { margin-bottom: 1.5rem; }
-      .slide-title .title-actions { margin-top: 1rem; }
-
       /* Slide 19: four videos in two rows. Everything in the stack except
          the two video rows adds up to 28.25rem (padding and spacers 8rem,
          heading 5.4rem, intro line 1.9rem, row gap 1.5rem, two caption
@@ -2506,6 +2496,125 @@
     .slide-counter {
       color: rgba(255, 255, 255, 0.65);
     }
+      /* Showcase Level 3 2026-11: the communication cycle, this lesson's
+         one picture. Drawn in the page from palette colors: on the cover in
+         place of the stationery photo, on slide 10 in place of the video
+         screenshot, and on the closing. Sizes inside the drawing are
+         attributes in its own units, not CSS px. */
+      .cycle { display: block; overflow: visible; }
+      .cycle .cyc-arc { fill: none; stroke: var(--primary); stroke-width: 7; stroke-linecap: round; }
+      .cycle .cyc-head { fill: var(--primary); }
+      .cycle .cyc-node text { font-family: var(--font-heading); font-weight: 700; fill: var(--light); }
+      .cycle .cyc-node-a circle { fill: var(--dark); }
+      .cycle .cyc-node-b circle { fill: var(--primary); }
+      .cycle .cyc-labels { font-family: var(--font-body); font-weight: 600; fill: var(--dark); }
+      .cycle .cyc-bubble-a { fill: none; stroke: var(--primary); stroke-width: 4; stroke-linejoin: round; }
+      .cycle .cyc-bubble-b { fill: var(--muted); stroke: var(--dark); stroke-width: 4; stroke-linejoin: round; }
+
+      /* Motion: the message travels the circle. Each step appears in turn
+         with the arrow that leads on from it, so the eye goes round once;
+         the two speech bubbles come last. Once, when the slide opens, on
+         the cover and on slide 10. The closing is still. With animation off
+         (reduced motion, print) the whole cycle shows. */
+      @keyframes cycPop { from { opacity: 0; transform: scale(0.6); } to { opacity: 1; transform: none; } }
+      @keyframes cycFade { from { opacity: 0; } to { opacity: 1; } }
+      .slide-title.active .cyc-node, .cycle-slide.active .cyc-node {
+        transform-box: fill-box;
+        transform-origin: center;
+        animation: cycPop 0.45s cubic-bezier(0.34, 1.4, 0.64, 1) both;
+      }
+      .slide-title.active .cyc-arc, .slide-title.active .cyc-label, .slide-title.active .cyc-bubbles,
+      .cycle-slide.active .cyc-arc, .cycle-slide.active .cyc-bubbles { animation: cycFade 0.45s ease-out both; }
+      .slide-title.active .cyc-node-1, .cycle-slide.active .cyc-node-1, .slide-title.active .cyc-label-1 { animation-delay: 0.3s; }
+      .slide-title.active .cyc-arc-1, .cycle-slide.active .cyc-arc-1 { animation-delay: 0.6s; }
+      .slide-title.active .cyc-node-2, .cycle-slide.active .cyc-node-2, .slide-title.active .cyc-label-2 { animation-delay: 0.85s; }
+      .slide-title.active .cyc-arc-2, .cycle-slide.active .cyc-arc-2 { animation-delay: 1.15s; }
+      .slide-title.active .cyc-node-3, .cycle-slide.active .cyc-node-3, .slide-title.active .cyc-label-3 { animation-delay: 1.4s; }
+      .slide-title.active .cyc-arc-3, .cycle-slide.active .cyc-arc-3 { animation-delay: 1.7s; }
+      .slide-title.active .cyc-node-4, .cycle-slide.active .cyc-node-4, .slide-title.active .cyc-label-4 { animation-delay: 1.95s; }
+      .slide-title.active .cyc-arc-4, .cycle-slide.active .cyc-arc-4 { animation-delay: 2.25s; }
+      .slide-title.active .cyc-bubbles, .cycle-slide.active .cyc-bubbles { animation-delay: 2.5s; }
+
+      /* Slide 10: the cycle stands where the screenshot was. The list
+         beside it carries the words, so this drawing has numbers only. */
+      .ppt-cycle-art.cycle-card { aspect-ratio: auto; max-width: 24rem; padding: 1.25rem; }
+      .ppt-cycle-art.cycle-card .cycle { width: 100%; height: auto; aspect-ratio: 1; }
+
+      /* Phones keep the cover and the closing they have. */
+      .slide-title .cycle, .slide-closing .cycle { display: none; }
+
+      @media (min-width: 769px) {
+        /* Cover: a plain white ground, the words on the left, the cycle on
+           the right. Two classes out-rank the older cover rules. */
+        .slide.slide-title {
+          background: var(--light);
+          padding: 1.5rem 35rem 4.25rem 5rem; /* the right 35rem holds the cycle */
+        }
+        .slide-title .cycle, .slide-closing .cycle {
+          display: block;
+          position: absolute;
+          top: 50%;
+          width: min(28rem, calc(100% - 40rem));
+          height: auto;
+          aspect-ratio: 580 / 640;
+          transform: translateY(-50%);
+          pointer-events: none;
+        }
+        .slide-title .cycle { right: 2.5rem; }
+        .slide-title .logo { width: auto; max-width: 12.5rem; margin: 0 0 1.5rem; }
+        .slide-title h1 { font-size: 4.8rem; line-height: 0.95; }
+        .slide-title .subtitle { font-size: 2.1rem; margin: 0.7rem 0 0; }
+        .slide-title .title-actions { margin-top: 1.75rem; gap: 0.6rem; }
+        .slide-title .title-resource-btn {
+          min-height: 0;
+          padding: 0.5rem 0.85rem;
+          font-size: 0.9rem;
+          box-shadow: none;
+        }
+
+        /* Closing: the cover's white ground, the cycle on the left, and
+           the words on the right with the take-home line largest. The
+           order on screen is set here; the markup keeps its order. The old
+           closing set some colors inline and with !important, so these
+           need it too. The rubric button stays: it marks when the rubric
+           is handed out (Britt). */
+        .slide.slide-closing { background: var(--light); }
+        .slide-closing .cycle { left: 2.5rem; }
+        .slide.slide-closing .closing-box {
+          position: absolute;
+          top: 0;
+          bottom: 0;
+          right: 5rem;
+          width: 32rem;
+          max-width: none;
+          padding: 0;
+          border-radius: 0;
+          background: none;
+          box-shadow: none;
+          display: flex;
+          flex-direction: column;
+          justify-content: center;
+          align-items: flex-start;
+          text-align: left;
+        }
+        .slide.slide-closing .closing-box h2 {
+          order: 1;
+          margin: 0;
+          font-size: 4.4rem;
+          line-height: 1;
+          color: var(--primary) !important;
+          text-shadow: none;
+        }
+        .slide-closing .closing-box .divider { order: 2; margin: 1.5rem 0; }
+        .slide-closing .closing-box p { order: 3; margin: 0; font-size: 1.75rem; line-height: 1.5; color: var(--gray); }
+        .slide-closing .closing-box h3 {
+          order: 4;
+          margin: 1.75rem 0 0 !important;
+          font-size: 1.2rem !important;
+          color: var(--dark) !important;
+        }
+        .slide-closing .closing-box .download-resource { order: 5; margin-top: 1rem; }
+      }
     </style>
   </head>
   <body>
@@ -2556,6 +2665,27 @@
             <a href="Teacher-Resources/Communicating_With_the_Public_Teachers_Guide.pdf" target="_blank" rel="noopener noreferrer" class="title-resource-btn secondary">Teacher's Guide</a>
           </div>
           <p class="copyright">Copyright &copy; 2026 WV Adult Basic Education</p>
+          <svg class="cycle" viewBox="0 0 580 640" role="img" aria-label="The communication cycle in four steps around a circle: the sender encodes, the receiver decodes, the receiver becomes the sender, the original sender decodes.">
+            <defs><marker id="head-cover" viewBox="0 0 10 10" refX="6" refY="5" markerWidth="5" markerHeight="5" orient="auto"><path class="cyc-head" d="M0,0 L10,5 L0,10 z"/></marker></defs>
+            <path class="cyc-arc cyc-arc-1" d="M352,126 A214,214 0 0 1 488,262" marker-end="url(#head-cover)"/>
+            <path class="cyc-arc cyc-arc-2" d="M488,398 A214,214 0 0 1 352,534" marker-end="url(#head-cover)"/>
+            <path class="cyc-arc cyc-arc-3" d="M228,534 A214,214 0 0 1 92,398" marker-end="url(#head-cover)"/>
+            <path class="cyc-arc cyc-arc-4" d="M92,262 A214,214 0 0 1 228,126" marker-end="url(#head-cover)"/>
+            <g class="cyc-bubbles" transform="translate(290,330)">
+              <path class="cyc-bubble-a" d="M-62,-30 h70 a14,14 0 0 1 14,14 v28 a14,14 0 0 1 -14,14 h-44 l-16,14 v-14 h-10 a14,14 0 0 1 -14,-14 v-28 a14,14 0 0 1 14,-14 z"/>
+              <path class="cyc-bubble-b" d="M62,-6 h-58 a12,12 0 0 0 -12,12 v24 a12,12 0 0 0 12,12 h36 l14,12 v-12 h8 a12,12 0 0 0 12,-12 v-24 a12,12 0 0 0 -12,-12 z"/>
+            </g>
+            <g class="cyc-node cyc-node-1 cyc-node-a"><circle cx="290" cy="116" r="54"/><text x="290" y="131" text-anchor="middle" font-size="44">1</text></g>
+            <g class="cyc-node cyc-node-2 cyc-node-b"><circle cx="504" cy="330" r="54"/><text x="504" y="345" text-anchor="middle" font-size="44">2</text></g>
+            <g class="cyc-node cyc-node-3 cyc-node-a"><circle cx="290" cy="544" r="54"/><text x="290" y="559" text-anchor="middle" font-size="44">3</text></g>
+            <g class="cyc-node cyc-node-4 cyc-node-b"><circle cx="76" cy="330" r="54"/><text x="76" y="345" text-anchor="middle" font-size="44">4</text></g>
+            <g class="cyc-labels" font-size="21">
+              <g class="cyc-label cyc-label-1"><text x="290" y="212" text-anchor="middle">Sender encodes</text></g>
+              <g class="cyc-label cyc-label-2"><text x="434" y="322" text-anchor="end">Receiver</text><text x="434" y="348" text-anchor="end">decodes</text></g>
+              <g class="cyc-label cyc-label-3"><text x="290" y="438" text-anchor="middle">Receiver becomes</text><text x="290" y="464" text-anchor="middle">sender</text></g>
+              <g class="cyc-label cyc-label-4"><text x="146" y="322">Original sender</text><text x="146" y="348">decodes</text></g>
+            </g>
+          </svg>
         </section>
 
         <!-- Slide 2: Personal Listening Assessment (Pre) -->
@@ -2706,7 +2836,7 @@
         </section>
 
         <!-- Slide 10: The Communication Cycle -->
-        <section class="slide" data-chapter="3" style="--fit: 0.87;">
+        <section class="slide cycle-slide" data-chapter="3" style="--fit: 0.87;">
           <h2>The Communication Cycle</h2>
           <div class="ppt-cycle-layout">
             <div>
@@ -2733,8 +2863,22 @@
                 <p>Why is this communication process called a <em>cycle</em>? What happens when the cycle breaks down?</p>
               </div>
             </div>
-            <div class="ppt-hero-card ppt-cycle-art">
-              <img src="images/ppt-inspiration/image8.png" alt="Illustrated communication cycle showing sender, message, encoding, channel, receiver, feedback, decode, and noise" loading="lazy" />
+            <div class="ppt-hero-card ppt-cycle-art cycle-card">
+              <svg class="cycle" viewBox="0 40 580 580" role="img" aria-label="The communication cycle: four numbered steps joined by arrows in a circle, around two speech bubbles.">
+                <defs><marker id="head-lesson" viewBox="0 0 10 10" refX="6" refY="5" markerWidth="5" markerHeight="5" orient="auto"><path class="cyc-head" d="M0,0 L10,5 L0,10 z"/></marker></defs>
+                <path class="cyc-arc cyc-arc-1" d="M352,126 A214,214 0 0 1 488,262" marker-end="url(#head-lesson)"/>
+                <path class="cyc-arc cyc-arc-2" d="M488,398 A214,214 0 0 1 352,534" marker-end="url(#head-lesson)"/>
+                <path class="cyc-arc cyc-arc-3" d="M228,534 A214,214 0 0 1 92,398" marker-end="url(#head-lesson)"/>
+                <path class="cyc-arc cyc-arc-4" d="M92,262 A214,214 0 0 1 228,126" marker-end="url(#head-lesson)"/>
+                <g class="cyc-bubbles" transform="translate(290,330)">
+                  <path class="cyc-bubble-a" d="M-62,-30 h70 a14,14 0 0 1 14,14 v28 a14,14 0 0 1 -14,14 h-44 l-16,14 v-14 h-10 a14,14 0 0 1 -14,-14 v-28 a14,14 0 0 1 14,-14 z"/>
+                  <path class="cyc-bubble-b" d="M62,-6 h-58 a12,12 0 0 0 -12,12 v24 a12,12 0 0 0 12,12 h36 l14,12 v-12 h8 a12,12 0 0 0 12,-12 v-24 a12,12 0 0 0 -12,-12 z"/>
+                </g>
+                <g class="cyc-node cyc-node-1 cyc-node-a"><circle cx="290" cy="116" r="54"/><text x="290" y="131" text-anchor="middle" font-size="44">1</text></g>
+                <g class="cyc-node cyc-node-2 cyc-node-b"><circle cx="504" cy="330" r="54"/><text x="504" y="345" text-anchor="middle" font-size="44">2</text></g>
+                <g class="cyc-node cyc-node-3 cyc-node-a"><circle cx="290" cy="544" r="54"/><text x="290" y="559" text-anchor="middle" font-size="44">3</text></g>
+                <g class="cyc-node cyc-node-4 cyc-node-b"><circle cx="76" cy="330" r="54"/><text x="76" y="345" text-anchor="middle" font-size="44">4</text></g>
+              </svg>
             </div>
           </div>
         </section>
@@ -3342,6 +3486,27 @@
         <!-- Slide 33: Closing -->
         <section class="slide slide-closing" data-chapter="7" id="closingSlide">
           <div class="confetti-container" id="confettiContainer"></div>
+          <svg class="cycle" viewBox="0 0 580 640" role="img" aria-label="The communication cycle in four steps around a circle: the sender encodes, the receiver decodes, the receiver becomes the sender, the original sender decodes.">
+            <defs><marker id="head-closing" viewBox="0 0 10 10" refX="6" refY="5" markerWidth="5" markerHeight="5" orient="auto"><path class="cyc-head" d="M0,0 L10,5 L0,10 z"/></marker></defs>
+            <path class="cyc-arc cyc-arc-1" d="M352,126 A214,214 0 0 1 488,262" marker-end="url(#head-closing)"/>
+            <path class="cyc-arc cyc-arc-2" d="M488,398 A214,214 0 0 1 352,534" marker-end="url(#head-closing)"/>
+            <path class="cyc-arc cyc-arc-3" d="M228,534 A214,214 0 0 1 92,398" marker-end="url(#head-closing)"/>
+            <path class="cyc-arc cyc-arc-4" d="M92,262 A214,214 0 0 1 228,126" marker-end="url(#head-closing)"/>
+            <g class="cyc-bubbles" transform="translate(290,330)">
+              <path class="cyc-bubble-a" d="M-62,-30 h70 a14,14 0 0 1 14,14 v28 a14,14 0 0 1 -14,14 h-44 l-16,14 v-14 h-10 a14,14 0 0 1 -14,-14 v-28 a14,14 0 0 1 14,-14 z"/>
+              <path class="cyc-bubble-b" d="M62,-6 h-58 a12,12 0 0 0 -12,12 v24 a12,12 0 0 0 12,12 h36 l14,12 v-12 h8 a12,12 0 0 0 12,-12 v-24 a12,12 0 0 0 -12,-12 z"/>
+            </g>
+            <g class="cyc-node cyc-node-1 cyc-node-a"><circle cx="290" cy="116" r="54"/><text x="290" y="131" text-anchor="middle" font-size="44">1</text></g>
+            <g class="cyc-node cyc-node-2 cyc-node-b"><circle cx="504" cy="330" r="54"/><text x="504" y="345" text-anchor="middle" font-size="44">2</text></g>
+            <g class="cyc-node cyc-node-3 cyc-node-a"><circle cx="290" cy="544" r="54"/><text x="290" y="559" text-anchor="middle" font-size="44">3</text></g>
+            <g class="cyc-node cyc-node-4 cyc-node-b"><circle cx="76" cy="330" r="54"/><text x="76" y="345" text-anchor="middle" font-size="44">4</text></g>
+            <g class="cyc-labels" font-size="21">
+              <g class="cyc-label cyc-label-1"><text x="290" y="212" text-anchor="middle">Sender encodes</text></g>
+              <g class="cyc-label cyc-label-2"><text x="434" y="322" text-anchor="end">Receiver</text><text x="434" y="348" text-anchor="end">decodes</text></g>
+              <g class="cyc-label cyc-label-3"><text x="290" y="438" text-anchor="middle">Receiver becomes</text><text x="290" y="464" text-anchor="middle">sender</text></g>
+              <g class="cyc-label cyc-label-4"><text x="146" y="322">Original sender</text><text x="146" y="348">decodes</text></g>
+            </g>
+          </svg>
           <div class="closing-box">
             <h3 style="color:var(--light); font-size:1.5rem; margin-bottom:1.5rem;">
               Congratulations, you have completed this lesson!

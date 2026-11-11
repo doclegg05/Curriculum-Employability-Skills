@@ -3228,6 +3228,105 @@
     @media (min-width: 769px) {
       .slide .exit-ticket-question { margin-top: 0; }
     }
+    /* Showcase Level 3 2026-11: the STAR method as four rising steps, this
+       lesson's one picture. Drawn in the page from palette colors, on the
+       cover, beside the STAR rows on slide 21, and on the closing. Sizes
+       inside the drawing are attributes in its own units, not CSS px. */
+    .star { display: block; overflow: visible; }
+    .star .sr-block { fill: var(--royal); }
+    .star .sr-step-1 .sr-block { fill-opacity: 0.7; }
+    .star .sr-step-2 .sr-block { fill-opacity: 0.8; }
+    .star .sr-step-3 .sr-block { fill-opacity: 0.9; }
+    .star .sr-edge { fill: var(--gold); }
+    .star .sr-letter { font-family: var(--font-heading); font-weight: 600; fill: var(--gold); }
+    .star .sr-word { font-family: var(--font-body); font-weight: 600; fill: var(--light); }
+
+    /* Motion: the steps rise one at a time, Situation to Result, the way
+       an answer is built. Once, when the slide opens, on the cover and on
+       slide 21. The closing is still. With animation off (reduced motion,
+       print) the finished steps show. */
+    @keyframes srRise { from { opacity: 0; transform: translateY(60px); } to { opacity: 1; transform: none; } }
+    .slide-title.active .sr-step, .star-slide.active .sr-step { animation: srRise 0.6s cubic-bezier(0.16, 1, 0.3, 1) both; }
+    .slide-title.active .sr-step-1, .star-slide.active .sr-step-1 { animation-delay: 0.5s; }
+    .slide-title.active .sr-step-2, .star-slide.active .sr-step-2 { animation-delay: 0.85s; }
+    .slide-title.active .sr-step-3, .star-slide.active .sr-step-3 { animation-delay: 1.2s; }
+    .slide-title.active .sr-step-4, .star-slide.active .sr-step-4 { animation-delay: 1.55s; }
+
+    /* Slide 21: the steps stand to the right of the STAR rows, which carry
+       the words, so this drawing has letters only. Phones keep the rows
+       alone. */
+    .star-row { display: block; }
+    .star-panel { display: none; }
+    @media (min-width: 769px) {
+      .star-row { display: flex; gap: 2rem; align-items: center; }
+      .star-row .smart-stack { flex: 1; min-width: 0; }
+      .star-panel { display: block; flex: 0 0 12rem; }
+      .star-panel .star { width: 100%; height: auto; aspect-ratio: 580 / 640; }
+      .star-panel .sr-block { fill: var(--dark); }
+    }
+
+    /* Phones keep the cover and the closing they have. */
+    .slide-title .star, .slide-closing .star { display: none; }
+
+    @media (min-width: 769px) {
+      /* Cover: the royal panel runs to 60% and holds the words; the steps
+         rise in the blue panel. Both panels stay inside the 25 to 75% range
+         that BeSpoke counts as a split title. The words start below the
+         logo, so the logo no longer sits on the title. */
+      .slide-title::before { width: 60%; }
+      .slide-title::after { left: 60%; }
+      .slide.slide-title { padding: 10rem 0 5.25rem 5rem; justify-content: flex-start; }
+      .slide-title h1, .slide-title .subtitle { max-width: 34rem; }
+      .slide-title h1 { font-size: 4.2rem; line-height: 1.08; } /* its size before room-scale: 95px at 1920x1080 */
+      .slide-title .logo { top: 2.25rem; max-width: 9.5rem; }
+      .slide-title .download-resource { margin-top: 1.75rem !important; gap: 0.6rem; }
+      .slide-title .download-btn {
+        background: none !important;
+        color: var(--gold) !important;
+        border: 1.5px solid var(--gold);
+        font-size: 0.9rem;
+        padding: 0.5rem 0.85rem;
+      }
+      .slide-title .star, .slide-closing .star {
+        display: block;
+        position: absolute;
+        width: min(27rem, calc(40% - 4rem));
+        height: auto;
+        aspect-ratio: 580 / 640;
+        pointer-events: none;
+      }
+      .slide-title .star { right: 2.5rem; bottom: 5.25rem; }
+
+      /* Closing: the steps on the left, the words on the right with the
+         take-home line largest. The order on screen is set here; the
+         markup keeps its order. Inline styles from the old closing need
+         !important. The rubric button stays: it marks when the rubric is
+         handed out (Britt). */
+      .slide-closing .star { left: 2.5rem; top: 50%; transform: translateY(-50%); width: min(28rem, calc(100% - 41rem)); }
+      .slide.slide-closing .closing-box {
+        position: absolute;
+        top: 0;
+        bottom: 0;
+        right: 5rem;
+        width: 32rem;
+        max-width: none;
+        padding: 0;
+        border: 0;
+        border-radius: 0;
+        box-shadow: none;
+        background: none;
+        display: flex;
+        flex-direction: column;
+        justify-content: center;
+        align-items: flex-start;
+        text-align: left;
+      }
+      .slide-closing .closing-box h2 { order: 1; margin: 0; font-size: 4rem; line-height: 1.08; }
+      .slide-closing .closing-box .divider { order: 2; margin: 1.5rem 0; }
+      .slide-closing .closing-box p { order: 3; margin: 0; font-size: 1.75rem; line-height: 1.5; }
+      .slide-closing .closing-box h3 { order: 4; margin: 1.75rem 0 0 !important; font-size: 1.2rem !important; }
+      .slide-closing .closing-box .download-resource { order: 5; justify-content: flex-start !important; margin-top: 1rem !important; }
+    }
   </style>
   </head>
 <body>
@@ -3270,6 +3369,32 @@
           <a href="Teacher-Resources/Interview_Skills_Teachers_Guide.pdf" target="_blank" rel="noopener noreferrer" class="download-btn" style="background:var(--gold);color:var(--royal);">Teacher's Guide</a>
         </div>
         <p class="copyright">Copyright &copy; 2026 WV Adult Basic Education</p>
+        <svg class="star" viewBox="0 0 580 640" role="img" aria-label="Four rising steps: Situation, Task, Action, Result.">
+          <g class="sr-step sr-step-1">
+            <rect class="sr-block" x="6" y="500" width="139" height="140"/>
+            <rect class="sr-edge" x="6" y="500" width="139" height="6"/>
+            <text class="sr-letter" x="24" y="582" font-size="80">S</text>
+            <text class="sr-word" x="26" y="622" font-size="22">Situation</text>
+          </g>
+          <g class="sr-step sr-step-2">
+            <rect class="sr-block" x="149" y="372" width="139" height="268"/>
+            <rect class="sr-edge" x="149" y="372" width="139" height="6"/>
+            <text class="sr-letter" x="167" y="454" font-size="80">T</text>
+            <text class="sr-word" x="169" y="494" font-size="22">Task</text>
+          </g>
+          <g class="sr-step sr-step-3">
+            <rect class="sr-block" x="292" y="244" width="139" height="396"/>
+            <rect class="sr-edge" x="292" y="244" width="139" height="6"/>
+            <text class="sr-letter" x="310" y="326" font-size="80">A</text>
+            <text class="sr-word" x="312" y="366" font-size="22">Action</text>
+          </g>
+          <g class="sr-step sr-step-4">
+            <rect class="sr-block" x="435" y="116" width="139" height="524"/>
+            <rect class="sr-edge" x="435" y="116" width="139" height="6"/>
+            <text class="sr-letter" x="453" y="198" font-size="80">R</text>
+            <text class="sr-word" x="455" y="238" font-size="22">Result</text>
+          </g>
+        </svg>
       </section>
 
       <!-- Slide 2 — Section Divider: Warm-Up -->
@@ -3722,9 +3847,10 @@
       </section>
 
       <!-- Slide 20 — STAR Method -->
-      <section class="slide" data-chapter="5">
+      <section class="slide star-slide" data-chapter="5" style="--fit: 0.99">
         <h2>The STAR Method</h2>
         <p style="font-size:1.2rem;color:var(--gray);margin-top:-1.5rem;margin-bottom:2rem;">A structured approach for answering behavioral interview questions</p>
+        <div class="star-row">
         <div class="smart-stack">
           <div class="smart-row">
             <div class="smart-letter">S</div>
@@ -3754,6 +3880,31 @@
               <p>Share the outcome. What happened? What did you accomplish? What did you learn from it?</p>
             </div>
           </div>
+        </div>
+        <div class="star-panel">
+          <svg class="star" viewBox="0 0 580 640" aria-hidden="true">
+            <g class="sr-step sr-step-1">
+              <rect class="sr-block" x="6" y="500" width="139" height="140"/>
+              <rect class="sr-edge" x="6" y="500" width="139" height="6"/>
+              <text class="sr-letter" x="24" y="582" font-size="80">S</text>
+            </g>
+            <g class="sr-step sr-step-2">
+              <rect class="sr-block" x="149" y="372" width="139" height="268"/>
+              <rect class="sr-edge" x="149" y="372" width="139" height="6"/>
+              <text class="sr-letter" x="167" y="454" font-size="80">T</text>
+            </g>
+            <g class="sr-step sr-step-3">
+              <rect class="sr-block" x="292" y="244" width="139" height="396"/>
+              <rect class="sr-edge" x="292" y="244" width="139" height="6"/>
+              <text class="sr-letter" x="310" y="326" font-size="80">A</text>
+            </g>
+            <g class="sr-step sr-step-4">
+              <rect class="sr-block" x="435" y="116" width="139" height="524"/>
+              <rect class="sr-edge" x="435" y="116" width="139" height="6"/>
+              <text class="sr-letter" x="453" y="198" font-size="80">R</text>
+            </g>
+          </svg>
+        </div>
         </div>
         <div class="download-resource">
           <span class="download-prompt">Instructor Resource Available</span>
@@ -4145,6 +4296,32 @@
       <!-- Slide 35 — Closing -->
       <section class="slide slide-closing" data-chapter="7" id="closingSlide">
         <div class="confetti-container" id="confettiContainer"></div>
+        <svg class="star" viewBox="0 0 580 640" role="img" aria-label="Four rising steps: Situation, Task, Action, Result.">
+          <g class="sr-step sr-step-1">
+            <rect class="sr-block" x="6" y="500" width="139" height="140"/>
+            <rect class="sr-edge" x="6" y="500" width="139" height="6"/>
+            <text class="sr-letter" x="24" y="582" font-size="80">S</text>
+            <text class="sr-word" x="26" y="622" font-size="22">Situation</text>
+          </g>
+          <g class="sr-step sr-step-2">
+            <rect class="sr-block" x="149" y="372" width="139" height="268"/>
+            <rect class="sr-edge" x="149" y="372" width="139" height="6"/>
+            <text class="sr-letter" x="167" y="454" font-size="80">T</text>
+            <text class="sr-word" x="169" y="494" font-size="22">Task</text>
+          </g>
+          <g class="sr-step sr-step-3">
+            <rect class="sr-block" x="292" y="244" width="139" height="396"/>
+            <rect class="sr-edge" x="292" y="244" width="139" height="6"/>
+            <text class="sr-letter" x="310" y="326" font-size="80">A</text>
+            <text class="sr-word" x="312" y="366" font-size="22">Action</text>
+          </g>
+          <g class="sr-step sr-step-4">
+            <rect class="sr-block" x="435" y="116" width="139" height="524"/>
+            <rect class="sr-edge" x="435" y="116" width="139" height="6"/>
+            <text class="sr-letter" x="453" y="198" font-size="80">R</text>
+            <text class="sr-word" x="455" y="238" font-size="22">Result</text>
+          </g>
+        </svg>
         <div class="closing-box">
           <h3 style="color:var(--gold);font-size:1.5rem;margin-bottom:1.5rem;font-family:'Playfair Display',serif;font-weight:400;">Congratulations, you have completed this lesson!</h3>
           <p>"The secret of getting ahead is getting started. Every interview brings you one step closer to your dream job."</p>

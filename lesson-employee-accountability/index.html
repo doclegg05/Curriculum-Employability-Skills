@@ -3070,20 +3070,6 @@
       }
       .slide h2 { margin-bottom: 1.5rem; }
 
-      /* Slide 1 (title): the cover logo is 14.5rem wide, the size it
-         had on a 1920x1080 screen before this change; the gaps around it,
-         the heading, the subtitle and the two buttons are tighter; and the
-         slide stops 4.5rem from the bottom so the copyright line clears the
-         navigation hint. The buttons' row is spaced inline, so it needs
-         !important. */
-      .slide-title { padding-bottom: 4.5rem; }
-      .slide-title .logo { max-width: 14.5rem; margin-bottom: 0.75rem; }
-      .slide-title h1 { margin-bottom: 1rem; }
-      .slide-title .divider { margin-bottom: 1rem; }
-      .slide-title .subtitle { margin-bottom: 1.25rem; }
-      .slide-title > div[style] { margin-top: 1rem !important; margin-bottom: 0.5rem !important; }
-      .slide-title .download-btn { margin-top: 0.5rem; }
-
       /* Text floors (Level 2, 2026-11-10). The smallest text on a slide is
          lifted: labels to 0.9rem, and reading text
          that was under 0.9rem to about 1rem. On a 1920x1080 screen that is
@@ -3133,6 +3119,180 @@
     .print-close:focus-visible { outline: 3px solid var(--gold); outline-offset: 2px; } /* 5.21:1 on the navy dialog header */
     .print-action-btn:focus-visible,
     .carousel-btn:focus-visible { outline: 3px solid var(--dark); outline-offset: 2px; } /* 10.65:1 on white, 9.70:1 on the footer tint */
+    /* Slide 25, the accountability map (Britt, 2026-11-10: the cards were
+       too narrow to read). The dark summary panel becomes a band across
+       the top, and the three cards share the full width below it, each
+       about a third wider. Icon and heading sit side by side again. Past
+       phone width only; phones keep their stacked layout. */
+    @media (min-width: 769px) {
+      .accountability-map { grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 1rem; }
+      .accountability-hub {
+        grid-column: 1 / -1;
+        flex-direction: row;
+        align-items: baseline;
+        gap: 1.75rem;
+        padding: 1.1rem 2rem;
+      }
+      .accountability-hub .hub-kicker { flex: none; margin-bottom: 0; }
+      .accountability-hub p { font-size: 1.5rem; }
+      .accountability-lane .lane-header { flex-direction: row; align-items: center; gap: 0.85rem; }
+      .accountability-lane h3 { font-size: 1.35rem; }
+    }
+
+    /* Showcase Level 3 2026-11: the two roads, this lesson's one picture.
+       Drawn in the page from palette colors, on the cover, on slide 24
+       where the roads are taught, and on the closing. Sizes inside the
+       drawing are attributes in its own units, not CSS px. */
+    .roads { display: block; overflow: visible; }
+    .roads .rd-victim { fill: none; stroke: var(--offwhite); stroke-width: 40; stroke-linecap: round; }
+    .roads .rd-victim-line { fill: none; stroke: var(--gray); stroke-width: 2.5; stroke-dasharray: 10 12; }
+    .roads .rd-acc { fill: none; stroke: var(--dark); stroke-width: 44; stroke-linecap: round; }
+    .roads .rd-acc-line { fill: none; stroke: var(--gold); stroke-width: 3; stroke-dasharray: 14 12; }
+    .roads .rd-barrier rect { fill: var(--light); stroke: var(--mauve); stroke-width: 2; }
+    .roads .rd-barrier path { stroke: var(--mauve); stroke-width: 7; }
+    .roads .rd-name { font-family: var(--font-heading); font-weight: 700; }
+    .roads .rd-name-victim { fill: var(--gray); }
+    .roads .rd-name-acc { fill: var(--dark); }
+    .roads .rd-victim-words { font-family: var(--font-body); fill: var(--gray); }
+    .roads .rd-steps { font-family: var(--font-body); font-weight: 600; fill: var(--dark); }
+    .roads .rd-step circle { fill: var(--gold); stroke: var(--light); stroke-width: 3; }
+
+    /* Motion: the road is drawn from where you stand. It forks; the Victim
+       Road bends off to its barrier, then the Accountable Road climbs and
+       its six steps appear in order. Once, when the slide opens, on the
+       cover and on slide 24. The closing is still. With animation off
+       (reduced motion, print) the finished picture shows. */
+    @keyframes rdDraw { from { stroke-dashoffset: 1; } to { stroke-dashoffset: 0; } }
+    @keyframes rdFade { from { opacity: 0; } to { opacity: 1; } }
+    @keyframes rdRise { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: none; } }
+    .slide-title.active .rd-victim, .roads-slide.active .rd-victim,
+    .slide-title.active .rd-acc, .roads-slide.active .rd-acc { stroke-dasharray: 1; }
+    .slide-title.active .rd-victim, .roads-slide.active .rd-victim { animation: rdDraw 0.9s cubic-bezier(0.16, 1, 0.3, 1) 0.3s both; }
+    .slide-title.active .rd-acc, .roads-slide.active .rd-acc { animation: rdDraw 1.3s cubic-bezier(0.16, 1, 0.3, 1) 0.7s both; }
+    .slide-title.active .rd-victim-line, .slide-title.active .rd-acc-line,
+    .roads-slide.active .rd-victim-line, .roads-slide.active .rd-acc-line { animation: rdFade 0.5s ease-out 1.6s both; }
+    .slide-title.active .rd-barrier, .roads-slide.active .rd-barrier,
+    .slide-title.active .rd-victim-words, .slide-title.active .rd-name { animation: rdFade 0.5s ease-out 1.1s both; }
+    .slide-title.active .rd-step { animation: rdRise 0.5s cubic-bezier(0.16, 1, 0.3, 1) both; }
+    .slide-title.active .rd-step:nth-child(1) { animation-delay: 1.3s; }
+    .slide-title.active .rd-step:nth-child(2) { animation-delay: 1.5s; }
+    .slide-title.active .rd-step:nth-child(3) { animation-delay: 1.7s; }
+    .slide-title.active .rd-step:nth-child(4) { animation-delay: 1.9s; }
+    .slide-title.active .rd-step:nth-child(5) { animation-delay: 2.1s; }
+    .slide-title.active .rd-step:nth-child(6) { animation-delay: 2.3s; }
+
+    /* Slide 24: the fork stands between the two lists, the Victim Road
+       bending toward its list and the Accountable Road climbing toward its
+       own. The lists carry the words, so the drawing is hidden from screen
+       readers. Phones stack the lists, so the fork stays off there. */
+    .roads-fork { display: none; }
+    @media (min-width: 769px) {
+      .roads-fork { display: block; flex: 0 0 8.5rem; align-self: center; width: 8.5rem; height: auto; aspect-ratio: 260 / 420; }
+      .roads-slide .comparison-row { gap: 1.25rem; }
+    }
+
+    /* Phones keep the cover and the closing they have. */
+    .slide-title .roads, .slide-closing .roads { display: none; }
+
+    @media (min-width: 769px) {
+      /* Cover: the words in a left column, the roads on the right. The
+         logo stays above the title, in the flow, as before. The PDF
+         buttons are quieter, the copyright is a plain line. The selector
+         repeats .slide so it out-ranks the older title rules. */
+      .slide.slide-title {
+        align-items: flex-start;
+        text-align: left;
+        padding: 2rem 0 5.25rem 5rem;
+      }
+      .slide-title .roads, .slide-closing .roads {
+        display: block;
+        position: absolute;
+        top: 50%;
+        width: min(30rem, calc(100% - 42rem));
+        height: auto;
+        aspect-ratio: 580 / 670;
+        transform: translateY(-50%);
+        pointer-events: none;
+      }
+      .slide-title .roads { right: 2.5rem; }
+      .slide-title .logo { max-width: 12.5rem; padding: 0.6rem 0.85rem; margin: 0 0 1.75rem; }
+      .slide-title h1 { max-width: 32rem; margin: 0; font-size: 4.2rem; line-height: 1.12; text-align: left; }
+      .slide-title .divider { margin: 1.5rem 0 1.25rem; }
+      .slide-title .subtitle { max-width: 32rem; margin: 0; font-size: 1.75rem; }
+      .slide-title > div[style] {
+        justify-content: flex-start !important;
+        width: auto !important;
+        gap: 0.6rem !important;
+        margin: 2rem 0 0 !important;
+      }
+      .slide-title .download-btn {
+        margin: 0;
+        font-size: 0.9rem;
+        padding: 0.5rem 0.85rem;
+        background: none;
+        border: 1.5px solid var(--dark);
+        color: var(--dark);
+      }
+      .slide-title .copyright {
+        position: absolute;
+        left: 5rem;
+        bottom: 1.75rem;
+        width: auto;
+        margin: 0;
+        padding: 0;
+        background: none;
+        color: var(--gray);
+        text-align: left;
+      }
+
+      /* Closing: the same light ground as the cover, the roads on the
+         left, and the words on the right with the take-home line largest.
+         The order on screen is set here; the markup keeps its order. Some
+         colors are set inline for the old dark closing, so they need
+         !important. The rubric button stays: it marks when the rubric is
+         handed out (Britt). */
+      .slide.slide-closing { background: linear-gradient(180deg, var(--muted) 0%, var(--light) 60%); }
+      .slide-closing .roads { left: 2.5rem; }
+      .slide-closing .closing-box {
+        position: absolute;
+        top: 0;
+        bottom: 0;
+        right: 5rem;
+        width: 32rem;
+        max-width: none;
+        padding: 0;
+        border-radius: 0;
+        background: none;
+        display: flex;
+        flex-direction: column;
+        justify-content: center;
+        text-align: left;
+      }
+      .slide-closing .closing-box h2 {
+        order: 1;
+        margin: 0;
+        font-size: 3.2rem;
+        font-weight: 700;
+        line-height: 1.15;
+        color: var(--dark);
+      }
+      .slide-closing .closing-box .divider { order: 2; margin: 1.5rem 0; }
+      .slide-closing .closing-box p { order: 3; margin: 0; font-size: 1.4rem; line-height: 1.5; color: var(--gray); }
+      .slide-closing .closing-box h3 {
+        order: 4;
+        margin: 1.75rem 0 0 !important;
+        font-size: 1.2rem !important;
+        color: var(--dark) !important;
+      }
+      .slide-closing .closing-box .download-resource {
+        order: 5;
+        margin: 1rem 0 0 !important;
+        padding: 0;
+        background: none !important;
+        border: 0;
+      }
+      .slide-closing .closing-box .download-prompt { color: var(--gray) !important; }
+    }
   </style>
   </head>
 <body>
@@ -3178,6 +3338,34 @@
           <a href="resources/Employee_Accountability_Teachers_Guide.pdf" target="_blank" rel="noopener noreferrer" class="download-btn">Teacher's Guide</a>
         </div>
         <p class="copyright">Copyright &copy; 2026 WV Adult Basic Education</p>
+        <svg class="roads" viewBox="0 -30 580 670" role="img" aria-label="A road that splits in two. The Victim Road, through ignore, deny, blame, rationalize, resist and hide, ends at a barrier. The Accountable Road climbs ahead through recognize, forgive, examine, learn, act and move forward.">
+          <path class="rd-victim" pathLength="1" d="M290,640 C284,560 220,520 160,476 C120,446 104,410 104,368"/>
+          <path class="rd-victim-line" d="M290,640 C284,560 220,520 160,476 C120,446 104,410 104,368"/>
+          <path class="rd-acc" pathLength="1" d="M290,640 C292,548 332,490 360,430 C392,362 406,300 400,200 C396,130 386,80 392,26"/>
+          <path class="rd-acc-line" d="M290,640 C292,548 332,490 360,430 C392,362 406,300 400,200 C396,130 386,80 392,26"/>
+          <g class="rd-barrier" transform="translate(104,330)">
+            <rect x="-44" y="-16" width="88" height="22" rx="3"/>
+            <path d="M-36,6 l14,-22 M-16,6 l14,-22 M4,6 l14,-22 M24,6 l14,-22"/>
+          </g>
+          <text class="rd-name rd-name-victim" x="104" y="300" text-anchor="middle" font-size="19">The Victim Road</text>
+          <text class="rd-name rd-name-acc" x="392" y="-6" text-anchor="middle" font-size="21">The Accountable Road</text>
+          <g class="rd-victim-words" font-size="18" text-anchor="end">
+            <text x="240.2" y="600.0">Ignore</text>
+            <text x="214.2" y="568.5">Deny</text>
+            <text x="179.4" y="539.3">Blame</text>
+            <text x="139.4" y="510.1">Rationalize</text>
+            <text x="97.3" y="466.8">Resist</text>
+            <text x="73.1" y="408.7">Hide</text>
+          </g>
+          <g class="rd-steps" font-size="21">
+            <g class="rd-step"><circle cx="308.5" cy="540.6" r="9"/><text x="340.5" y="559.1">Recognize</text></g>
+            <g class="rd-step"><circle cx="347.6" cy="455.4" r="9"/><text x="377.9" y="477.7">Forgive</text></g>
+            <g class="rd-step"><circle cx="384.0" cy="368.9" r="9"/><text x="416.5" y="385.9">Examine</text></g>
+            <g class="rd-step"><circle cx="400.3" cy="276.7" r="9"/><text x="434.3" y="285.8">Learn</text></g>
+            <g class="rd-step"><circle cx="398.9" cy="182.9" r="9"/><text x="432.8" y="187.4">Act</text></g>
+            <g class="rd-step"><circle cx="391.0" cy="89.4" r="9"/><text x="425.0" y="94.4">Move forward</text></g>
+          </g>
+        </svg>
       </section>
 
       <section class="slide slide-section" data-chapter="1" data-chapter-num="W">
@@ -3685,7 +3873,7 @@
       </section>
 
       <!-- Victim Road vs Accountable Road: side-by-side contrast panels with step lists -->
-      <section class="slide" data-chapter="5">
+      <section class="slide roads-slide" data-chapter="5" style="--fit: 0.99">
         <h2>Victim Road vs. Accountable Road</h2>
         <p style="font-size: 1.1rem; color: var(--gray); margin-top: -1.5rem; margin-bottom: 1.5rem;">Everyone visits the Victim Road sometimes. The real question is: <em>how fast can you choose to leave it?</em></p>
         <div class="comparison-row">
@@ -3700,6 +3888,16 @@
               <li>Hide to avoid dealing with it</li>
             </ul>
           </div>
+          <svg class="roads roads-fork" viewBox="0 0 260 420" aria-hidden="true">
+            <path class="rd-victim" pathLength="1" d="M130,430 L130,330 C130,270 52,250 40,160"/>
+            <path class="rd-victim-line" d="M130,430 L130,330 C130,270 52,250 40,160"/>
+            <path class="rd-acc" pathLength="1" d="M130,430 L130,330 C130,262 222,236 228,150 C232,96 226,52 230,6"/>
+            <path class="rd-acc-line" d="M130,430 L130,330 C130,262 222,236 228,150 C232,96 226,52 230,6"/>
+            <g class="rd-barrier" transform="translate(40,128) scale(0.8)">
+              <rect x="-44" y="-16" width="88" height="22" rx="3"/>
+              <path d="M-36,6 l14,-22 M-16,6 l14,-22 M4,6 l14,-22 M24,6 l14,-22"/>
+            </g>
+          </svg>
           <div class="comparison-panel comparison-panel--accent">
             <p class="comparison-label comparison-label--accent"><img class="label-icon" src="images/generated-context/accountable-road.png" alt="" aria-hidden="true" loading="lazy" />The Accountable Road</p>
             <ul class="comparison-list comparison-list--accent">
@@ -3999,6 +4197,34 @@
 
       <section class="slide slide-closing" data-chapter="7" id="closingSlide">
         <div class="confetti-container" id="confettiContainer"></div>
+        <svg class="roads" viewBox="0 -30 580 670" role="img" aria-label="A road that splits in two. The Victim Road, through ignore, deny, blame, rationalize, resist and hide, ends at a barrier. The Accountable Road climbs ahead through recognize, forgive, examine, learn, act and move forward.">
+          <path class="rd-victim" pathLength="1" d="M290,640 C284,560 220,520 160,476 C120,446 104,410 104,368"/>
+          <path class="rd-victim-line" d="M290,640 C284,560 220,520 160,476 C120,446 104,410 104,368"/>
+          <path class="rd-acc" pathLength="1" d="M290,640 C292,548 332,490 360,430 C392,362 406,300 400,200 C396,130 386,80 392,26"/>
+          <path class="rd-acc-line" d="M290,640 C292,548 332,490 360,430 C392,362 406,300 400,200 C396,130 386,80 392,26"/>
+          <g class="rd-barrier" transform="translate(104,330)">
+            <rect x="-44" y="-16" width="88" height="22" rx="3"/>
+            <path d="M-36,6 l14,-22 M-16,6 l14,-22 M4,6 l14,-22 M24,6 l14,-22"/>
+          </g>
+          <text class="rd-name rd-name-victim" x="104" y="300" text-anchor="middle" font-size="19">The Victim Road</text>
+          <text class="rd-name rd-name-acc" x="392" y="-6" text-anchor="middle" font-size="21">The Accountable Road</text>
+          <g class="rd-victim-words" font-size="18" text-anchor="end">
+            <text x="240.2" y="600.0">Ignore</text>
+            <text x="214.2" y="568.5">Deny</text>
+            <text x="179.4" y="539.3">Blame</text>
+            <text x="139.4" y="510.1">Rationalize</text>
+            <text x="97.3" y="466.8">Resist</text>
+            <text x="73.1" y="408.7">Hide</text>
+          </g>
+          <g class="rd-steps" font-size="21">
+            <g class="rd-step"><circle cx="308.5" cy="540.6" r="9"/><text x="340.5" y="559.1">Recognize</text></g>
+            <g class="rd-step"><circle cx="347.6" cy="455.4" r="9"/><text x="377.9" y="477.7">Forgive</text></g>
+            <g class="rd-step"><circle cx="384.0" cy="368.9" r="9"/><text x="416.5" y="385.9">Examine</text></g>
+            <g class="rd-step"><circle cx="400.3" cy="276.7" r="9"/><text x="434.3" y="285.8">Learn</text></g>
+            <g class="rd-step"><circle cx="398.9" cy="182.9" r="9"/><text x="432.8" y="187.4">Act</text></g>
+            <g class="rd-step"><circle cx="391.0" cy="89.4" r="9"/><text x="425.0" y="94.4">Move forward</text></g>
+          </g>
+        </svg>
         <div class="closing-box">
           <h3 style="color: var(--light); font-size: 1.5rem; margin-bottom: 1.5rem;">Congratulations, you have completed this lesson!</h3>
           <p>"The strength of a team is each individual member. The strength of each member is the team."</p>
