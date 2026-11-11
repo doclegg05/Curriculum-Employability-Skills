@@ -14,7 +14,7 @@
       "title": "Communicating with the Public",
       "source": {
         "path": "lesson-communicating-with-the-public/index.html",
-        "sha256": "b20260eb7ef85bdf29fee3233849638a3b5783c1881d13bcf2c95bc47f03abfd",
+        "sha256": "4334653f1aa7e793118087cc702d762aba831f2be5dffa7a9701713518499866",
         "status": "ready"
       },
       "roles": {
@@ -156,21 +156,21 @@
         "slides.title.colors": {
           "selector": ".slide-title background and split panels",
           "observed": [
-            "linear-gradient(90deg, rgba(255, 255, 255, 0.96) 0%, rgba(255, 255, 255, 0.82) 42%, rgba(255, 255, 255, 0.22) 100%), url(\"lesson-communicating-with-the-public/images/ppt-inspiration/image1.jpg\")"
+            "none"
           ],
           "reason": "Photo/composite title has no equivalent one-color or two-color finish."
         },
         "roles.titleBackground": {
           "selector": ".slide-title background / first gradient stop / left split panel",
           "observed": [
-            "linear-gradient(90deg, rgba(255, 255, 255, 0.96) 0%, rgba(255, 255, 255, 0.82) 42%, rgba(255, 255, 255, 0.22) 100%), url(\"lesson-communicating-with-the-public/images/ppt-inspiration/image1.jpg\")"
+            "rgba(0, 0, 0, 0)"
           ],
           "reason": "No single exact first color when null (photo, transparency or more than two stops)."
         },
         "roles.titleBackgroundEnd": {
           "selector": ".slide-title last gradient stop",
           "observed": [
-            "linear-gradient(90deg, rgba(255, 255, 255, 0.96) 0%, rgba(255, 255, 255, 0.82) 42%, rgba(255, 255, 255, 0.22) 100%), url(\"lesson-communicating-with-the-public/images/ppt-inspiration/image1.jpg\")"
+            "none"
           ],
           "reason": "No comparable second color: solid, photo, multi-color split panel, or unsupported gradient."
         },
@@ -548,7 +548,7 @@
       "title": "Employee Accountability",
       "source": {
         "path": "lesson-employee-accountability/index.html",
-        "sha256": "7c06432bd6c9730009cc2089ad0eb15542d1423f343f43fdfb8350d21c92353a",
+        "sha256": "33653889da7c0bb5c81ab3b94582bdd4ddac06837874f303269826c44eb3d374",
         "status": "ready"
       },
       "roles": {
@@ -571,7 +571,7 @@
       "background": "soft-gradient",
       "slides": {
         "title": {
-          "layout": "center",
+          "layout": "left",
           "logo": "above",
           "colors": "gradient"
         },
@@ -646,6 +646,7 @@
         "roles.button": {
           "selector": ".slide .download-btn",
           "observed": [
+            "rgba(0, 0, 0, 0); none",
             "rgb(0, 64, 113); none",
             "rgb(211, 178, 87); none"
           ],
@@ -679,7 +680,7 @@
         "slides.title.layout": {
           "selector": ".slide-title h1 and ::before/::after geometry",
           "observed": [
-            "text-align:center; split-panels:false; title-in-lower-half:false"
+            "text-align:left; split-panels:false; title-in-lower-half:false"
           ]
         },
         "slides.title.logo": {
@@ -810,7 +811,7 @@
       "title": "Interview Skills",
       "source": {
         "path": "lesson-interview-skills/index.html",
-        "sha256": "d227192e17aedc10736d6c2565024b672fd40aabc3ca54c2956907793d41bb9d",
+        "sha256": "63844d6d52d198031b5a0f7bf7945294786036c196ec1eea90bc28f252a6d0ac",
         "status": "ready"
       },
       "roles": {
@@ -912,7 +913,7 @@
         "roles.button": {
           "selector": ".slide .download-btn",
           "observed": [
-            "rgb(211, 178, 87); none",
+            "rgba(0, 0, 0, 0); none",
             "rgb(0, 19, 63); none"
           ],
           "reason": "A gradient, photo, overlay, transparent surface, off-palette color, or mixed surfaces has no single exact swatch."
@@ -950,7 +951,7 @@
         "slides.title.logo": {
           "selector": ".slide-title .logo geometry relative to h1",
           "observed": [
-            "position:absolute; above-title:false"
+            "position:absolute; above-title:true"
           ]
         },
         "slides.title.colors": {
@@ -1062,7 +1063,7 @@
       "title": "Problem Solving & Decision Making",
       "source": {
         "path": "lesson-problem-solving-and-decision-making/index.html",
-        "sha256": "77915b0a6cc7c1cf24e9d87e5848054abcd3d846db6b26c6f790bea02deed2cf",
+        "sha256": "425b96871dba2ccee977318c3347f642589a045e54b052dd7e756371c43f68b4",
         "status": "ready"
       },
       "roles": {
@@ -1324,7 +1325,7 @@
       "title": "Time Management",
       "source": {
         "path": "lesson-time-management/index.html",
-        "sha256": "104bad9335ec659c1edee6b4ab280df89d40b7971ddacf9176aaf55d5c3a2d15",
+        "sha256": "4c5e12366e768143f85e11d60879a4ee7cea8f42d38a9a02ef1908daa952e388",
         "status": "ready"
       },
       "roles": {

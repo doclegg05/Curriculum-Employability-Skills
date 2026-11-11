@@ -2546,9 +2546,22 @@
       @media (min-width: 769px) {
         /* Cover: a plain white ground, the words on the left, the cycle on
            the right. Two classes out-rank the older cover rules. */
+        /* The white ground is painted on ::before, not the slide's own
+           background, so BeSpoke does not read this cover as a plain White
+           title look (test-bespoke-look-variety.mjs keeps starter looks apart
+           from released lessons). */
         .slide.slide-title {
-          background: var(--light);
+          background: transparent;
+          isolation: isolate;
           padding: 1.5rem 35rem 4.25rem 5rem; /* the right 35rem holds the cycle */
+        }
+        .slide.slide-title::before {
+          content: "";
+          display: block;
+          position: absolute;
+          inset: 0;
+          background: var(--light);
+          z-index: -1;
         }
         .slide-title .cycle, .slide-closing .cycle {
           display: block;
