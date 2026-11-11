@@ -1,0 +1,101 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<style>
+  @font-face { font-family: "Crimson Pro"; src: url("../../fonts/crimson-pro-latin.woff2") format("woff2"); font-weight: 400 700; font-display: block; }
+  @font-face { font-family: "Work Sans"; src: url("../../fonts/work-sans-latin.woff2") format("woff2"); font-weight: 400 600; font-display: block; }
+  :root { --font-heading: "Crimson Pro", serif; --font-body: "Work Sans", sans-serif; }
+</style>
+<link rel="stylesheet" href="../spokes-handout.css">
+<title>Connecting or Disconnecting?: SPOKES Communicating with the Public</title>
+<style>
+  /* SPOKES wording (approved by Britt), replacing a third-party card game.
+     Sheet 1: how to play and the answer key. Sheet 2: 12 cut-apart cards. */
+  .handout { font-size: 11pt; }
+  .handout-head h1 { font-weight: 700; }
+  .handout h3 { font-weight: 700; }
+  .body p { margin: 0; }
+  .sheet > .body { gap: 0.18in; }
+  .play { margin: 0; padding: 0; list-style: none; counter-reset: st; display: grid; gap: 0.06in; }
+  .play > li { counter-increment: st; display: grid; grid-template-columns: 0.32in 1fr; column-gap: 0.06in; line-height: 1.33; }
+  .play > li::before { content: counter(st) "."; font-weight: 700; color: var(--primary); }
+  .cut-label { display: flex; align-items: center; gap: 0.1in; font-size: 9pt; color: var(--gray); }
+  .cut-label::after { content: ""; flex: 1; border-top: 1pt dashed var(--gray); }
+  .cards { flex: 1; margin-bottom: 0.18in; display: grid; grid-template-columns: repeat(3, 1fr); grid-template-rows: repeat(4, 1fr); border: 1.2pt dashed var(--gray); }
+  .cards > div { border: 0.75pt dashed var(--gray); display: flex; flex-direction: column; justify-content: center; align-items: center; padding: 0.12in 0.16in; text-align: center; }
+  .cards q { quotes: "\201C" "\201D"; font-family: var(--font-heading); font-size: 19pt; line-height: 1.15; color: var(--royal); font-weight: 600; }
+  .cards small { margin-top: 0.08in; font-size: 7.5pt; letter-spacing: 0.12em; text-transform: uppercase; color: var(--gray); }
+  .card-body { flex: 1; }
+
+  .key th:nth-child(1), .key th:nth-child(3) { width: 31%; }
+  .key tbody td { height: 0.98in; font-size: 11.5pt; }
+  .key q { quotes: "\201C" "\201D"; font-weight: 600; }
+  .key td.why { color: var(--gray); font-style: italic; }
+  .key thead th.conn { border-top: 4pt solid var(--accent); }
+  .key thead th.disc { border-top: 4pt solid var(--mauve); }
+</style>
+</head>
+<body>
+<main class="handout">
+  <section class="sheet">
+    <header class="handout-head">
+      <img class="logo" src="../../SPOKES-Logo.png" alt="SPOKES, Skills for Life">
+      <h1>Connecting or Disconnecting?</h1>
+    </header>
+    <div class="body">
+      <p class="directions"><b>How to play (2 or 3 players):</b> Cut the cards apart and stack them face down.</p>
+      <ol class="play">
+        <li><div>Player 1 draws a card and reads it out loud.</div></li>
+        <li><div>Player 2 says whether it <i>connects</i> (brings people together) or <i>disconnects</i> (pushes them apart).</div></li>
+        <li><div>If Player 2 is right, they keep the card. If wrong, it goes to the bottom of the stack.</div></li>
+        <li><div>Switch roles. Play until the stack is gone.</div></li>
+      </ol>
+      <section>
+        <h2>Answer key: check after you play</h2>
+        <table class="grid-table key">
+          <thead><tr><th class="conn">Connecting</th><th>Reason</th><th class="disc">Disconnecting</th><th>Reason</th></tr></thead>
+          <tbody>
+            <tr><td><q>I can see this matters to you.</q></td><td class="why">shows understanding</td><td><q>Whatever. Do what you want.</q></td><td class="why">brushes the person off</td></tr>
+            <tr><td><q>Can we figure this out together?</q></td><td class="why">invites teamwork</td><td><q>You never listen.</q></td><td class="why">blames</td></tr>
+            <tr><td><q>I need a minute to think, then let&rsquo;s talk.</q></td><td class="why">asks for time</td><td><q>That&rsquo;s not my problem.</q></td><td class="why">refuses to help</td></tr>
+            <tr><td><q>Help me understand what happened.</q></td><td class="why">asks to understand</td><td><q>Calm down!</q></td><td class="why">orders feelings</td></tr>
+            <tr><td><q>I was frustrated when the report was late.</q></td><td class="why">names the feeling and the facts</td><td><q>Why would you do something so dumb?</q></td><td class="why">insults</td></tr>
+            <tr><td><q>Thanks for telling me.</q></td><td class="why">shows appreciation</td><td><q>I&rsquo;m done talking to you.</q></td><td class="why">shuts the door</td></tr>
+          </tbody>
+        </table>
+      </section>
+    </div>
+    <footer class="handout-foot">
+      <span><strong>SPOKES</strong> Communicating with the Public &middot; Connecting or Disconnecting?</span>
+      <span>Copyright &copy; 2026 WV Adult Basic Education</span>
+    </footer>
+  </section>
+
+  <section class="sheet">
+    <div class="body card-body" style="margin-top: 0">
+      <p class="cut-label">Cut along the dashed lines</p>
+      <div class="cards">
+        <div><q>I can see this matters to you.</q><small>Card 1</small></div>
+        <div><q>You never listen.</q><small>Card 2</small></div>
+        <div><q>Can we figure this out together?</q><small>Card 3</small></div>
+        <div><q>Calm down!</q><small>Card 4</small></div>
+        <div><q>I need a minute to think, then let&rsquo;s talk.</q><small>Card 5</small></div>
+        <div><q>Whatever. Do what you want.</q><small>Card 6</small></div>
+        <div><q>Help me understand what happened.</q><small>Card 7</small></div>
+        <div><q>That&rsquo;s not my problem.</q><small>Card 8</small></div>
+        <div><q>I was frustrated when the report was late.</q><small>Card 9</small></div>
+        <div><q>Why would you do something so dumb?</q><small>Card 10</small></div>
+        <div><q>Thanks for telling me.</q><small>Card 11</small></div>
+        <div><q>I&rsquo;m done talking to you.</q><small>Card 12</small></div>
+      </div>
+    </div>
+    <footer class="handout-foot">
+      <span><strong>SPOKES</strong> Communicating with the Public &middot; Connecting or Disconnecting?</span>
+      <span>Copyright &copy; 2026 WV Adult Basic Education</span>
+    </footer>
+  </section>
+</main>
+<script src="../lines.js"></script>
+</body>
+</html>

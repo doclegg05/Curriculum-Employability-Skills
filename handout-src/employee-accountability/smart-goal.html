@@ -1,0 +1,172 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<title>SMART Goals: SPOKES Employee Accountability</title>
+<style>
+  @font-face { font-family: "Merriweather"; src: url("../../fonts/merriweather-latin.woff2") format("woff2"); font-weight: 400 900; font-display: block; }
+  @font-face { font-family: "Source Sans 3"; src: url("../../fonts/source-sans-3-latin.woff2") format("woff2"); font-weight: 400 600; font-display: block; }
+  :root { --font-heading: "Merriweather", serif; --font-body: "Source Sans 3", sans-serif; }
+</style>
+<link rel="stylesheet" href="../spokes-handout.css">
+<style>
+  /* Handout #4, SMART Goal Worksheet. Same three pages and wording as the
+     handout it replaces. */
+  .handout-head h1 { font-weight: 700; font-size: 26pt; }
+  .handout h3 { font-weight: 700; font-size: 14pt; }
+  .smart { display: grid; gap: 0.07in; }
+  .smart-row { display: grid; grid-template-columns: 0.42in 1.35in 1fr; align-items: center; gap: 0.14in; }
+  .smart-row .letter {
+    width: 0.42in; height: 0.42in; border-radius: 6pt;
+    background: var(--dark); color: var(--light);
+    display: grid; place-items: center;
+    font-family: var(--font-heading); font-weight: 700; font-size: 16pt;
+  }
+  .smart-row b { color: var(--dark); }
+  .smart-row span { color: var(--gray); }
+  .example { --panel-edge: var(--gold); }
+  .example dl { display: grid; grid-template-columns: 1.05in 1fr; gap: 0.05in 0.14in; margin: 0.08in 0; }
+  .example dt { font-weight: 600; color: var(--primary); }
+  .example dd { margin: 0; }
+  .example .complete { margin: 0.1in 0 0; font-weight: 600; color: var(--dark); }
+  .mistakes tbody td { height: auto; padding: 0.08in 0.1in; }
+  .mistakes tbody td:first-child { font-style: italic; color: var(--gray); }
+  .build { display: grid; gap: 0.18in; }
+  .build .prompt b { color: var(--primary); }
+  .statement { min-height: 1.4in; }
+  .steps tbody td { height: 0.5in; }
+  .steps th:first-child, .steps td:first-child { width: 0.4in; color: var(--primary); font-weight: 700; }
+  .obstacles tbody td { height: 0.6in; }
+  .person { border: 1pt solid var(--line); border-radius: 6pt; padding: 0.1in 0.16in; display: grid; gap: 0.08in; }
+  .commit { --panel-edge: var(--accent); display: grid; gap: 0.1in; }
+  /* Page 1 carries the header, the SMART key, the example and the table. */
+  .sheet.tight > .body { gap: 0.14in; }
+  .tight .smart { gap: 0.04in; }
+  .tight .smart-row .letter { width: 0.34in; height: 0.34in; font-size: 14pt; }
+  .tight .smart-row { grid-template-columns: 0.34in 1.35in 1fr; }
+  .tight .example dl { gap: 0.03in 0.14in; }
+  .tight .mistakes tbody td { padding: 0.05in 0.1in; }
+</style>
+</head>
+<body>
+<main class="handout">
+  <section class="sheet tight">
+    <header class="handout-head">
+      <img class="logo" src="../../SPOKES-Logo.png" alt="SPOKES, Skills for Life">
+      <h1>SMART Goals</h1>
+    </header>
+    <div class="body">
+      <div class="name-row">
+        <div class="field"><span class="label">Name:</span><span class="rule"></span></div>
+        <div class="field"><span class="label">Date:</span><span class="rule"></span></div>
+      </div>
+      <p class="directions aside">Directions: Use the SMART framework to create a meaningful accountability goal. Review the example below, then write your own SMART goal on the next page.</p>
+
+      <section>
+        <h3>What Makes a Goal SMART?</h3>
+        <div class="smart">
+          <div class="smart-row"><span class="letter">S</span><b>Specific</b><span>What exactly will I do? (clear, detailed action)</span></div>
+          <div class="smart-row"><span class="letter">M</span><b>Measurable</b><span>How will I track progress? (numbers, milestones, evidence)</span></div>
+          <div class="smart-row"><span class="letter">A</span><b>Achievable</b><span>Is this realistic for me right now? (within my control)</span></div>
+          <div class="smart-row"><span class="letter">R</span><b>Relevant</b><span>Why does this matter? (connects to my growth or career)</span></div>
+          <div class="smart-row"><span class="letter">T</span><b>Time-bound</b><span>What is my deadline? (specific date or timeframe)</span></div>
+        </div>
+      </section>
+
+      <section class="panel example">
+        <h3>Worked Example: Building an Accountability Goal</h3>
+        <dl>
+          <dt>Scenario:</dt><dd>Jamal works as a warehouse associate. He has been late to work 3 times this month and received a verbal warning from his supervisor.</dd>
+          <dt>Specific:</dt><dd>I will arrive at work at least 10 minutes before my shift starts every day.</dd>
+          <dt>Measurable:</dt><dd>I will track my arrival time in a phone log; my goal is zero late arrivals this month.</dd>
+          <dt>Achievable:</dt><dd>I will set two alarms and prep my clothes/lunch the night before.</dd>
+          <dt>Relevant:</dt><dd>Being on time builds trust with my supervisor and keeps me eligible for the lead position opening next quarter.</dd>
+          <dt>Time-bound:</dt><dd>I will achieve 30 consecutive days of on-time arrivals by March 15.</dd>
+        </dl>
+        <p class="complete">COMPLETE GOAL: "I will arrive at work 10 minutes early every day for 30 consecutive days by March 15, tracking my arrival in a phone log, so that I rebuild trust with my supervisor and position myself for the warehouse lead opening."</p>
+      </section>
+
+      <section>
+        <h3>Common Mistakes vs. SMART Goals</h3>
+        <table class="grid-table mistakes">
+          <thead><tr><th>Weak Goal (Vague)</th><th>SMART Goal (Specific &amp; Measurable)</th></tr></thead>
+          <tbody>
+            <tr><td>I'll try to be better at work.</td><td>I will complete all assigned tasks by their deadline for the next 2 weeks.</td></tr>
+            <tr><td>I need to communicate more.</td><td>I will give my supervisor a progress update every Friday at 3 PM for the next month.</td></tr>
+            <tr><td>I want to be more reliable.</td><td>I will respond to all work emails within 4 hours during business hours for 30 days.</td></tr>
+          </tbody>
+        </table>
+      </section>
+    </div>
+    <footer class="handout-foot">
+      <span><strong>SPOKES</strong> Employee Accountability &middot; Handout #4: SMART Goal Worksheet</span>
+      <span>Copyright &copy; 2026 WV Adult Basic Education</span>
+    </footer>
+  </section>
+
+  <section class="sheet">
+    <div class="body build" style="margin-top: 0">
+      <h3>Build Your SMART Accountability Goal</h3>
+      <div><p class="prompt"><b>SPECIFIC</b> -- What exactly will I do? Be as detailed as possible:</p><div class="lines" style="--n: 3"></div></div>
+      <div><p class="prompt"><b>MEASURABLE</b> -- How will I measure or track my progress?</p><div class="lines" style="--n: 3"></div></div>
+      <div><p class="prompt"><b>ACHIEVABLE</b> -- What makes this realistic for me? What resources or support do I need?</p><div class="lines" style="--n: 3"></div></div>
+      <div><p class="prompt"><b>RELEVANT</b> -- Why is this goal important to my career, education, or personal growth?</p><div class="lines" style="--n: 3"></div></div>
+      <div><p class="prompt"><b>TIME-BOUND</b> -- What is my target completion date?</p><div class="lines" style="--n: 2"></div></div>
+      <section class="panel">
+        <h2>My Complete Goal Statement:</h2>
+        <div class="lines" style="--n: 4"></div>
+      </section>
+    </div>
+    <footer class="handout-foot">
+      <span><strong>SPOKES</strong> Employee Accountability &middot; Handout #4: SMART Goal Worksheet</span>
+      <span>Copyright &copy; 2026 WV Adult Basic Education</span>
+    </footer>
+  </section>
+
+  <section class="sheet">
+    <div class="body" style="margin-top: 0">
+      <section>
+        <h3>Action Steps &amp; Accountability Plan</h3>
+        <p class="directions aside" style="margin-bottom: 0.08in">Break your SMART goal into small, manageable action steps. Set a target date and check off when completed.</p>
+        <table class="grid-table steps">
+          <thead><tr><th style="width: 0.4in">#</th><th>Action Step</th><th style="width: 1.3in">Target Date</th><th style="width: 1.1in">Completed?</th></tr></thead>
+          <tbody><tr><td>1.</td><td></td><td></td><td></td></tr><tr><td>2.</td><td></td><td></td><td></td></tr><tr><td>3.</td><td></td><td></td><td></td></tr><tr><td>4.</td><td></td><td></td><td></td></tr></tbody>
+        </table>
+      </section>
+      <section>
+        <h3>Planning for Obstacles</h3>
+        <p class="directions aside" style="margin-bottom: 0.08in">Think about what might get in your way and how you will handle it.</p>
+        <table class="grid-table obstacles">
+          <thead><tr><th>Potential Obstacle</th><th>My Plan to Overcome It</th></tr></thead>
+          <tbody><tr><td></td><td></td></tr><tr><td></td><td></td></tr></tbody>
+        </table>
+      </section>
+      <section>
+        <h3>Accountability Support Network</h3>
+        <p class="directions aside" style="margin-bottom: 0.08in">Who will help hold you accountable? Choose people you trust who will be honest with you.</p>
+        <div style="display: grid; gap: 0.1in">
+          <div class="person">
+            <div class="blank-row"><div class="field"><span class="label">Person 1:</span><span class="rule"></span></div><div class="field"><span class="label">Relationship:</span><span class="rule"></span></div></div>
+            <div class="field"><span class="label" style="font-weight: 400">How they will help:</span><span class="rule"></span></div>
+          </div>
+          <div class="person">
+            <div class="blank-row"><div class="field"><span class="label">Person 2:</span><span class="rule"></span></div><div class="field"><span class="label">Relationship:</span><span class="rule"></span></div></div>
+            <div class="field"><span class="label" style="font-weight: 400">How they will help:</span><span class="rule"></span></div>
+          </div>
+        </div>
+      </section>
+      <section class="panel commit">
+        <h3 style="margin: 0">My Commitment</h3>
+        <p style="margin: 0">I commit to following through on this SMART goal and holding myself accountable for my progress.</p>
+        <div class="name-row"><div class="field"><span class="label">Signature:</span><span class="rule"></span></div><div class="field"><span class="label">Date:</span><span class="rule"></span></div></div>
+      </section>
+    </div>
+    <footer class="handout-foot">
+      <span><strong>SPOKES</strong> Employee Accountability &middot; Handout #4: SMART Goal Worksheet</span>
+      <span>Copyright &copy; 2026 WV Adult Basic Education</span>
+    </footer>
+  </section>
+</main>
+<script src="../lines.js"></script>
+</body>
+</html>

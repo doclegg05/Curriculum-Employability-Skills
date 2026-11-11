@@ -1,0 +1,73 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<style>
+  @font-face { font-family: "Crimson Pro"; src: url("../../fonts/crimson-pro-latin.woff2") format("woff2"); font-weight: 400 700; font-display: block; }
+  @font-face { font-family: "Work Sans"; src: url("../../fonts/work-sans-latin.woff2") format("woff2"); font-weight: 400 600; font-display: block; }
+  :root { --font-heading: "Crimson Pro", serif; --font-body: "Work Sans", sans-serif; }
+</style>
+<link rel="stylesheet" href="../spokes-handout.css">
+<title>What Is Self-Advocacy?: SPOKES Communicating with the Public</title>
+<style>
+  /* SPOKES wording (approved by Britt), replacing a third-party graphic.
+     A one-page poster of six tiles, each with a drawn icon. */
+  .handout { font-size: 11.5pt; }
+  .handout-head h1 { font-weight: 700; }
+  .body p { margin: 0; }
+  .lead { --panel-edge: var(--primary); font-family: var(--font-heading); font-size: 17pt; line-height: 1.25; color: var(--dark); padding: 0.16in 0.22in; }
+  .tiles { flex: 1; display: grid; grid-template-columns: 1fr 1fr; grid-template-rows: repeat(3, 1fr); gap: 0.2in; }
+  .tile { border: 1pt solid var(--line); border-top: 5pt solid var(--edge, var(--primary)); border-radius: 0 0 8pt 8pt; padding: 0.2in 0.22in; display: grid; grid-template-columns: 0.9in 1fr; column-gap: 0.18in; align-items: center; }
+  .tile svg { width: 0.9in; height: 0.9in; }
+  .tile svg .s { fill: none; stroke: var(--edge, var(--primary)); stroke-width: 3.5; stroke-linecap: round; stroke-linejoin: round; }
+  .tile svg .f { fill: var(--edge, var(--primary)); }
+  .tile h3 { margin: 0 0 0.05in; font-size: 19pt; font-weight: 700; line-height: 1.1; }
+  .tile p { line-height: 1.35; }
+  .card-body { flex: 1; }
+</style>
+</head>
+<body>
+<main class="handout">
+  <section class="sheet">
+    <header class="handout-head">
+      <img class="logo" src="../../SPOKES-Logo.png" alt="SPOKES, Skills for Life">
+      <h1>What Is Self-Advocacy?</h1>
+    </header>
+    <div class="body card-body">
+      <p class="panel lead">Self-advocacy means standing up for yourself and your family by knowing what you need and asking for it.</p>
+      <div class="tiles">
+        <div class="tile">
+          <svg viewBox="0 0 64 64" aria-hidden="true"><path class="s" d="M10 14 h44 a4 4 0 0 1 4 4 v22 a4 4 0 0 1 -4 4 h-26 l-10 9 v-9 h-8 a4 4 0 0 1 -4 -4 v-22 a4 4 0 0 1 4 -4 z"/><line class="s" x1="18" y1="25" x2="46" y2="25"/><line class="s" x1="18" y1="33" x2="38" y2="33"/></svg>
+          <div><h3>Speak up for yourself</h3><p>Say what you need, clearly and calmly.</p></div>
+        </div>
+        <div class="tile" style="--edge: var(--muted-gold)">
+          <svg viewBox="0 0 64 64" aria-hidden="true"><line class="s" x1="32" y1="8" x2="32" y2="54"/><line class="s" x1="20" y1="54" x2="44" y2="54"/><line class="s" x1="12" y1="16" x2="52" y2="16"/><path class="s" d="M12 16 l-8 18 h16 z"/><path class="s" d="M52 16 l-8 18 h16 z"/><circle class="f" cx="32" cy="8" r="3"/></svg>
+          <div><h3>Know your rights</h3><p>At work, at school and with benefits.</p></div>
+        </div>
+        <div class="tile" style="--edge: var(--dark)">
+          <svg viewBox="0 0 64 64" aria-hidden="true"><circle class="s" cx="27" cy="27" r="16"/><line class="s" x1="39" y1="39" x2="56" y2="56"/><line class="s" x1="20" y1="23" x2="34" y2="23"/><line class="s" x1="20" y1="30" x2="30" y2="30"/></svg>
+          <div><h3>Get the facts</h3><p>Find out how things work before you decide.</p></div>
+        </div>
+        <div class="tile" style="--edge: var(--accent)">
+          <svg viewBox="0 0 64 64" aria-hidden="true"><circle class="s" cx="32" cy="18" r="7"/><path class="s" d="M20 46 a12 12 0 0 1 24 0"/><circle class="s" cx="13" cy="26" r="5"/><path class="s" d="M4 48 a9 9 0 0 1 14 -8"/><circle class="s" cx="51" cy="26" r="5"/><path class="s" d="M60 48 a9 9 0 0 0 -14 -8"/></svg>
+          <div><h3>Build your support team</h3><p>People and programs who have your back.</p></div>
+        </div>
+        <div class="tile" style="--edge: var(--mauve)">
+          <svg viewBox="0 0 64 64" aria-hidden="true"><path class="s" d="M32 56 v-22"/><path class="s" d="M32 34 l-16 -14"/><path class="s" d="M32 34 l16 -14"/><circle class="s" cx="13" cy="17" r="5"/><circle class="s" cx="51" cy="17" r="5"/><circle class="f" cx="32" cy="56" r="3"/></svg>
+          <div><h3>Solve problems</h3><p>Look for options, pick one, try it.</p></div>
+        </div>
+        <div class="tile" style="--edge: var(--primary)">
+          <svg viewBox="0 0 64 64" aria-hidden="true"><path class="s" d="M24 58 v-14 l-6 -8 a3 3 0 0 1 5 -4 l5 5 v-25 a3.5 3.5 0 0 1 7 0 v16 a3.5 3.5 0 0 1 7 0 v3 a3.5 3.5 0 0 1 7 0 v14 c0 6 -3 9 -5 13"/></svg>
+          <div><h3>Ask for help early</h3><p>Before a small problem becomes a big one.</p></div>
+        </div>
+      </div>
+    </div>
+    <footer class="handout-foot">
+      <span><strong>SPOKES</strong> Communicating with the Public &middot; What Is Self-Advocacy?</span>
+      <span>Copyright &copy; 2026 WV Adult Basic Education</span>
+    </footer>
+  </section>
+</main>
+<script src="../lines.js"></script>
+</body>
+</html>

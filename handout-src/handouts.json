@@ -1,0 +1,250 @@
+{
+  "about": "SPOKES student handouts. Each entry turns one page in handout-src/ into the PDF a lesson links to, at that same path. Build with: node scripts/build-handouts.mjs",
+  "handouts": [
+    {
+      "source": "handout-src/time-management/daily-planner.html",
+      "pdf": "lesson-time-management/Handouts/Daily_Planner_2.pdf",
+      "pages": 1
+    },
+    {
+      "source": "handout-src/time-management/big-rocks-worksheet.html",
+      "pdf": "lesson-time-management/Handouts/Big_Rocks_of_Time_Worksheet.pdf",
+      "pages": 2
+    },
+    {
+      "source": "handout-src/time-management/priorities-flow-chart.html",
+      "pdf": "lesson-time-management/Handouts/GET_YOUR_PRIORITIES_STRAIGHT_FOR_THE_DAY_1.pdf",
+      "pages": 1
+    },
+    {
+      "source": "handout-src/time-management/weekly-planner.html",
+      "pdf": "lesson-time-management/Handouts/Weekly_Planner_Template_linked_To_Daily_Planner_1.pdf",
+      "pages": 2
+    },
+    {
+      "source": "handout-src/time-management/self-assessment.html",
+      "pdf": "lesson-time-management/Handouts/SPOKES_Time_Management_Self_Assessment.pdf",
+      "pages": 2
+    },
+    {
+      "source": "handout-src/time-management/pre-post-test.html",
+      "pdf": "lesson-time-management/Handouts/SPOKES_Time_Management_Pre_and_Post_Test.pdf",
+      "pages": 2
+    },
+    {
+      "source": "handout-src/employee-accountability/habits-of-mind.html",
+      "pdf": "lesson-employee-accountability/Handouts/Handout_1_Habits_of_Mind.pdf",
+      "pages": 1
+    },
+    {
+      "source": "handout-src/employee-accountability/self-reflection.html",
+      "pdf": "lesson-employee-accountability/Handouts/Handout_2_Self_Reflection.pdf",
+      "pages": 2
+    },
+    {
+      "source": "handout-src/employee-accountability/workplace-scenarios.html",
+      "pdf": "lesson-employee-accountability/Handouts/Handout_3_Workplace_Scenarios.v2.pdf",
+      "pages": 11
+    },
+    {
+      "source": "handout-src/employee-accountability/smart-goal.html",
+      "pdf": "lesson-employee-accountability/Handouts/Handout_4_SMART_Goal.pdf",
+      "pages": 3
+    },
+    {
+      "source": "handout-src/employee-accountability/career-planning.html",
+      "pdf": "lesson-employee-accountability/Handouts/Handout_5_Career_Planning.pdf",
+      "pages": 3
+    },
+    {
+      "source": "handout-src/interview-skills/star-worksheet.html",
+      "pdf": "lesson-interview-skills/Handouts/STAR_Interview_Worksheet.pdf",
+      "pages": 2
+    },
+    {
+      "source": "handout-src/interview-skills/chatgpt-prompt.html",
+      "pdf": "lesson-interview-skills/Handouts/ChatGPT Interview Practice Prompts.pdf",
+      "pages": 1
+    },
+    {
+      "source": "handout-src/problem-solving/lost-at-sea.html",
+      "pdf": "lesson-problem-solving-and-decision-making/Handouts/Lost At Sea.pdf",
+      "pages": 2
+    },
+    {
+      "source": "handout-src/problem-solving/stranded-on-a-mountain.html",
+      "pdf": "lesson-problem-solving-and-decision-making/Handouts/Stranded on a Mountain.pdf",
+      "pages": 2
+    },
+    {
+      "source": "handout-src/problem-solving/problem-solving-styles.html",
+      "pdf": "lesson-problem-solving-and-decision-making/Handouts/Problem_Solving_Styles.pdf",
+      "pages": 2
+    },
+    {
+      "source": "handout-src/problem-solving/giraffe-exercise.html",
+      "pdf": "lesson-problem-solving-and-decision-making/Handouts/Critical Thinking Exercise (giraffe in refrigerator).pdf",
+      "pages": 2
+    },
+    {
+      "source": "handout-src/problem-solving/group-scenarios.html",
+      "pdf": "lesson-problem-solving-and-decision-making/Handouts/Group Activity Scenarios.pdf",
+      "pages": 1
+    },
+    {
+      "source": "handout-src/problem-solving/lunar-survival.html",
+      "pdf": "lesson-problem-solving-and-decision-making/Handouts/Lunar Survival.pdf",
+      "pages": 3
+    },
+    {
+      "source": "handout-src/controlling-anger/healthy-anger-worksheet.html",
+      "pdf": "lesson-controlling-anger/Handouts/Healthy_Anger_Worksheet.pdf",
+      "pages": 2
+    },
+    {
+      "source": "handout-src/controlling-anger/role-play.html",
+      "pdf": "lesson-controlling-anger/Handouts/Role_Play_Healthy_Anger_Printable.pdf",
+      "pages": 1
+    },
+    {
+      "source": "handout-src/controlling-anger/speak-listen.html",
+      "pdf": "lesson-controlling-anger/Handouts/Speak Listen Activity Directions.pdf",
+      "pages": 1
+    },
+    {
+      "source": "handout-src/controlling-anger/iceberg.html",
+      "pdf": "lesson-controlling-anger/Handouts/Iceberg.pdf",
+      "pages": 1
+    },
+    {
+      "source": "handout-src/controlling-anger/iceberg-directions.html",
+      "pdf": "lesson-controlling-anger/Handouts/Iceberg directions.pdf",
+      "pages": 1
+    },
+    {
+      "source": "handout-src/controlling-anger/styles-of-anger.html",
+      "pdf": "lesson-controlling-anger/Handouts/Styles-of-Anger-Assessment-Handout.pdf",
+      "pages": 3
+    },
+    {
+      "source": "handout-src/controlling-anger/anger-toolbox.html",
+      "pdf": "lesson-controlling-anger/Handouts/Anger-Management-Toolbox.pdf",
+      "pages": 4
+    },
+    {
+      "source": "handout-src/communicating-with-the-public/three-minute-talk.html",
+      "pdf": "lesson-communicating-with-the-public/Handouts/3 Minute Talk Activity.pdf",
+      "pages": 1
+    },
+    {
+      "source": "handout-src/communicating-with-the-public/paper-fold.html",
+      "pdf": "lesson-communicating-with-the-public/Handouts/Paper Fold Exercise.pdf",
+      "pages": 1
+    },
+    {
+      "source": "handout-src/communicating-with-the-public/listening-assessment.html",
+      "pdf": "lesson-communicating-with-the-public/Handouts/Personal Listening Assessment.pdf",
+      "pages": 1
+    },
+    {
+      "source": "handout-src/communicating-with-the-public/role-play-scenarios.html",
+      "pdf": "lesson-communicating-with-the-public/Handouts/Role-Play Scenarios.pdf",
+      "pages": 3
+    },
+    {
+      "source": "handout-src/communicating-with-the-public/role-play-evaluation.html",
+      "pdf": "lesson-communicating-with-the-public/Handouts/Role-Play Evaluation Form.pdf",
+      "pages": 2
+    },
+    {
+      "source": "handout-src/communicating-with-the-public/binder-project.html",
+      "pdf": "lesson-communicating-with-the-public/Handouts/Self-Advocacy Binder Project.pdf",
+      "pages": 1
+    },
+    {
+      "source": "handout-src/communicating-with-the-public/self-advocacy-checklist.html",
+      "pdf": "lesson-communicating-with-the-public/Handouts/Self-Advocacy Checklist.pdf",
+      "pages": 2
+    },
+    {
+      "source": "handout-src/communicating-with-the-public/communication-organizer.html",
+      "pdf": "lesson-communicating-with-the-public/Handouts/Self-Advocacy Communication Organizer.pdf",
+      "pages": 3
+    },
+    {
+      "source": "handout-src/communicating-with-the-public/self-advocacy-adult-learners.html",
+      "pdf": "lesson-communicating-with-the-public/Handouts/Self-Advocacy for Adult Learners.pdf",
+      "pages": 3
+    },
+    {
+      "source": "handout-src/communicating-with-the-public/resource-tracking-chart.html",
+      "pdf": "lesson-communicating-with-the-public/Handouts/Self-Advocacy Resource Tracking Chart.pdf",
+      "pages": 1
+    },
+    {
+      "source": "handout-src/communicating-with-the-public/self-advocacy-scenarios.html",
+      "pdf": "lesson-communicating-with-the-public/Handouts/Self-Advocacy Role-Play Scenarios.pdf",
+      "pages": 3
+    },
+    {
+      "source": "handout-src/communicating-with-the-public/making-a-plan.html",
+      "pdf": "lesson-communicating-with-the-public/Handouts/Self-Advocacy Making a Plan.pdf",
+      "pages": 3
+    },
+    {
+      "source": "handout-src/communicating-with-the-public/parents-worksheet.html",
+      "pdf": "lesson-communicating-with-the-public/Handouts/Self-Advocacy Worksheet for Parents.pdf",
+      "pages": 4
+    },
+    {
+      "source": "handout-src/communicating-with-the-public/parent-self-assessment.html",
+      "pdf": "lesson-communicating-with-the-public/Handouts/Self-Advocacy Self-Assessment for Parents.pdf",
+      "pages": 5
+    },
+    {
+      "source": "handout-src/communicating-with-the-public/helping-children.html",
+      "pdf": "lesson-communicating-with-the-public/Handouts/Helping Children Develop Self-Advocacy.pdf",
+      "pages": 1
+    },
+    {
+      "source": "handout-src/communicating-with-the-public/phone-call-notes.html",
+      "pdf": "lesson-communicating-with-the-public/Handouts/Phone Call Notes Template.pdf",
+      "pages": 2
+    },
+    {
+      "source": "handout-src/communicating-with-the-public/back-to-back-drawing.html",
+      "pdf": "lesson-communicating-with-the-public/Handouts/Back-to-Back Drawing.pdf",
+      "pages": 4
+    },
+    {
+      "source": "handout-src/communicating-with-the-public/connecting-or-disconnecting.html",
+      "pdf": "lesson-communicating-with-the-public/Handouts/Connecting or Disconnecting.pdf",
+      "pages": 2
+    },
+    {
+      "source": "handout-src/communicating-with-the-public/important-documents.html",
+      "pdf": "lesson-communicating-with-the-public/Handouts/Important Documents Checklist.pdf",
+      "pages": 2
+    },
+    {
+      "source": "handout-src/communicating-with-the-public/asking-for-help.html",
+      "pdf": "lesson-communicating-with-the-public/Handouts/Six Steps to Asking for Help.pdf",
+      "pages": 1
+    },
+    {
+      "source": "handout-src/communicating-with-the-public/speak-up-planners.html",
+      "pdf": "lesson-communicating-with-the-public/Handouts/Getting Ready to Speak Up.pdf",
+      "pages": 3
+    },
+    {
+      "source": "handout-src/communicating-with-the-public/what-is-self-advocacy.html",
+      "pdf": "lesson-communicating-with-the-public/Handouts/What Is Self-Advocacy.pdf",
+      "pages": 1
+    },
+    {
+      "source": "handout-src/communicating-with-the-public/all-handouts.html",
+      "pdf": "lesson-communicating-with-the-public/Handouts/Communicating with the Public 2026 Handouts.pdf",
+      "pages": 49
+    }
+  ]
+}

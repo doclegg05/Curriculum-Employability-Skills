@@ -1,0 +1,161 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<title>Styles of Anger Assessment: SPOKES Controlling Anger</title>
+<style>
+  @font-face { font-family: "Vollkorn"; src: url("../../fonts/vollkorn-latin.woff2") format("woff2"); font-weight: 400 700; font-display: block; }
+  @font-face { font-family: "Fira Sans"; src: url("../../fonts/fira-sans-400-latin.woff2") format("woff2"); font-weight: 400; font-display: block; }
+  @font-face { font-family: "Fira Sans"; src: url("../../fonts/fira-sans-500-latin.woff2") format("woff2"); font-weight: 500; font-display: block; }
+  @font-face { font-family: "Fira Sans"; src: url("../../fonts/fira-sans-600-latin.woff2") format("woff2"); font-weight: 600 700; font-display: block; }
+  :root { --font-heading: "Vollkorn", serif; --font-body: "Fira Sans", sans-serif; }
+</style>
+<link rel="stylesheet" href="../spokes-handout.css">
+<style>
+  /* Styles of Anger Assessment. SPOKES statements and style cards approved
+     by Britt 2026-11-10; the four style names match the lesson slides. */
+  .handout { font-size: 10.5pt; }
+  .handout-head h1 { font-weight: 700; font-size: 26pt; }
+  .sheet > .body { gap: 0.14in; }
+  .body p { margin: 0; }
+  .scale { display: flex; gap: 0.1in; align-items: center; }
+  .scale b { color: var(--dark); margin-right: 0.04in; }
+  .scale span { background: var(--muted); border-radius: 4pt; padding: 0.04in 0.14in; font-weight: 600; color: var(--dark); }
+  .items td { height: 0.44in; padding: 0.04in 0.12in; font-size: 11pt; }
+  /* A fixed-layout table takes its column widths from the header row. */
+  .items th:first-child { width: 0.9in; }
+  .items th:nth-child(2) { width: 0.5in; text-align: center; }
+  .items td:nth-child(2) { text-align: center; font-weight: 700; color: var(--primary); }
+  .items tbody tr:nth-child(even) td { background: var(--muted); }
+  .scoring { display: grid; grid-template-columns: repeat(4, 1fr); gap: 0.16in; }
+  .col { border-top: 4pt solid var(--edge); background: var(--muted); border-radius: 0 0 6pt 6pt; padding: 0.1in 0.14in; display: grid; gap: 0.07in; }
+  .col h3 { margin: 0 0 0.02in; font-weight: 700; font-size: 12.5pt; }
+  .col .row { display: grid; grid-template-columns: 0.32in 1fr; align-items: end; gap: 0.06in; }
+  .col .row b { color: var(--primary); }
+  .col .row span { border-bottom: 1pt solid var(--gray); height: 0.22in; }
+  .col .total { margin-top: 0.04in; padding-top: 0.06in; border-top: 1.5pt solid var(--dark); }
+  .col .total b { color: var(--dark); font-size: 9pt; letter-spacing: 0.08em; }
+  .cards { display: grid; grid-template-columns: 1fr 1fr; gap: 0.24in; }
+  .card { border-left: 4pt solid var(--edge); background: var(--muted); border-radius: 0 6pt 6pt 0; padding: 0.1in 0.16in; display: grid; gap: 0.05in; align-content: start; }
+  .card h3 { margin: 0; font-weight: 700; font-size: 17pt; }
+  .card { font-size: 12.5pt; padding: 0.2in 0.24in; gap: 0.1in; }
+  .card dd { line-height: 1.45; }
+  .card .what { font-style: italic; color: var(--gray); }
+  .card dl { margin: 0.02in 0 0; display: grid; gap: 0.04in; }
+  .card dt { font-weight: 700; color: var(--dark); font-size: 9pt; letter-spacing: 0.08em; text-transform: uppercase; }
+  .card dd { margin: 0 0 0.03in; }
+</style>
+</head>
+<body>
+<main class="handout">
+  <section class="sheet">
+    <header class="handout-head">
+      <img class="logo" src="../../SPOKES-Logo.png" alt="SPOKES, Skills for Life">
+      <h1>Styles of Anger Assessment</h1>
+    </header>
+    <div class="body">
+      <div class="name-row">
+        <div class="field"><span class="label">Name:</span><span class="rule"></span></div>
+        <div class="field"><span class="label">Date:</span><span class="rule"></span></div>
+      </div>
+      <p>Everyone has a usual way of handling anger. No style is always right or always wrong. Knowing your default style helps you choose the best one for the situation.</p>
+      <div class="scale"><b>Score each statement:</b><span>3 = Often</span><span>2 = Sometimes</span><span>1 = Rarely</span><span>0 = Never</span></div>
+      <table class="grid-table items">
+        <thead><tr><th>Score</th><th>#</th><th>Statement</th></tr></thead>
+        <tbody>
+          <tr><td></td><td>1</td><td>When I'm angry, I keep quiet and hope it blows over.</td></tr>
+          <tr><td></td><td>2</td><td>When I'm angry, I raise my voice so people know I mean it.</td></tr>
+          <tr><td></td><td>3</td><td>When I'm upset with someone, I ask to talk it through.</td></tr>
+          <tr><td></td><td>4</td><td>When I'm upset, I drop hints instead of saying what's wrong.</td></tr>
+          <tr><td></td><td>5</td><td>I leave the room rather than deal with someone I'm angry with.</td></tr>
+          <tr><td></td><td>6</td><td>I push until the other person gives in.</td></tr>
+          <tr><td></td><td>7</td><td>I tell people what bothers me and ask how they see it.</td></tr>
+          <tr><td></td><td>8</td><td>I do favors for people so they'll go along with what I want later.</td></tr>
+          <tr><td></td><td>9</td><td>I tell myself my feelings don't matter much.</td></tr>
+          <tr><td></td><td>10</td><td>I say things in anger that I regret later.</td></tr>
+        </tbody>
+      </table>
+    </div>
+    <footer class="handout-foot">
+      <span><strong>SPOKES</strong> Controlling Anger &middot; Styles of Anger Assessment</span>
+      <span>Copyright &copy; 2026 WV Adult Basic Education</span>
+    </footer>
+  </section>
+
+  <section class="sheet">
+    <div class="body" style="margin-top: 0">
+      <table class="grid-table items">
+        <thead><tr><th>Score</th><th>#</th><th>Statement</th></tr></thead>
+        <tbody>
+          <tr><td></td><td>11</td><td>I stay calm enough to listen, even when I'm frustrated.</td></tr>
+          <tr><td></td><td>12</td><td>I steer the conversation so it ends up where I want it.</td></tr>
+          <tr><td></td><td>13</td><td>I agree just to end an argument.</td></tr>
+          <tr><td></td><td>14</td><td>When I'm angry, I need to win.</td></tr>
+          <tr><td></td><td>15</td><td>I look for a solution that works for both of us.</td></tr>
+          <tr><td></td><td>16</td><td>I complain to other people instead of the person I'm angry with.</td></tr>
+          <tr><td></td><td>17</td><td>I put off dealing with problems that make me angry.</td></tr>
+          <tr><td></td><td>18</td><td>I slam doors, hit things or throw things when I'm mad.</td></tr>
+          <tr><td></td><td>19</td><td>I wait until I've cooled down, then come back to the problem.</td></tr>
+          <tr><td></td><td>20</td><td>I act fine on the outside but find ways to get back at the person.</td></tr>
+        </tbody>
+      </table>
+      <section style="margin-top: 0.14in">
+        <h3 style="margin: 0 0 0.04in; font-weight: 700; font-size: 18pt">Scoring</h3>
+        <p>Copy your score for each statement onto its line below, then add up each column. Your highest total is your default style.</p>
+      </section>
+      <div class="scoring">
+        <div class="col" style="--edge: var(--primary)"><h3>Avoidance</h3>
+          <div class="row"><b>1</b><span></span></div><div class="row"><b>5</b><span></span></div><div class="row"><b>9</b><span></span></div><div class="row"><b>13</b><span></span></div><div class="row"><b>17</b><span></span></div>
+          <div class="row total"><b>TOTAL</b><span></span></div></div>
+        <div class="col" style="--edge: var(--mauve)"><h3>Forceful</h3>
+          <div class="row"><b>2</b><span></span></div><div class="row"><b>6</b><span></span></div><div class="row"><b>10</b><span></span></div><div class="row"><b>14</b><span></span></div><div class="row"><b>18</b><span></span></div>
+          <div class="row total"><b>TOTAL</b><span></span></div></div>
+        <div class="col" style="--edge: var(--accent)"><h3>Collaborative</h3>
+          <div class="row"><b>3</b><span></span></div><div class="row"><b>7</b><span></span></div><div class="row"><b>11</b><span></span></div><div class="row"><b>15</b><span></span></div><div class="row"><b>19</b><span></span></div>
+          <div class="row total"><b>TOTAL</b><span></span></div></div>
+        <div class="col" style="--edge: var(--muted-gold)"><h3>Indirect Control</h3>
+          <div class="row"><b>4</b><span></span></div><div class="row"><b>8</b><span></span></div><div class="row"><b>12</b><span></span></div><div class="row"><b>16</b><span></span></div><div class="row"><b>20</b><span></span></div>
+          <div class="row total"><b>TOTAL</b><span></span></div></div>
+      </div>
+    </div>
+    <footer class="handout-foot">
+      <span><strong>SPOKES</strong> Controlling Anger &middot; Styles of Anger Assessment</span>
+      <span>Copyright &copy; 2026 WV Adult Basic Education</span>
+    </footer>
+  </section>
+
+  <section class="sheet">
+    <div class="body" style="margin-top: 0">
+      <h3 style="margin: 0; font-weight: 700; font-size: 18pt">The Four Styles</h3>
+      <div class="cards">
+        <section class="card" style="--edge: var(--primary)">
+          <h3>Avoidance</h3>
+          <p class="what">Withdrawing, staying quiet, avoiding conflict to keep the peace</p>
+          <dl><dt>It helps</dt><dd>Gives everyone time to cool down.</dd><dt>Watch out for</dt><dd>Problems that never get solved, and feelings that build up.</dd><dt>Best used when</dt><dd>Things are too heated to talk right now, or the issue is small.</dd></dl>
+        </section>
+        <section class="card" style="--edge: var(--mauve)">
+          <h3>Forceful</h3>
+          <p class="what">Intimidation, overpowering, expressing emotions without filter</p>
+          <dl><dt>It helps</dt><dd>Gets fast action.</dd><dt>Watch out for</dt><dd>Damaged trust, and people who stop speaking up around you.</dd><dt>Best used when</dt><dd>Someone's safety is at risk and there's no time to discuss.</dd></dl>
+        </section>
+        <section class="card" style="--edge: var(--accent)">
+          <h3>Collaborative</h3>
+          <p class="what">Hearing all sides, pursuing resolution constructively, maintaining relationships</p>
+          <dl><dt>It helps</dt><dd>Solves the problem and keeps the relationship.</dd><dt>Watch out for</dt><dd>It takes time, and both people have to be willing.</dd><dt>Best used when</dt><dd>The relationship and the result both matter.</dd></dl>
+        </section>
+        <section class="card" style="--edge: var(--muted-gold)">
+          <h3>Indirect Control</h3>
+          <p class="what">Manipulation, maneuvering situations, appearing collaborative but controlling</p>
+          <dl><dt>It helps</dt><dd>Can keep tension from boiling over in the moment.</dd><dt>Watch out for</dt><dd>People feel used once they notice, and trust drops.</dd><dt>Best used when</dt><dd>Rarely. Say what you want openly instead.</dd></dl>
+        </section>
+      </div>
+    </div>
+    <footer class="handout-foot">
+      <span><strong>SPOKES</strong> Controlling Anger &middot; Styles of Anger Assessment</span>
+      <span>Copyright &copy; 2026 WV Adult Basic Education</span>
+    </footer>
+  </section>
+</main>
+<script src="../lines.js"></script>
+</body>
+</html>

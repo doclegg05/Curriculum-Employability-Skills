@@ -1,0 +1,73 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<style>
+  @font-face { font-family: "Crimson Pro"; src: url("../../fonts/crimson-pro-latin.woff2") format("woff2"); font-weight: 400 700; font-display: block; }
+  @font-face { font-family: "Work Sans"; src: url("../../fonts/work-sans-latin.woff2") format("woff2"); font-weight: 400 600; font-display: block; }
+  :root { --font-heading: "Crimson Pro", serif; --font-body: "Work Sans", sans-serif; }
+</style>
+<link rel="stylesheet" href="../spokes-handout.css">
+<title>Paper Fold Exercise: SPOKES Communicating with the Public</title>
+<style>
+  /* Effective Communication Skills: Paper Fold Exercise, an instructor
+     page. Same wording as the page it replaces. */
+  .handout { font-size: 11.5pt; }
+  .handout-head h1 { font-weight: 700; font-size: 26pt; }
+  .handout h3 { font-weight: 700; font-size: 16pt; }
+  .sheet > .body { gap: 0.22in; }
+  .body p { margin: 0; }
+  .body p b { color: var(--dark); }
+  .facts { display: grid; grid-template-columns: 1fr 1fr; gap: 0.2in; }
+  .facts .panel { --panel-edge: var(--primary); }
+  .facts b { display: block; font-size: 9.5pt; letter-spacing: 0.1em; text-transform: uppercase; color: var(--primary); margin-bottom: 0.03in; }
+  .read-aloud { border: 1pt solid var(--line); border-top: 4pt solid var(--accent); border-radius: 0 0 6pt 6pt; padding: 0.16in 0.22in; display: grid; gap: 0.14in; }
+  .fold-steps { margin: 0; padding: 0; list-style: none; counter-reset: s; display: grid; grid-template-columns: 1fr 1fr; grid-auto-flow: column; grid-template-rows: repeat(5, auto); gap: 0.1in 0.3in; }
+  .fold-steps li { counter-increment: s; display: grid; grid-template-columns: 0.36in 1fr; align-items: baseline; }
+  .fold-steps li::before { content: counter(s) ")"; font-weight: 700; color: var(--primary); }
+  .debrief { --panel-edge: var(--gold); line-height: 1.45; }
+</style>
+</head>
+<body>
+<main class="handout">
+  <section class="sheet">
+    <header class="handout-head">
+      <img class="logo" src="../../SPOKES-Logo.png" alt="SPOKES, Skills for Life">
+      <h1>Effective Communication Skills: Paper Fold Exercise</h1>
+    </header>
+    <div class="body">
+      <p><b>Purpose:</b> This activity demonstrates what can go wrong in communication: poor listening, lack of feedback, different contexts/backgrounds and perceptions.</p>
+      <div class="facts">
+        <p class="panel"><b>Materials:</b> 8 &frac12; sheet of paper for each person</p>
+        <p class="panel"><b>Time:</b> 10 to 15 minutes plus discussion time</p>
+      </div>
+      <p><b>Directions:</b> Lead into this exercise by asking folks if they think communication is easy. Tell them &ldquo;let&rsquo;s see.&rdquo; Give each learner a piece of paper and then read the directions to them.</p>
+      <section class="read-aloud">
+        <p><b>Instructions to participants:</b> This exercise requires listening to and following directions. As you hear the instructions, perform the task. You may not ask questions. You must close your eyes.</p>
+        <ol class="fold-steps">
+          <li>Fold your sheet of paper in half</li>
+          <li>Tear off the upper right corner</li>
+          <li>Fold your paper in half again</li>
+          <li>Tear off the lower right corner</li>
+          <li>Fold your paper in half</li>
+          <li>Tear off the upper left corner</li>
+          <li>Fold in half a final time</li>
+          <li>Tear off the lower left corner</li>
+          <li>Unfold your paper and hold it up</li>
+          <li>Open your eyes, look at your product and compare it with the other student&rsquo;s</li>
+        </ol>
+      </section>
+      <section class="panel debrief">
+        <h3>Debrief</h3>
+        <p>What happened? Does everyone&rsquo;s look the same? Remember when you communicate with others, they may not receive the message you sent. Individual perceptions vary. If you were given the same directions, why are everyone&rsquo;s products different? People have different context. You were not given feedback&hellip;you had to keep your eyes closed and you could not ask questions.</p>
+      </section>
+    </div>
+    <footer class="handout-foot">
+      <span><strong>SPOKES</strong> Communicating with the Public &middot; Paper Fold Exercise</span>
+      <span>Copyright &copy; 2026 WV Adult Basic Education</span>
+    </footer>
+  </section>
+</main>
+<script src="../lines.js"></script>
+</body>
+</html>

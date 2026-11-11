@@ -1,0 +1,112 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<title>Time Management Self-Assessment: SPOKES Time Management</title>
+<style>
+  @font-face { font-family: "DM Serif Display"; src: url("../../fonts/dm-serif-display-latin.woff2") format("woff2"); font-display: block; }
+  @font-face { font-family: "Outfit"; src: url("../../fonts/outfit-latin.woff2") format("woff2"); font-weight: 100 900; font-display: block; }
+  :root { --font-heading: "DM Serif Display", serif; --font-body: "Outfit", sans-serif; }
+</style>
+<link rel="stylesheet" href="../spokes-handout.css">
+<style>
+  /* SPOKES Time Management Self-Assessment Worksheet. Same four parts and
+     wording as the worksheet it replaces. */
+  .handout-head h1 { font-size: 24pt; }
+  .scale { margin: 0.04in 0 0; color: var(--gray); }
+  .rating thead th { text-align: center; }
+  .rating thead th:first-child { text-align: left; }
+  .rating tbody td { text-align: center; height: 0.56in; } /* out-ranks the shared .grid-table row height */
+  .rating tbody th { font-weight: 400; color: var(--royal); }
+  .rating .box { display: inline-block; width: 0.16in; height: 0.16in; border: 1.2pt solid var(--dark); border-radius: 2pt; }
+  .total { display: flex; justify-content: flex-end; }
+  .total .field { width: 2.6in; }
+  .challenges { grid-template-columns: 1fr 1fr; column-gap: 0.4in; }
+  .numbered { margin: 0; padding: 0; list-style: none; display: grid; gap: 0.1in; }
+  .numbered li { display: flex; align-items: flex-end; gap: 0.12in; }
+  .numbered li b { color: var(--primary); width: 0.2in; }
+  .numbered .rule { flex: 1; border-bottom: 1pt solid var(--gray); height: 0.3in; }
+  .plan { display: grid; gap: 0.14in; }
+  .plan p { margin: 0; font-weight: 600; }
+  .plan .lines { margin-top: 0.02in; }
+</style>
+</head>
+<body>
+<main class="handout">
+  <section class="sheet">
+    <header class="handout-head">
+      <img class="logo" src="../../SPOKES-Logo.png" alt="SPOKES, Skills for Life">
+      <h1>SPOKES Time Management Self&#8209;Assessment Worksheet</h1>
+    </header>
+    <div class="body">
+      <div>
+        <h3>Part 1: How Well Do You Manage Your Time?</h3>
+        <p class="directions">Rate each statement from 1 to 5:</p>
+        <p class="scale">1 = Never, 2 = Rarely, 3 = Sometimes, 4 = Often, 5 = Always</p>
+      </div>
+      <table class="grid-table rating">
+        <thead><tr><th style="width: 52%">Statement</th><th>1</th><th>2</th><th>3</th><th>4</th><th>5</th></tr></thead>
+        <tbody>
+          <tr><th scope="row">I set clear goals for what I want to accomplish.</th><td><span class="box"></span></td><td><span class="box"></span></td><td><span class="box"></span></td><td><span class="box"></span></td><td><span class="box"></span></td></tr>
+          <tr><th scope="row">I create daily or weekly to-do lists.</th><td><span class="box"></span></td><td><span class="box"></span></td><td><span class="box"></span></td><td><span class="box"></span></td><td><span class="box"></span></td></tr>
+          <tr><th scope="row">I prioritize tasks based on importance, not urgency.</th><td><span class="box"></span></td><td><span class="box"></span></td><td><span class="box"></span></td><td><span class="box"></span></td><td><span class="box"></span></td></tr>
+          <tr><th scope="row">I break large tasks into smaller steps.</th><td><span class="box"></span></td><td><span class="box"></span></td><td><span class="box"></span></td><td><span class="box"></span></td><td><span class="box"></span></td></tr>
+          <tr><th scope="row">I start tasks ahead of deadlines instead of waiting until the last minute.</th><td><span class="box"></span></td><td><span class="box"></span></td><td><span class="box"></span></td><td><span class="box"></span></td><td><span class="box"></span></td></tr>
+          <tr><th scope="row">I stay focused and avoid distractions while working.</th><td><span class="box"></span></td><td><span class="box"></span></td><td><span class="box"></span></td><td><span class="box"></span></td><td><span class="box"></span></td></tr>
+          <tr><th scope="row">I finish tasks before moving on to new ones.</th><td><span class="box"></span></td><td><span class="box"></span></td><td><span class="box"></span></td><td><span class="box"></span></td><td><span class="box"></span></td></tr>
+          <tr><th scope="row">I can estimate how long tasks will take.</th><td><span class="box"></span></td><td><span class="box"></span></td><td><span class="box"></span></td><td><span class="box"></span></td><td><span class="box"></span></td></tr>
+          <tr><th scope="row">I take breaks to avoid burnout.</th><td><span class="box"></span></td><td><span class="box"></span></td><td><span class="box"></span></td><td><span class="box"></span></td><td><span class="box"></span></td></tr>
+          <tr><th scope="row">I feel in control of my schedule.</th><td><span class="box"></span></td><td><span class="box"></span></td><td><span class="box"></span></td><td><span class="box"></span></td><td><span class="box"></span></td></tr>
+        </tbody>
+      </table>
+      <div class="total"><div class="field"><span class="label">Total Score:</span><span class="rule"></span><span class="label">/ 50</span></div></div>
+    </div>
+    <footer class="handout-foot">
+      <span><strong>SPOKES</strong> Time Management &middot; Self-Assessment</span>
+      <span>Copyright &copy; 2026 WV Adult Basic Education</span>
+    </footer>
+  </section>
+
+  <section class="sheet">
+    <div class="body" style="margin-top: 0">
+      <section>
+        <h3>Part 2: What Are Your Biggest Time Challenges?</h3>
+        <ul class="tick-list challenges">
+          <li>Procrastination</li>
+          <li>Getting distracted</li>
+          <li>Overscheduling</li>
+          <li>Poor planning</li>
+          <li>Difficulty saying 'no'</li>
+          <li>Unexpected interruptions</li>
+          <li>Multitasking too much</li>
+          <li>Lack of motivation</li>
+          <li>Ineffective routines</li>
+          <li>Not waking up on time</li>
+          <li>Other: <span class="fill"></span></li>
+        </ul>
+      </section>
+      <section>
+        <h3>Part 3: What Are Your Time Strengths?</h3>
+        <ol class="numbered">
+          <li><b>1.</b><span class="rule"></span></li>
+          <li><b>2.</b><span class="rule"></span></li>
+          <li><b>3.</b><span class="rule"></span></li>
+        </ol>
+      </section>
+      <section class="plan">
+        <h3>Part 4: Improvement Plan</h3>
+        <div><p>1. What is one habit you want to change?</p><div class="lines" style="--n: 1"></div></div>
+        <div><p>2. What steps will you take to improve your time management?</p><div class="lines" style="--n: 2"></div></div>
+        <div><p>3. What tools will help you? <span class="hint" style="font-weight: 400">(Examples: planner, calendar app, timer, routines)</span></p><div class="lines" style="--n: 1"></div></div>
+        <div><p>4. When will you start?</p><div class="lines" style="--n: 1"></div></div>
+      </section>
+    </div>
+    <footer class="handout-foot">
+      <span><strong>SPOKES</strong> Time Management &middot; Self-Assessment</span>
+      <span>Copyright &copy; 2026 WV Adult Basic Education</span>
+    </footer>
+  </section>
+</main>
+<script src="../lines.js"></script>
+</body>
+</html>

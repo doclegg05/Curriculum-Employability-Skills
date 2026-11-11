@@ -1,0 +1,111 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<title>Weekly Planner: SPOKES Time Management</title>
+<style>
+  @font-face { font-family: "DM Serif Display"; src: url("../../fonts/dm-serif-display-latin.woff2") format("woff2"); font-display: block; }
+  @font-face { font-family: "Outfit"; src: url("../../fonts/outfit-latin.woff2") format("woff2"); font-weight: 100 900; font-display: block; }
+  :root { --font-heading: "DM Serif Display", serif; --font-body: "Outfit", sans-serif; }
+</style>
+<link rel="stylesheet" href="../spokes-handout.css">
+<style>
+  /* Weekly Planner. Same sections and wording as the planner it replaces;
+     it pairs with the SPOKES Daily Planner. */
+  .intro { margin: 0; color: var(--gray); font-style: italic; }
+  .goal-lines { display: grid; gap: 0.1in; }
+  .glance tbody th { width: 1.25in; }
+  .glance tbody td, .glance tbody th { height: 0.38in; }
+  .category tbody th { width: 1.9in; }
+  .category tbody td, .category tbody th { height: 0.5in; }
+  .tasks { columns: 2; column-gap: 0.4in; }
+  .tasks li { break-inside: avoid; margin-bottom: 0.04in; }
+  .sheet:first-child > .body { gap: 0.17in; }
+</style>
+</head>
+<body>
+<main class="handout">
+  <section class="sheet">
+    <header class="handout-head">
+      <img class="logo" src="../../SPOKES-Logo.png" alt="SPOKES, Skills for Life">
+      <h1>Weekly Planner</h1>
+    </header>
+    <div class="body">
+      <div class="field"><span class="label">Week of:</span><span class="rule"></span></div>
+      <p class="intro">Use this weekly planner to set priorities and map out the week. Daily planner pages pull directly from the sections below.</p>
+
+      <section>
+        <h2>Weekly Focus</h2>
+        <div class="goal-lines">
+          <div class="field"><span class="label">Main Goal for the Week:</span><span class="rule"></span></div>
+          <div class="field"><span class="label">Secondary Goals:</span><span class="rule"></span></div>
+          <div class="lines" style="--n: 1"></div>
+        </div>
+      </section>
+
+      <section>
+        <h2>Week at a Glance</h2>
+        <table class="grid-table glance">
+          <thead><tr><th style="width: 1.25in">Day</th><th>Top Priorities</th><th>Key Meetings / Deadlines</th></tr></thead>
+          <tbody>
+            <tr><th scope="row">Monday</th><td></td><td></td></tr>
+            <tr><th scope="row">Tuesday</th><td></td><td></td></tr>
+            <tr><th scope="row">Wednesday</th><td></td><td></td></tr>
+            <tr><th scope="row">Thursday</th><td></td><td></td></tr>
+            <tr><th scope="row">Friday</th><td></td><td></td></tr>
+          </tbody>
+        </table>
+      </section>
+
+      <section>
+        <h2>Weekly Task List</h2>
+        <p class="hint" style="margin: 0 0 0.12in">(Transfer items to Daily Planner To-Do Lists)</p>
+        <ul class="tick-list tasks">
+          <li><span class="fill"></span></li><li><span class="fill"></span></li><li><span class="fill"></span></li><li><span class="fill"></span></li>
+          <li><span class="fill"></span></li><li><span class="fill"></span></li><li><span class="fill"></span></li><li><span class="fill"></span></li>
+        </ul>
+      </section>
+    </div>
+    <footer class="handout-foot">
+      <span><strong>SPOKES</strong> Time Management &middot; Weekly Planner</span>
+      <span>Copyright &copy; 2026 WV Adult Basic Education</span>
+    </footer>
+  </section>
+
+  <section class="sheet">
+    <div class="body" style="margin-top: 0">
+      <section>
+        <h2>Priorities by Category</h2>
+        <table class="grid-table category">
+          <thead><tr><th style="width: 1.9in">Category</th><th>Focus Items</th></tr></thead>
+          <tbody>
+            <tr><th scope="row">Work Projects</th><td></td></tr>
+            <tr><th scope="row">Meetings</th><td></td></tr>
+            <tr><th scope="row">Follow-Ups</th><td></td></tr>
+            <tr><th scope="row">Admin / Paperwork</th><td></td></tr>
+          </tbody>
+        </table>
+      </section>
+
+      <section>
+        <h2>Notes &amp; Reminders</h2>
+        <div class="lines" style="--n: 4"></div>
+      </section>
+
+      <section>
+        <h2>End-of-Week Review</h2>
+        <h3>What was accomplished this week?</h3>
+        <div class="lines" style="--n: 3"></div>
+        <h3 style="margin-top: 0.18in">What should carry over to next week?</h3>
+        <div class="lines" style="--n: 3"></div>
+      </section>
+    </div>
+    <footer class="handout-foot">
+      <span><strong>SPOKES</strong> Time Management &middot; Weekly Planner</span>
+      <span>Copyright &copy; 2026 WV Adult Basic Education</span>
+    </footer>
+  </section>
+</main>
+<script src="../lines.js"></script>
+</body>
+</html>

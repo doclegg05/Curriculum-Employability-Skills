@@ -1,0 +1,185 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<title>Problem Solving Styles: SPOKES Problem Solving &amp; Decision Making</title>
+<style>
+  @font-face { font-family: "Bitter"; src: url("../../fonts/bitter-latin.woff2") format("woff2"); font-weight: 400 700; font-display: block; }
+  @font-face { font-family: "Raleway"; src: url("../../fonts/raleway-latin.woff2") format("woff2"); font-weight: 400 700; font-display: block; }
+  :root { --font-heading: "Bitter", serif; --font-body: "Raleway", sans-serif; }
+</style>
+<link rel="stylesheet" href="../spokes-handout.css">
+<style>
+  /* Problem Solving Styles questionnaire, scoring grid and the four styles.
+     Same wording as the handout it replaces. */
+  .handout { font-size: 10.5pt; }
+  .handout-head h1 { font-weight: 700; font-size: 26pt; }
+  .sheet > .body { gap: 0.14in; }
+  .body p { margin: 0; }
+  .rank-line { font-weight: 700; color: var(--dark); }
+  .scale { display: flex; gap: 0.12in; }
+  .scale span { background: var(--muted); border-radius: 4pt; padding: 0.04in 0.14in; font-weight: 700; color: var(--dark); }
+  .statements { display: grid; grid-template-columns: 1fr 1fr; gap: 0.1in; }
+  .statements .wide { grid-column: 1 / -1; }
+  .stmt { border: 1pt solid var(--line); border-radius: 6pt; padding: 0.08in 0.14in; }
+  .stmt h3 { font-size: 11.5pt; font-weight: 700; margin-bottom: 0.06in; }
+  .stmt ul { list-style: none; margin: 0; padding: 0; display: grid; gap: 0.05in; }
+  .stmt li { display: grid; grid-template-columns: 0.3in 0.5in 1fr; align-items: start; column-gap: 0.08in; }
+  .stmt li .blank { height: 0.16in; }
+  .stmt li b { color: var(--primary); }
+  .blank { border-bottom: 1pt solid var(--gray); height: 0.2in; }
+  .score-note { font-weight: 700; color: var(--dark); }
+  .score-note u { text-decoration-color: var(--gold); text-decoration-thickness: 2pt; }
+  .tally td { height: 0.32in; text-align: center; }
+  .tally td b { color: var(--primary); margin-right: 0.1in; }
+  .tally .line { display: inline-block; width: 0.6in; border-bottom: 1pt solid var(--gray); height: 0.18in; vertical-align: bottom; }
+  .tally tr.total td { background: var(--muted); font-weight: 700; color: var(--dark); }
+  .styles { display: grid; grid-template-columns: 1fr 1fr; gap: 0.18in; }
+  .style-card { border-top: 4pt solid var(--edge); background: var(--muted); border-radius: 0 0 6pt 6pt; padding: 0.14in 0.18in; display: grid; gap: 0.1in; align-content: start; }
+  .style-card h3 { margin: 0; font-weight: 700; font-size: 15pt; }
+  .style-card h3 span { color: var(--edge); margin-right: 0.08in; }
+  .style-card .field .label { font-weight: 400; color: var(--gray); }
+  .style-card ul { margin: 0; padding-left: 0.18in; display: grid; gap: 0.05in; line-height: 1.35; }
+  .style-card li::marker { color: var(--edge); }
+  .style-card li:last-child { font-style: italic; }
+</style>
+</head>
+<body>
+<main class="handout">
+  <section class="sheet">
+    <header class="handout-head">
+      <img class="logo" src="../../SPOKES-Logo.png" alt="SPOKES, Skills for Life">
+      <h1>Problem Solving Styles</h1>
+    </header>
+    <div class="body">
+      <p>In general, people try to solve their problems in one of four ways. These are known as problem solving styles. You will probably use a variety of styles, but it is still a good idea to know which style you prefer. To understand what kind of problem solver you are, complete the following questionnaire.</p>
+      <p class="rank-line">Rank the words or phrases that are listed under each statement.</p>
+      <div class="scale"><span>1-Almost Always</span><span>2-Sometimes</span><span>3-Seldom</span><span>4-Never</span></div>
+      <div class="statements">
+        <div class="stmt">
+          <h3>1. Things I consider in solving a problem:</h3>
+          <ul>
+            <li><b>1a)</b><span class="blank"></span>views of other people</li>
+            <li><b>1b)</b><span class="blank"></span>views of experts</li>
+            <li><b>1c)</b><span class="blank"></span>relevant information</li>
+            <li><b>1d)</b><span class="blank"></span>personal experience</li>
+          </ul>
+        </div>
+        <div class="stmt">
+          <h3>2. How I usually approach a problem:</h3>
+          <ul>
+            <li><b>2a)</b><span class="blank"></span>talk to people</li>
+            <li><b>2b)</b><span class="blank"></span>explore the background</li>
+            <li><b>2c)</b><span class="blank"></span>collect facts</li>
+            <li><b>2d)</b><span class="blank"></span>try out a solution</li>
+          </ul>
+        </div>
+        <div class="stmt">
+          <h3>3. The way I like to interact with people:</h3>
+          <ul>
+            <li><b>3a)</b><span class="blank"></span>try to convince them</li>
+            <li><b>3b)</b><span class="blank"></span>inform them</li>
+            <li><b>3c)</b><span class="blank"></span>interview them</li>
+            <li><b>3d)</b><span class="blank"></span>challenge them</li>
+          </ul>
+        </div>
+        <div class="stmt">
+          <h3>4. I like problem solving best when I:</h3>
+          <ul>
+            <li><b>4a)</b><span class="blank"></span>weigh alternatives</li>
+            <li><b>4b)</b><span class="blank"></span>gather complete data</li>
+            <li><b>4c)</b><span class="blank"></span>explore the cause</li>
+            <li><b>4d)</b><span class="blank"></span>take decisive action</li>
+          </ul>
+        </div>
+        <div class="stmt wide">
+          <h3>5. The statement that best expresses my view of problem solving is:</h3>
+          <ul>
+            <li><b>5a)</b><span class="blank"></span>to be successful a solution must be acceptable to everyone involved</li>
+            <li><b>5b)</b><span class="blank"></span>we have a lot to learn from our past experiences</li>
+            <li><b>5c)</b><span class="blank"></span>solving most problems comes down to figuring out the cause-and-effect relationships</li>
+            <li><b>5d)</b><span class="blank"></span>in the real world, you often have to solve a problem without a complete understanding of what has caused it</li>
+          </ul>
+        </div>
+      </div>
+      <p class="score-note">To see what your style is, write the scores from the questions above next to the corresponding letters in the following section. Your <u>lowest score</u> on the survey indicates your preferred style.</p>
+      <table class="grid-table tally">
+        <tbody>
+          <tr><td><b>1a)</b><span class="line"></span></td><td><b>1b)</b><span class="line"></span></td><td><b>1c)</b><span class="line"></span></td><td><b>1d)</b><span class="line"></span></td></tr>
+          <tr><td><b>2a)</b><span class="line"></span></td><td><b>2b)</b><span class="line"></span></td><td><b>2c)</b><span class="line"></span></td><td><b>2d)</b><span class="line"></span></td></tr>
+          <tr><td><b>3a)</b><span class="line"></span></td><td><b>3b)</b><span class="line"></span></td><td><b>3c)</b><span class="line"></span></td><td><b>3d)</b><span class="line"></span></td></tr>
+          <tr><td><b>4a)</b><span class="line"></span></td><td><b>4b)</b><span class="line"></span></td><td><b>4c)</b><span class="line"></span></td><td><b>4d)</b><span class="line"></span></td></tr>
+          <tr><td><b>5a)</b><span class="line"></span></td><td><b>5b)</b><span class="line"></span></td><td><b>5c)</b><span class="line"></span></td><td><b>5d)</b><span class="line"></span></td></tr>
+          <tr class="total"><td>Total: <span class="line"></span> (D)</td><td>Total: <span class="line"></span> (P)</td><td>Total: <span class="line"></span> (De)</td><td>Total: <span class="line"></span> (C)</td></tr>
+        </tbody>
+      </table>
+    </div>
+    <footer class="handout-foot">
+      <span><strong>SPOKES</strong> Problem Solving &amp; Decision Making &middot; Problem Solving Styles</span>
+      <span>Copyright &copy; 2026 WV Adult Basic Education</span>
+    </footer>
+  </section>
+
+  <section class="sheet">
+    <div class="body" style="margin-top: 0; gap: 0.2in">
+      <h3 style="margin: 0; font-weight: 700; font-size: 18pt">SCORES:</h3>
+      <div class="styles">
+        <section class="style-card" style="--edge: var(--primary)">
+          <h3><span>(D)</span>Diplomat</h3>
+          <div class="field"><span class="rule"></span><span class="label">my score</span></div>
+          <ul>
+            <li>Interested in reaching consensus (when people all agree)</li>
+            <li>Learns best from talking to those involved</li>
+            <li>Often values opinions more than facts</li>
+            <li>Focuses on practical solutions</li>
+            <li>Can be very persuasive</li>
+            <li>Needs to guard against missing timelines as a result of taking too much time gathering opinions</li>
+          </ul>
+        </section>
+        <section class="style-card" style="--edge: var(--muted-gold)">
+          <h3><span>(P)</span>Professor</h3>
+          <div class="field"><span class="rule"></span><span class="label">my score</span></div>
+          <ul>
+            <li>Interested in theories</li>
+            <li>Seeks a lot of background information</li>
+            <li>Learns from relationships to other situations</li>
+            <li>Values detachment from issues (tries to be very objective)</li>
+            <li>Relates to others by giving and getting information</li>
+            <li>Needs to guard against indecision and impracticality (always waiting for more information)</li>
+          </ul>
+        </section>
+        <section class="style-card" style="--edge: var(--accent)">
+          <h3><span>(De)</span>Detective</h3>
+          <div class="field"><span class="rule"></span><span class="label">my score</span></div>
+          <ul>
+            <li>Interested in finding the cause of the problem</li>
+            <li>Focuses on relevant facts</li>
+            <li>Prefers to make direct observations of situations</li>
+            <li>Tends to follow a consistent method or process</li>
+            <li>Tries to establish clear cause-and-effect relationships</li>
+            <li>Needs to guard against inflexibility and insensitivity to people</li>
+          </ul>
+        </section>
+        <section class="style-card" style="--edge: var(--mauve)">
+          <h3><span>(C)</span>Champion</h3>
+          <div class="field"><span class="rule"></span><span class="label">my score</span></div>
+          <ul>
+            <li>Interested in results</li>
+            <li>Finds a solution by trying one out</li>
+            <li>Wants to achieve success without help from others</li>
+            <li>Trusts his or her instincts</li>
+            <li>Good in crisis situations when there is no time for analysis</li>
+            <li>Needs to guard against impulsiveness and uncooperativeness</li>
+          </ul>
+        </section>
+      </div>
+    </div>
+    <footer class="handout-foot">
+      <span><strong>SPOKES</strong> Problem Solving &amp; Decision Making &middot; Problem Solving Styles</span>
+      <span>Copyright &copy; 2026 WV Adult Basic Education</span>
+    </footer>
+  </section>
+</main>
+<script src="../lines.js"></script>
+</body>
+</html>

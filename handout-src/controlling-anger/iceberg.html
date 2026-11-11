@@ -1,0 +1,71 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<title>Anger Iceberg: SPOKES Controlling Anger</title>
+<style>
+  @font-face { font-family: "Vollkorn"; src: url("../../fonts/vollkorn-latin.woff2") format("woff2"); font-weight: 400 700; font-display: block; }
+  @font-face { font-family: "Fira Sans"; src: url("../../fonts/fira-sans-400-latin.woff2") format("woff2"); font-weight: 400; font-display: block; }
+  @font-face { font-family: "Fira Sans"; src: url("../../fonts/fira-sans-500-latin.woff2") format("woff2"); font-weight: 500; font-display: block; }
+  @font-face { font-family: "Fira Sans"; src: url("../../fonts/fira-sans-600-latin.woff2") format("woff2"); font-weight: 600 700; font-display: block; }
+  :root { --font-heading: "Vollkorn", serif; --font-body: "Fira Sans", sans-serif; }
+</style>
+<link rel="stylesheet" href="../spokes-handout.css">
+<style>
+  /* Anger Iceberg worksheet. The iceberg is the same shape as the one on the
+     Controlling Anger cover, drawn light so students can write inside it. */
+  .handout-head h1 { font-weight: 700; font-size: 26pt; }
+  .sheet > .body { gap: 0.18in; }
+  .situation .lines { margin-top: 0; }
+  .berg { flex: 1; display: grid; place-items: center; min-height: 0; }
+  .berg svg { width: 7.3in; height: 7.1in; display: block; }
+  .berg .water { stroke: var(--primary); stroke-width: 2.5; stroke-dasharray: 10 7; }
+  .berg .sea { fill: #eef5fa; }
+  .berg .tip { fill: #ffffff; stroke: var(--dark); stroke-width: 3; stroke-linejoin: round; }
+  .berg .below { fill: #ffffff; stroke: var(--dark); stroke-width: 3; stroke-linejoin: round; }
+  .berg .facet { fill: none; stroke: var(--dark); stroke-width: 1.5; stroke-linejoin: round; opacity: 0.55; }
+  .berg .label { font-family: "Fira Sans", sans-serif; font-weight: 600; font-size: 15px; letter-spacing: 0.14em; fill: var(--primary); }
+  .berg .hint { font-family: "Fira Sans", sans-serif; font-size: 14px; fill: var(--gray); font-style: italic; }
+</style>
+</head>
+<body>
+<main class="handout">
+  <section class="sheet">
+    <header class="handout-head">
+      <img class="logo" src="../../SPOKES-Logo.png" alt="SPOKES, Skills for Life">
+      <h1>Anger Iceberg</h1>
+    </header>
+    <div class="body" style="flex: 1">
+      <div class="name-row">
+        <div class="field"><span class="label">Name:</span><span class="rule"></span></div>
+        <div class="field"><span class="label">Date:</span><span class="rule"></span></div>
+      </div>
+      <div class="situation">
+        <div class="field"><span class="label">The situation:</span><span class="rule"></span></div>
+        <div class="lines" style="--n: 1"></div>
+      </div>
+      <div class="berg">
+        <svg viewBox="0 0 700 680" role="img" aria-label="A blank iceberg to write on. A small tip sits above the waterline; a much larger part sits below it.">
+          <rect class="sea" x="0" y="230" width="700" height="450"/>
+          <polygon class="below" points="214,230 468,230 548,286 612,372 604,468 556,548 474,612 388,658 300,646 236,600 178,520 160,420 176,322"/>
+          <polygon class="tip" points="318,36 350,74 372,62 404,124 432,150 468,230 214,230 236,168 262,140 280,92"/>
+          <polyline class="facet" points="318,36 304,128 330,230"/>
+          <polyline class="facet" points="404,124 384,176 402,230"/>
+          <line class="water" x1="0" y1="230" x2="700" y2="230"/>
+          <text class="label" x="14" y="40">ABOVE THE WATERLINE</text>
+          <text class="hint" x="14" y="62">Anger, and how it showed</text>
+          <text class="label" x="14" y="620">BELOW THE WATERLINE</text>
+          <text class="hint" x="14" y="642">The feelings, thoughts and</text>
+          <text class="hint" x="14" y="660">beliefs underneath</text>
+        </svg>
+      </div>
+    </div>
+    <footer class="handout-foot">
+      <span><strong>SPOKES</strong> Controlling Anger &middot; Anger Iceberg</span>
+      <span>Copyright &copy; 2026 WV Adult Basic Education</span>
+    </footer>
+  </section>
+</main>
+<script src="../lines.js"></script>
+</body>
+</html>

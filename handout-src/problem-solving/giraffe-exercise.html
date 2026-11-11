@@ -1,0 +1,78 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<title>Critical Thinking Exercise: SPOKES Problem Solving &amp; Decision Making</title>
+<style>
+  @font-face { font-family: "Bitter"; src: url("../../fonts/bitter-latin.woff2") format("woff2"); font-weight: 400 700; font-display: block; }
+  @font-face { font-family: "Raleway"; src: url("../../fonts/raleway-latin.woff2") format("woff2"); font-weight: 400 700; font-display: block; }
+  :root { --font-heading: "Bitter", serif; --font-body: "Raleway", sans-serif; }
+</style>
+<link rel="stylesheet" href="../spokes-handout.css">
+<style>
+  /* Critical Thinking Exercise (Giraffe in the Refrigerator). SPOKES wording
+     approved by Britt 2026-11-10. Page 1 is the questions; page 2 the answers,
+     so the questions can be printed alone. */
+  .handout-head h1 { font-weight: 700; font-size: 26pt; }
+  .handout-head .sub { margin: 0.04in 0 0; font-family: var(--font-heading); font-size: 13pt; color: var(--primary); }
+  .sheet > .body { gap: 0.3in; }
+  .body p { margin: 0; }
+  .intro { --panel-edge: var(--primary); font-size: 12pt; line-height: 1.5; }
+  .riddles { margin: 0; padding: 0; list-style: none; display: grid; gap: 0.32in; }
+  .riddles li { display: grid; grid-template-columns: 0.5in 1fr; column-gap: 0.12in; }
+  .riddles .num {
+    width: 0.42in; height: 0.42in; border-radius: 50%;
+    background: var(--dark); color: var(--light);
+    display: grid; place-items: center;
+    font-family: var(--font-heading); font-weight: 700; font-size: 15pt;
+  }
+  .riddles .prompt { font-size: 13pt; line-height: 1.4; }
+  .answers .answer { margin-top: 0.06in; line-height: 1.5; }
+  .answers .tests { margin-top: 0.06in; font-style: italic; color: var(--gray); }
+  .answers .tests b { font-style: normal; color: var(--muted-gold); }
+</style>
+</head>
+<body>
+<main class="handout">
+  <section class="sheet">
+    <header class="handout-head">
+      <img class="logo" src="../../SPOKES-Logo.png" alt="SPOKES, Skills for Life">
+      <div>
+        <h1>Critical Thinking Exercise</h1>
+        <p class="sub">Giraffe in the Refrigerator</p>
+      </div>
+    </header>
+    <div class="body">
+      <p class="panel intro">Good problem solvers stop and think before they jump in. Answer these four questions in order. Each one builds on the one before it. Write down your answer before you look at the answers.</p>
+      <ol class="riddles">
+        <li><span class="num">1</span><div><p class="prompt">How would you fit a giraffe into your refrigerator?</p><div class="lines" style="--n: 3"></div></div></li>
+        <li><span class="num">2</span><div><p class="prompt">Now, how would you fit an elephant into your refrigerator?</p><div class="lines" style="--n: 3"></div></div></li>
+        <li><span class="num">3</span><div><p class="prompt">The king of the animals calls a meeting of every animal. All of them come except one. Which animal is missing?</p><div class="lines" style="--n: 3"></div></div></li>
+        <li><span class="num">4</span><div><p class="prompt">You need to cross a river where crocodiles live, and you have no boat. How do you get across?</p><div class="lines" style="--n: 3"></div></div></li>
+      </ol>
+    </div>
+    <footer class="handout-foot">
+      <span><strong>SPOKES</strong> Problem Solving &amp; Decision Making &middot; Critical Thinking Exercise</span>
+      <span>Copyright &copy; 2026 WV Adult Basic Education</span>
+    </footer>
+  </section>
+
+  <section class="sheet">
+    <div class="body" style="margin-top: 0">
+      <h3 style="margin: 0; font-weight: 700; font-size: 20pt">Answers</h3>
+      <ol class="riddles answers">
+        <li><span class="num">1</span><div><p class="prompt">How would you fit a giraffe into your refrigerator?</p><p class="answer">Open the door, put the giraffe inside, and shut the door.</p><p class="tests"><b>What it checks:</b> whether you make a simple job harder than it needs to be.</p></div></li>
+        <li><span class="num">2</span><div><p class="prompt">Now, how would you fit an elephant into your refrigerator?</p><p class="answer">Open the door, take the giraffe out, put the elephant in, and shut the door.</p><p class="tests"><b>What it checks:</b> whether you think about what your earlier choices changed.</p></div></li>
+        <li><span class="num">3</span><div><p class="prompt">The king of the animals calls a meeting of every animal. All of them come except one. Which animal is missing?</p><p class="answer">The elephant. It is still in your refrigerator.</p><p class="tests"><b>What it checks:</b> your memory.</p></div></li>
+        <li><span class="num">4</span><div><p class="prompt">You need to cross a river where crocodiles live, and you have no boat. How do you get across?</p><p class="answer">Swim across. Every crocodile is at the animal meeting.</p><p class="tests"><b>What it checks:</b> whether you learn quickly from a mistake.</p></div></li>
+      </ol>
+    </div>
+    <footer class="handout-foot">
+      <span><strong>SPOKES</strong> Problem Solving &amp; Decision Making &middot; Critical Thinking Exercise</span>
+      <span>Copyright &copy; 2026 WV Adult Basic Education</span>
+    </footer>
+  </section>
+</main>
+<script src="../lines.js"></script>
+</body>
+</html>
