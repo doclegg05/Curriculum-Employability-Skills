@@ -60,6 +60,13 @@ async function build(page, handout) {
       for (const block of root.querySelectorAll('.lines, .ruled')) {
         if (!block.children.length) found.push(`a block of writing lines is empty${where} (is lines.js loaded?)`);
       }
+      // A font file can load while the text still falls back to the browser
+      // default (a packet part once printed in Times), so read the family the
+      // text actually gets against the page's --font-body.
+      const body = getComputedStyle(document.documentElement).getPropertyValue('--font-body').split(',')[0].trim().replace(/"/g, '');
+      const first = root.querySelector('.sheet');
+      if (!body) found.push(`the page sets no --font-body${where}`);
+      else if (first && !getComputedStyle(first).fontFamily.includes(body)) found.push(`text is not set in ${body}${where}`);
       for (const sheet of root.querySelectorAll('.sheet')) {
         if (sheet.scrollHeight > sheet.clientHeight + 1) found.push(`a sheet runs ${sheet.scrollHeight - sheet.clientHeight}px past the bottom of the page${where}`);
       }
