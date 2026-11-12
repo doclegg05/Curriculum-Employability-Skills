@@ -2,7 +2,7 @@
 window.SPOKES_PRINT_MANIFEST = {
   "version": 1,
   "lessonTitle": "Communicating with the Public",
-  "sourceHash": "0adb2601c8b552be85b4e96acb246df0d5d551b58d01bddc1aab807b158b7dc8",
+  "sourceHash": "c5c35cc22b3c330e3e164cf5f3944fb6ab3b4a44c2dbf0928a867a476e89187e",
   "pictures": [
     {
       "slide": 1,
