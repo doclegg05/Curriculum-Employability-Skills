@@ -3172,9 +3172,10 @@
       /* The ten "remix" slides fill their height with no spacer under the
          content, so they stop 5.25rem from the bottom themselves. (On slide
          10 the checklist pictures reached under the navigation hint.) The
-         selector repeats the fit rule's so that it out-ranks it. */
+         selector repeats the fit rule's so that it out-ranks it. Dividing by
+         --fit keeps the 5.25rem true when a slide is drawn smaller. */
       .slide.remix-slide:not(.slide-title):not(.slide-section):not(.slide-closing):not(.big-statement) {
-        padding-bottom: 5.25rem;
+        padding-bottom: calc(5.25rem / var(--fit, 1));
       }
 
       /* Closing slide: the box's own padding is 2.75rem, so the box fits
