@@ -14,7 +14,7 @@
       "title": "Communicating with the Public",
       "source": {
         "path": "lesson-communicating-with-the-public/index.html",
-        "sha256": "4334653f1aa7e793118087cc702d762aba831f2be5dffa7a9701713518499866",
+        "sha256": "2cd5ab1b1d5c3449bf464cfcd182d16d96dbe1b298c2bd2b6bda6bb459d03976",
         "status": "ready"
       },
       "roles": {
@@ -100,8 +100,7 @@
             "rgb(96, 99, 107)",
             "rgb(0, 64, 113)",
             "rgb(255, 255, 255)",
-            "rgb(0, 19, 63)",
-            "rgba(255, 255, 255, 0.85)"
+            "rgb(0, 19, 63)"
           ],
           "reason": "The colors vary, use transparency, or are outside the eleven exact brand swatches."
         },
@@ -288,7 +287,7 @@
       "title": "Controlling Anger",
       "source": {
         "path": "lesson-controlling-anger/index.html",
-        "sha256": "290b07c0c581569429c44fba8a1917e594af18d72ab5a8f231d5c6e4fa0d23cf",
+        "sha256": "e4f28e3d6ebbe5407af9049c9f625a8b6b6e42ae67c3f7400a5b7b812afeb207",
         "status": "ready"
       },
       "roles": {
@@ -548,7 +547,7 @@
       "title": "Employee Accountability",
       "source": {
         "path": "lesson-employee-accountability/index.html",
-        "sha256": "33653889da7c0bb5c81ab3b94582bdd4ddac06837874f303269826c44eb3d374",
+        "sha256": "63bf1163bce390fe1a04772b2582d5be53fb87896e24f0f5b8441416aff5132e",
         "status": "ready"
       },
       "roles": {
@@ -811,7 +810,7 @@
       "title": "Interview Skills",
       "source": {
         "path": "lesson-interview-skills/index.html",
-        "sha256": "63844d6d52d198031b5a0f7bf7945294786036c196ec1eea90bc28f252a6d0ac",
+        "sha256": "ad8214b045aa353ad731382843266030ebd2662da2e14edbf288db816806039c",
         "status": "ready"
       },
       "roles": {
@@ -1063,7 +1062,7 @@
       "title": "Problem Solving & Decision Making",
       "source": {
         "path": "lesson-problem-solving-and-decision-making/index.html",
-        "sha256": "425b96871dba2ccee977318c3347f642589a045e54b052dd7e756371c43f68b4",
+        "sha256": "d6a73f9a70e9b3b3d5490d149c490a716776d9743c3f0d57aed407c106b797b8",
         "status": "ready"
       },
       "roles": {
@@ -1325,7 +1324,7 @@
       "title": "Time Management",
       "source": {
         "path": "lesson-time-management/index.html",
-        "sha256": "4c5e12366e768143f85e11d60879a4ee7cea8f42d38a9a02ef1908daa952e388",
+        "sha256": "2ea38c3fef6fbc5d917f5d6ed2e69a7d51da7e7306422e88a0316f3c9c6f89ea",
         "status": "ready"
       },
       "roles": {
@@ -1415,7 +1414,7 @@
           "observed": [
             "rgb(96, 99, 107)",
             "rgb(18, 63, 92)",
-            "rgba(255, 255, 255, 0.85)",
+            "rgb(255, 255, 255)",
             "rgb(0, 19, 63)",
             "rgb(16, 32, 51)"
           ],

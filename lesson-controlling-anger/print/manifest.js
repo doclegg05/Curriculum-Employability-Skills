@@ -2,7 +2,7 @@
 window.SPOKES_PRINT_MANIFEST = {
   "version": 1,
   "lessonTitle": "Controlling Anger",
-  "sourceHash": "0afe4fa2d60d7ad0f271a5987da6d602c53fa1ef6fb73e266db00a7a6237c6b4",
+  "sourceHash": "1e10cd41b69f91d0d915176918f5bd18a3013336616b1ea2766515549f0d1f17",
   "pictures": [
     {
       "slide": 1,
