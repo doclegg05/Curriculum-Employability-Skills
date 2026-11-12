@@ -1,5 +1,5 @@
 // Checks that every slide of every room-scale lesson fits its screen and
-// stays clear of the corner logo and the navigation hint: at rest on four
+// stays clear of the corner logo and the navigation hint: at rest on five
 // screens, and after each control on a slide is pressed on two of them.
 // A lesson is checked when it carries the room-scale sizing block, so a
 // lesson joins this check the day it is converted.
@@ -14,14 +14,17 @@ import { chromium } from 'playwright';
 const root = path.resolve(path.dirname(fileURLToPath(import.meta.url)), '..');
 const PROBE = path.join(root, 'scripts/lesson-fit-probe.js');
 const MARKER = 'Room-scale sizing';
-// Sidebar open and closed, on the smallest and the most common 16:9 screens.
+// Sidebar open and closed, on the smallest and the most common 16:9 screens,
+// and a 4:3 classroom projector (1024x768) with the sidebar open.
 const REST_SCREENS = [
+  { width: 1024, height: 768, sidebar: 'open' },
   { width: 1280, height: 720, sidebar: 'open' },
   { width: 1280, height: 720, sidebar: 'closed' },
   { width: 1920, height: 1080, sidebar: 'open' },
   { width: 1920, height: 1080, sidebar: 'closed' },
 ];
-const isPressScreen = (screen) => screen.sidebar === 'open';
+// Controls are pressed on the two 16:9 screens with the sidebar open.
+const isPressScreen = (screen) => screen.sidebar === 'open' && screen.width >= 1280;
 
 const named = process.argv.slice(2).map((name) => name.replace(/\/+$/, ''));
 const folders = (named.length ? named : fs.readdirSync(root).filter((name) => name.startsWith('lesson-')).sort())
