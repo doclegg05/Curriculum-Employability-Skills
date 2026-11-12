@@ -3173,9 +3173,11 @@
          content, so they stop 5.25rem from the bottom themselves. (On slide
          10 the checklist pictures reached under the navigation hint.) The
          selector repeats the fit rule's so that it out-ranks it. Dividing by
-         --fit keeps the 5.25rem true when a slide is drawn smaller. */
+         --fit keeps the gap true when a slide is drawn smaller. The 76px floor
+         clears the navigation hint on a 1024x768 projector, where 1rem is
+         about 12px and 5.25rem falls short of it. */
       .slide.remix-slide:not(.slide-title):not(.slide-section):not(.slide-closing):not(.big-statement) {
-        padding-bottom: calc(5.25rem / var(--fit, 1));
+        padding-bottom: calc(max(5.25rem, 76px) / var(--fit, 1));
       }
 
       /* Closing slide: the box's own padding is 2.75rem, so the box fits
@@ -3620,7 +3622,7 @@
       </section>
 
       <!-- Slide 9 — Preparation Tips -->
-      <section class="slide remix-slide" data-chapter="3" style="--fit: 0.97;">
+      <section class="slide remix-slide" data-chapter="3">
         <h2>Preparation Tips</h2>
         <div class="prep-board">
           <div class="prep-brief">
