@@ -7,8 +7,8 @@
 - **Repo**: origin = doclegg05/Curriculum-Employability-Skills (dev); publisher = SPOKES-Skills/Employability-Skills-Curriculum (public Pages); t9 = /Volumes/T9 backup mirror
 
 ## Current Status
-(as of 2026-11-10; BeSpoke lines as of 2026-11-06)
-- **Lesson showcase pass under way** (Britt, 2026-11-09): Level 1 repairs to the six released lessons are committed on worktree branch `t3/review-lessons-presentation-polish`, not pushed. Level 2 (room-size text) is next. Detail in Last Session.
+(as of 2026-11-12; BeSpoke lines as of 2026-11-06)
+- **Lesson showcase pass in PR #73** (Britt, 2026-11-09): Levels 1-3, SPOKES handouts and the Sol review fixes are on `t3/review-lessons-presentation-polish`. Britt merges.
 - **BeSpoke is live and ready for hosted checks.** Pages serves `main`; the Netlify service is deploy `6ae4a32718993eaabe906eaf` from `fdf6fe4` (2026-10-30, [[bespoke-netlify-deploy]] in auto-memory). No service file changed since: PRs #68 (team code first, Send pop-up) and #69 (session switching, C1/C2) are page-only.
   - Team codes: all six open with edit access; a fake code and another lesson's code get 403 (2026-10-30).
   - View links: `BESPOKE_VIEW_KEYS` is set and live. On 2026-11-04 all six view codes opened with `access: view`; history and status with a view code got 403 `view`. Files in `~/BeSpoke-private/codes-2026-10-14/` (`view-links.html` to pin).
@@ -23,10 +23,9 @@
 - **Money Management intro animation narrated** (PR #46, 2026-10-09). Rebuild steps: `lesson-Money-Management/intro-narration/script.md`.
 
 ## Last Session
-- **Date**: 2026-11-10 (began 2026-11-09; worktree branch `t3/review-lessons-presentation-polish`, called `t3/987d1938` when the session started)
-- **What we worked on**: Britt asked for a review of the six released lessons before showing them to many instructors and students. Design critique 26/40, technical audit 12/20, no blockers; report with line numbers in `.impeccable/critique/2026-11-10T00-30-25Z__lesson-index-html.md`. Then Level 1 of the showcase pass (repair): clicker keys (NAV-14), about 40 defect repairs in a `Showcase repair 2026-11` block at the end of each lesson's theme-override, seven AV1 videos re-saved as H.264, a 199 KB title JPEG for Communicating with the Public, each lesson down to its two registered typefaces, and a larger Jeopardy board on Controlling Anger slide 28 at Britt's request.
-- **What we decided**: see the 2026-11-09 and 2026-11-10 rows in the decision log.
-- **Where we left off**: Levels 1 and 2 and the Level 3 pilot (Controlling Anger, `c386d70`) are committed on the worktree branch, not pushed. Level 3 (all six) and SPOKES handouts committed 2026-11-10; next: Britt runs print captures, fingerprints, push, PR. Template plan waits until after Level 3.
+- **Date**: 2026-11-12 (branch `t3/review-lessons-presentation-polish`, PR #73)
+- **What we worked on**: fixed all 8 findings in Sol's review `docs/qa-reports/claude-changes-review-2026-11-11.md`: packet fonts (Times to Work Sans and Crimson Pro, plus a build check), CwP cover and closing bubbles, PS slide 17 scenarios matched to the handout, contrast on 8 slides, 4:3 fit on 5 slides, Lunar Survival wording, Forceful anger card, Daily Planner noon row.
+- **Where we left off**: committed; Britt pushes to PR #73 and reviews the new anger, Lunar and planner wording before the showing.
 
 ## Open Items
 - [ ] **Lesson showcase pass, Level 1**: committed, not pushed (hashes in Last Session). Push and the pull request go through Britt's Terminal. Britt's calls still open: the Problem Solving closing slide lost its photo; Communicating with the Public labels changed from a handwriting font to Work Sans; the NAV-14 heading uses a colon, unlike the other 87.
@@ -72,6 +71,8 @@
 ## Key Decisions Log
 | Date | Decision | Rationale |
 |------|----------|-----------|
+| 2026-11-12 | Slide text floor drops from 14px to 12px, and the fit check adds a 1024x768 screen with the sidebar open | Sol's review found five slides overflowing on 4:3 projectors; 12px still reads at the back of a room and fits them |
+| 2026-11-12 | Forceful anger style teaches "be firm without threats" instead of "best used when" | Sol's review: the old card read as approval of intimidation; slide wording unchanged |
 | 2026-11-10 | A slide that holds too much for room-size text is drawn smaller as a whole (`--fit` on the slide, never under 0.84) | Spacing alone could not fit 28 of 202 slides; a whole-slide scale keeps their proportions and keeps text at least as large at 1920x1080 as before |
 | 2026-11-10 | Slides stop 5.25rem above the bottom, and each fit keeps a 1.2% margin | The corner logo and navigation hint sat on top of fuller slides; classroom Windows machines set type slightly wider than the Mac the fit was measured on |
 | 2026-11-10 | Level 2 text scales with the screen | Britt's pick: a slide should look the same on any projector; about 19% larger than today at 1920x1080 |
@@ -80,11 +81,8 @@
 | 2026-11-09 | Page Down, Page Up, Home and End added to the lessons' key handler and the builder template (NAV-14) | Britt approved; presenter remotes send Page Down and the handler took arrows and Space only |
 | 2026-11-09 | Seven AV1 lesson videos re-saved as H.264 under the same file names | Old Edge and Safari may not play AV1; 56 MB of growth accepted |
 | 2026-11-09 | Controlling Anger slide 28 shows a drawn game board, not the Jeopardy thumbnail | The thumbnail carried a redrawn SPOKES mark (LOGO-01); the PNG stays in the folder, unreferenced |
-| 2026-11-04 | Turn off auto-merge rather than require PR approval on `main` | Britt is the only reviewer and PRs open under her account, which GitHub will not let her approve; auto-merge is what lets a PR land without her |
-| 2026-11-04 | The person on the Lesson & team form is the "spokesperson" in every page, guide and doc | The form label says Spokesperson; "Team Leader" in other copy named the same person differently |
-| 2026-11-03 | One pending Send per browser stays | Teams are remote and never share a browser (`bespoke-teams-never-share-browsers` in auto-memory) |
 
-Rows from 2026-10-23 and earlier are in `.claude/MEMORY-archive.md`.
+Rows from 2026-11-04 and earlier are in `.claude/MEMORY-archive.md`.
 
 ## Architecture Notes
 - TWO GitHub repos, one history: publisher (`SPOKES-Skills/Employability-Skills-Curriculum`) is the public home + Pages site; origin (`doclegg05/...`) is the dev repo and the one that moves. Publisher carries no unique commits — catching up is `git push publisher main:main`. Both public; dev repo ALSO serves Pages.
