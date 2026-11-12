@@ -14,7 +14,7 @@
       "title": "Communicating with the Public",
       "source": {
         "path": "lesson-communicating-with-the-public/index.html",
-        "sha256": "2cd5ab1b1d5c3449bf464cfcd182d16d96dbe1b298c2bd2b6bda6bb459d03976",
+        "sha256": "079d4e7bb1dad9a82da54af55622a4aff7cc6f01c914335c09472b4ed45ce4d0",
         "status": "ready"
       },
       "roles": {
@@ -810,7 +810,7 @@
       "title": "Interview Skills",
       "source": {
         "path": "lesson-interview-skills/index.html",
-        "sha256": "ad8214b045aa353ad731382843266030ebd2662da2e14edbf288db816806039c",
+        "sha256": "c855ff51e53b232c31c0224a580efb1a2d3d9e3261c9d928db2d3fa250ba5357",
         "status": "ready"
       },
       "roles": {
