@@ -2018,14 +2018,20 @@
 
     .matrix-cell.eliminate {
       background: var(--tm-coral);
-      color: var(--tm-paper);
+      color: var(--royal);
     }
 
+    /* Cream on coral measured 2.8:1 and dark ink 4.35:1; Royal on coral is
+       4.77:1. Labels and descriptions drop their fade on the colored cells so
+       the measured color is the color shown (WCAG AA 4.5:1). */
     .matrix-cell.eliminate .matrix-label,
     .matrix-cell.eliminate .matrix-action,
     .matrix-cell.eliminate .matrix-desc {
-      color: var(--tm-paper);
+      color: var(--royal);
     }
+    .matrix-cell.delegate .matrix-label,
+    .matrix-cell.eliminate .matrix-label,
+    .matrix-cell.eliminate .matrix-desc { opacity: 1; }
 
     .big-statement {
       background:
@@ -2349,15 +2355,17 @@
       display: grid;
       place-items: center;
       background: var(--mark-color, var(--tm-teal));
-      color: var(--tm-paper);
+      color: var(--mark-ink, var(--tm-ink));
       font-weight: 900;
       letter-spacing: 0.14em;
       border-radius: 1.125rem 1.125rem 0 1.125rem;
     }
 
     .focus-cost-item:nth-child(2) { --mark-color: var(--tm-amber); }
-    .focus-cost-item:nth-child(3) { --mark-color: var(--tm-coral); }
-    .focus-cost-item:nth-child(4) { --mark-color: var(--tm-navy); }
+    /* Mark numbers: dark ink on teal (5.5:1) and amber (9.1:1), Royal on coral
+       (4.77:1), cream on navy (10.5:1). */
+    .focus-cost-item:nth-child(3) { --mark-color: var(--tm-coral); --mark-ink: var(--royal); }
+    .focus-cost-item:nth-child(4) { --mark-color: var(--tm-navy); --mark-ink: var(--tm-paper); }
 
     .focus-cost-item h3 {
       font-size: 1.45rem;
@@ -2519,7 +2527,11 @@
        replaces the 16px and 19px steps and the short-screen rule block.
        Phones keep the browser's default root size and are unchanged. */
     @media (min-width: 769px) {
-      html { font-size: clamp(13px, min(2.1vh, 1.181vw), 48px); }
+      html { font-size: clamp(12px, min(2.1vh, 1.181vw), 48px); }
+      /* The 12px floor is what a 1024px-wide 4:3 projector needs: 1.181vw
+         there is 12.1px, so that screen gets the same 67rem slide area as
+         every 16:9 screen. A 13px floor squeezed it to 61rem and five
+         slides overflowed (review, 2026-11-11). */
 
       /* Fit. The slide area is 47.6rem tall on any 16:9 screen. Content
          slides start 1.75rem from the top and stop 4.25rem from the bottom.
@@ -2610,6 +2622,9 @@
     /* Slide 18: the gold card's body text was gray, 3.33:1. --royal on the
        gold card is 9.99:1. */
     .slide-chores .info-card.gold-card p { color: var(--royal); }
+    /* Slide 18: the blue cards' body text was a pale blue, 4.11:1. White on
+       the blue card is 5.04:1. */
+    .slide-chores .info-card.primary p { color: var(--light); }
 
     /* Slide 18: the heading is centred here, so centre its accent rule. */
     .slide.slide-chores h2::after { margin-left: auto; margin-right: auto; }
