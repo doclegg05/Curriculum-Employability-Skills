@@ -3027,7 +3027,11 @@
        replaces the 16px and 19px steps and the short-screen rule block.
        Phones keep the browser's default root size and are unchanged. */
     @media (min-width: 769px) {
-      html { font-size: clamp(13px, min(2.1vh, 1.181vw), 48px); }
+      html { font-size: clamp(12px, min(2.1vh, 1.181vw), 48px); }
+      /* The 12px floor is what a 1024px-wide 4:3 projector needs: 1.181vw
+         there is 12.1px, so that screen gets the same 67rem slide area as
+         every 16:9 screen. A 13px floor squeezed it to 61rem and five
+         slides overflowed (review, 2026-11-11). */
 
       /* Fit. The slide area is 47.6rem tall on any 16:9 screen. Content
          slides start 1.75rem from the top and stop 4.25rem from the bottom.
@@ -3735,7 +3739,7 @@
         <div class="split-layout">
           <div class="split-text">
             <div style="background:var(--muted); padding:1.5rem 2rem; border-radius:0.75rem; border-left:5px solid var(--gold); margin-bottom:1.5rem;">
-              <p style="font-size:1.2rem; color:var(--dark); line-height:1.5;"><strong style="color:var(--muted-gold);">Scenario:</strong> Your kids need shirts for school, and with your limited budget, you look for a bargain on your favorite store&rsquo;s website. You find a great sale on children&rsquo;s shirts at <strong>3 for $10</strong>! You rush to the store &mdash; but find the same shirts listed at <strong>$15 each</strong>, no sale sign in sight!</p>
+              <p style="font-size:1.2rem; color:var(--dark); line-height:1.5;"><strong style="color:var(--dark);">Scenario:</strong> Your kids need shirts for school, and with your limited budget, you look for a bargain on your favorite store&rsquo;s website. You find a great sale on children&rsquo;s shirts at <strong>3 for $10</strong>! You rush to the store &mdash; but find the same shirts listed at <strong>$15 each</strong>, no sale sign in sight!</p>
             </div>
             <p style="font-size:1.5rem; color:var(--primary); font-weight:600;">What could you do?</p>
             <ul class="content-list" style="margin-top:0.5rem;">
@@ -3832,16 +3836,16 @@
       <section class="slide scenario-choose-slide" data-chapter="4">
         <h2>Choose a Scenario</h2>
         <div class="scenarios-grid">
-          <div class="scenario-card"><strong>Scenario 1</strong>You run into an acquaintance at the library and realize you forgot her name. What could you do?</div>
-          <div class="scenario-card"><strong>Scenario 2</strong>You take clothes to a consignment shop expecting 50/50, but the clerk says it&rsquo;s 30/70. You were counting on that money. What could you do?</div>
-          <div class="scenario-card"><strong>Scenario 3</strong>Your friend asks you to write a reference for a job. In your opinion, he isn&rsquo;t qualified. What could you do?</div>
-          <div class="scenario-card"><strong>Scenario 4</strong>You&rsquo;re a single parent with a job interview, and your babysitter cancels last minute. This is a dream job. What could you do?</div>
-          <div class="scenario-card"><strong>Scenario 5</strong>After surgery, the nurse says to ring the buzzer for the bathroom &mdash; but it takes staff 20 minutes to answer. What could you do?</div>
-          <div class="scenario-card"><strong>Scenario 6</strong>Your washing machine is making strange noises. A service call costs $150, but you only have $20 left this month. What could you do?</div>
-          <div class="scenario-card"><strong>Scenario 7</strong>You just started a new job. At lunchtime you realize you don&rsquo;t have enough lunch money. What could you do?</div>
-          <div class="scenario-card"><strong>Scenario 8</strong>Your boss constantly asks you to run personal errands during work. You can&rsquo;t finish your own work. What could you do?</div>
-          <div class="scenario-card"><strong>Scenario 9</strong>You call the doctor to schedule a check-up, but the receptionist isn&rsquo;t being helpful with an appointment time. What could you do?</div>
-          <div class="scenario-card"><strong>Scenario 10</strong>You&rsquo;re offered a great job with a huge salary, but it requires a lot of travel that cuts into family time. What could you do?</div>
+          <div class="scenario-card"><strong>Scenario 1</strong>You start a new job on Monday. On Sunday night your car will not start, and the first bus arrives after your shift begins. What could you do?</div>
+          <div class="scenario-card"><strong>Scenario 2</strong>A coworker keeps sharing your ideas in team meetings as if they were their own. What could you do?</div>
+          <div class="scenario-card"><strong>Scenario 3</strong>Your child&rsquo;s school calls at 10 a.m. Your child is sick and needs to be picked up. You are in the middle of a shift, and your supervisor is in a meeting. What could you do?</div>
+          <div class="scenario-card"><strong>Scenario 4</strong>Your paycheck is six hours short. The next payday is two weeks away, and your rent is due Friday. What could you do?</div>
+          <div class="scenario-card"><strong>Scenario 5</strong>A classmate asks to copy your homework because they ran out of time. What could you do?</div>
+          <div class="scenario-card"><strong>Scenario 6</strong>You are offered two jobs. One pays more but has night shifts. The other pays less but fits your family&rsquo;s schedule. You must answer both by tomorrow. What could you do?</div>
+          <div class="scenario-card"><strong>Scenario 7</strong>You have asked your landlord three times to fix a leaking sink. Now the water is ruining the cabinet underneath. What could you do?</div>
+          <div class="scenario-card"><strong>Scenario 8</strong>You make a mistake at work that costs a customer&rsquo;s order. No one knows it was you. What could you do?</div>
+          <div class="scenario-card"><strong>Scenario 9</strong>Your caseworker needs a signed form by Friday, but the office that signs it is closed until Monday. What could you do?</div>
+          <div class="scenario-card"><strong>Scenario 10</strong>One member of your team project has not done their part, and the deadline is in two days. What could you do?</div>
         </div>
       </section>
 
@@ -3950,7 +3954,7 @@
       <!-- Slide 21: Lunar Survival -->
       <section class="slide" data-chapter="5" style="--fit: 0.93;">
         <h2>Lunar Survival &mdash; NASA Rankings</h2>
-        <p style="font-size:1rem; color:var(--gray); margin-top:-1.5rem; margin-bottom:1rem;">Your ship crash-landed 200 miles from the mothership on the moon. Rank these 15 items.</p>
+        <p style="font-size:1rem; color:var(--gray); margin-top:-1.5rem; margin-bottom:1rem;">Your ship crash-landed on the sunlit side of the moon, 200 miles from the mothership. Rank these 15 items.</p>
         <div class="tabs-container">
           <div class="tabs-nav" role="tablist">
             <button class="tab-btn active" role="tab" aria-selected="true" aria-controls="lunar-items" onclick="switchTab(event, 'lunar-items')">Items to Rank</button>

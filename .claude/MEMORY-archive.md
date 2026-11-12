@@ -71,3 +71,6 @@ Older rows moved out of `.claude/MEMORY.md` to keep it under its size cap.
 | 2026-08-03 | big-rocks.vtt gets music-descriptor cues, not speech captions | Video verified music-only with on-screen text (whiteboard animation) |
 | 2026-08-03 | Classroom type scale: 19px root font at ≥1600×920, per deck | Britt found content too small at 1920×1080; decks are rem-based so one lever scales all; scoped to avoid the ≤900px fit-guard |
 | 2026-08-03 | Scale/override blocks go at the END of theme-override | Media queries don't add specificity; later same-specificity rules silently win — bit us twice (CWP icons, PSDM closing h2) |
+| 2026-11-04 | Turn off auto-merge rather than require PR approval on `main` | Britt is the only reviewer and PRs open under her account, which GitHub will not let her approve; auto-merge is what lets a PR land without her |
+| 2026-11-04 | The person on the Lesson & team form is the "spokesperson" in every page, guide and doc | The form label says Spokesperson; "Team Leader" in other copy named the same person differently |
+| 2026-11-03 | One pending Send per browser stays | Teams are remote and never share a browser (`bespoke-teams-never-share-browsers` in auto-memory) |

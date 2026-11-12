@@ -1684,7 +1684,9 @@
 
     .team-strength-slide .danger-icon {
       width: 100%;
-      height: clamp(9.375rem, 21vh, 13.125rem);
+      /* min(21vh, 11.8vw): the same size on every 16:9 screen, but no taller
+         on a 4:3 one, where 21vh crowded out the card heading. */
+      height: clamp(9.375rem, min(21vh, 11.8vw), 13.125rem);
       margin-bottom: 0;
       border-radius: 10px;
       overflow: hidden;
@@ -3049,7 +3051,11 @@
        replaces the 16px and 19px steps and the short-screen rule block.
        Phones keep the browser's default root size and are unchanged. */
     @media (min-width: 769px) {
-      html { font-size: clamp(13px, min(2.1vh, 1.181vw), 48px); }
+      html { font-size: clamp(12px, min(2.1vh, 1.181vw), 48px); }
+      /* The 12px floor is what a 1024px-wide 4:3 projector needs: 1.181vw
+         there is 12.1px, so that screen gets the same 67rem slide area as
+         every 16:9 screen. A 13px floor squeezed it to 61rem and five
+         slides overflowed (review, 2026-11-11). */
 
       /* Fit. The slide area is 47.6rem tall on any 16:9 screen. Content
          slides start 1.75rem from the top and stop 4.25rem from the bottom.

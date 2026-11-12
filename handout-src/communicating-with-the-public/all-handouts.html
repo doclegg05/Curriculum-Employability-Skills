@@ -5,6 +5,9 @@
 <style>
   @font-face { font-family: "Crimson Pro"; src: url("../../fonts/crimson-pro-latin.woff2") format("woff2"); font-weight: 400 700; font-display: block; }
   @font-face { font-family: "Work Sans"; src: url("../../fonts/work-sans-latin.woff2") format("woff2"); font-weight: 400 600; font-display: block; }
+  /* Each handout sets these on its own :root, which means nothing inside a
+     packet's shadow root. Set here, they inherit into every packet part. */
+  :root { --font-heading: "Crimson Pro", serif; --font-body: "Work Sans", sans-serif; }
 </style>
 <link rel="stylesheet" href="../spokes-handout.css">
 <title>Communicating with the Public 2026 Handouts: SPOKES</title>
