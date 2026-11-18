@@ -250,6 +250,43 @@ try {
     await context.close();
     pass(`${width}px top bar and menu fit the screen`);
   }
+  {
+    // Finding the way (review of 2026-11-18), on a school laptop's screen: a forward button on Make it yours,
+    // toasts clear of the stage pills, and a slide that stays put when the selection changes.
+    const context = await browser.newContext({viewport: {width: 1366, height: 768}, reducedMotion: 'reduce'});
+    await context.addInitScript(() => { window.__bespokeAutosave = {enabled: false}; });
+    const page = await context.newPage();
+    page.on('pageerror', e => errors.push(e.message));
+    await page.goto(server.baseUrl + '/bespoke/');
+    await page.locator('#localPreviewNotice').waitFor({state: 'visible'});
+    await page.locator('#stage-slides').click();
+
+    const forward = page.locator('#btnToSend');
+    assert.equal(await forward.isVisible(), true, 'Make it yours has a visible way forward');
+    assert.match(await forward.textContent(), /Continue to Send/);
+    pass('Make it yours shows Continue to Send beside the slide heading');
+
+    await page.locator('#btnSave').click();
+    await page.locator('#toast.is-visible').waitFor();
+    const toast = await rect(page, '#toast'), bar = await rect(page, '.app-bar');
+    assert.ok(toast.top >= bar.bottom, `the toast sits below the top bar, toast top ${toast.top}px, bar bottom ${bar.bottom}px`);
+    pass('a toast does not cover the stage pills');
+
+    const place = async () => { const r = await rect(page, '#modelStage'); return [Math.round(r.top), Math.round(r.width)]; };
+    await page.locator('#modelStage .slide-title-text').click();
+    const withText = await place();
+    await page.keyboard.press('Escape');
+    await page.locator('#selectedElement').evaluate(el => el.value).then(value => assert.equal(value, 'background'));
+    assert.deepEqual(await place(), withText, 'selecting the background does not move or resize the slide');
+    await page.locator('#modelStage .slide-title-text').click();
+    assert.deepEqual(await place(), withText, 'selecting text again leaves the slide where it was');
+    pass('the slide stays put when the selection changes');
+
+    await forward.click();
+    assert.equal(await page.locator('#workspace').getAttribute('data-stage'), 'review');
+    pass('Continue to Send opens Send');
+    await context.close();
+  }
   assert.deepEqual(errors, []);
 } finally {
   await browser.close();

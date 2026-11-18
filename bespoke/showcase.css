@@ -23,6 +23,8 @@
   pointer-events: none;
   opacity: 0;
 }
+/* The top bar is pinned at this width and holds the stage pills, Undo and Save: a toast sits under it, never over them. */
+@media (min-width: 1101px) { .toast { top: calc(var(--bar-h) + 8px); } }
 /* Always rendered so screen readers register the live region before its text changes. */
 .toast.is-visible {
   opacity: 1;

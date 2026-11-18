@@ -4,6 +4,8 @@
    too and their Slide options drawer scrolls on its own. Phones (760px and narrower)
    keep the stacked layout. Chrome only; lesson colors stay inside the preview. */
 :root{--bar-h:52px}
+/* Shown only beside the docked editor (below); the stacked layouts keep the stage panel's own Continue button. */
+#btnToSend{display:none}
 
 /* ---- Top bar ---------------------------------------------------------- */
 .app-bar{display:flex;flex-wrap:wrap;align-items:center;gap:6px 12px;min-height:var(--bar-h);padding:4px 16px;background:#fff;border-bottom:1px solid var(--line)}
@@ -104,6 +106,8 @@ body:has(.workspace[data-editor=true]) #btnMenuOptions{display:flex}
  .workspace[data-editor=true] .drawer-bar{position:sticky;top:0;z-index:3;display:flex;align-items:center;justify-content:space-between;gap:12px;padding:6px 16px 6px 20px;border-bottom:1px solid var(--line);background:#fff}
 
  .workspace[data-editor=true] .preview-heading{margin:0;min-height:44px}
+ /* With the options drawer closed, the stage's own Continue button is out of sight, so the heading row carries one. */
+ .workspace[data-editor=true] #btnToSend{display:inline-flex}
  .workspace[data-editor=true] .preview-heading h2{display:inline;font-size:var(--fs-md)}
  .workspace[data-editor=true] .canvas-hint{display:inline;margin-left:12px;color:var(--muted);font-size:var(--fs-xs)}
  /* The band above the slide holds the docked toolbar; canvas-fit.mjs scales the slide to the room left under it. */

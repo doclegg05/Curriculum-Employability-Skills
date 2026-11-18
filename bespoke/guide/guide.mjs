@@ -1,6 +1,6 @@
 import * as Model from '../builder-model.mjs';
 import { questionCopy } from './copy.mjs';
-import { advance, back, buildQuestions, byIdMap, jumpToQuestion, jumpToSection, normalizeGuide, questionAt, skipSection, startGuide } from './questions.mjs';
+import { advance, back, buildQuestions, byIdMap, jumpToQuestion, jumpToSection, normalizeGuide, questionAt, sectionProgress, skipSection, startGuide } from './questions.mjs';
 import { applyAnswer } from './answers.mjs';
 import { renderGuide } from './screens.mjs';
 
@@ -56,7 +56,8 @@ export function createGuide(host) {
       renderGuide(panel, { guide, q, byId, catalog, host, actions, Model, moreOpen: moreFor === q.id });
       // The preview writes its own live text during render, so announce the question just after it.
       if (focusHeading) { focusHeading = false; panel.querySelector('h1')?.focus({ preventScroll: true }); }
-      if (moved) setTimeout(() => host.announce(`Question ${guide.index + 1} of ${guide.ids.length}: ${questionCopy(q).title}`), 60);
+      const place = sectionProgress(guide, byId);
+      if (moved) setTimeout(() => host.announce(`${place.label}, question ${place.number} of ${place.total}: ${questionCopy(q).title}`), 60);
     }
   };
 }

@@ -143,3 +143,16 @@ test('scope sentences name each group in order and skip empty ones', () => {
   assert.deepEqual(scopeSentences([['title', 'primary']], () => 'shared', ([kind]) => kind), ['Shared: title.']);
   assert.deepEqual(scopeSentences([], () => 'shared', () => ''), []);
 });
+
+test("the Font menu can change the lesson's font for the slot the text is on", async () => {
+  const { lessonFontChoices, lessonFontPick } = await import('../bespoke/font-slots.mjs');
+  const group = lessonFontChoices(catalog, 'heading');
+  assert.equal(group.label, "Change the lesson's heading font");
+  assert.equal(lessonFontChoices(catalog, 'body').label, "Change the lesson's body font");
+  assert.deepEqual(group.options.map(option => option.label), catalog.fonts.map(font => font.label), 'every lesson font is offered where it says Font');
+  // A pick from that group names the font; the two slot choices and anything else are not picks.
+  assert.equal(lessonFontPick(catalog, group.options[2].id), catalog.fonts[2].id);
+  assert.equal(lessonFontPick(catalog, 'heading'), null);
+  assert.equal(lessonFontPick(catalog, 'inherit'), null);
+  assert.equal(lessonFontPick(catalog, 'lesson:not-a-font'), null);
+});
