@@ -165,6 +165,25 @@ try {
       assert.deepEqual(sentFrom, [SAVED_REVISION], 'the click was not lost');
     });
   }
+  {
+    let releaseSave;
+    const heldSave = new Promise(resolve => { releaseSave = resolve; });
+    const sent = [];
+    await scenario('a second click while Send is saving first does not send twice', {
+      save: async () => { await heldSave; return savedOk(); },
+      send: body => { sent.push(body.mutationId); return processing(); },
+      status: processing
+    }, async page => {
+      await page.locator('#reviewNotes').fill('Sent once.');
+      await send(page);
+      await page.locator('#sendFeedback').filter({hasText: 'Saving the shared design'}).waitFor();
+      await send(page);
+      releaseSave();
+      await dialog(page).waitFor();
+      await page.waitForTimeout(500);
+      assert.equal(sent.length, 1, 'one click, or two, is one request to Britt');
+    });
+  }
   await scenario('a save that fails stops the send and says why', {
     save: () => ({status: 502, json: {ok: false, error: 'store', message: 'The connected store could not complete this request.'}}),
     send: () => { throw new Error('Nothing may be sent when the save failed.'); },

@@ -19,7 +19,7 @@ import { createTeamView, isShareHash, isSnapshotHash, viewLinkToOpen } from './t
 import { pendingForSession } from './team-session.mjs';
 import { guideMark, indexForMark, keepsGuide } from './guide/questions.mjs';
 import { buildQuestions, normalizeGuide } from './guide/questions.mjs';
-import { editFacts, drawSavedStatus, conflictSavedText, choiceLists, afterAckedSave, validTime } from './saved-session.mjs';
+import { editFacts, drawSavedStatus, conflictSavedText, choiceLists, afterAckedSave, validTime, newestRevision } from './saved-session.mjs';
 import { openChoices } from './saved-card.mjs';
 import { askReplace, replaceEachNamed, REPLACE_STALE_NOTICE, OPEN_CONFLICT_NOTICE, CHOOSE_VERSION_NOTICE, SAVE_CONFLICT_NOTICE, REPLACE_CONFLICT_NOTICE, KEPT_CHANGES_NOTICE, RECOVERY_FULL_NOTICE } from './replace-confirm.mjs';
 import { openOutcome } from './open-outcome.mjs';
@@ -1160,14 +1160,20 @@ const findOption=(family,slug)=>state.library?.families?.[family]?.options.find(
   }
 
   // A follow-up note resends a design the team already sent, so it skips the coordinator tick.
-  async function cloudSend({ followUp = false } = {}) {
-    if (!isLeadSession()) return;
+  // One Send at a time, from the click to the service's answer. Send can wait for a save and then save
+  // itself, and a second click during either wait would otherwise send the same design twice.
+  async function cloudSend(options = {}) {
+    if (!isLeadSession() || ui.sendActive) return;
+    ui.sendActive = true;
+    try { await sendOnce(options); } finally { ui.sendActive = false; }
+  }
+
+  async function sendOnce({ followUp = false } = {}) {
     if (handoffBusy) {
       // A save in flight used to swallow the click. Wait for it, then carry on. An open or a send in flight
-      // shows its own progress, and a second click while waiting adds nothing.
-      if (!ui.savingFor || ui.sendWaiting) return;
-      ui.sendWaiting = true;
-      try { await whenIdle(); } finally { ui.sendWaiting = false; }
+      // shows its own progress.
+      if (!ui.savingFor) return;
+      await whenIdle();
       if (handoffBusy) return;
     }
     if (ui.localPreview) { actionNotice("This local preview does not send review requests. Your test design and backups remain available."); return; }
@@ -1186,7 +1192,7 @@ const findOption=(family,slug)=>state.library?.families?.[family]?.options.find(
     const needsSave = () => Boolean(ui.cloudConflict) || !session.revision || hasUnsavedTeamWork() || ui.convertedUnsaved;
     if (needsSave()) {
       await cloudSave();
-      if (ui.teamSession !== session || needsSave()) return;
+      if (ui.teamSession !== session || handoffBusy || needsSave()) return;
     }
     const existing = pendingSubmission();
     let payload;
@@ -1420,7 +1426,8 @@ const findOption=(family,slug)=>state.library?.families?.[family]?.options.find(
       const li = document.createElement("li");
       const text = document.createElement("span");
       const savedText = validTime(item.savedAt) ? formatSavedTime(item.savedAt) : "";
-      const newest = item.revision === session.revision;
+      // The fresh history names the newest save. This browser's own revision may be older if another device saved since.
+      const newest = item.revision === newestRevision(result.history);
       text.textContent = (savedText ? `Saved ${savedText}` : item.revision) + (newest ? " · your team's latest save" : "");
       const button = document.createElement("button");
       button.type = "button";

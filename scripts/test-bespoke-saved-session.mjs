@@ -203,3 +203,19 @@ test('Cancel sends nothing, and a save that fails without a newer version stops 
   assert.deepEqual(failed.page.saved, ['B']);
   assert.deepEqual(failed.page.asked, ['B']);
 });
+
+test("Previous versions marks the team's newest save, not the one this browser last knew", () => {
+  const { newestRevision } = editModule;
+  const mine = { revision: 'a'.repeat(40), savedAt: '2026-11-18T14:00:00Z' };
+  const theirs = { revision: 'b'.repeat(40), savedAt: '2026-11-18T15:30:00Z' };
+  // Another device saved after this browser did: the fresh history decides, whatever order it arrives in.
+  assert.equal(newestRevision([theirs, mine]), theirs.revision);
+  assert.equal(newestRevision([mine, theirs]), theirs.revision);
+});
+
+test('a history without usable times falls back to the first row, and an empty one names nothing', () => {
+  const { newestRevision } = editModule;
+  assert.equal(newestRevision([{ revision: 'c'.repeat(40) }, { revision: 'd'.repeat(40), savedAt: '2026-11-18T15:30:00Z' }]), 'c'.repeat(40));
+  assert.equal(newestRevision([]), null);
+  assert.equal(newestRevision(undefined), null);
+});
