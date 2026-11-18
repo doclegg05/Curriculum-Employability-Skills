@@ -287,6 +287,28 @@ try {
     pass('Continue to Send opens Send');
     await context.close();
   }
+  {
+    // The drawer also hides at 761 to 1100px wide, taking the stage's own Continue button with it, so the heading
+    // row carries Continue to Send there too (Greptile on PR 77).
+    const context = await browser.newContext({viewport: {width: 1024, height: 768}, reducedMotion: 'reduce'});
+    await context.addInitScript(() => { window.__bespokeAutosave = {enabled: false}; });
+    const page = await context.newPage();
+    page.on('pageerror', e => errors.push(e.message));
+    await page.goto(server.baseUrl + '/bespoke/');
+    await page.locator('#localPreviewNotice').waitFor({state: 'visible'});
+    await page.locator('#stage-slides').click();
+    if (await page.locator('#workspace').getAttribute('data-options') === 'true') await page.locator('#btnMoreOptions').click();
+    assert.equal(await page.locator('#workspace').getAttribute('data-options'), 'false');
+    assert.equal(await page.locator('#btnNext').isVisible(), false, 'with the drawer closed the stage Continue button is out of sight');
+    const forward = page.locator('#btnToSend');
+    assert.equal(await forward.isVisible(), true, 'Continue to Send shows at 1024px wide');
+    const box = await forward.boundingBox();
+    assert.ok(box.x + box.width <= 1024 && box.y + box.height <= 768, 'and sits inside the first screen');
+    await forward.click();
+    assert.equal(await page.locator('#workspace').getAttribute('data-stage'), 'review');
+    pass('a 1024px laptop has Continue to Send with the drawer closed');
+    await context.close();
+  }
   assert.deepEqual(errors, []);
 } finally {
   await browser.close();
