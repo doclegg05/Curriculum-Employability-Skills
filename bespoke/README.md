@@ -198,7 +198,8 @@ original wizard still opens read-only, does not follow later saves, and can
 contain readable sample text and contact details. Review proposals are public
 repository artifacts; use work contact details and non-sensitive sample copy.
 
-**Send to Britt** uses the confirmed saved selection. Processing is not delivery;
+**Send to Britt** uses the confirmed saved selection. It saves unsaved changes first,
+and waits for a save already running; a save that fails stops the send. Processing is not delivery;
 only the matching proposal receipt establishes that Britt received the review
 request. Then Send shows the **Sent to Britt** view, or another stage shows the toast
 **Sent to Britt.** Local preview disables Send and receipt-status requests completely.

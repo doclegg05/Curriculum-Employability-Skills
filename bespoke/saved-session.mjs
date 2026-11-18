@@ -7,6 +7,17 @@ import { renderSavedCard, renderBadge } from './saved-card.mjs';
 // A malformed time from the service is skipped rather than allowed to break the card.
 export const validTime = iso => (typeof iso === 'string' && !Number.isNaN(Date.parse(iso)) ? iso : null);
 
+/**
+ * The revision of the newest save in a history list from the service, or null when the list is empty.
+ * Save times decide when every row has one; otherwise the service's order (newest first) does.
+ */
+export function newestRevision(history) {
+  const rows = Array.isArray(history) ? history.filter(row => row?.revision) : [];
+  if (!rows.length) return null;
+  if (!rows.every(row => validTime(row.savedAt))) return rows[0].revision;
+  return rows.reduce((newest, row) => (Date.parse(row.savedAt) > Date.parse(newest.savedAt) ? row : newest)).revision;
+}
+
 /** The competing save's time for the Replace it question. */
 export const conflictSavedText = conflict => (validTime(conflict?.savedAt) ? formatSavedTime(conflict.savedAt) : 'most recently');
 

@@ -85,11 +85,18 @@ function chooseBadge(facts) {
   if (facts.phase === 'checking') return badge('Checking…', 'busy');
   if (facts.phase === 'failed') return badge("Couldn't check", 'error');
   if (facts.saving) return badge('Saving…', 'busy');
-  if (facts.saveFailed) return badge('Save failed', 'error');
+  // The screen matching an acknowledged save is Saved, even when a later save attempt failed.
   if (facts.matchesSave && facts.hasSave && !facts.converted) return badge('Saved', 'ok');
+  if (facts.saveFailed) return badge('Save failed', 'error');
   if (!facts.hasSave && facts.untouchedPresets) return null;
   return badge('Changes not saved', 'warn');
 }
+
+// What only the header's older status text can say: trouble with this browser's own storage.
+const CHIP_ONLY = /another tab|needs recovery|storage unavailable/i;
+
+/** Whether the header status text shows. The badge is the one word on saving, so the text steps aside beside it. */
+export const chipShown = (text, badgeShown) => !badgeShown || CHIP_ONLY.test(text);
 
 export function savedStatus(facts) {
   const shown = chooseCard(facts);

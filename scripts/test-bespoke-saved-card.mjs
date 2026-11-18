@@ -68,6 +68,10 @@ async function scenario(name, {seed = {}, local = false, autosave = {enabled: fa
       const hook = hooks[body.action]?.shift?.();
       if (hook?.wait) await hook.wait();
       if (hook?.reply) return route.fulfill(hook.reply);
+      if (hook?.lost) {
+        Object.assign(data, {revision: NEXT_REVISION, savedAt: NEXT_SAVED_AT, selection: body.selection});
+        return route.abort();
+      }
       if (body.action === 'open') return route.fulfill({json: {ok: true, access: 'edit', revision: data.revision, savedAt: data.savedAt, selection: data.selection}});
       if (body.action === 'save') {
         Object.assign(data, {revision: NEXT_REVISION, savedAt: NEXT_SAVED_AT, selection: body.selection});
@@ -498,6 +502,69 @@ try {
     await page.locator('#savedOk').click();
     await page.locator('#savedCard').waitFor({state: 'hidden'});
     await page.locator('#saveBadge').waitFor({state: 'hidden'});
+  });
+
+  // Safe-work fixes (review of 2026-11-18): the recovery copy, a save whose reply was lost, a replaced code,
+  // one word on saving, and the lesson in the code dialog.
+  const recoveryCopy = page => page.evaluate(key => JSON.parse(localStorage.getItem(key)), BACKUP_DRAFT_KEY);
+  const chip = page => page.locator('#saveStatus');
+  const wrongCode = {reply: {status: 403, json: {ok: false, error: 'code', message: 'That team access code is not right. Check the code from Britt.'}}};
+
+  await scenario('the recovery copy survives the next page load', {seed: competing}, async page => {
+    await showsConflict(page, 'Friday, November 6 at 9:10 AM');
+    await page.locator('#savedUseSaved').click();
+    await savedState(page);
+    await page.reload();
+    await savedState(page);
+    assert.deepEqual((await recoveryCopy(page)).design.fonts, builtDesign.fonts, 'the set-aside browser work is still in the recovery copy');
+  });
+
+  await scenario("a save whose reply was lost is not reported as someone else's save", {
+    seed: {[SESSION_KEY]: session()}, hooks: {save: [{lost: true}]}
+  }, async page => {
+    await savedState(page);
+    await paint(page, 'mauve');
+    await saveControl(page).click();
+    await showsBadge(page, 'Save failed');
+    await page.reload();
+    await savedState(page);
+    assert.equal(await page.locator('#savedUseSaved').count(), 0, 'no choice between two copies of the same design');
+    assert.equal((await shownDesign(page)).roles.sidebar, 'mauve', 'the saved change is on screen');
+  });
+
+  await scenario('a replaced team code asks for the new code and keeps the work', {
+    seed: {[SESSION_KEY]: session(), [DRAFT_KEY]: draft(builtDesign)}, autosave: quickAutosave, hooks: {open: [wrongCode]}
+  }, async (page, calls) => {
+    await page.locator('#openDialog').waitFor();
+    assert.match(await page.locator('#openError').innerText(), /no longer works.*Your work on this computer is kept\./s);
+    assert.equal(await page.locator('#openLesson').inputValue(), LESSON.id, "the dialog is on this team's lesson");
+    assert.deepEqual(saves(calls), [], 'nothing is saved with a refused code');
+    await page.locator('#openEditCode').fill('N3WC-0D32');
+    await page.locator('#openConfirm').click();
+    await page.locator('#openDialog').waitFor({state: 'hidden'});
+    await until(() => saves(calls).length === 1, 'the kept work is saved once the new code is accepted');
+    await showsBadge(page, 'Saved');
+    assert.deepEqual((await shownDesign(page)).fonts, builtDesign.fonts, 'the browser work is still on screen');
+    assert.equal(await page.evaluate(key => JSON.parse(localStorage.getItem(key)).editCode, SESSION_KEY), 'N3WC-0D32', 'the new code is remembered');
+    assert.equal(await recoveryCopy(page), null, 'work that stayed on screen needed no recovery copy');
+  });
+
+  await scenario('the header never says saved beside Changes not saved', {seed: {[SESSION_KEY]: session()}}, async page => {
+    await savedState(page);
+    assert.equal(await chip(page).isHidden(), true, 'the badge alone says Saved');
+    await paint(page, 'mauve');
+    await showsBadge(page, 'Changes not saved');
+    assert.equal(await chip(page).isHidden(), true, 'the badge alone says Changes not saved');
+  });
+
+  await scenario('the code dialog starts on no lesson and names the lesson a code was refused for', {hooks: {open: [wrongCode]}}, async page => {
+    await page.locator('#btnEnterTeamCode').click();
+    assert.equal(await page.locator('#openLesson').inputValue(), '', 'no lesson is chosen for the team');
+    await page.locator('#openLesson').selectOption('goal-setting');
+    await page.locator('#openEditCode').fill(CODE);
+    await page.locator('#openConfirm').click();
+    await page.locator('#openError').filter({hasText: 'That code does not open Goal Setting.'}).waitFor();
+    assert.match(await page.locator('#openError').innerText(), /Check that Lesson is your team's lesson/);
   });
 } catch (error) {
   console.error(error);
