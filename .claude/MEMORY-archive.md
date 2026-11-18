@@ -2,9 +2,13 @@
 
 Older rows moved out of `.claude/MEMORY.md` to keep it under its size cap.
 
-## Key Decisions Log (2026-10-23 and earlier)
+## Key Decisions Log (2026-11-09 and earlier)
 | Date | Decision | Rationale |
 |------|----------|-----------|
+| 2026-11-09 | Lesson showcase pass runs in three levels (repair, room-size text, showpiece), with a stop for Britt's review after each | Britt's pick; the lessons are released, so each level gets looked at before the next |
+| 2026-11-09 | Page Down, Page Up, Home and End added to the lessons' key handler and the builder template (NAV-14) | Britt approved; presenter remotes send Page Down and the handler took arrows and Space only |
+| 2026-11-09 | Seven AV1 lesson videos re-saved as H.264 under the same file names | Old Edge and Safari may not play AV1; 56 MB of growth accepted |
+| 2026-11-09 | Controlling Anger slide 28 shows a drawn game board, not the Jeopardy thumbnail | The thumbnail carried a redrawn SPOKES mark (LOGO-01); the PNG stays in the folder, unreferenced |
 | 2026-10-23 | LOGO-02 fails a filter or blend mode on any element around the logo, except a filter made only of `drop-shadow()` | A wrapper filter is the easiest way to whiten the logo for a dark slide; a drop-shadow adds a shadow without recoloring it |
 | 2026-10-23 | A logo image with `alt=""` counts as the logo, not stand-in art | An empty alt marks it decorative, as Employee Accountability already does |
 | 2026-10-23 | CRD-02 allows cards that lift on hover (with `:active`), background textures including dot-grid, grain, gradient-fill cards and a soft radial glow; frosted glass and emoji stay banned | Britt's calls on the Claude Design export review; the template gets its hover lift and statement glow back |
