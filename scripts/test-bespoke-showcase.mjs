@@ -736,12 +736,11 @@ try {
     await page.locator('#stage-review').click();
     await page.locator('#coordinatorAgree').check();
     await page.locator('#btnSendToBritt').click();
-    const unsaved = 'Save the current shared design before sending it to Britt.';
-    assert.equal(await textOf(page, '#sendFeedback'), unsaved, 'a send that cannot start says why beside the buttons');
-    assert.equal(await textOf(page, '#fileStatus'), unsaved, 'the strip still shows the warning');
-    await page.locator('#btnSendSave').click();
+    // Send saves first (Britt, 2026-11-18). This fake service answers the save with a newer version, so the
+    // send stops there and says why beside the buttons and in the strip.
     await page.locator('#sendFeedback').filter({hasText: 'Someone saved a newer shared version'}).waitFor({timeout: 4000});
     assert.match(await textOf(page, '#fileStatus'), /Someone saved a newer shared version/, 'the strip still shows the conflict');
+    assert.equal(await page.locator('#sendWaitDialog').isVisible(), false, 'nothing was sent');
     await context.close();
     pass('send errors show beside the buttons');
   }

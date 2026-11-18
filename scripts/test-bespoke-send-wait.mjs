@@ -23,7 +23,8 @@ const server = await createDevServer({port: 0});
 
 function storeReply(body, replies) {
   if (body.action === 'open') return {json: {ok: true, revision: 'b'.repeat(40), savedAt: '2026-10-30T14:00:00Z', selection}};
-  if (body.action === 'send') return replies.send();
+  if (body.action === 'save' && replies.save) return replies.save(body);
+  if (body.action === 'send') return replies.send(body);
   if (body.action === 'status') return replies.status();
   throw new Error('Unexpected synthetic action: ' + body.action);
 }
@@ -109,7 +110,9 @@ try {
     status: processing
   }, async page => {
     await send(page);
-    await page.locator('#sendFeedback').filter({hasText: 'could not complete'}).waitFor();
+    // An outage reads in the page's plain words, with the next step (service-messages.mjs).
+    await page.locator('#sendFeedback').filter({hasText: 'BeSpoke could not finish that just now.'}).waitFor();
+    assert.match(await page.locator('#sendFeedback').innerText(), /tell Britt/);
     assert.equal(await dialog(page).isVisible(), false);
     assert.equal(await page.locator('#btnSendToBritt').isDisabled(), false, 'the team can retry');
   });
@@ -121,6 +124,55 @@ try {
     await send(page);
     await dialog(page).waitFor();
     await page.locator('#sendFeedback').filter({hasText: 'could not be created'}).waitFor(POLL_WAIT);
+    assert.equal(await dialog(page).isVisible(), false);
+  });
+
+  // Send saves first (Britt, 2026-11-18): a team never has to press Save and then Send.
+  const SAVED_REVISION = 'c'.repeat(40);
+  const savedOk = () => ({json: {ok: true, revision: SAVED_REVISION, savedAt: '2026-10-30T15:00:00Z'}});
+  {
+    const savedNotes = [], sentFrom = [];
+    await scenario('a note typed just before Send is saved, then sent', {
+      save: body => { savedNotes.push(body.selection.unspoken); return savedOk(); },
+      send: body => { sentFrom.push(body.expectedRevision); return processing(); },
+      status: processing
+    }, async page => {
+      await page.locator('#reviewNotes').fill('Please check the title color.');
+      await send(page);
+      await dialog(page).waitFor();
+      assert.deepEqual(savedNotes, ['Please check the title color.'], 'the note was saved before the send');
+      assert.deepEqual(sentFrom, [SAVED_REVISION], 'the send is the version that was just saved');
+      assert.doesNotMatch(await page.locator('#fileStatus').textContent(), /Save the current shared design/);
+    });
+  }
+  {
+    let releaseSave;
+    const heldSave = new Promise(resolve => { releaseSave = resolve; });
+    const sentFrom = [];
+    await scenario('a click on Send while a save is running waits for it, then sends', {
+      save: async () => { await heldSave; return savedOk(); },
+      send: body => { sentFrom.push(body.expectedRevision); return processing(); },
+      status: processing
+    }, async page => {
+      await page.locator('#reviewNotes').fill('One more thing.');
+      await page.locator('#btnSendSave').click();
+      await page.locator('#sendFeedback').filter({hasText: 'Saving the shared design'}).waitFor();
+      await send(page);
+      assert.equal(await dialog(page).isVisible(), false, 'nothing is sent while the save is still running');
+      assert.deepEqual(sentFrom, []);
+      releaseSave();
+      await dialog(page).waitFor();
+      assert.deepEqual(sentFrom, [SAVED_REVISION], 'the click was not lost');
+    });
+  }
+  await scenario('a save that fails stops the send and says why', {
+    save: () => ({status: 502, json: {ok: false, error: 'store', message: 'The connected store could not complete this request.'}}),
+    send: () => { throw new Error('Nothing may be sent when the save failed.'); },
+    status: processing
+  }, async page => {
+    await page.locator('#reviewNotes').fill('This note cannot be saved.');
+    await send(page);
+    await page.locator('#sendFeedback').filter({hasText: 'BeSpoke could not finish that just now.'}).waitFor();
     assert.equal(await dialog(page).isVisible(), false);
   });
 } finally {

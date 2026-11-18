@@ -19,9 +19,13 @@ import { createTeamView, isShareHash, isSnapshotHash, viewLinkToOpen } from './t
 import { pendingForSession } from './team-session.mjs';
 import { guideMark, indexForMark, keepsGuide } from './guide/questions.mjs';
 import { buildQuestions, normalizeGuide } from './guide/questions.mjs';
-import { editFacts, drawSavedStatus, conflictSavedText, choiceLists, afterAckedSave } from './saved-session.mjs';
+import { editFacts, drawSavedStatus, conflictSavedText, choiceLists, afterAckedSave, validTime } from './saved-session.mjs';
 import { openChoices } from './saved-card.mjs';
 import { askReplace, replaceEachNamed, REPLACE_STALE_NOTICE, OPEN_CONFLICT_NOTICE, CHOOSE_VERSION_NOTICE, SAVE_CONFLICT_NOTICE, REPLACE_CONFLICT_NOTICE, KEPT_CHANGES_NOTICE, RECOVERY_FULL_NOTICE } from './replace-confirm.mjs';
+import { openOutcome } from './open-outcome.mjs';
+import { pollStep } from './send-poll.mjs';
+import { teacherMessage, wrongCodeMessage, staleCodeMessage, SERVICE_UNREADABLE } from './service-messages.mjs';
+import { chipShown, formatSavedTime } from './saved-status.mjs';
 
 // Keep the established SPOKES identity. Preview selection edits the cumulative
 // design model; confirmed shared saves remain separate from browser drafts.
@@ -51,7 +55,8 @@ const teamIdentified = () => Boolean(state.teamName.trim() && state.spokesperson
 const state = {step:0,stepId:'start',meta:null,library:null,lessonId:'money-management',teamName:'',spokespersonName:'',spokespersonEmail:'',builderName:'',lessonTitle:'',lessonSubtitle:'',unspoken:'',editCode:'',previewView:'title',design:null,legacySelection:null,alternatives:null,changes:[],redo:[]};
 const ui = {onlySlide:false,mode:'view',renderedStep:null,previewPinned:false,teamSession:null,linkReplacedSession:null,cloudConflict:null,cloudBusy:false,autosavePaused:false,allowUnload:false,skipNextLocalSave:false,restoreNote:'',restoredFromLink:false,editCodeHash:'',activeRole:'sidebar',paintScope:'slide',themeScope:'slide',localPreview:false,editorRole:'title',sharedThemeOpen:false,meaningfulDesign:false,appliedLook:null,lookSnapshot:null,lookUndoAt:null,onStart:false,coordinatorAgreed:false};
 // The saved-design card and badge (saved-status.mjs): which open they describe and what it found.
-Object.assign(ui,{openPhase:null,openFor:null,openReplace:false,openedKey:'',savedSnapshot:null,cardDismissed:false,keptChanges:false,priorWork:false,saveFailed:false,aheadSaving:false,savingFor:null});
+const FIRST_LESSON=state.lessonId;
+Object.assign(ui,{lessonChosen:false,openPhase:null,openFor:null,openReplace:false,openedKey:'',savedSnapshot:null,cardDismissed:false,keptChanges:false,priorWork:false,saveFailed:false,aheadSaving:false,savingFor:null});
 ui.guide = null;
 let guide = null;
 let previewEditor = null;
@@ -92,7 +97,17 @@ const findOption=(family,slug)=>state.library?.families?.[family]?.options.find(
     if (!el) return;
     el.textContent = text;
     el.title = text;
-    el.dataset.state = /another tab|failed|could not|not saved|not shared|waiting|newer|unsaved|stale|conflict/i.test(text) ? "warn" : "ok";
+    el.dataset.state = /another tab|failed|could not|not saved|not shared|waiting|newer|unsaved|stale|conflict|recovery|unavailable/i.test(text) ? "warn" : "ok";
+    syncSaveChip();
+  }
+
+  // The badge is the one word on saving. The older status text shows only without a badge, or for what the
+  // badge cannot say: this browser's own storage, and a design updated to the standard on open.
+  function syncSaveChip() {
+    const el = byId("saveStatus"), badge = byId("saveBadge");
+    if (!el) return;
+    const text = el.textContent;
+    el.hidden = !(chipShown(text, Boolean(badge) && !badge.hidden) || text === CONVERTED_STATUS);
   }
 
   function queueSaveAnnouncement() {
@@ -237,6 +252,8 @@ const findOption=(family,slug)=>state.library?.families?.[family]?.options.find(
 
   function draftStatusText() {
     if (!ui.teamSession || !ui.teamSession.revision) return "Browser draft saved";
+    // Until the service has answered for this session, the text claims only the browser copy.
+    if (ui.openFor !== ui.teamSession || ui.openPhase !== "ready") return "Browser draft saved";
     if (ui.localPreview) return hasUnsavedTeamWork() ? "Browser draft saved · local test save pending" : "Local test design up to date";
     if (!hasUnsavedTeamWork()) return ui.convertedUnsaved ? CONVERTED_STATUS : "Shared design up to date";
     if (ui.autosavePaused) return "Choose Save for the team to share";
@@ -280,7 +297,10 @@ const findOption=(family,slug)=>state.library?.families?.[family]?.options.find(
     // The competing-versions choice stays until a button is clicked.
     const choosing = Boolean(ui.cloudConflict) && !ui.keptChanges;
     if (shown && !choosing && ui.openPhase === "ready" && currentSelectionKey() !== ui.openedKey) ui.cardDismissed = true;
+    // A design back in step with its acknowledged save has no failed save left to report.
+    if (ui.saveFailed && session?.revision && !hasUnsavedTeamWork()) ui.saveFailed = false;
     drawSavedStatus({ section: byId("savedCard"), button: byId("saveBadge"), facts: shown ? savedFacts() : null, localPreview: ui.localPreview, catalog, snapshot: ui.savedSnapshot, handlers: savedCardHandlers, onBadge: showChoices });
+    syncSaveChip();
   }
 
   // A successful open: the card describes this session's design as it now stands.
@@ -435,6 +455,7 @@ const findOption=(family,slug)=>state.library?.families?.[family]?.options.find(
       if (ui.teamSession && !ui.localPreview) return;
       if(ui.localPreview){installTeamSession(select.value,'bespoke-local-preview-synthetic');ui.autosavePaused=true;}
       state.lessonId = select.value;
+      ui.lessonChosen = true;
       saveDraft();
       updatePreview();
       updateTeamPill();
@@ -490,7 +511,12 @@ const findOption=(family,slug)=>state.library?.families?.[family]?.options.find(
   function setHandoffBusy(value) {
     handoffBusy = value;
     refreshNoteButton();
+    if (!value) idleWaiters.splice(0).forEach(resume => resume());
   }
+
+  // Resolves once no save, open or send is in flight.
+  const idleWaiters = [];
+  const whenIdle = () => (handoffBusy ? new Promise(resume => idleWaiters.push(resume)) : Promise.resolve());
 
   function refreshNoteButton() {
     const button = byId("btnSendNote");
@@ -793,9 +819,10 @@ const findOption=(family,slug)=>state.library?.families?.[family]?.options.find(
       });
       const data = await res.json().catch(() => null);
       if (!data || typeof data !== "object") {
-        return { ok: false, error: "store", message: "The shared store returned an unreadable response. Your browser draft is safe.", httpStatus: res.status };
+        return { ok: false, error: "unreadable", message: SERVICE_UNREADABLE, httpStatus: res.status };
       }
-      return { ...data, httpStatus: res.status };
+      // An outage reads in plain words and says when to tell Britt; every other answer keeps the service's text.
+      return { ...data, message: teacherMessage(data), httpStatus: res.status };
     } catch (error) {
       if (controller.signal.aborted || error?.name === "AbortError") {
         return { ok: false, error: "timeout", message: "The shared store took too long to respond. Your browser draft is safe. Try again." };
@@ -858,8 +885,14 @@ const findOption=(family,slug)=>state.library?.families?.[family]?.options.find(
       const result = await handoffRequest("open", { lessonId: session.lessonId, editCode: session.editCode });
       if (session !== ui.teamSession || generation !== draftGeneration) return false;
       if (!result.ok) {
-        // A rejected code keeps the code-entry handling; the card claims nothing about it.
-        if (result.error === "code") ui.openPhase = null;
+        // A remembered code the service refuses (Britt issued a new one) can only be fixed by typing the new
+        // code. Ask for it here, with the browser's work untouched, so nobody has to leave the session to do it.
+        if (result.error === "code") {
+          ui.openPhase = null;
+          clearStrip();
+          openOpenDialog(staleCodeMessage());
+          return false;
+        }
         fileNotice(result.message || "Could not open the shared design. Your browser draft is unchanged.");
         return false;
       }
@@ -877,10 +910,14 @@ const findOption=(family,slug)=>state.library?.families?.[family]?.options.find(
           return false;
         }
       }
-      const dirty = hasUnsavedTeamWork();
-      const remoteChanged = result.revision !== session.revision;
-      if (dirty && (!replace || openingKey !== currentSelectionKey())) {
-        if (remoteChanged) {
+      const outcome = openOutcome({
+        dirty: hasUnsavedTeamWork(), replace, editedWhileOpening: openingKey !== currentSelectionKey(),
+        remoteChanged: (result.revision ?? null) !== (session.revision ?? null),
+        incomingKey: result.selection ? selectionKey(result.selection) : null,
+        currentKey: currentSelectionKey(), hasWork: hasUnclaimedWork()
+      });
+      if (outcome.action === "conflict" || outcome.action === "blocked") {
+        if (outcome.action === "conflict") {
           ui.cloudConflict = { revision: result.revision, savedAt: result.savedAt };
           fileNotice(OPEN_CONFLICT_NOTICE);
         } else {
@@ -890,9 +927,9 @@ const findOption=(family,slug)=>state.library?.families?.[family]?.options.find(
         updateCloudChrome();
         return false;
       }
-      if (replace && !keepRecoveryCopy()) return false;
-      if (result.selection && selectionKey(result.selection) !== currentSelectionKey()) applySelectionPayload(result.selection);
-      else if (!result.selection) resetDesignForLesson(session.lessonId);
+      if (outcome.keepCopy && !keepRecoveryCopy()) return false;
+      if (outcome.action === "apply") applySelectionPayload(result.selection);
+      else if (outcome.action === "reset") resetDesignForLesson(session.lessonId);
       if(result.selection)ui.meaningfulDesign=true;
       state.lessonId = session.lessonId;
       session.revision = result.revision ?? null;
@@ -1089,12 +1126,12 @@ const findOption=(family,slug)=>state.library?.families?.[family]?.options.find(
     if (shown) byId(ui.noteFrom !== undefined ? "sentNote" : "sentHeading")?.focus();
   }
 
-  function scheduleSubmissionPoll(receipt, delay = 10000) {
+  function scheduleSubmissionPoll(receipt, delay = 10000, failures = 0) {
     clearTimeout(submissionPollTimer);
-    submissionPollTimer = window.setTimeout(() => pollSubmission(receipt), delay);
+    submissionPollTimer = window.setTimeout(() => pollSubmission(receipt, failures), delay);
   }
 
-  async function pollSubmission(receipt) {
+  async function pollSubmission(receipt, failures = 0) {
     const result = await handoffRequest("status", {
       lessonId: receipt.lessonId,
       editCode: receipt.editCode,
@@ -1102,17 +1139,19 @@ const findOption=(family,slug)=>state.library?.families?.[family]?.options.find(
       runId: receipt.runId
     });
     if(ui.teamSession?.lessonId!==receipt.lessonId||ui.teamSession.editCode!==receipt.editCode||pendingSubmission()?.submissionId!==receipt.submissionId)return;
-    if (!result.ok) {
+    const step = pollStep({ result, failures, elapsedMs: receipt.sentAt ? Date.now() - receipt.sentAt : 0 });
+    if (step.kind === "stopped") {
       actionNotice(result.message || "Britt’s receipt could not be checked. We will check again when this page opens.");
       return;
     }
-    if (result.status === "processing") {
-      storePendingSubmission({ ...receipt, runId: result.runId || receipt.runId, stage: "receipt" });
-      pendingNotice("Britt’s review request is processing. You can close this page; this browser will check again when you return.");
-      scheduleSubmissionPoll({ ...receipt, runId: result.runId || receipt.runId }, 10000);
+    if (step.kind === "wait") {
+      const next = result.ok ? { ...receipt, runId: result.runId || receipt.runId } : receipt;
+      if (result.ok) storePendingSubmission({ ...next, stage: "receipt" });
+      pendingNotice(step.notice || "Britt’s review request is processing. You can close this page; this browser will check again when you return.");
+      scheduleSubmissionPoll(next, step.retryIn, step.failures);
       return;
     }
-    if (result.status === "received") {
+    if (step.kind === "received") {
       rememberReceipt(result, receipt);
       return;
     }
@@ -1122,7 +1161,15 @@ const findOption=(family,slug)=>state.library?.families?.[family]?.options.find(
 
   // A follow-up note resends a design the team already sent, so it skips the coordinator tick.
   async function cloudSend({ followUp = false } = {}) {
-    if (!isLeadSession() || handoffBusy) return;
+    if (!isLeadSession()) return;
+    if (handoffBusy) {
+      // A save in flight used to swallow the click. Wait for it, then carry on. An open or a send in flight
+      // shows its own progress, and a second click while waiting adds nothing.
+      if (!ui.savingFor || ui.sendWaiting) return;
+      ui.sendWaiting = true;
+      try { await whenIdle(); } finally { ui.sendWaiting = false; }
+      if (handoffBusy) return;
+    }
     if (ui.localPreview) { actionNotice("This local preview does not send review requests. Your test design and backups remain available."); return; }
     const session = requireTeamSession();
     if (!session) return;
@@ -1134,11 +1181,12 @@ const findOption=(family,slug)=>state.library?.families?.[family]?.options.find(
       goStage('review');byId('coordinatorAgree')?.focus();actionNotice(COORDINATOR_REQUIRED);
       return;
     }
-    // A converted design is not an edit, so nothing has saved it; pressing Send is the team's action, so it saves first.
-    if (ui.convertedUnsaved && session.revision && !ui.cloudConflict && !hasUnsavedTeamWork()) { await cloudSave(); if (ui.cloudConflict || ui.convertedUnsaved || hasUnsavedTeamWork()) return; }
-    if (ui.cloudConflict || !session.revision || hasUnsavedTeamWork()) {
-      actionNotice("Save the current shared design before sending it to Britt.");
-      return;
+    // Send saves first (Britt, 2026-11-18): unsaved changes, a design never saved, or one updated on open are
+    // saved by the same click. A save that cannot finish says why itself, and then nothing is sent.
+    const needsSave = () => Boolean(ui.cloudConflict) || !session.revision || hasUnsavedTeamWork() || ui.convertedUnsaved;
+    if (needsSave()) {
+      await cloudSave();
+      if (ui.teamSession !== session || needsSave()) return;
     }
     const existing = pendingSubmission();
     let payload;
@@ -1178,7 +1226,8 @@ const findOption=(family,slug)=>state.library?.families?.[family]?.options.find(
         submissionId: result.submissionId,
         runId: result.runId || null,
         designKey: pending.designKey,
-        notes: pending.selection.unspoken ?? ""
+        notes: pending.selection.unspoken ?? "",
+        sentAt: Date.now()
       };
       storePendingSubmission(receipt);
       if (result.status === "received") {
@@ -1210,19 +1259,27 @@ const findOption=(family,slug)=>state.library?.families?.[family]?.options.find(
     const select = byId("openLesson");
     if (!select || !state.meta) return;
     select.replaceChildren();
+    // The service refuses a right code under the wrong lesson, so a lesson nobody picked is never offered as
+    // the answer: the list starts on a prompt unless a session or the team's own choice names the lesson.
+    const known = ui.teamSession?.lessonId || (ui.lessonChosen || state.lessonId !== FIRST_LESSON ? state.lessonId : "");
+    if (!known) {
+      const prompt = document.createElement("option");
+      Object.assign(prompt, { value: "", textContent: "Choose your lesson", disabled: true, selected: true });
+      select.appendChild(prompt);
+    }
     for (const lesson of state.meta.lessons) {
       const option = document.createElement("option");
       option.value = lesson.id;
       option.textContent = lesson.title;
-      if ((ui.teamSession?.lessonId || state.lessonId) === lesson.id) option.selected = true;
+      if (known === lesson.id) option.selected = true;
       select.appendChild(option);
     }
   }
 
-  function openOpenDialog() {
+  function openOpenDialog(message = "") {
     fillOpenLessons();
     const err = byId("openError");
-    if (err) err.textContent = "";
+    if (err) err.textContent = message;
     const input = byId("openEditCode");
     if (input) input.value = "";
     const dialog = byId("openDialog");
@@ -1230,12 +1287,25 @@ const findOption=(family,slug)=>state.library?.families?.[family]?.options.find(
     input?.focus();
   }
 
+  // The code dialog's Open. A new code for the team already open here keeps the browser's work and lets the
+  // usual open decide what the saved design does to it; any other code opens that team's design.
   async function cloudOpen() {
+    if (await openWithCode() !== "same-team") return;
+    await fetchSharedDesign();
+    await saveAheadWork();
+  }
+
+  async function openWithCode() {
     if (handoffBusy) return;
     const generation = draftGeneration, openingKey = currentSelectionKey();
     const lessonId = byId("openLesson")?.value || "";
     const editCode = (byId("openEditCode")?.value || "").trim();
     const err = byId("openError");
+    if (!lessonId) {
+      if (err) err.textContent = "Choose your team's lesson first.";
+      byId("openLesson")?.focus();
+      return;
+    }
     if (editCode.length < EDIT_CODE_MIN) {
       if (err) err.textContent = "Enter the 8-character team code from your team's OneDrive folder.";
       return;
@@ -1250,12 +1320,20 @@ const findOption=(family,slug)=>state.library?.families?.[family]?.options.find(
         return;
       }
       if (!result.ok) {
-        if (err) err.textContent = result.message || "That private team access could not be opened. Check the lesson and code, then try again.";
+        const lessonTitle = findMeta(state.meta.lessons, lessonId)?.title || "that lesson";
+        if (err) err.textContent = result.error === "code" ? wrongCodeMessage(lessonTitle)
+          : result.message || "That private team access could not be opened. Check the lesson and code, then try again.";
         byId("openEditCode")?.focus();
         return;
       }
       // A view code opens a team view; an editing session with it could never save.
       if (result.access === "view") { if (err) err.textContent = ""; byId("openDialog").close(); await teamView.open(lessonId + "." + encodeURIComponent(editCode), result); render(); return; }
+      if (ui.teamSession?.lessonId === lessonId) {
+        installTeamSession(lessonId, editCode);
+        if (err) err.textContent = "";
+        byId("openDialog").close();
+        return "same-team";
+      }
       if (result.selection) {
         try { validateSelectionPayload(result.selection,{draft:true}); }
         catch (error) {
@@ -1263,13 +1341,14 @@ const findOption=(family,slug)=>state.library?.families?.[family]?.options.find(
           return;
         }
       }
-      if (!keepRecoveryCopy()) {
+      // Work built before the code is this team's when it has no saved design yet.
+      const keepWork = !ui.teamSession && !result.selection && hasUnclaimedWork();
+      // The one recovery copy is for work this open replaces; work that stays on screen needs none.
+      if (!keepWork && !keepRecoveryCopy()) {
         if (err) err.textContent = "Could not keep a browser recovery copy. Download backup before opening another team.";
         return;
       }
 
-      // Work built before the code is this team's when it has no saved design yet.
-      const keepWork = !ui.teamSession && !result.selection && hasUnclaimedWork();
       // With a save to load, that work went to the recovery copy above (state 8).
       const priorWork = !ui.teamSession && Boolean(result.selection) && hasUnclaimedWork();
       installTeamSession(lessonId, editCode);
@@ -1329,10 +1408,7 @@ const findOption=(family,slug)=>state.library?.families?.[family]?.options.find(
     trigger?.setAttribute("aria-expanded", "true");
     if (trigger) trigger.textContent = "Hide previous versions";
     panel.textContent = "Loading previous versions…";
-    const [result, latest] = await Promise.all([
-      handoffRequest("history", { lessonId: session.lessonId, editCode: session.editCode }),
-      handoffRequest("open", { lessonId: session.lessonId, editCode: session.editCode })
-    ]);
+    const result = await handoffRequest("history", { lessonId: session.lessonId, editCode: session.editCode });
     if (session !== ui.teamSession || generation !== draftGeneration) { closeHistory(); return; }
     if (!result.ok) {
       panel.textContent = result.message || "Previous versions could not be loaded.";
@@ -1343,30 +1419,34 @@ const findOption=(family,slug)=>state.library?.families?.[family]?.options.find(
     for (const item of result.history || []) {
       const li = document.createElement("li");
       const text = document.createElement("span");
-      text.textContent = item.savedAt ? new Date(item.savedAt).toLocaleString() : item.revision;
+      const savedText = validTime(item.savedAt) ? formatSavedTime(item.savedAt) : "";
+      const newest = item.revision === session.revision;
+      text.textContent = (savedText ? `Saved ${savedText}` : item.revision) + (newest ? " · your team's latest save" : "");
       const button = document.createElement("button");
       button.type = "button";
       button.className = "btn btn-secondary";
       button.textContent = "Use these choices";
       button.addEventListener("click", async () => {
         if (session !== ui.teamSession || generation !== draftGeneration) { closeHistory(); return; }
+        // One click used to swap the whole design. Name the version and say where the screen's work goes first.
+        if (!confirm(`Replace what is on screen with the version saved ${savedText || "earlier"}? What is on screen now is kept in ⋯ > Recover previous draft. Your team's saved design does not change until you choose Save for the team.`)) return;
         const openingKey = currentSelectionKey();
+        // Read the latest save now, not when the list opened: an automatic save since then moved it on.
+        const [latest, opened] = await Promise.all([
+          handoffRequest("open", { lessonId: session.lessonId, editCode: session.editCode }),
+          handoffRequest("openRevision", { lessonId: session.lessonId, editCode: session.editCode, revision: item.revision })
+        ]);
+        if (session !== ui.teamSession || generation !== draftGeneration || openingKey !== currentSelectionKey()) {
+          closeHistory();
+          fileNotice("The browser draft changed while opening a previous version. Your current choices were kept.");
+          return;
+        }
         if (!latest.ok) {
           fileNotice("The latest shared version could not be checked. Previous choices were not loaded.");
           return;
         }
         const latestRevision = latest.revision ?? null;
         const latestKey = latest.selection ? selectionKey(latest.selection) : session.baseSelectionKey;
-        const opened = await handoffRequest("openRevision", {
-          lessonId: session.lessonId,
-          editCode: session.editCode,
-          revision: item.revision
-        });
-        if (session !== ui.teamSession || generation !== draftGeneration || openingKey !== currentSelectionKey()) {
-          closeHistory();
-          fileNotice("The browser draft changed while opening a previous version. Your current choices were kept.");
-          return;
-        }
         if (!opened.ok || !opened.selection) {
           fileNotice(opened.message || "That previous version could not be opened.");
           return;
@@ -1383,7 +1463,7 @@ const findOption=(family,slug)=>state.library?.families?.[family]?.options.find(
         state.step = stepIndex("review");
         closeHistory();
         render();
-        fileNotice("Previous choices loaded into this browser draft. Review them, then Save for the team to create a new revision. Later history is preserved.");
+        fileNotice(`Previous choices loaded: you are looking at the version saved ${savedText || "earlier"}. Your team's saved design has not changed. Choose Save for the team to make this the team's design. What was on screen before is in ⋯ > Recover previous draft.`);
         window.requestAnimationFrame(() => byId("stepPanel")?.focus({ preventScroll: true }));
       });
       li.append(text, button);

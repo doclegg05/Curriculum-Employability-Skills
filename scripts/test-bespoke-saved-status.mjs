@@ -176,3 +176,24 @@ test('the copy has no em dashes', () => {
     assert.ok(!JSON.stringify(card).includes('—'));
   }
 });
+
+test('a failed save no longer shows once the screen matches the saved design again', () => {
+  // Undo back to the saved design after a failed save: Saved means the screen matches an acknowledged save.
+  const out = savedStatus(facts({ matchesSave: true, saveFailed: true }));
+  assert.equal(out.badge.text, 'Saved');
+});
+
+test('the older header status steps aside whenever the badge speaks', async () => {
+  const { chipShown } = await import('../bespoke/saved-status.mjs');
+  assert.equal(chipShown('Browser draft saved', true), false, 'never "saved" beside "Changes not saved"');
+  assert.equal(chipShown('Automatic save will retry', true), false, 'never a calm retry beside "Save failed"');
+  assert.equal(chipShown('Shared design up to date', true), false);
+  assert.equal(chipShown('Browser draft saved', false), true, 'with no badge the header status is the only word');
+});
+
+test('the header status still shows what the badge cannot say', async () => {
+  const { chipShown } = await import('../bespoke/saved-status.mjs');
+  for (const text of ['Another tab changed this draft', 'Draft needs recovery', 'Browser storage unavailable. Download a backup.']) {
+    assert.equal(chipShown(text, true), true, text);
+  }
+});
