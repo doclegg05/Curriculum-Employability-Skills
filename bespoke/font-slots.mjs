@@ -28,6 +28,23 @@ export function fontControl(catalog, design, { saved, slot, effective, inherit =
   return { options: [...shared, ...choices, ...kept], value };
 }
 
+// A Font menu value that changes the lesson's own font for a slot, as opposed to choosing which slot a text uses.
+const LESSON_PICK = 'lesson:';
+
+/** The group a Font menu adds under its two slot choices: every lesson font, to become the font of `slot`. */
+export const lessonFontChoices = (catalog, slot) => ({
+  slot,
+  label: `Change the lesson's ${slot} font`,
+  options: catalog.fonts.map(font => ({ id: LESSON_PICK + font.id, label: font.label }))
+});
+
+/** The font id a Font menu value picks for the lesson, or null when the value is a slot or anything else. */
+export function lessonFontPick(catalog, value) {
+  if (typeof value !== 'string' || !value.startsWith(LESSON_PICK)) return null;
+  const id = value.slice(LESSON_PICK.length);
+  return catalog.fonts.some(font => font.id === id) ? id : null;
+}
+
 // Shared font defaults are headingFont and bodyFont; a slot equal to the default's own slot moves with it.
 const OWN_SLOT = { headingFont: 'heading', bodyFont: 'body' };
 

@@ -2,9 +2,13 @@
 
 Older rows moved out of `.claude/MEMORY.md` to keep it under its size cap.
 
-## Key Decisions Log (2026-11-09 and earlier)
+## Key Decisions Log (2026-11-10 and earlier)
 | Date | Decision | Rationale |
 |------|----------|-----------|
+| 2026-11-10 | A slide that holds too much for room-size text is drawn smaller as a whole (`--fit` on the slide, never under 0.84) | Spacing alone could not fit 28 of 202 slides; a whole-slide scale keeps their proportions and keeps text at least as large at 1920x1080 as before |
+| 2026-11-10 | Slides stop 5.25rem above the bottom, and each fit keeps a 1.2% margin | The corner logo and navigation hint sat on top of fuller slides; classroom Windows machines set type slightly wider than the Mac the fit was measured on |
+| 2026-11-10 | Level 2 text scales with the screen | Britt's pick: a slide should look the same on any projector; about 19% larger than today at 1920x1080 |
+| 2026-11-10 | Lessons keep opening with the sidebar showing | Britt's pick over starting closed on small screens; Level 2 fits slides around the open sidebar, which means smaller text on small screens |
 | 2026-11-09 | Lesson showcase pass runs in three levels (repair, room-size text, showpiece), with a stop for Britt's review after each | Britt's pick; the lessons are released, so each level gets looked at before the next |
 | 2026-11-09 | Page Down, Page Up, Home and End added to the lessons' key handler and the builder template (NAV-14) | Britt approved; presenter remotes send Page Down and the handler took arrows and Space only |
 | 2026-11-09 | Seven AV1 lesson videos re-saved as H.264 under the same file names | Old Edge and Safari may not play AV1; 56 MB of growth accepted |

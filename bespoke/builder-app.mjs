@@ -4,6 +4,7 @@ import { readabilitySuggestions } from './readability.mjs';
 import { compareDesign } from './similarity.mjs';
 import { createPreviewEditor } from './preview-editor.mjs';
 import { watchCanvasFit } from './canvas-fit.mjs';
+import { holdBand } from './toolbar-band.mjs';
 import { fontControl, fontScopeGroup, scopeSentences } from './font-slots.mjs';
 import { convertToStandard, convertAlternatives, convertDraft, conversionNote } from './standard-conversion.mjs';
 import { CONVERTED_STATUS, CONVERTED_NOTE, convertedOnOpen } from './converted-open.mjs';
@@ -2251,7 +2252,7 @@ async function init(){
   thumbnail:kind=>Model.renderSlide(catalog,state.design,kind,renderOptions(state.design))
  });
  const closeOptions=()=>{ui.moreOptions=false;render(false);byId('btnMoreOptions').focus();};
- byId('btnHideDrawer').onclick=closeOptions;byId('btnSwapLook').onclick=()=>goStage('start');
+ byId('btnHideDrawer').onclick=closeOptions;byId('btnSwapLook').onclick=()=>goStage('start');byId('btnToSend').onclick=()=>goStage('review');
  // Show or hide the options drawer by toolbar button, menu command or shortcut (Apple HIG: more than one way to reveal a hidden pane).
  const toggleOptions=()=>{if(byId('workspace').dataset.editor==='true')byId('btnMoreOptions')?.click();};
  byId('btnMenuOptions').onclick=toggleOptions;
@@ -2288,6 +2289,7 @@ async function init(){
  const workspace=byId('workspace'),surfacePositions={design:0,preview:0};
  const sizeSurfaceNavigation=()=>{const height=document.querySelector('.surface-navigation').getBoundingClientRect().height;document.documentElement.style.setProperty('--surface-navigation-height',Math.ceil(height)+'px');};
  new ResizeObserver(sizeSurfaceNavigation).observe(document.querySelector('.surface-navigation'));sizeSurfaceNavigation();
+ holdBand(byId('previewToolbarMount'));
  watchCanvasFit();
  document.querySelectorAll('#surfaceSwitcher [role=tab]').forEach(tab=>tab.onclick=()=>{surfacePositions[workspace.dataset.activeSurface]=workspace.scrollTop;workspace.dataset.activeSurface=tab.dataset.surface;workspace.scrollTop=surfacePositions[tab.dataset.surface];document.querySelectorAll('#surfaceSwitcher [role=tab]').forEach(t=>t.setAttribute('aria-selected',String(t===tab)));previewEditor.refresh();});bindTablistKeys(byId('surfaceSwitcher'));
  window.addEventListener('storage',event=>{if((event.key===STORAGE_KEY||event.key===null)&&isLeadSession()){storageConflict=true;setSaveStatus('Another tab changed this draft');fileNotice('This tab’s draft is kept. Download a backup before reopening the latest version.');}});

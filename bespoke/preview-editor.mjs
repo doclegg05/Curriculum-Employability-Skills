@@ -1,7 +1,7 @@
 import {isQuickField} from './canvas-toolbar.mjs';
 import {SHARED_LINE_END, renderScopeParts} from './make-it-yours.mjs';
 import {colorWell,segmentedControl,SEGMENTED_FIELDS,MAX_SEGMENTS} from './canvas-controls.mjs';
-import {fontControl} from './font-slots.mjs';
+import {fontControl,FONT_SLOTS,lessonFontChoices,lessonFontPick} from './font-slots.mjs';
 import {fitCanvas} from './canvas-fit.mjs';
 // Narrower than this, the docked band sends Sample text and Position to the drawer so it keeps two rows.
 const FULL_BAND_MIN=1000;
@@ -113,7 +113,21 @@ export function createPreviewEditor(host) {
   const shared=['primary','secondary','headingColor','bodyColor'];
   const apply=(key,value)=>host.change(`${names[kind]}: ${key.replace(/([A-Z])/g,' $1').toLowerCase()}`,d=>Object.assign(d,(shared.includes(key)&&!host.onlySlide()?host.model.setSharedColor:host.model.setRoleStyle)(host.catalog,d,kind,key,value)));
   // Per-slide and feature fonts offer the two lesson fonts only; a saved font id stays selectable.
-  const fontField=(savedFont,slot,effectiveFont,callback)=>{const f=fontControl(host.catalog,design,{saved:savedFont??'inherit',slot,effective:effectiveFont});field('font','Font',f.value,f.options,callback);};
+  // The first choices pick which of the two lesson fonts this text uses. The group under them changes that lesson
+  // font itself, for every slide on it, so a team can change the font where it says Font.
+  const fontField=(savedFont,slot,effectiveFont,callback)=>{
+   const f=fontControl(host.catalog,design,{saved:savedFont??'inherit',slot,effective:effectiveFont});
+   const onSlot=FONT_SLOTS.includes(f.value)?f.value:slot,lesson=lessonFontChoices(host.catalog,onSlot);
+   field('font','Font',f.value,f.options,value=>{
+    const font=lessonFontPick(host.catalog,value);
+    if(!font)return callback(value);
+    host.change(`Lesson ${onSlot} font: ${host.catalog.fonts.find(item=>item.id===font).label}`,d=>{d.fonts[onSlot]=font;});
+   });
+   const select=document.getElementById('context-font');if(!select)return;
+   const group=document.createElement('optgroup');group.label=lesson.label;
+   for(const option of lesson.options){const el=document.createElement('option');el.value=option.id;el.textContent=option.label;group.append(el);}
+   select.append(group);
+  };
   const colors=()=>host.catalog.palette.map(c=>({id:c.id,label:c.name}));
   const colorField=(id,title,value,callback)=>{field(id,title,value,colors(),callback,{color:true});const input=document.getElementById('context-'+id);input.style.borderLeft='12px solid '+host.catalog.palette.find(c=>c.id===value).hex;};
   const feature=(id,key,value)=>host.change(label(selected)+': '+key,d=>Object.assign(d,host.model.setFeatureStyle(host.catalog,d,id,key,value)));

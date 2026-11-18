@@ -24,12 +24,14 @@
 
 ## Last Session
 - **Date**: 2026-11-18
-- **What we worked on**: a full BeSpoke review (21 findings F1 to F21, score 21/40, no blocker; snapshot in `.impeccable/critique/2026-11-18T14-22-50Z__bespoke-index-html.md`, gitignored), then the "safe-work" fixes F1 to F9 in commit `b8b38c2` on branch `fix/bespoke-safe-work`.
-- **What was fixed**: the recovery copy is written only when the screen's design is replaced; a refused stored code opens the code dialog and keeps the work; a save whose reply was lost is adopted, not shown as a conflict; the header status text hides whenever the badge shows; Send saves first and waits for a running save; a missed status check keeps checking; outages say "tell Britt"; Previous versions asks first; the code dialog starts on "Choose your lesson". Decisions live in `bespoke/open-outcome.mjs`, `send-poll.mjs` and `service-messages.mjs`. Page-only: no service deploy.
-- **Where we left off**: PR open for Britt to merge. Hosted Save, Open and Send not exercised. F10 to F21 untouched.
+- **What we worked on**: a full BeSpoke review (21 findings F1 to F21, score 21/40, no blocker; snapshot in `.impeccable/critique/2026-11-18T14-22-50Z__bespoke-index-html.md`, gitignored), then two batches of fixes.
+- **F1 to F9, PR #76** (`fix/bespoke-safe-work`): recovery copy kept only when the design is replaced; a refused stored code reopens the code dialog; a lost save reply is adopted, not a conflict; one save indicator; Send saves first and runs one at a time; status checks keep trying; outages say "tell Britt"; Previous versions asks first and marks the newest save; the code dialog starts on "Choose your lesson". Pure decisions in `bespoke/open-outcome.mjs`, `send-poll.mjs`, `service-messages.mjs`. Greptile reviewed it (now on for this repo); both findings fixed.
+- **F10 to F13, commit `b555daf`** on `feat/bespoke-find-the-way`, stacked on #76: Continue to Send beside Present; toasts under the top bar; the band above the slide holds its tallest height (`toolbar-band.mjs`), so the slide shrinks once and then stays; the Font menu changes the lesson font; Guide me counts per section and pins Back and Next.
+- **Evidence**: 312 unit tests and all 26 browser test files green on `b555daf`. `npm ci` ran in the main checkout (Britt's OK), so `node_modules` is there now.
+- **Where we left off**: #76 is green and waits for Britt's merge. Then rebase `feat/bespoke-find-the-way` onto `main` and open its PR. Hosted Save, Open and Send not exercised. Page-only: no service deploy.
 
 ## Open Items
-- [ ] **BeSpoke review, not started**: F10 no forward button on Make it yours, toasts over the stage pills; F11 slide jumps on selection; F12 Font menu cannot change the font; F13 Guide me's 40 questions and hidden Next; F14 to F21 in the critique snapshot. Britt's calls: D2 drop "Original wizard" from the teacher menu (it saves old-format designs with live codes); D3 show the looks before the code.
+- [ ] **BeSpoke review, not started**: F14 look strip shows 8 of 12; F15 stage 1 accepts empty fields; F16 Option B cannot be removed; F17 See every setting opens out of sight; F18 to F20 wording, the team guide's code-versus-link contradiction, the Original wizard link; F21 small text, faint borders, load size. Britt's calls: D2 drop "Original wizard" from the teacher menu; D3 show the looks before the code. Known trade-off in F11: the toolbar still needs two rows for text at 1366 wide.
 - [ ] **Do not delete `bespoke-drafts` after a real team has saved**: an open that finds no saved file resets the browser design to the presets.
 - [ ] Local `main` holds an unpushed memory trim (`a6e52e2`) that conflicts with `origin/main`'s own trim. Britt's call: drop it or redo it.
 - [ ] **Lesson showcase pass, Level 1**: committed, not pushed (hashes in Last Session). Push and the pull request go through Britt's Terminal. Britt's calls still open: the Problem Solving closing slide lost its photo; Communicating with the Public labels changed from a handwriting font to Work Sans; the NAV-14 heading uses a colon, unlike the other 87.
@@ -78,12 +80,8 @@
 | 2026-11-18 | Send to Britt saves first, then sends; a save that fails stops the send | A note typed just before Send was refused, and a click during an autosave did nothing |
 | 2026-11-12 | Slide text floor drops from 14px to 12px, and the fit check adds a 1024x768 screen with the sidebar open | Sol's review found five slides overflowing on 4:3 projectors; 12px still reads at the back of a room and fits them |
 | 2026-11-12 | Forceful anger style teaches "be firm without threats" instead of "best used when" | Sol's review: the old card read as approval of intimidation; slide wording unchanged |
-| 2026-11-10 | A slide that holds too much for room-size text is drawn smaller as a whole (`--fit` on the slide, never under 0.84) | Spacing alone could not fit 28 of 202 slides; a whole-slide scale keeps their proportions and keeps text at least as large at 1920x1080 as before |
-| 2026-11-10 | Slides stop 5.25rem above the bottom, and each fit keeps a 1.2% margin | The corner logo and navigation hint sat on top of fuller slides; classroom Windows machines set type slightly wider than the Mac the fit was measured on |
-| 2026-11-10 | Level 2 text scales with the screen | Britt's pick: a slide should look the same on any projector; about 19% larger than today at 1920x1080 |
-| 2026-11-10 | Lessons keep opening with the sidebar showing | Britt's pick over starting closed on small screens; Level 2 fits slides around the open sidebar, which means smaller text on small screens |
 
-Rows from 2026-11-09 and earlier are in `.claude/MEMORY-archive.md`.
+Rows from 2026-11-10 and earlier are in `.claude/MEMORY-archive.md`.
 
 ## Architecture Notes
 - TWO GitHub repos, one history: publisher (`SPOKES-Skills/Employability-Skills-Curriculum`) is the public home + Pages site; origin (`doclegg05/...`) is the dev repo and the one that moves. Publisher carries no unique commits — catching up is `git push publisher main:main`. Both public; dev repo ALSO serves Pages.

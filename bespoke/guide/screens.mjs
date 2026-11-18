@@ -1,7 +1,7 @@
 import { applyAnswer, currentValue, optionsFor } from './answers.mjs';
 import { recapLines } from './answers.mjs';
-import { questionCopy, sectionLabel } from './copy.mjs';
-import { sectionsOf } from './questions.mjs';
+import { questionCopy } from './copy.mjs';
+import { progressLine, sectionProgress, sectionsOf } from './questions.mjs';
 
 export function el(tag, attrs = {}, ...kids) {
   const node = document.createElement(tag);
@@ -25,7 +25,7 @@ function progress(ctx) {
     list.append(el('li', {}, b));
   }
   return el('div', { class: 'guide-head' },
-    el('p', { class: 'guide-count' }, `Question ${guide.index + 1} of ${guide.ids.length} · ${sectionLabel(q.section)}`), list);
+    el('p', { class: 'guide-count' }, progressLine(sectionProgress(guide, byId))), list);
 }
 
 let thumbSerial = 0;

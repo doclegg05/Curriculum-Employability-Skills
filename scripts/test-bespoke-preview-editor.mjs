@@ -38,7 +38,18 @@ try{
   await page.locator('#context-only-slide').check();
   assert.match(await page.locator('#editScope').textContent(),/Title slide only/, 'Only this slide restores the single-slide wording');
   await page.locator('#context-only-slide').uncheck();
-  assert.deepEqual(await page.locator('#context-font option').evaluateAll(nodes=>nodes.map(n=>n.value)),['heading','body'],'Fonts are the two lesson slots');
+  // The text's own font is one of the two lesson slots. The group under them changes that lesson font itself
+  // (review of 2026-11-18, F12), so no choice here can give one slide a third typeface.
+  assert.deepEqual(await page.locator('#context-font > option').evaluateAll(nodes=>nodes.map(n=>n.value)),['heading','body'],'Fonts are the two lesson slots');
+  const lessonPicks=await page.locator('#context-font optgroup option').evaluateAll(nodes=>nodes.map(n=>n.value));
+  assert.equal(lessonPicks.length,12,'all twelve lesson fonts are offered where it says Font');
+  assert.ok(lessonPicks.every(value=>value.startsWith('lesson:')),'every other choice changes the lesson font');
+  const fontsBefore=(await current(page)).fonts;
+  await page.locator('#context-font').selectOption(fontsBefore.heading==='bitter'?'lesson:raleway':'lesson:bitter');
+  assert.equal((await current(page)).fonts.heading,fontsBefore.heading==='bitter'?'raleway':'bitter','a lesson pick changes the lesson heading font');
+  assert.equal((await current(page)).roleStyles?.title?.headingFont??'inherit',before.roleStyles?.title?.headingFont??'inherit','and leaves this slide on its slot');
+  await page.locator('#btnUndo').click();
+  assert.deepEqual((await current(page)).fonts,fontsBefore,'Undo puts the lesson font back');
   await page.locator('#context-font').selectOption('body');
   assert.equal((await current(page)).roleStyles.title.headingFont,'body');
   assert.deepEqual((await current(page)).roles,before.roles);

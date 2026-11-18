@@ -93,6 +93,18 @@ export function sectionsOf(guide, byId) {
   return list.map((s) => ({ ...s, reached: s.firstIndex <= guide.furthest, current: s.id === current }));
 }
 
+/**
+ * Where the current question sits inside its own section: the section's label, the question's number in it and
+ * how many the section holds. The guide counts this way so no screen reads "Question 12 of 40".
+ */
+export function sectionProgress(guide, byId) {
+  const section = questionAt(guide, byId).section;
+  const inSection = guide.ids.filter((id) => byId.get(id).section === section);
+  return { label: SECTIONS.find((s) => s.id === section).label, number: inSection.indexOf(guide.ids[guide.index]) + 1, total: inSection.length };
+}
+
+export const progressLine = ({ label, number, total }) => `${label} · question ${number} of ${total}`;
+
 export function jumpToSection(guide, sectionId, byId) {
   const target = sectionsOf(guide, byId).find((s) => s.id === sectionId);
   return target && target.reached ? { ...guide, index: target.firstIndex } : guide;

@@ -70,13 +70,25 @@ async function walkTo(page, title) {
 }
 
 try {
+  await scenario('Back and Next stay on screen on a school laptop, however tall the question is', async ({ makePage }) => {
+    const page = await makePage();
+    await page.setViewportSize({ width: 1366, height: 768 });
+    await startGuide(page);
+    await walkTo(page, 'Subtitle color');
+    const nextButton = await page.locator('#btnGuideNext').boundingBox();
+    assert.ok(nextButton.y + nextButton.height <= 768, `Next is in view without scrolling, bottom ${nextButton.y + nextButton.height}px of 768`);
+    const backButton = await page.locator('#btnGuideBack').boundingBox();
+    assert.ok(backButton.y + backButton.height <= 768, 'Back is in view without scrolling');
+  });
+
   await scenario('Start offers Guide me and the guide opens on the first question', async ({ makePage }) => {
     const page = await makePage();
     await page.locator('#stage-start').click();
     assert.equal(await page.locator('#btnGuideMe').innerText(), 'Guide me');
     assert.equal(await page.locator('#btnBuildOwn').count(), 1, 'Edit freely (Build my own) is still there');
     await page.locator('#btnGuideMe').click();
-    assert.match(await count(page), /^Question 1 of 40 · Starting look$/);
+    // The counter places the team inside the section, never "of 40" (review of 2026-11-18, F13).
+    assert.match(await count(page), /^Starting look · question 1 of 2$/);
     assert.equal(await heading(page), 'Your team');
     assert.equal(await page.locator('#stage-slides').getAttribute('aria-current'), 'step');
   });
@@ -314,7 +326,7 @@ try {
     await page.locator('#stage-start').click();
     await page.locator('#btnGuideMe').click();
     await page.locator('.guide-count').waitFor();
-    assert.match(await count(page), /of 39\b/, 'the restarted guide no longer asks the team question');
+    assert.match(await count(page), /^Starting look · question 1 of 1$/, 'the restarted guide no longer asks the team question');
     await page.locator('#btnUndo').click();
     assert.equal(await heading(page), 'Title layout', 'Undo lands on the question where the change was made');
     assert.equal((await design(page)).slides.title.layout, original);
@@ -429,7 +441,7 @@ try {
     await page.keyboard.press('Enter');
     assert.equal(await heading(page), 'Logo position');
     assert.equal(await page.evaluate(() => document.activeElement?.id), 'btnGuideNext', 'focus stays on Next so the keyboard flow continues');
-    await page.waitForFunction(() => /Question \d+ of \d+: Logo position/.test(document.getElementById('liveRegion').textContent));
+    await page.waitForFunction(() => /^Title slide, question \d+ of \d+: Logo position$/.test(document.getElementById('liveRegion').textContent));
     await walkTo(page, 'Box layout');
     await page.locator('.guide-sample').first().focus();
     await page.keyboard.press('Tab');

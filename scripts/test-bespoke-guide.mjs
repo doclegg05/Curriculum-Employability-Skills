@@ -358,3 +358,24 @@ test('both ways of replacing the design decide about the guide with the same rul
     assert.doesNotMatch(body, /lessonId!==state\.lessonId\)ui\.guide=null/, `${name} has no lesson-only rule left`);
   }
 });
+
+test('the guide counts questions within the section, so no screen says "of 40"', async () => {
+  const { sectionProgress } = await import('../bespoke/guide/questions.mjs');
+  let g = startGuide(all);
+  // With the team still to confirm, Starting look holds two questions.
+  assert.deepEqual(sectionProgress(g, byId), { label: 'Starting look', number: 1, total: 2 });
+  g = advance(g);
+  assert.deepEqual(sectionProgress(g, byId), { label: 'Starting look', number: 2, total: 2 });
+  g = advance(g);
+  assert.deepEqual(sectionProgress(g, byId), { label: 'Shared look', number: 1, total: 5 });
+  // Every section is short enough to feel finishable.
+  for (let i = 0; i < all.length; i += 1) {
+    const here = sectionProgress({ ...g, index: i }, byId);
+    assert.ok(here.total <= 9 && here.number >= 1 && here.number <= here.total, `${all[i].id}: ${JSON.stringify(here)}`);
+  }
+});
+
+test('the counter reads as section, then place in it', async () => {
+  const { progressLine } = await import('../bespoke/guide/questions.mjs');
+  assert.equal(progressLine({ label: 'Title slide', number: 3, total: 6 }), 'Title slide · question 3 of 6');
+});

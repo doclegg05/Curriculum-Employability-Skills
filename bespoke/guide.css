@@ -10,7 +10,8 @@
 .guide-sample:focus-visible, .guide-section:focus-visible { outline: 3px solid var(--blue); outline-offset: 2px }
 .guide-sample small { color: var(--muted); font-size: var(--fs-2xs) }
 .guide-sample .guide-note { color: var(--navy) }
-.guide-nav { display: flex; flex-wrap: wrap; gap: 10px; align-items: center; margin-top: 18px }
+/* Pinned to the bottom of the window: a tall question (twelve looks, eleven colors) must not push Back and Next out of sight. */
+.guide-nav { position: sticky; bottom: 0; z-index: 2; display: flex; flex-wrap: wrap; gap: 10px; align-items: center; margin-top: 18px; padding: 12px 0; border-top: 1px solid var(--line); background: #fff }
 .guide-entry { margin: 18px 0; padding: 16px; border: 1px solid var(--line); border-radius: var(--radius-feature); background: #f6fafc }
 .guide-entry h2 { margin: 0 0 6px; font-size: var(--fs-md) }
 .guide-entry .start-actions { display: flex; flex-wrap: wrap; gap: 10px; align-items: center }

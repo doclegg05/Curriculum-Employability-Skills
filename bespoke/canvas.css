@@ -4,6 +4,8 @@
    too and their Slide options drawer scrolls on its own. Phones (760px and narrower)
    keep the stacked layout. Chrome only; lesson colors stay inside the preview. */
 :root{--bar-h:52px}
+/* Shown beside the docked editor (761px and up, below); the phone layout keeps the stage panel's own Continue button. */
+#btnToSend{display:none}
 
 /* ---- Top bar ---------------------------------------------------------- */
 .app-bar{display:flex;flex-wrap:wrap;align-items:center;gap:6px 12px;min-height:var(--bar-h);padding:4px 16px;background:#fff;border-bottom:1px solid var(--line)}
@@ -111,6 +113,9 @@ body:has(.workspace[data-editor=true]) #btnMenuOptions{display:flex}
 }
 
 @media(min-width:761px){
+ /* The options drawer can hide at every docked width (761px and up), taking the stage's own Continue button with it,
+    so the heading row carries one. */
+ .workspace[data-editor=true] #btnToSend{display:inline-flex}
  /* Docked toolbar: in normal flow above the slide. When it needs more room it wraps and pushes the slide down. */
  .context-toolbar.is-docked{display:flex;flex-wrap:wrap;align-items:end;gap:8px 10px;margin:0;padding:8px 10px;border:1px solid var(--line);border-radius:var(--radius-dialog);background:#fff;box-shadow:0 4px 14px #00133f14}
  .context-toolbar.is-docked .toolbar-field{flex:0 0 auto;max-width:170px;color:var(--muted);font-size:var(--fs-2xs)}
